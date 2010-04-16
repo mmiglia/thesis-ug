@@ -2,8 +2,8 @@ package test;
 
 import java.util.*;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import junit.framework.TestCase;
 import BusinessObject.LoginManager;
@@ -21,7 +21,7 @@ public class ClientTest extends TestCase
 	
 	public void testNewsByZipCode() throws Exception
 	{
-		Logger log = Logger.getLogger(ClientTest.class);
+		Logger log = LoggerFactory.getLogger(ClientTest.class);
 		log.info("hallo hallo Bandung");
 		LoginManager.login("gw", "sendiri");
 		//RegisteredUsers.instance.addUsers("pras", "hanyakamu", "thesisUG", "checkthesisUG");

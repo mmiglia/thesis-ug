@@ -15,6 +15,16 @@
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jaxrs</artifactId>
       <version>1.2.GA</version>
+      <exclusions>
+      	<exclusion>
+      		<artifactId>slf4j-simple</artifactId>
+      		<groupId>org.slf4j</groupId>
+      	</exclusion>
+      	<exclusion>
+      		<artifactId>slf4j-api</artifactId>
+      		<groupId>org.slf4j</groupId>
+      	</exclusion>
+      </exclusions>
    </dependency>    
   	<dependency>
   		<groupId>org.apache.tomcat</groupId>
@@ -29,9 +39,9 @@
   		<scope>test</scope>
   	</dependency>
   	<dependency>
-  		<groupId>apache-log4j</groupId>
-  		<artifactId>log4j</artifactId>
-  		<version>1.2.15</version>
+  		<groupId>org.slf4j</groupId>
+  		<artifactId>slf4j-log4j12</artifactId>
+  		<version>1.5.11</version>
   	</dependency>
    </dependencies>
 </project>
