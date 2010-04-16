@@ -10,14 +10,15 @@ import javax.ws.rs.WebApplicationException;
 import BusinessObject.LoginManager;
 import ValueObject.LoginReply;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/login/{username}")
 /**
  * Resource class for login to the system by providing user ID and password
 */
 public class LoginResource{
-	private static Logger log = Logger.getLogger(LoginResource.class);
+	private static Logger log = LoggerFactory.getLogger(LoginResource.class);
 /**
  * This method will authenticate the user based on a given params. It will call BO.LoginManager.Login() method to do authentication in database.
  * Upon successful completion, LoginReply object is created and returned as a JAXB annotated XML
@@ -30,7 +31,7 @@ public class LoginResource{
 @GET
 @Produces("application/xml")
 public LoginReply Authenticate(@PathParam("username") String username, @QueryParam ("p") String password) {	
-    log.info("Retrieving username and password from client");
+    log.info("Receiving authentication request from client");
     LoginReply reply = LoginManager.login(username, password);
     if (reply != null) {
         return reply;

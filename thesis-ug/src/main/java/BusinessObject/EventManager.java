@@ -1,5 +1,5 @@
 package BusinessObject;
-import java.lang.*;
+
 /**
  * everytime the user wants to retrieve/add events, it saves in the local event databases, and also to the 3rd party database (Google)
 */
@@ -13,6 +13,7 @@ public interface EventManager{
  * @param endDate 
 */
 public void createEvents(String username, String title, String startDate, String endDate) {
+	
 }
 /**
  * this method will particularly use quick add features in Google Calendar, which can parse directly any type of string.

@@ -1,5 +1,5 @@
 package BusinessObject;
-import java.lang.*;
+
 /**
 */
 public interface MapManager{

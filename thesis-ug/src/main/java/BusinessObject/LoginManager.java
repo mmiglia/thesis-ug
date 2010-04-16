@@ -1,6 +1,7 @@
 package BusinessObject;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ValueObject.LoginReply;
 import DAO.RegisteredUsers;
@@ -10,7 +11,7 @@ import DAO.SessionData;
  * Business Object that will handle transaction for login process.
  */
 public class LoginManager {
-	private static Logger log = Logger.getLogger(LoginManager.class);
+	private final static Logger log = LoggerFactory.getLogger(LoginManager.class);
 
 	/**
 	 * This class checks the database for matching username and password, and
@@ -33,7 +34,7 @@ public class LoginManager {
 			log.info("Username or password is wrong");
 			return new LoginReply(0, "-1");
 		} else {
-			log.info("Creating new session key for user");
+			log.info("Found matching record, create new session key for user");
 			return new LoginReply(1, SessionData.instance.createSessionforUser(ID));
 		}
 	}

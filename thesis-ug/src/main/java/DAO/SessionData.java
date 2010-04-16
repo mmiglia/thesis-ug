@@ -15,7 +15,7 @@ public enum SessionData {
 	private static final String DATABASE_NAME = "src/main/resources/SessionData";
 	
 	/**
-	 * Create a session for user and return the sessionkey
+	 * Create a session for user and return the session key
 	 * @param userID UUID of the user
 	 * @return Fresh session key of the user if user is not in the database, or old ones if user already logged in
 	 */
@@ -26,7 +26,7 @@ public enum SessionData {
 			String sessionKey = UUID.randomUUID().toString();
 			Session toAdd = instance.new Session(userID, sessionKey);
 			ObjectContainer db = openDatabase();
-			try {			
+			try {
 				db.store(toAdd);
 				return sessionKey; // return the fresh session key upon successful add
 			} finally {
