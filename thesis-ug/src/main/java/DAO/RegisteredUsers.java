@@ -3,6 +3,9 @@ package DAO;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.query.Predicate;
@@ -14,7 +17,8 @@ import com.db4o.query.Predicate;
  */
 public enum RegisteredUsers {
 	instance; //singleton instance
-	private static final String DATABASE_NAME = "src/main/resources/RegisteredUsers";	
+	private static final String DATABASE_NAME = "src/main/resources/RegisteredUsers";
+	private final static Logger log = LoggerFactory.getLogger(RegisteredUsers.class);
 	
 	/**
 	 * Add new user to database 
@@ -22,13 +26,16 @@ public enum RegisteredUsers {
 	 * @param password password to the system
 	 */
 	public static void addUsers (String username, String password){
-		if (usernameExist(username))return;
+		if (usernameExist(username)) {
+			log.warn("Username already exist, choose different username");
+			return; //check for redundant entry, because db40 saves redundant object
+		}
 		Users toAdd =  instance.new Users (username, password);		
 		ObjectContainer db = openDatabase();
 		try {			
 			db.store(toAdd);
 		} finally{
-			db.close();
+			db.close();			
 		}
 	}
 	
@@ -40,7 +47,10 @@ public enum RegisteredUsers {
 	 * @param googlePassword password to logon to Google Services
 	 */
 	public static void addUsers(String username, String password, String googleID, String googlePassword){
-		if (usernameExist(username)) return;
+		if (usernameExist(username)) {
+			log.warn("Username already exist, choose different username");			
+			return; //check for redundant entry, because db40 saves redundant object
+		}
 		Users toAdd = instance.new Users (username, password, googleID, googlePassword);
 		ObjectContainer db = openDatabase();
 		try {			
@@ -80,7 +90,10 @@ public enum RegisteredUsers {
 					return user.ID.equals(ID);
 				}
 			});
-			if (result.isEmpty()) return;
+			if (result.isEmpty()) {
+				log.warn("Cannot find user with ID "+ID);
+				return;
+			}
 			Users toDelete = result.get(0);
 			db.delete(toDelete);
 		} finally {
@@ -101,7 +114,10 @@ public enum RegisteredUsers {
 					return user.ID.equals(ID);
 				}
 			});
-			if (result.isEmpty()) return;
+			if (result.isEmpty()) {
+				log.warn("Cannot find user with ID "+ID);
+				return;
+			}
 			Users toChange = result.get(0);
 			toChange.googleUsername = googleID;
 			db.store(toChange);
@@ -123,7 +139,10 @@ public enum RegisteredUsers {
 					return user.ID.equals(ID);
 				}
 			});
-			if (result.isEmpty()) return;
+			if (result.isEmpty()) {
+				log.warn("Cannot find user with ID "+ID);
+				return;
+			}
 			Users toChange = result.get(0);
 			toChange.googlePassword = googlePassword;
 			db.store(toChange);

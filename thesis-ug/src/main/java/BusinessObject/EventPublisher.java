@@ -1,5 +1,7 @@
 package BusinessObject;
 
+import java.util.List;
+
 /**
 */
 public class EventPublisher extends Publisher implements EventManager{
@@ -10,7 +12,7 @@ private List<EventSubscriber> subscriberlist;
  * @param Return 
  * @param subscriber 
 */
-public void subscribe<EventSubscriber>(EventSubscriber subscriber) {
+public <E> void subscribe( E subscriber) {
 }
 @Override
 public void Authenticate(String username, String password) {

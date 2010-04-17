@@ -3,6 +3,9 @@ package DAO;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.query.Predicate;
@@ -13,6 +16,7 @@ import com.db4o.query.Predicate;
 public enum SessionData {
 	instance; //singleton instance
 	private static final String DATABASE_NAME = "src/main/resources/SessionData";
+	private final static Logger log = LoggerFactory.getLogger(SessionData.class);
 	
 	/**
 	 * Create a session for user and return the session key
