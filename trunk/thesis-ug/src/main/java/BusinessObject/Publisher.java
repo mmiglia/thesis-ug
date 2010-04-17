@@ -7,7 +7,7 @@ import java.util.List;
 public abstract class Publisher<E> {
 	/**
 */
-	private List<E> subscriberlist;
+	protected List<E> subscriberlist;
 
 	/**
 	 * this method will put the subscriber to the subscriber list
@@ -15,6 +15,6 @@ public abstract class Publisher<E> {
 	 * @param Return
 	 * @param subscriber
 	 */
-	public <E> void subscribe(E subscriber) {
+	public void subscribe(E subscriber) {
 	}
 }
