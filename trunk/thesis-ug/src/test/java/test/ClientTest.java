@@ -1,7 +1,5 @@
 package test;
 
-import java.util.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,12 +17,21 @@ public class ClientTest extends TestCase
 	}
 	
 	
-	public void testNewsByZipCode() throws Exception
+	public void testLogin() throws Exception
 	{
 		Logger log = LoggerFactory.getLogger(ClientTest.class);
 		log.info("hallo hallo Bandung");
 		LoginManager.login("gw", "sendiri");
 		//RegisteredUsers.instance.addUsers("pras", "hanyakamu", "thesisUG", "checkthesisUG");
 	}	
+	
+	public void testaddUser() throws Exception
+	{
+		Logger log = LoggerFactory.getLogger(ClientTest.class);
+		log.info("hallo hallo Bandung");
+		RegisteredUsers.instance.addUsers("adda", "hanya");
+		//RegisteredUsers.instance.addUsers("pras", "hanyakamu", "thesisUG", "checkthesisUG");
+	}	
+
 
 }

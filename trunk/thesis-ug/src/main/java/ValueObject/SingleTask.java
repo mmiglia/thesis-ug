@@ -71,4 +71,12 @@ public class SingleTask extends Reminder {
 		super(UUID.randomUUID().toString(), title, 3, description, 2);
 		this.dueDate = dueDate;
 	}
+	
+	public boolean equals(Object other){
+		return (other instanceof SingleTask && ID == ((SingleTask)other).ID);		
+	}
+	
+	public int hashCode(){
+		return ID.hashCode();
+	}
 }
