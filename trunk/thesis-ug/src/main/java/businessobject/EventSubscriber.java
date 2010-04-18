@@ -9,7 +9,7 @@ public abstract class EventSubscriber implements EventManager {
 	/**
 	 * Constructor for this class, subscribe itself to EventPublisher
 	 */
-	public EventSubscriber() {
+	protected EventSubscriber() {
 		EventPublisher.getInstance().subscribe(this);
 	}	
 }

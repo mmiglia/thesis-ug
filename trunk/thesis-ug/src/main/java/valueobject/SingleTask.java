@@ -1,5 +1,7 @@
 package valueobject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -14,25 +16,31 @@ public class SingleTask extends Reminder {
 	 */
 	public String dueDate;
 	/**
-	 * time to start notifying user to complete this task. Default value is
-	 * "12:00:00 AM"
+	 * time to start notifying user to complete this task (xs:Time format, e.g.
+	 * "09:30:10-06:00"). Default value is "00:00:00"
 	 */
-	public String notifyTimeStart = "12:00:00 AM";
+	public String notifyTimeStart;
 	/**
-	 * time to end notifying user to complete this task. Default value is
-	 * "12:00:00 PM"
+	 * time to end notifying user to complete this task (xs:Time format, e.g.
+	 * "09:30:10-06:00"). Default value is "23:59:59"
 	 */
-	public String notifyTimeEnd = "12:00:00 PM";
+	public String notifyTimeEnd;
 
 	/**
 	 * Basic constructor for the class
 	 * 
-	 * @param title title of the task
-	 * @param notifyTimeStart time to start notifying user
-	 * @param notifyTimeEnd time to end notifying user
-	 * @param dueDate the deadline for task completion
-	 * @param description brief description of the task
-	 * @param priority task priority
+	 * @param title
+	 *            title of the task
+	 * @param notifyTimeStart
+	 *            time to start notifying user
+	 * @param notifyTimeEnd
+	 *            time to end notifying user
+	 * @param dueDate
+	 *            the deadline for task completion
+	 * @param description
+	 *            brief description of the task
+	 * @param priority
+	 *            task priority
 	 */
 	public SingleTask(String title, String notifyTimeStart,
 			String notifyTimeEnd, String dueDate, String description,
@@ -46,11 +54,16 @@ public class SingleTask extends Reminder {
 	/**
 	 * Constructor without specifying priority
 	 * 
-	 * @param title title of the task
-	 * @param notifyTimeStart time to start notifying user
-	 * @param notifyTimeEnd time to end notifying user
-	 * @param dueDate the deadline for task completion
-	 * @param description brief description of the task
+	 * @param title
+	 *            title of the task
+	 * @param notifyTimeStart
+	 *            time to start notifying user
+	 * @param notifyTimeEnd
+	 *            time to end notifying user
+	 * @param dueDate
+	 *            the deadline for task completion
+	 * @param description
+	 *            brief description of the task
 	 */
 	public SingleTask(String title, String notifyTimeStart,
 			String notifyTimeEnd, String dueDate, String description) {
@@ -63,20 +76,27 @@ public class SingleTask extends Reminder {
 	/**
 	 * Simple constructor with default value for priority and notify-time.
 	 * 
-	 * @param title title of the task
-	 * @param dueDate the deadline for task completion
-	 * @param description brief description of the task
+	 * @param title
+	 *            title of the task
+	 * @param dueDate
+	 *            the deadline for task completion
+	 * @param description
+	 *            brief description of the task
 	 */
 	public SingleTask(String title, String dueDate, String description) {
 		super(UUID.randomUUID().toString(), title, 3, description, 2);
+		Date now = new Date();
+		SimpleDateFormat timezone = new SimpleDateFormat("Z");
 		this.dueDate = dueDate;
+		this.notifyTimeEnd = "00:00:00" + timezone.format(now);
+		this.notifyTimeEnd = "23:59:59" + timezone.format(now);		
 	}
-	
-	public boolean equals(Object other){
-		return (other instanceof SingleTask && ID == ((SingleTask)other).ID);		
+
+	public boolean equals(Object other) {
+		return (other instanceof SingleTask && ID == ((SingleTask) other).ID);
 	}
-	
-	public int hashCode(){
+
+	public int hashCode() {
 		return ID.hashCode();
 	}
 }
