@@ -26,7 +26,7 @@ public class CalendarClient extends EventSubscriber{
 		try {
 			myCalendar.setUserCredentials(username, password);
 		} catch (AuthenticationException e) {
-			log.warn("Unabe to authenticate to Google Calendar");
+			log.warn("Unable to authenticate to Google Calendar");
 		}		
 		return false;
 	}
