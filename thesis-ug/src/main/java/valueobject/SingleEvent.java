@@ -11,11 +11,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class SingleEvent extends Reminder {
 	/**
-	 * start time of event execution. In the format of "Tue Nov 04 20:14:11 EST 2003"
+	 * start time of event execution (xs:dateTime format) <code>2006-04-17T15:00:00-08:00</code>
 	 * */
 	public String startTime;
 	/**
-	 * end time of event execution. In the format of "Tue Nov 04 20:14:11 EST 2003"
+	 * end time of event execution(xs:dateTime format) <code>2006-04-17T15:00:00-08:00</code>
 	 * */
 	public String endTime;
 	/**
