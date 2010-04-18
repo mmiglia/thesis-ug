@@ -11,7 +11,8 @@ import javax.ws.rs.Produces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ValueObject.SingleTask;
+import valueobject.SingleTask;
+
 import java.util.List;
 
 /**

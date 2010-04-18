@@ -5,12 +5,13 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import valueobject.SingleEvent;
+
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.query.Predicate;
 import com.google.gdata.data.calendar.CalendarEntry;
 
-import ValueObject.SingleEvent;
 
 /**
  * Singleton class that acts as a database that will save all the events

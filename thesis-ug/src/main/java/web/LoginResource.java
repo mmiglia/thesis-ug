@@ -7,11 +7,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 
-import BusinessObject.LoginManager;
-import ValueObject.LoginReply;
+import businessobject.LoginManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import valueobject.LoginReply;
 
 @Path("/login/{username}")
 /**

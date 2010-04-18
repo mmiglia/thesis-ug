@@ -11,7 +11,8 @@ import javax.ws.rs.Produces;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ValueObject.SingleEvent;
+import valueobject.SingleEvent;
+
 import java.util.List;
 
 /**

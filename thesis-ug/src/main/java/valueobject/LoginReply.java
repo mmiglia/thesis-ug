@@ -1,4 +1,4 @@
-package ValueObject;
+package valueobject;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

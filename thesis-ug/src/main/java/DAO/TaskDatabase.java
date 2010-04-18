@@ -5,11 +5,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import valueobject.SingleTask;
+
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.query.Predicate;
 
-import ValueObject.SingleTask;
 
 /**
  * Singleton class that acts as a database that will save all the tasks
