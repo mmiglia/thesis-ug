@@ -4,6 +4,7 @@ import java.util.List;
 
 import ValueObject.SingleEvent;
 import BusinessObject.EventSubscriber;
+import com.google.gdata.client.calendar.*;
 
 public class CalendarClient extends EventSubscriber{
 
