@@ -81,6 +81,33 @@ public enum EventDatabase {
 	}
 	
 	/**
+	 * Update the specific task
+	 * @param eventID unique UUID of the task
+	 * @param event the new task, must have the same UUID
+	 * @return false if update unsuccessful , true if update is successful
+	 */
+	public static boolean updateEvent(final String eventID, final SingleEvent event){
+		ObjectContainer db = openDatabase();
+		try {
+			List<EventTuple> result = db.query(new Predicate<EventTuple>() {
+				public boolean match(EventTuple current) {
+					return (current.event.ID.equals(eventID));
+				}
+			});
+			if (result.isEmpty()) {
+				log.warn ("Cannot find task with ID "+eventID);
+				return false;
+			}
+			EventTuple toChange = result.get(0);
+			toChange.event = event;
+			db.store(toChange);
+			return true;
+		} finally {
+			db.close();
+		}		
+	}
+	
+	/**
 	 * This method check if the event exist in the database
 	 * @param event object to be checked against database
 	 * @return 1 if event is exist, 0 otherwise
