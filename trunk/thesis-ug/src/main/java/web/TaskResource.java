@@ -8,10 +8,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import java.util.List;
-import ValueObject.SingleTask;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import valueobject.SingleTask;
 
 /**
  * Task Resource is responsible for GETTING the task from the server
