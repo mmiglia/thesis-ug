@@ -10,7 +10,6 @@ import valueobject.SingleEvent;
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.query.Predicate;
-import com.google.gdata.data.calendar.CalendarEntry;
 
 
 /**
@@ -31,34 +30,14 @@ public enum EventDatabase {
 			log.warn ("Event "+event.ID+" already exist");
 			return; 
 		}
-		EventTuple toAdd = instance.new EventTuple(userID, event, new CalendarEntry());
+		EventTuple toAdd = instance.new EventTuple(userID, event);
 		ObjectContainer db = openDatabase();
 		try {			
 			db.store(toAdd);
 		} finally{
 			db.close();			
 		}
-	}
-	
-	/**
-	 * Add new event to the database
-	 * @param userID unique UUID of the user
-	 * @param event event object to be saved
-	 * @param googlecalendar google calendar entry
-	 */
-	public static void addEvent(String userID, SingleEvent event, CalendarEntry googlecalendar) {
-		if (eventExist(event)) { //check for redundant entry, because db40 saves redundant object
-			log.warn ("Event "+event.ID+" already exist");
-			return; 
-		}
-		EventTuple toAdd = instance.new EventTuple(userID, event, googlecalendar);
-		ObjectContainer db = openDatabase();
-		try {			
-			db.store(toAdd);
-		} finally{
-			db.close();			
-		}
-	}
+	}	
 	
 	/**
 	 * Delete the specific event from database
@@ -142,17 +121,10 @@ public enum EventDatabase {
 		 * list of events saved in the database
 		 */
 		public SingleEvent event;
-		/**
-		 * this variable represents the equivalent CalendarEntry object for this
-		 * event. Useful for updating/removing from Google Calendar. Needs to
-		 * divide this entry into separate database, in order to be able to
-		 * extend to different service.
-		 */
-		public CalendarEntry googleCalendarEntry;
-		public EventTuple (String userID, SingleEvent event, CalendarEntry googlecal){
+	
+		public EventTuple (String userID, SingleEvent event){
 			this.userID = userID;
 			this.event = event;
-			this.googleCalendarEntry = googlecal;
 		}
 	}
 }
