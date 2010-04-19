@@ -1,14 +1,13 @@
 package businessobject;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Configuration{
-	private final static Logger log = LoggerFactory.getLogger(Configuration.class);
+	private static final Logger log = LoggerFactory.getLogger(Configuration.class);
 	public static final Properties constants = new Properties();
 	
 	private Configuration(){

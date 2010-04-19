@@ -3,10 +3,11 @@ package businessobject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import dao.RegisteredUsers;
+import dao.SessionData;
+
 import valueobject.LoginReply;
 
-import DAO.RegisteredUsers;
-import DAO.SessionData;
 
 /**
  * Business Object that will handle transaction for login process.
