@@ -1,8 +1,7 @@
 package businessobject;
-import BusinessObject.*;
 /**
 */
-public class TaskPublisher extends Publisher implements TaskManager{
+public class TaskPublisher extends Publisher<TaskSubscriber> implements TaskManager{
 /**
 */
 private List<TaskSubscriber> subscriberlist;
@@ -13,4 +12,5 @@ private List<TaskSubscriber> subscriberlist;
 public void subscribe<TaskSubscriber>(TaskSubscriber subscriber) {
 }
 }
+
 

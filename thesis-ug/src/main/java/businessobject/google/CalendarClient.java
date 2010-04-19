@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import valueobject.SingleEvent;
 
-import businessobject.Configuration;
 import businessobject.EventSubscriber;
 
 import com.google.gdata.client.calendar.CalendarService;
@@ -32,19 +31,11 @@ public class CalendarClient extends EventSubscriber {
 	 */
 	public CalendarClient() {
 		super();
-		String hallo = new String(Configuration.getInstance().constants
-				.getProperty("COMPANY_NAME")
+		myCalendar = new CalendarService(CONSTANTS.getProperty("COMPANY_NAME")
 				+ "-"
-				+ Configuration.constants.getProperty("APP_NAME")
+				+ CONSTANTS.getProperty("APP_NAME")
 				+ "-"
-				+ Configuration.constants.getProperty("VERSION"));
-		myCalendar = new CalendarService(Configuration.getInstance().constants
-				.getProperty("COMPANY_NAME")
-				+ "-"
-				+ Configuration.getInstance().constants.getProperty("APP_NAME")
-				+ "-"
-				+ Configuration.getInstance().constants.getProperty("VERSION"));
-		log.info(hallo);
+				+ CONSTANTS.getProperty("VERSION"));
 		// default name for this application
 	}
 
@@ -62,16 +53,6 @@ public class CalendarClient extends EventSubscriber {
 		this.password = password;
 		myCalendar = new CalendarService("UG-thesis-1");// default name for this
 		// application
-	}
-
-	public boolean Authenticate() {
-		try {
-			myCalendar.setUserCredentials(username, password);
-			return true;
-		} catch (AuthenticationException e) {
-			log.warn("Unable to authenticate to Google Calendar");
-		}
-		return false;
 	}
 
 	@Override
@@ -108,10 +89,10 @@ public class CalendarClient extends EventSubscriber {
 			CalendarEventEntry insertedEntry = myCalendar.insert(postUrl,
 					myEntry);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			log.error("IO exception is catched");
 			e.printStackTrace();
 		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
+			log.error("Service exception is catched");
 			e.printStackTrace();
 		}
 	}
