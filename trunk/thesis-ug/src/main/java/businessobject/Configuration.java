@@ -6,6 +6,10 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Singleton class that holds all the configurations for the system.
+ * 
+ */
 public class Configuration{
 	private static final Logger log = LoggerFactory.getLogger(Configuration.class);
 	public static final Properties constants = new Properties();
