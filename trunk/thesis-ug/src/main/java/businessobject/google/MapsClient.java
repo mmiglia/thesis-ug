@@ -1,10 +1,6 @@
 package businessobject.google;
 
-import java.lang.reflect.AccessibleObject;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +56,7 @@ public class MapsClient {
 		return r.getResponseData().getResults();
 	}
 
-	protected Response sendSearchRequest(String url, Map<String, String> params) {
+	private Response sendSearchRequest(String url, Map<String, String> params) {
 		if (params.get("v") == null) {
 			params.put("v", "1.0");
 		}
@@ -110,7 +106,6 @@ public class MapsClient {
 		if ("GET".equalsIgnoreCase(httpMethod)) {
 			String queryString = buildQueryString(params);
 			url = url + queryString;
-			System.out.println(url);
 			request = new HttpGet(url);
 		} else {
 			throw new RuntimeException("unsupported method: " + httpMethod);
@@ -130,8 +125,6 @@ public class MapsClient {
 			return EntityUtils.toString(entity);
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
-		} finally {
-			// todo :
-		}
+		} 
 	}	
 }
