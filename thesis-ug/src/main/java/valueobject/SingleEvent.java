@@ -59,13 +59,5 @@ public class SingleEvent extends Reminder {
 	
 	public void setLocation(float longitude, float latitude){
 		super.setGPS(longitude, latitude);
-	}
-	
-	public boolean equals(Object other){
-		return (other instanceof SingleEvent && ID == ((SingleEvent)other).ID);		
-	}
-	
-	public int hashCode(){
-		return ID.hashCode();
-	}
+	}	
 }

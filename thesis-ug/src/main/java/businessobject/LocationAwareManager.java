@@ -1,5 +1,4 @@
 package businessobject;
-import java.lang.*;
 /**
 */
 public class LocationAwareManager{
