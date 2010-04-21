@@ -82,7 +82,7 @@ public enum TaskDatabase {
 	/**
 	 * Update the specific task
 	 * @param taskID unique UUID of the task
-	 * @param task the new task, must have the same UUID
+	 * @param task the new task
 	 * @return false if update unsuccessful , true if update is successful
 	 */
 	public static boolean updateTask(final String taskID, final SingleTask task){
@@ -90,7 +90,7 @@ public enum TaskDatabase {
 		try {
 			List<TaskTuple> result = db.query(new Predicate<TaskTuple>() {
 				public boolean match(TaskTuple current) {
-					return (current.taskID.equals(taskID) && current.task.equals(task));
+					return (current.taskID.equals(taskID));
 				}
 			});
 			if (result.isEmpty()) {
@@ -98,6 +98,7 @@ public enum TaskDatabase {
 				return false;
 			}
 			TaskTuple toChange = result.get(0);
+			task.ID = taskID; //make sure ID is the same
 			toChange.task = task;
 			db.store(toChange);
 			return true;

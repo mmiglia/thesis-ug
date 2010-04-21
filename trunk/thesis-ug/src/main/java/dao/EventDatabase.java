@@ -1,5 +1,9 @@
 package dao;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -62,8 +66,8 @@ public enum EventDatabase {
 	
 	/**
 	 * Update the specific task
-	 * @param eventID unique UUID of the task
-	 * @param event the new task, must have the same UUID
+	 * @param eventID unique UUID of the event
+	 * @param event the new event
 	 * @return false if update unsuccessful , true if update is successful
 	 */
 	public static boolean updateEvent(final String eventID, final SingleEvent event){
@@ -79,12 +83,87 @@ public enum EventDatabase {
 				return false;
 			}
 			EventTuple toChange = result.get(0);
+			event.ID = eventID; //make sure ID is the same
 			toChange.event = event;
 			db.store(toChange);
 			return true;
 		} finally {
 			db.close();
 		}		
+	}
+	
+	/**
+	 * Get all events from a specific userID
+	 * @param userID unique UUID of the user
+	 * @return list containing all events from the user
+	 */
+	public static List<SingleEvent> getAllEvent(final String userID){
+		ObjectContainer db = openDatabase();
+		try {
+			List<EventTuple> queryResult = db.query(new Predicate<EventTuple>() {
+				public boolean match(EventTuple current) {
+					return (current.userID.equals(userID));
+				}
+			});
+			if (queryResult.isEmpty()) {
+				log.warn ("Cannot find user ID "+userID);
+				return null;
+			}
+			List<SingleEvent> result= new LinkedList<SingleEvent>();
+			for (EventTuple o : queryResult) result.add(o.event);
+			return result;
+		} finally {
+			db.close();
+		}
+	}
+	
+	/**
+	 * Get all events given a period of time
+	 * @param userID unique UUID of the user
+	 * @param startTime limit on the starting time of the event
+	 * @param endTime limit on the ending time of the event
+	 * @return list containing all events in that period
+	 */
+	public static List<SingleEvent> getEventsDuring(final String userID, String startTime, String endTime){
+		ObjectContainer db = openDatabase();
+		final Date startPeriod = convertToJavaDate(startTime);
+		final Date endPeriod = convertToJavaDate(endTime);
+		
+		try {
+			List<EventTuple> queryResult = db.query(new Predicate<EventTuple>() {
+				public boolean match(EventTuple current) {
+					Date currentStart = convertToJavaDate(current.event.startTime);
+					Date currentEnd = convertToJavaDate(current.event.endTime);					
+					return (current.userID.equals(userID) &&
+							currentStart.after(startPeriod)&&
+							currentEnd.before(endPeriod));
+				}
+			});
+			if (queryResult.isEmpty()) {
+				log.warn ("Cannot find user ID "+userID);
+				return null;
+			}
+			List<SingleEvent> result= new LinkedList<SingleEvent>();
+			for (EventTuple o : queryResult) result.add(o.event);
+			return result;
+		} finally {
+			db.close();
+		}
+	}
+	
+	private static Date convertToJavaDate (String toParse){
+		String xsDateTime = new String(toParse);
+		int stringLength = xsDateTime.length();
+		// removes the colon ':' at the 3rd position from the end to match ISO 8601
+		xsDateTime=xsDateTime.substring(0, stringLength-3)+xsDateTime.substring(stringLength-2,stringLength);
+		SimpleDateFormat ISO_8601 = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
+		try {
+			return ISO_8601.parse(xsDateTime);
+		} catch (ParseException e) {
+			log.warn("Parsing error: cannot parse date '"+toParse+"'");
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	/**
