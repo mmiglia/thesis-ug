@@ -1,12 +1,9 @@
 package businessobject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import businessobject.google.CalendarClient;
 
 import dao.EventDatabase;
 
@@ -19,7 +16,8 @@ import valueobject.SingleEvent;
  * 
  */
 public class EventManager extends Publisher<EventSubscriber> {
-	private final static Logger log = LoggerFactory	.getLogger(EventManager.class);
+	private final static Logger log = LoggerFactory
+			.getLogger(EventManager.class);
 
 	private EventManager() {
 		super();
@@ -53,12 +51,14 @@ public class EventManager extends Publisher<EventSubscriber> {
 	 *            unique UUID of the user
 	 * @return list that contains all events from the user
 	 */
-	public List<SingleEvent> retrieveAllEvents(String username) {
-		for (EventSubscriber o : subscriberlist) {
-			o.retrieveAllEvents(username);
-		}
-
-		return new ArrayList<SingleEvent>();
+	public List<SingleEvent> retrieveAllEvents(String userid) {
+		return EventDatabase.instance.getAllEvent(userid);
+		/*
+		 * Code stub to retrieve from subscriber 
+		 * for (EventSubscriber o : subscriberlist) 
+		 * { o.retrieveAllEvents(userid); }
+		 * 
+		 */
 	}
 
 	/**
@@ -72,12 +72,9 @@ public class EventManager extends Publisher<EventSubscriber> {
 	 *            end time of event execution
 	 * @return list that contains events during specified period
 	 */
-	public List<SingleEvent> retrieveEventsbyDate(String username,
+	public List<SingleEvent> retrieveEventsbyDate(String userid,
 			String startDate, String endDate) {
-		for (EventSubscriber o : subscriberlist) {
-			o.retrieveEventsbyDate(username, startDate, endDate);
-		}
-		return new ArrayList<SingleEvent>();
+		return EventDatabase.instance.getEventsDuring(userid, startDate, endDate);
 	}
 
 	/**
@@ -102,14 +99,11 @@ public class EventManager extends Publisher<EventSubscriber> {
 			String endTime, String location, String description) {
 		SingleEvent toAdd = new SingleEvent(title, startTime, endTime,
 				location, description);		
-		EventDatabase.addEvent(userid, toAdd);
 		for (EventSubscriber o : subscriberlist) {
 			o.createEvents(userid, toAdd);
 		}
-
+		EventDatabase.instance.addEvent(userid, toAdd);
 	}
-	
-	
 
 	/**
 	 * this method will particularly use quick add features in Google Calendar,
@@ -140,18 +134,27 @@ public class EventManager extends Publisher<EventSubscriber> {
 	 * @return false if unsuccessful, 1 if successful
 	 */
 	public boolean updateEvent(String userid, SingleEvent oldEvent,
-			SingleEvent newEvent) {
+			SingleEvent newEvent) {		
 		for (EventSubscriber o : subscriberlist) {
-			o.updateEvent(userid, oldEvent, newEvent);
+			if (o.updateEvent(userid, oldEvent, newEvent)) continue;
+			else return false ;
 		}
-		return false;
+		EventDatabase.instance.updateEvent(oldEvent.ID, newEvent);
+		return true;
 	}
 	
-	public boolean removeEvent(String userid, String eventID) {
-		EventDatabase.deleteEvent(userid, eventID);
+	/**
+	 * Remove an event from a database
+	 * @param userid unique UUID of the user
+	 * @param eventID eventID to be removed
+	 * @return false if unsuccessful, 1 if successful
+	 */
+	public boolean removeEvent(String userid, String eventID) {		
 		for (EventSubscriber o : subscriberlist) {
-			o.removeEvent(userid, eventID);
+			if (o.removeEvent(userid, eventID)) continue;
+			else return false;
 		}
-		return false;
+		EventDatabase.instance.deleteEvent(userid, eventID);
+		return true;
 	}
 }

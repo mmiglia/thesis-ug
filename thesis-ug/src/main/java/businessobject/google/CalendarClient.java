@@ -1,7 +1,9 @@
 package businessobject.google;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -15,11 +17,16 @@ import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.query.Predicate;
 
+import com.google.gdata.client.calendar.CalendarQuery;
 import com.google.gdata.client.calendar.CalendarService;
 import com.google.gdata.data.DateTime;
 import com.google.gdata.data.PlainTextConstruct;
+import com.google.gdata.data.TextContent;
 import com.google.gdata.data.calendar.CalendarEventEntry;
+import com.google.gdata.data.calendar.CalendarEventFeed;
 import com.google.gdata.data.extensions.When;
+import com.google.gdata.data.extensions.Where;
+import com.google.gdata.model.atom.Feed;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
@@ -68,7 +75,7 @@ public class CalendarClient extends EventSubscriber {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean Authenticate(String username, String password) {
 		try {
@@ -86,24 +93,16 @@ public class CalendarClient extends EventSubscriber {
 			postUrl = new URL("http://www.google.com/calendar/feeds/"
 					+ username + "@gmail.com/private/full");
 
-			CalendarEventEntry myEntry = new CalendarEventEntry();
-			myEntry.setTitle(new PlainTextConstruct(event.title));
-			myEntry.setContent(new PlainTextConstruct(event.description));
-
-			DateTime start = DateTime.parseDateTime(event.startTime);
-			DateTime end = DateTime.parseDateTime(event.endTime);
-			When eventTimes = new When();
-			eventTimes.setStartTime(start);
-			eventTimes.setEndTime(end);
-			myEntry.addTime(eventTimes);
+			CalendarEventEntry myEntry = convertToCalendarEntry(event);
 
 			// Send the request and receive the response
 			CalendarEventEntry insertedEntry = myCalendar.insert(postUrl,
 					myEntry);
 			// Save the object in local database
-			CalendarEventEntryDatabase.instance.addEntry(userid, event.ID,insertedEntry.getEditLink().getHref());
-			log.info("editlink "+insertedEntry.getEditLink().getHref());
-			log.info("id "+insertedEntry.getId());
+			CalendarEventEntryDatabase.instance.addEntry(userid, event.ID,
+					insertedEntry.getEditLink().getHref());
+			log.info("editlink " + insertedEntry.getEditLink().getHref());
+			log.info("id " + insertedEntry.getId());
 			return true;
 		} catch (IOException e) {
 			log.error("IO exception is catched");
@@ -120,14 +119,16 @@ public class CalendarClient extends EventSubscriber {
 	public boolean removeEvent(String userid, String eventID) {
 		try {
 			String URItoDelete = CalendarEventEntryDatabase.instance
-					.getCalendarEntry(userid, eventID);	
-			if (URItoDelete == null) return false;			
-			CalendarEventEntry toDelete = myCalendar.getEntry(new URL(URItoDelete), CalendarEventEntry.class);			
+					.getCalendarEntry(userid, eventID);
+			if (URItoDelete == null)
+				return false;
+			CalendarEventEntry toDelete = myCalendar.getEntry(new URL(
+					URItoDelete), CalendarEventEntry.class);
 			myCalendar.setHeader("If-Match", toDelete.getEtag());
 			// send remote request to Google
-			myCalendar.delete(new URL(toDelete.getEditLink().getHref()));			
+			myCalendar.delete(new URL(URItoDelete));
 			// delete the entry in local database
-			CalendarEventEntryDatabase.deleteEntry(userid, eventID);
+			CalendarEventEntryDatabase.instance.deleteEntry(userid, eventID);
 			return true;
 		} catch (IOException e) {
 			log.error("IO exception is catched");
@@ -148,22 +149,117 @@ public class CalendarClient extends EventSubscriber {
 
 	@Override
 	public List<SingleEvent> retrieveAllEvents(String userid) {
-		// TODO Auto-generated method stub
-		return null;
+		CalendarEventFeed myEvents;
+		try {
+			myEvents = myCalendar.getFeed(new URL("http://www.google.com/calendar/feeds/"
+						+ username + "@gmail.com/private/full"), CalendarEventFeed.class);
+
+			List<CalendarEventEntry> retrievedEvents = myEvents.getEntries();
+			List<SingleEvent> result = new LinkedList<SingleEvent>();
+			for (CalendarEventEntry o: retrievedEvents)	result.add(convertToSingleEvent(o));			
+			return result;
+		} catch (IOException e) {
+			log.error("IO exception is catched");
+			e.printStackTrace();
+			return null;
+		} catch (ServiceException e) {
+			log.error("Service exception is catched");
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override
 	public List<SingleEvent> retrieveEventsbyDate(String userid,
 			String startTime, String endTime) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			URL feedUrl = new URL(
+					"http://www.google.com/calendar/feeds/default/private/full");
+			CalendarQuery myQuery = new CalendarQuery(feedUrl);
+			myQuery.setMinimumStartTime(DateTime.parseDateTime(startTime));
+			myQuery.setMaximumStartTime(DateTime.parseDateTime(endTime));
+
+			// Send the request and receive the response:
+			CalendarEventFeed resultFeed;
+			resultFeed = myCalendar.query(myQuery, CalendarEventFeed.class);
+			List<CalendarEventEntry> retrievedEvents = resultFeed.getEntries();
+			List<SingleEvent> result = new LinkedList<SingleEvent>();
+			for (CalendarEventEntry o : retrievedEvents)
+				result.add(convertToSingleEvent(o));
+			return result;
+		} catch (IOException e) {
+			log.error("IO exception is catched");
+			e.printStackTrace();
+			return null;
+		} catch (ServiceException e) {
+			log.error("Service exception is catched");
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override
 	public boolean updateEvent(String userid, SingleEvent oldEvent,
 			SingleEvent newEvent) {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			String URItoUpdate = CalendarEventEntryDatabase.instance
+					.getCalendarEntry(userid, oldEvent.ID);
+			if (URItoUpdate == null)
+				return false;
+			CalendarEventEntry toUpdate = myCalendar.getEntry(new URL(
+					URItoUpdate), CalendarEventEntry.class);
+			
+			// Create new CalendarEntry instance
+			CalendarEventEntry newEntry = convertToCalendarEntry(newEvent);
+			
+			// send remote request to Google
+			myCalendar.setHeader("If-Match", toUpdate.getEtag());
+			CalendarEventEntry updatedEntry = (CalendarEventEntry) myCalendar
+					.update(new URL(URItoUpdate), newEntry);
+
+			// Delete-add the object in local database
+			CalendarEventEntryDatabase.instance
+					.deleteEntry(userid, oldEvent.ID);
+			CalendarEventEntryDatabase.instance.addEntry(userid, newEvent.ID,
+					updatedEntry.getEditLink().getHref());
+
+			return true;
+		} catch (IOException e) {
+			log.error("IO exception is catched");
+			e.printStackTrace();
+			return false;
+		} catch (ServiceException e) {
+			log.error("Service exception is catched");
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	private SingleEvent convertToSingleEvent (CalendarEventEntry e){
+		SingleEvent result = new SingleEvent(e.getTitle().getPlainText(),
+				e.getTimes().get(0).getStartTime().toString(),
+				e.getTimes().get(0).getEndTime().toString(),
+				e.getLocations().get(0).getValueString(),
+				((TextContent)e.getContent()).getContent().getPlainText());
+		return result;
+	}
+	
+	private CalendarEventEntry convertToCalendarEntry (SingleEvent e){
+		CalendarEventEntry result = new CalendarEventEntry();
+		result.setTitle(new PlainTextConstruct(e.title));
+		result.setContent(new PlainTextConstruct(e.description));
+		//add location
+		Where eventLocation = new Where();
+		eventLocation.setValueString(e.location);
+		result.addLocation(eventLocation);
+		//add period
+		DateTime start = DateTime.parseDateTime(e.startTime);
+		DateTime end = DateTime.parseDateTime(e.endTime);
+		When eventTimes = new When();
+		eventTimes.setStartTime(start);
+		eventTimes.setEndTime(end);
+		result.addTime(eventTimes);
+		return result;
 	}
 
 	private static enum CalendarEventEntryDatabase {
@@ -172,8 +268,7 @@ public class CalendarClient extends EventSubscriber {
 		private final static Logger log = LoggerFactory
 				.getLogger(CalendarEventEntryDatabase.class);
 
-		public static void addEntry(String userID, String eventID,
-				String cal) {
+		public static void addEntry(String userID, String eventID, String cal) {
 			if (eventExist(userID, eventID)) { // check for redundant entry,
 				// because db40 saves redundant
 				// object
@@ -263,8 +358,7 @@ public class CalendarClient extends EventSubscriber {
 			 */
 			public String googleCalendarEntry;
 
-			public CalendarTuple(String userID, String eventID,
-					String cal) {
+			public CalendarTuple(String userID, String eventID, String cal) {
 				this.userID = userID;
 				this.eventID = eventID;
 				this.googleCalendarEntry = cal;
