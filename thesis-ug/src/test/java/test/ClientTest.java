@@ -13,11 +13,8 @@ import businessobject.google.Result;
 public class ClientTest extends TestCase {
 
 	static {
-		System.getProperties().put("org.apache.commons.logging.Log",
-				"org.apache.commons.logging.impl.SimpleLog");
-		System.getProperties().put(
-				"org.apache.commons.logging.simplelog.defaultlog", "info");
-		System.getProperties().put("log4j.configuration", "log4j.conf");
+//		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SLF4JLog");
+		System.setProperty("log4j.configuration", "log4j.conf");		
 		System.setProperty("http.proxyHost", "wifiproxy.unige.it");
 		System.setProperty("http.proxyPort", "80");
 		System.setProperty("https.proxyHost", "wifiproxy.unige.it");
