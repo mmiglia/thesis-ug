@@ -1,5 +1,9 @@
 package valueobject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlRootElement;
 /**
  * This is the parent class for event and task that has common field for them.
@@ -74,5 +78,15 @@ public abstract class Reminder {
 	protected class GPSLocation{
 		float latitude;
 		float longitude;
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		return (this.ID == ((Reminder) other).ID);
+	}
+
+	@Override
+	public int hashCode() {
+		return ID.hashCode();
 	}
 }

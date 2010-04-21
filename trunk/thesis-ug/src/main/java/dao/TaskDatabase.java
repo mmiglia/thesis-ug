@@ -1,16 +1,17 @@
 package dao;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import valueobject.SingleEvent;
 import valueobject.SingleTask;
 
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.query.Predicate;
-
 
 /**
  * Singleton class that acts as a database that will save all the tasks
@@ -55,6 +56,31 @@ public enum TaskDatabase {
 			db.store(toAdd);
 		} finally{
 			db.close();			
+		}
+	}
+	
+	/**
+	 * Get all tasks from a specific userID
+	 * @param userID unique UUID of the user
+	 * @return list containing all tasks from the user
+	 */
+	public static List<SingleTask> getAllTask(final String userID){
+		ObjectContainer db = openDatabase();
+		try {
+			List<TaskTuple> queryResult = db.query(new Predicate<TaskTuple>() {
+				public boolean match(TaskTuple current) {
+					return (current.userID.equals(userID));
+				}
+			});
+			if (queryResult.isEmpty()) {
+				log.warn ("Cannot find user ID "+userID);
+				return null;
+			}
+			List<SingleTask> result= new LinkedList<SingleTask>();
+			for (TaskTuple o : queryResult) result.add(o.task);
+			return result;
+		} finally {
+			db.close();
 		}
 	}
 	

@@ -1,49 +1,152 @@
 package businessobject;
 
-import valueobject.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import dao.TaskDatabase;
+
+import valueobject.SingleTask;
 
 /**
-*/
-public interface TaskManager {
-	/**
-	 * get all task from a given username.
-	 * 
-	 * @param username username of the user
-	 * @param Return
-	 *            
-	 */
-	public void getAllTask(String username);
+ * This SINGLETON class is the only manager/publisher for event. All implemented
+ * methods are just doing the operation in local database, and then calling all
+ * subsequent methods in the subscriber (3rd party database)
+ */
+public class TaskManager extends Publisher<TaskSubscriber> {
+	private final static Logger log = LoggerFactory
+			.getLogger(TaskManager.class);
+
+	private TaskManager() {
+		super();
+	}
+
+	private static class InstanceHolder {
+		private static final TaskManager INSTANCE = new TaskManager();
+	}
+
+	public static TaskManager getInstance() {
+		return InstanceHolder.INSTANCE;
+	}
 
 	/**
-	 * get only first few near deadline task, if deadline is the same, then sort
-	 * based on priority.
+	 * Get all task from a given userid
 	 * 
-	 * @param username
-	 * @param Return
-	 *            username of the user
+	 * @param userID
+	 *            unique UUID of the user
+	 * @return list containing all tasks from the user
+	 * 
 	 */
-	public void getFirstTask(String username);
+	public List<SingleTask> retrieveAllTask(String userID) {
+		return TaskDatabase.instance.getAllTask(userID);
+	}
 
 	/**
-	 * @param username
-	 * @param description
-	 * @param Return
+	 * get only first few near deadline task (according to the date in server), 
+	 * if deadline is the same, then sort based on priority.
+	 * 
+	 * @param userID unique UUID of the user
+	 * @return 5 most prioritized tasks
+	 */
+	public List<SingleTask> getFirstTasks(String userID) {
+		List<SingleTask> result = TaskDatabase.instance.getAllTask(userID);
+		Date now = new Date();
+		Date compare;
+		for (SingleTask o:result){
+			compare = convertToJavaDate(o.dueDate);
+			// delete if task's deadline is already passed
+			if(now.after(compare)) result.remove(o);			
+		}
+		Collections.sort(result); // sort based on compareTo method
+		return (result.size()<=5)? result : result.subList(0, 4); // trim the result
+	}
+	
+	private static Date convertToJavaDate (String toParse){
+		String xsDateTime = new String(toParse);
+		int stringLength = xsDateTime.length();
+		// removes the colon ':' at the 3rd position from the end to match ISO 8601
+		xsDateTime=xsDateTime.substring(0, stringLength-3)+xsDateTime.substring(stringLength-2,stringLength);
+		SimpleDateFormat ISO_8601 = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
+		try {
+			return ISO_8601.parse(xsDateTime);
+		} catch (ParseException e) {
+			log.warn("Parsing error: cannot parse date '"+toParse+"'");
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * This method create a new tasks
+	 * 
+	 * @param title
+	 *            title of the task
+	 * @param notifyTimeStart
+	 *            time to start notifying user
+	 * @param notifyTimeEnd
+	 *            time to end notifying user
 	 * @param dueDate
+	 *            the deadline for task completion
+	 * @param description
+	 *            brief description of the task
+	 * @param priority
+	 *            task priority
+	 * @return true if task is successfully created , false otherwise
 	 */
-	public void createTask(String username, String description, String dueDate);
+	public boolean createTask(String userID, String title,
+			String notifyTimeStart, String notifyTimeEnd, String dueDate,
+			String description, int priority) {
+		SingleTask toAdd = new SingleTask(title, notifyTimeStart,
+				notifyTimeEnd, dueDate, description, priority);
+		for (TaskSubscriber o : subscriberlist) {
+			if (o.createTasks(userID, toAdd))
+				continue;
+			else
+				return false;
+		}
+		TaskDatabase.instance.addTask(userID, toAdd);
+		return true;
+	}
 
 	/**
-	 * @param username
-	 * @param task
-	 * @param Return
-	 * @param taskID
+	 * Update the task by a given UUID to a new one
+	 * 
+	 * @param userid
+	 *            unique UUID of the user
+	 * @param oldTask
+	 *            old task object to be replaced
+	 * @param newTask
+	 *            the new task object
+	 * @return false if unsuccessful, 1 if successful
 	 */
-	public void updateTask(String username, String taskID, Reminder task);
+	public boolean updateTask(String userid, SingleTask oldTask,
+			SingleTask newTask) {		
+		for (TaskSubscriber o : subscriberlist) {
+			if (o.updateTask(userid, oldTask, newTask)) continue;
+			else return false ;
+		}
+		TaskDatabase.instance.updateTask(oldTask.ID, newTask);
+		return true;
+	}
+	
 
 	/**
-	 * @param username
-	 * @param Return
-	 * @param taskID
+	 * Remove an task from a database
+	 * @param userid unique UUID of the user
+	 * @param taskID taskID to be removed
+	 * @return false if unsuccessful, 1 if successful
 	 */
-	public void retrieveTaskbyID(String username, String taskID);
+	public boolean removeTask(String userid, String taskID) {		
+		for (TaskSubscriber o : subscriberlist) {
+			if (o.removeTask(userid, taskID)) continue;
+			else return false;
+		}
+		TaskDatabase.instance.deleteTask(userid, taskID);
+		return true;
+	}
 }

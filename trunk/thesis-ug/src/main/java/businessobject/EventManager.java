@@ -94,15 +94,18 @@ public class EventManager extends Publisher<EventSubscriber> {
 	 * @param description
 	 *            brief descriptions regarding the event
 	 * 
+	 * @return 0 if unsuccessful , 1 if successful
 	 */
-	public void createEvents(String userid, String title, String startTime,
+	public boolean createEvents(String userid, String title, String startTime,
 			String endTime, String location, String description) {
 		SingleEvent toAdd = new SingleEvent(title, startTime, endTime,
 				location, description);		
 		for (EventSubscriber o : subscriberlist) {
-			o.createEvents(userid, toAdd);
+			if (o.createEvents(userid, toAdd)) continue;
+			else return false;
 		}
 		EventDatabase.instance.addEvent(userid, toAdd);
+		return true;
 	}
 
 	/**

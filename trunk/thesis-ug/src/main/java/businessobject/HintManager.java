@@ -1,8 +1,8 @@
 package businessobject;
 
 /**
- * Hint Manager purpose here is only to remind the user about the TASK that can
- * be completed.
+ * Hint Manager is a pipe (filter) that accepts the result from LocationManager
+ * and filter it based on user preferences.
  */
 public class HintManager {
 	/**
