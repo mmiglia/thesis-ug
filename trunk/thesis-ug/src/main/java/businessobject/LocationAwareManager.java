@@ -1,25 +1,31 @@
 package businessobject;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import valueobject.Hint;
 
 /**
 */
-public class LocationAwareManager{
-/**
- * example of implementation will be , first getting all tasks that needs to be done, and then infers, pass the inference to Google Maps, and then filter with Hint Manager, and return the result to android client.
- * @param Return 
- * @param longitude 
- * @param latitude 
- * @return 
-*/
-public String checkLocation(float latitude, float longitude) {
-/*	sample of code stub that will be implemented
-	List<Hint> result = new ArrayList<Hint>();
-	HintManager.filterLocation(userDistance, result);*/
-    return null;
+public class LocationAwareManager {
+	private final static Logger log = LoggerFactory
+	.getLogger(LocationAwareManager.class);
+	
+	/**
+	 * Check for a task that can be completed near given location
+	 * @param latitude GPS latitude coordinate
+	 * @param longitude GPS longitude coordinate
+	 * @return list of hints
+	 */
+	public List<Hint> checkLocation(float latitude, float longitude) {
+		// Sample implementation
+		// get the list of keyword from ontology 
+		// for ontology
+		List<Hint> result = MapManager.getInstance().searchLocalBusiness(latitude, longitude, "restaurant");
+		result = HintManager.filterLocation(50,latitude, longitude, result);
+		 
+		return result;
+	}
 }
-}
-
