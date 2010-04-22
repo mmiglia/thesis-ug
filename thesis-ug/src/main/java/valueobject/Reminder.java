@@ -1,9 +1,5 @@
 package valueobject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import javax.xml.bind.annotation.XmlRootElement;
 /**
  * This is the parent class for event and task that has common field for them.

@@ -6,7 +6,9 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
-
+/**
+ * This class represents the location hints that will be sent to client
+ */
 @XmlRootElement
 public class Hint {
 	public String title;
