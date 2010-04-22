@@ -1,4 +1,10 @@
 package businessobject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import valueobject.Hint;
+
 /**
 */
 public class LocationAwareManager{
@@ -10,6 +16,9 @@ public class LocationAwareManager{
  * @return 
 */
 public String checkLocation(float latitude, float longitude) {
+/*	sample of code stub that will be implemented
+	List<Hint> result = new ArrayList<Hint>();
+	HintManager.filterLocation(userDistance, result);*/
     return null;
 }
 }

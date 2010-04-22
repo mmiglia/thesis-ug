@@ -1,17 +1,14 @@
 package businessobject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dao.TaskDatabase;
-
 import valueobject.SingleTask;
+import dao.TaskDatabase;
 
 /**
  * This SINGLETON class is the only manager/publisher for event. All implemented
@@ -55,31 +52,16 @@ public class TaskManager extends Publisher<TaskSubscriber> {
 	 */
 	public List<SingleTask> getFirstTasks(String userID) {
 		List<SingleTask> result = TaskDatabase.instance.getAllTask(userID);
-		Date now = new Date();
-		Date compare;
+		Calendar now = Calendar.getInstance();
+		Calendar compare;
 		for (SingleTask o:result){
-			compare = convertToJavaDate(o.dueDate);
+			compare = Converter.toJavaDate(o.dueDate);
 			// delete if task's deadline is already passed
 			if(now.after(compare)) result.remove(o);			
 		}
 		Collections.sort(result); // sort based on compareTo method
 		return (result.size()<=5)? result : result.subList(0, 4); // trim the result
-	}
-	
-	private static Date convertToJavaDate (String toParse){
-		String xsDateTime = new String(toParse);
-		int stringLength = xsDateTime.length();
-		// removes the colon ':' at the 3rd position from the end to match ISO 8601
-		xsDateTime=xsDateTime.substring(0, stringLength-3)+xsDateTime.substring(stringLength-2,stringLength);
-		SimpleDateFormat ISO_8601 = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
-		try {
-			return ISO_8601.parse(xsDateTime);
-		} catch (ParseException e) {
-			log.warn("Parsing error: cannot parse date '"+toParse+"'");
-			e.printStackTrace();
-			return null;
-		}
-	}
+	}	
 
 	/**
 	 * This method create a new tasks

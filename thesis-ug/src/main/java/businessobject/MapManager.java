@@ -1,7 +1,11 @@
 package businessobject;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import valueobject.Hint;
 
 /**
  * This SINGLETON class is the only manager/publisher for map/geolocation services. All implemented
@@ -29,6 +33,7 @@ public class MapManager extends Publisher<MapSubscriber> {
 	 * @return
 	 */
 	public boolean openConnection() {
+		
 		return false;
 	}
 
@@ -44,7 +49,8 @@ public class MapManager extends Publisher<MapSubscriber> {
 	 * @param business
 	 *            keyword of the business
 	 */
-	public void searchLocalBusiness(float latitude, float longitude,
+	public List<Hint> searchLocalBusiness(float latitude, float longitude,
 			String business) {
+		return null;
 	}
 }

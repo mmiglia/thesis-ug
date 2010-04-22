@@ -1,11 +1,14 @@
-package businessobject.google;
+package valueobject;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-public class Result {
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
+public class Hint {
 	public String title;
 	public String url;
 	public String content;

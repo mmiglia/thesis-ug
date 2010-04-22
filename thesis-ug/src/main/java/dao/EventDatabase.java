@@ -1,8 +1,6 @@
 package dao;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.SingleEvent;
+import businessobject.Converter;
 
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
@@ -126,14 +125,15 @@ public enum EventDatabase {
 	 */
 	public static List<SingleEvent> getEventsDuring(final String userID, String startTime, String endTime){
 		ObjectContainer db = openDatabase();
-		final Date startPeriod = convertToJavaDate(startTime);
-		final Date endPeriod = convertToJavaDate(endTime);
+		final Calendar startPeriod = Converter.toJavaDate(startTime);
+		final Calendar endPeriod = Converter.toJavaDate(endTime);
 		
 		try {
 			List<EventTuple> queryResult = db.query(new Predicate<EventTuple>() {
+				Calendar currentStart, currentEnd;
 				public boolean match(EventTuple current) {
-					Date currentStart = convertToJavaDate(current.event.startTime);
-					Date currentEnd = convertToJavaDate(current.event.endTime);					
+					currentStart = Converter.toJavaDate(current.event.startTime);
+					currentEnd = Converter.toJavaDate(current.event.endTime);					
 					return (current.userID.equals(userID) &&
 							currentStart.after(startPeriod)&&
 							currentEnd.before(endPeriod));
@@ -148,21 +148,6 @@ public enum EventDatabase {
 			return result;
 		} finally {
 			db.close();
-		}
-	}
-	
-	private static Date convertToJavaDate (String toParse){
-		String xsDateTime = new String(toParse);
-		int stringLength = xsDateTime.length();
-		// removes the colon ':' at the 3rd position from the end to match ISO 8601
-		xsDateTime=xsDateTime.substring(0, stringLength-3)+xsDateTime.substring(stringLength-2,stringLength);
-		SimpleDateFormat ISO_8601 = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
-		try {
-			return ISO_8601.parse(xsDateTime);
-		} catch (ParseException e) {
-			log.warn("Parsing error: cannot parse date '"+toParse+"'");
-			e.printStackTrace();
-			return null;
 		}
 	}
 	

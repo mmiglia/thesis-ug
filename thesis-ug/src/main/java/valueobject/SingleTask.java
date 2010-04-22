@@ -1,11 +1,13 @@
 package valueobject;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
+import businessobject.Converter;
 
 /**
  * This is the basic task object that will be used for communications to client
@@ -101,8 +103,8 @@ public class SingleTask extends Reminder implements Comparable<SingleTask>{
 	 */
 	@Override
 	public int compareTo(SingleTask compare) {
-		Date datecompare = convertToJavaDate(compare.dueDate);
-		Date thisobject = convertToJavaDate(this.dueDate);
+		Calendar datecompare = Converter.toJavaDate(compare.dueDate);
+		Calendar thisobject = Converter.toJavaDate(this.dueDate);
 		if (!(thisobject.after(datecompare) || thisobject.before(datecompare))) {
 			if (this.priority == compare.priority)
 				return 0;
@@ -110,19 +112,5 @@ public class SingleTask extends Reminder implements Comparable<SingleTask>{
 				return (this.priority > compare.priority) ? -1 : 1;
 		} else
 			return (thisobject.after(datecompare)) ? 1 : -1;
-	}
-	
-	private static Date convertToJavaDate (String toParse){
-		String xsDateTime = new String(toParse);
-		int stringLength = xsDateTime.length();
-		// removes the colon ':' at the 3rd position from the end to match ISO 8601
-		xsDateTime=xsDateTime.substring(0, stringLength-3)+xsDateTime.substring(stringLength-2,stringLength);
-		SimpleDateFormat ISO_8601 = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ");
-		try {
-			return ISO_8601.parse(xsDateTime);
-		} catch (ParseException e) {
-			e.printStackTrace();
-			return null;
-		}
 	}
 }
