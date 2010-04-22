@@ -1,5 +1,10 @@
 package businessobject;
 
+import java.util.List;
+
+import valueobject.Hint;
+
+
 /**
  * This class defines all the method that need to be implemented by actual map /
  * geolocation service (e.g. Google Maps)
@@ -25,6 +30,6 @@ public interface MapInterface {
 	 * @param business
 	 *            keyword of the business
 	 */
-	public void searchLocalBusiness(float latitude, float longitude,
+	public List<Hint> searchLocalBusiness(float latitude, float longitude,
 			String business);
 }

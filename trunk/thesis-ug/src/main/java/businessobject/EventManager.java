@@ -41,7 +41,11 @@ public class EventManager extends Publisher<EventSubscriber> {
 	 * @return 0 if unsuccessful, 1 if successful
 	 */
 	public boolean Authenticate(String username, String password) {
-		return false;
+		for (EventSubscriber o : subscriberlist) {
+			if (o.Authenticate(username, password)) continue;
+			else return false;
+		}
+		return true;
 	}
 
 	/**

@@ -3,6 +3,8 @@ package businessobject.google;
 import java.util.ArrayList;
 import java.util.List;
 
+import valueobject.Hint;
+
 public class Response {
 	private String json;
 	private ResponseData responseData;
@@ -54,16 +56,16 @@ public class Response {
 	}
 
 	public static class ResponseData {
-		private List<Result> results;
+		private List<Hint> results;
 
-		public List<Result> getResults() {
+		public List<Hint> getResults() {
 			if (results == null) {
-				results = new ArrayList<Result>();
+				results = new ArrayList<Hint>();
 			}
 			return results;
 		}
 
-		public void setResults(List<Result> resultList) {
+		public void setResults(List<Hint> resultList) {
 			this.results = resultList;
 		}
 	}

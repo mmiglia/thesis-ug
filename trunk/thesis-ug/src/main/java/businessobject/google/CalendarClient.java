@@ -1,7 +1,6 @@
 package businessobject.google;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,13 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.SingleEvent;
-
 import businessobject.EventSubscriber;
 
 import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
 import com.db4o.query.Predicate;
-
 import com.google.gdata.client.calendar.CalendarQuery;
 import com.google.gdata.client.calendar.CalendarService;
 import com.google.gdata.data.DateTime;
@@ -26,7 +23,6 @@ import com.google.gdata.data.calendar.CalendarEventEntry;
 import com.google.gdata.data.calendar.CalendarEventFeed;
 import com.google.gdata.data.extensions.When;
 import com.google.gdata.data.extensions.Where;
-import com.google.gdata.model.atom.Feed;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
@@ -38,6 +34,7 @@ public class CalendarClient extends EventSubscriber {
 	private CalendarService myCalendar;
 	private String username;
 	private String password;
+	private boolean authenticated;
 	private final static Logger log = LoggerFactory
 			.getLogger(CalendarClient.class);
 
@@ -70,6 +67,7 @@ public class CalendarClient extends EventSubscriber {
 	public boolean Authenticate() {
 		try {
 			myCalendar.setUserCredentials(username, password);
+			authenticated = true;
 		} catch (AuthenticationException e) {
 			log.warn("Unable to authenticate to Google Calendar");
 		}
@@ -80,6 +78,7 @@ public class CalendarClient extends EventSubscriber {
 	public boolean Authenticate(String username, String password) {
 		try {
 			myCalendar.setUserCredentials(username, password);
+			authenticated = true;
 		} catch (AuthenticationException e) {
 			log.warn("Unable to authenticate to Google Calendar");
 		}

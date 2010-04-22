@@ -19,10 +19,14 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import valueobject.Hint;
+
+import businessobject.MapSubscriber;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class MapsClient {
+public class MapsClient extends MapSubscriber {
 	private HttpClient httpClient;
 	private static final String LOCAL_SEARCH_URI = "http://ajax.googleapis.com/ajax/services/search/local";
 	private final static Logger log = LoggerFactory.getLogger(MapsClient.class);
@@ -32,19 +36,32 @@ public class MapsClient {
 	}
 
 	public MapsClient(HttpClient hClient) {
+		super();
 		this.httpClient = hClient;
-		HttpHost proxy = new HttpHost("wifiproxy.unige.it", 80);
+		HttpHost proxy = new HttpHost(CONSTANTS.getProperty("HTTP_PROXY"),
+				Integer.parseInt(CONSTANTS.getProperty("HTTP_PORT")));
 		this.httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,
 				proxy);
-		this.httpClient.getParams().setParameter(AllClientPNames.USER_AGENT,
-				"Mozilla/5.0 (Java) Gecko/20081007 gsearch-java-client");
+		this.httpClient.getParams().setParameter(
+				AllClientPNames.USER_AGENT,
+				"Mozilla/5.0 (Java) Gecko/20081007 "
+						+ CONSTANTS.getProperty("APP_NAME") + "-"
+						+ CONSTANTS.getProperty("COMPANY_NAME") + "-"
+						+ CONSTANTS.getProperty("VERSION"));
 		this.httpClient.getParams().setIntParameter(
 				AllClientPNames.CONNECTION_TIMEOUT, 10 * 1000);
 		this.httpClient.getParams().setIntParameter(AllClientPNames.SO_TIMEOUT,
 				25 * 1000);
 	}
 
-	public List<Result> searchLocal(double lat, double lon, String query) {
+	@Override
+	public boolean openConnection() {
+		//since AJAX API doesn't need handshake, we always return true
+		return true;
+	}
+
+	@Override
+	public List<Hint> searchLocalBusiness(float lat, float lon, String query) {
 		Map<String, String> params = new LinkedHashMap<String, String>();
 		params.put("sll", lat + "," + lon);
 		params.put("mrt", "localonly");
@@ -61,7 +78,7 @@ public class MapsClient {
 			params.put("v", "1.0");
 		}
 		String json = sendHttpRequest("GET", url, params);
-		log.info("JSON : "+json);
+		log.info("JSON : " + json);
 		GsonBuilder builder = new GsonBuilder();
 		Gson gson = builder.create();
 		Response r = gson.fromJson(json, Response.class);
@@ -125,6 +142,6 @@ public class MapsClient {
 			return EntityUtils.toString(entity);
 		} catch (Exception ex) {
 			throw new RuntimeException(ex);
-		} 
-	}	
+		}
+	}
 }

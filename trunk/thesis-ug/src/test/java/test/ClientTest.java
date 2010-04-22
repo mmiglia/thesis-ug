@@ -1,25 +1,35 @@
 package test;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Properties;
 
 import junit.framework.TestCase;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import businessobject.google.MapsClient;
-import businessobject.google.Result;
+import valueobject.Hint;
+import businessobject.Configuration;
+import businessobject.Converter;
 
 public class ClientTest extends TestCase {
 
 	static {
-//		System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SLF4JLog");
-		System.setProperty("log4j.configuration", "log4j.conf");		
-		System.setProperty("http.proxyHost", "wifiproxy.unige.it");
-		System.setProperty("http.proxyPort", "80");
-		System.setProperty("https.proxyHost", "wifiproxy.unige.it");
-		System.setProperty("https.proxyPort", "80");
-
+		System.setProperty("org.apache.commons.logging.Log",
+				"org.apache.commons.logging.impl.SLF4JLog");
+		System.setProperty("log4j.configuration", "log4j.conf");
+		final Properties CONSTANTS = Configuration.getInstance().constants;
+		System.setProperty("http.proxyHost", CONSTANTS
+				.getProperty("HTTP_PROXY"));
+		System
+				.setProperty("http.proxyPort", CONSTANTS
+						.getProperty("HTTP_PORT"));
+		System.setProperty("https.proxyHost", CONSTANTS
+				.getProperty("HTTPS_PROXY"));
+		System.setProperty("https.proxyPort", CONSTANTS
+				.getProperty("HTTPS_PORT"));
 	}
 
 	/*
@@ -59,24 +69,34 @@ public class ClientTest extends TestCase {
 	 * SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ"); Date start =
 	 * pf.parse(startDate); log.info("start "+start.toString()); }
 	 */
-
+/*
 	public void testMaps() throws Exception {
 		Logger log = LoggerFactory.getLogger(ClientTest.class);
 		MapsClient coba = new MapsClient();
-		double lat = 45.521694;
-		double lon = -122.691806;
-		List<Result> results = coba.searchLocal(lat, lon, "coffee");
-		assertTrue(results.size() > 0);
-		for (Result r : results) log.info(r.phoneNumbers.get(0).number);	
+		float lat = 45.521694f;
+		float lon = -122.691806f;
+		log.info("lat = " + lat + " long = " + lon);
+		List<Hint> results = coba.searchLocalBusiness(lat, lon, "coffee");
+		 assertValidResults(results);
+		for (Hint r : results)
+			log.info(r.phoneNumbers.get(0).number);
+	}*/
+	
+	public void testTimes() throws Exception{
+		Logger log = LoggerFactory.getLogger(ClientTest.class);
+		Calendar hallo = Converter.toJavaTime("09:30:10-06:00");
+		log.info(hallo.toString());
 	}
 
-	private void assertValidResults(List<Result> results) {
+	private void assertValidResults(List<Hint> results) {
 		assertNotNull(results);
 		assertTrue(results.size() > 0);
-		//for (Result r : results) log.info(r.phoneNumbers.get(0).number);		
+		for (Hint o : results)
+			assertValid(o);
+		// for (Result r : results) log.info(r.phoneNumbers.get(0).number);
 	}
 
-	private void assertValid(Result r) {
+	private void assertValid(Hint r) {
 		System.out
 				.println("--------------------------------------------------------");
 		System.out.println(r);
