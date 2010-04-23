@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import valueobject.Hint;
 import businessobject.Configuration;
 import businessobject.Converter;
+import businessobject.google.MapsClient;
 
 public class ClientTest extends TestCase {
 
@@ -69,7 +70,7 @@ public class ClientTest extends TestCase {
 	 * SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ"); Date start =
 	 * pf.parse(startDate); log.info("start "+start.toString()); }
 	 */
-/*
+
 	public void testMaps() throws Exception {
 		Logger log = LoggerFactory.getLogger(ClientTest.class);
 		MapsClient coba = new MapsClient();
@@ -80,12 +81,12 @@ public class ClientTest extends TestCase {
 		 assertValidResults(results);
 		for (Hint r : results)
 			log.info(r.phoneNumbers.get(0).number);
-	}*/
+	}
 	
 	public void testTimes() throws Exception{
 		Logger log = LoggerFactory.getLogger(ClientTest.class);
 		Calendar hallo = Converter.toJavaTime("09:30:10-06:00");
-		log.info(hallo.toString());
+		log.info(new SimpleDateFormat().format(hallo.getTime()));
 	}
 
 	private void assertValidResults(List<Hint> results) {
