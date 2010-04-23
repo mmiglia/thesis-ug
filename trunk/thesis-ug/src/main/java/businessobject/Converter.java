@@ -56,7 +56,7 @@ public class Converter {
 			Calendar result = Calendar.getInstance();
 			result.setTime(parsedDate);	
 			result.set(now.get(Calendar.YEAR), now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH));
-			return now;
+			return result;
 		} catch (ParseException e) {
 			log.warn("Cannot parse string :"+toParse);
 			e.printStackTrace();
