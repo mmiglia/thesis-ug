@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public class OntologyReasoner {
 	private final static Logger log = LoggerFactory
-			.getLogger(OWLReasoner.class);
+			.getLogger(OntologyReasoner.class);
 	private final static String ONTOLOGY_FILE = "src/main/resources/HintsOntology.owl";
 	
 	/**
