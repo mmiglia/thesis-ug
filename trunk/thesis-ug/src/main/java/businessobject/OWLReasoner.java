@@ -25,14 +25,13 @@ import org.slf4j.LoggerFactory;
  * reasoner (http://hermit-reasoner.com/)
  * 
  */
-public class OntologyReasoner {
+public class OWLReasoner {
 	private final static Logger log = LoggerFactory
 			.getLogger(OWLReasoner.class);
 	private final static String ONTOLOGY_FILE = "src/main/resources/HintsOntology.owl";
 	
 	/**
 	* Get a list of location that might satisfy the need
-	* 
 	* @param need String from a parsed user query / task that needs to be done
 	* @return list of location that can satisfy the need
 	*/
