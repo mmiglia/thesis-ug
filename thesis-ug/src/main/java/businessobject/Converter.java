@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 public class Converter {
 	private final static Logger log = LoggerFactory.getLogger(Converter.class);
 	/**
-	 * Convert from xs:DateTime format to simple Java Date
+	 * Convert from xs:DateTime format to simple Java Calendar
 	 * @param xsDateTime xs:DateTime format
 	 * @return java calendar object
 	 */
