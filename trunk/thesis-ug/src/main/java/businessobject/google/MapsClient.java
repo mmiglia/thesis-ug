@@ -38,10 +38,13 @@ public class MapsClient extends MapSubscriber {
 	public MapsClient(HttpClient hClient) {
 		super();
 		this.httpClient = hClient;
-		HttpHost proxy = new HttpHost(CONSTANTS.getProperty("HTTP_PROXY"),
-				Integer.parseInt(CONSTANTS.getProperty("HTTP_PORT")));
-		this.httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,
-				proxy);
+		if (CONSTANTS.containsKey("http.proxyHost")
+				&& CONSTANTS.containsKey("http.proxyPort")) {
+			HttpHost proxy = new HttpHost(CONSTANTS.getProperty("HTTP_PROXY"),
+					Integer.parseInt(CONSTANTS.getProperty("HTTP_PORT")));
+			this.httpClient.getParams().setParameter(
+					ConnRoutePNames.DEFAULT_PROXY, proxy);
+		}
 		this.httpClient.getParams().setParameter(
 				AllClientPNames.USER_AGENT,
 				"Mozilla/5.0 (Java) Gecko/20081007 "
@@ -56,7 +59,7 @@ public class MapsClient extends MapSubscriber {
 
 	@Override
 	public boolean openConnection() {
-		//since AJAX API doesn't need handshake, we always return true
+		// since AJAX API doesn't need handshake, we always return true
 		return true;
 	}
 
