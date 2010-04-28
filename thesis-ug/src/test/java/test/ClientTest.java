@@ -1,7 +1,5 @@
 package test;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 
@@ -12,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import valueobject.Hint;
 import businessobject.Configuration;
-import businessobject.Converter;
 import businessobject.google.MapsClient;
 
 public class ClientTest extends TestCase {
@@ -22,15 +19,10 @@ public class ClientTest extends TestCase {
 				"org.apache.commons.logging.impl.SLF4JLog");
 		System.setProperty("log4j.configuration", "log4j.conf");
 		final Properties CONSTANTS = Configuration.getInstance().constants;
-		System.setProperty("http.proxyHost", CONSTANTS
-				.getProperty("HTTP_PROXY"));
-		System
-				.setProperty("http.proxyPort", CONSTANTS
-						.getProperty("HTTP_PORT"));
-		System.setProperty("https.proxyHost", CONSTANTS
-				.getProperty("HTTPS_PROXY"));
-		System.setProperty("https.proxyPort", CONSTANTS
-				.getProperty("HTTPS_PORT"));
+		if (CONSTANTS.containsKey("http.proxyHost")) System.setProperty("http.proxyHost", CONSTANTS.getProperty("HTTP_PROXY"));
+		if (CONSTANTS.containsKey("http.proxyPort")) System.setProperty("http.proxyPort", CONSTANTS.getProperty("HTTP_PORT"));
+		if (CONSTANTS.containsKey("https.proxyHost")) System.setProperty("https.proxyHost", CONSTANTS.getProperty("HTTPS_PROXY"));
+		if (CONSTANTS.containsKey("https.proxyPort")) System.setProperty("https.proxyPort", CONSTANTS.getProperty("HTTPS_PORT"));
 	}
 
 	/*
@@ -82,12 +74,12 @@ public class ClientTest extends TestCase {
 		for (Hint r : results)
 			log.info(r.phoneNumbers.get(0).number);
 	}
-	
+	/**
 	public void testTimes() throws Exception{
 		Logger log = LoggerFactory.getLogger(ClientTest.class);
 		Calendar hallo = Converter.toJavaTime("09:30:10-06:00");
-		log.info(new SimpleDateFormat().format(hallo.getTime()));
-	}
+		log.info(hallo.toString());
+	}*/
 
 	private void assertValidResults(List<Hint> results) {
 		assertNotNull(results);
