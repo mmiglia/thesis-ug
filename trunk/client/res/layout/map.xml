@@ -9,5 +9,5 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/MainLogo"
         android:layout_marginLeft="15dip"
-        android:text="@string/username"/>  
+        android:text="map"/>  
 </RelativeLayout>
