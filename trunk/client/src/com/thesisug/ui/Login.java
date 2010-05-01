@@ -9,6 +9,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+/**
+ * This activity is shown when the user add new account service in
+ * an android device
+ */
 public class Login extends AccountAuthenticatorActivity {
 	public static final String PARAM_CONFIRMCREDENTIALS = "confirmCredentials";
     public static final String PARAM_PASSWORD = "password";
