@@ -1,4 +1,4 @@
-package com.thesisug.ui.authenticator;
+package com.thesisug.authenticator;
 
 import android.app.Service;
 import android.content.Intent;

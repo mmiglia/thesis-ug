@@ -1,4 +1,4 @@
-package com.thesisug.ui.authenticator;
+package com.thesisug.authenticator;
 
 import android.accounts.AbstractAccountAuthenticator;
 import android.accounts.Account;
@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.thesisug.Constants;
 import com.thesisug.R;
 import com.thesisug.ui.Login;
 

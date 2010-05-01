@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.widget.TabHost;
 
 public class ParentTab extends TabActivity {
-    /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +41,5 @@ public class ParentTab extends TabActivity {
         tabHost.addTab(spec);
 
         tabHost.setCurrentTab(0);
-
     }
 }
