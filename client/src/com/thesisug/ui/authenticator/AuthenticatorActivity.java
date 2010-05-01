@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.thesisug.authenticator;
+package com.thesisug.ui.authenticator;
 
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;

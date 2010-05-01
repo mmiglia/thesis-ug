@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.thesisug.synchronizator;
+package com.thesisug.ui.synchronizator;
 
 import android.app.Service;
 import android.content.Intent;
