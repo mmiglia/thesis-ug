@@ -1,4 +1,6 @@
-package com.thesisug;
+package com.thesisug.ui;
+
+import com.thesisug.R;
 
 import android.app.Activity;
 import android.content.Intent;

@@ -1,4 +1,6 @@
-package com.thesisug;
+package com.thesisug.ui;
+
+import com.thesisug.R;
 
 import android.app.TabActivity;
 import android.content.Intent;

@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.thesisug.authenticator;
+package com.thesisug.ui.authenticator;
 
 public class Constants {
 
