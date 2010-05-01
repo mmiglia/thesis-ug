@@ -1,10 +1,13 @@
 package web;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.ws.rs.Consumes;
+import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.CookieParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
@@ -13,12 +16,10 @@ import org.slf4j.LoggerFactory;
 
 import valueobject.SingleEvent;
 
-import java.util.List;
-
 /**
  * Event Resource is responsible for GETTING the result from the server
  */
-@Path("/event/{username}")
+@Path("/{username}/event")
 public class EventResource {
 	private static Logger log = LoggerFactory.getLogger(EventResource.class);
 	/**
@@ -33,11 +34,14 @@ public class EventResource {
 	 * @return All events by this user
 	 */
 	@GET
+	@Path("/all")
 	@Produces("application/xml")
 	public List<SingleEvent> getAllEvents(@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request to get all events from user "+userid+" session "+sessionid);
-		return null;
+		List<SingleEvent> dummy = new LinkedList<SingleEvent>();
+		dummy.add(new SingleEvent("hallo","pertamax","endTime","lokasi", "deskripsi"));
+		return dummy;
 	}
 
 	/**
@@ -50,8 +54,8 @@ public class EventResource {
 	 * @return list of events occured today
 	 */
 	@GET
-	@Produces("application/xml")
-	
+	@Path("/today")
+	@Produces("application/xml")	
 	public List<SingleEvent> getEventToday(
 			@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid) {
@@ -74,6 +78,7 @@ public class EventResource {
 	 * @return list of events
 	 */
 	@GET
+	@Path("/between")
 	@Produces("application/xml")
 	public List<SingleEvent> getEvent(String DateFrom, String DateTo,
 			@PathParam("username") String userid,
@@ -90,6 +95,7 @@ public class EventResource {
 	 * @return 0 for unsuccessful, 1 for successful
 	 */
 	@POST
+	@Path("/erase")
 	@Consumes("application/xml")
 	@Produces("application/xml")
 	public boolean removeEvent(String eventID,
