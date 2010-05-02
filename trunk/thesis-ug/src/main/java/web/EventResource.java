@@ -1,12 +1,12 @@
 package web;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.SingleEvent;
+import businessobject.EventManager;
 
 /**
  * Event Resource is responsible for GETTING the result from the server
@@ -22,6 +23,24 @@ import valueobject.SingleEvent;
 @Path("/{username}/event")
 public class EventResource {
 	private static Logger log = LoggerFactory.getLogger(EventResource.class);
+	
+	/**
+	 * Create new event in the database
+	 * @param userid unique UUID of the user
+	 * @param sessionid current session id
+	 * @param toAdd SingleEvent instance to be added
+	 * @return true if successful
+	 */
+	@PUT
+	@Path("/add")	
+	@Consumes("application/xml")	
+	@Produces("application/xml")
+	public boolean createEvent(@PathParam("username") String userid,
+			@CookieParam("sessionid") String sessionid, SingleEvent toAdd) {
+		log.info("Request to create event from user " + userid + ", session "+ sessionid);
+		return EventManager.getInstance().createEvent(userid, toAdd);
+	}
+	
 	/**
 	 * This method will return maximum 100 events to prevent slow transmission.
 	 * First it checks HTTP headers for session and userID and then use that
@@ -39,9 +58,7 @@ public class EventResource {
 	public List<SingleEvent> getAllEvents(@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request to get all events from user "+userid+" session "+sessionid);
-		List<SingleEvent> dummy = new LinkedList<SingleEvent>();
-		dummy.add(new SingleEvent("hallo","pertamax","endTime","lokasi", "deskripsi"));
-		return dummy;
+		return EventManager.getInstance().retrieveAllEvents(userid);
 	}
 
 	/**
@@ -60,7 +77,7 @@ public class EventResource {
 			@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request to get event today from user "+userid+" session "+sessionid);
-		return null;
+		return EventManager.getInstance().retrieveEventToday(userid);
 	}
 
 	/**
@@ -84,7 +101,17 @@ public class EventResource {
 			@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request to get events between "+DateFrom+" until "+DateTo+" from user "+userid+" session "+sessionid);
-		return null;
+		return EventManager.getInstance().retrieveEventsbyDate(userid, DateFrom, DateTo);
+	}
+	
+	@PUT
+	@Path("update")
+	@Consumes("application/xml")
+	@Produces("application/xml")
+	public boolean updateEvent(@PathParam("username") String userid,
+			@CookieParam("sessionid") String sessionid, SingleEvent oldEvent, SingleEvent newEvent) {
+		log.info("Request to update event from user " + userid + ", session " + sessionid);
+		return EventManager.getInstance().updateEvent(userid, oldEvent, newEvent);
 	}
 	
 	/**
@@ -103,6 +130,6 @@ public class EventResource {
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request to remove event " + eventID + " from user " + userid
 				+ ", session " + sessionid);
-		return false;
+		return EventManager.getInstance().removeEvent(userid, eventID);
 	}
 }

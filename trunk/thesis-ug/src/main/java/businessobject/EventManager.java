@@ -1,13 +1,13 @@
 package businessobject;
 
+import java.util.Calendar;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dao.EventDatabase;
-
 import valueobject.SingleEvent;
+import dao.EventDatabase;
 
 /**
  * This SINGLETON class is the only manager/publisher for event. All implemented
@@ -80,7 +80,21 @@ public class EventManager extends Publisher<EventSubscriber> {
 			String startDate, String endDate) {
 		return EventDatabase.instance.getEventsDuring(userid, startDate, endDate);
 	}
-
+	
+	public List<SingleEvent> retrieveEventToday(String userid){
+		Calendar now = Calendar.getInstance();
+		now.set(Calendar.HOUR_OF_DAY, 0);
+		now.set(Calendar.MINUTE, 0);
+		now.set(Calendar.SECOND, 0);
+		String startTime = Converter.CalendarDatetoString(now);
+		now.set(Calendar.HOUR_OF_DAY, 23);
+		now.set(Calendar.MINUTE, 59);
+		now.set(Calendar.SECOND, 59);
+		String endTime = Converter.CalendarDatetoString(now);
+		log.info("Start Time "+startTime);
+		log.info("End time "+endTime);
+		return retrieveEventsbyDate(userid, startTime, endTime);
+	}
 	/**
 	 * this method will create directly an events from a specified date, and
 	 * title.
@@ -104,14 +118,23 @@ public class EventManager extends Publisher<EventSubscriber> {
 			String endTime, String location, String description) {
 		SingleEvent toAdd = new SingleEvent(title, startTime, endTime,
 				location, description);		
-		for (EventSubscriber o : subscriberlist) {
-			if (o.createEvents(userid, toAdd)) continue;
-			else return false;
-		}
+		for (EventSubscriber o : subscriberlist) o.createEvents(userid, toAdd);
 		EventDatabase.instance.addEvent(userid, toAdd);
 		return true;
 	}
 
+	/**
+	 * create events with supplied SingleEvent instance
+	 * @param userID unique UUID of the user
+	 * @param toAdd SingleEvent instance
+	 * @return true is successful
+	 */
+	public boolean createEvent(String userID, SingleEvent toAdd){
+		for (EventSubscriber o : subscriberlist) o.createEvents(userID, toAdd);
+		EventDatabase.instance.addEvent(userID, toAdd);
+		return true;
+	}
+	
 	/**
 	 * this method will particularly use quick add features in Google Calendar,
 	 * which can parse directly any type of string.
@@ -142,10 +165,7 @@ public class EventManager extends Publisher<EventSubscriber> {
 	 */
 	public boolean updateEvent(String userid, SingleEvent oldEvent,
 			SingleEvent newEvent) {		
-		for (EventSubscriber o : subscriberlist) {
-			if (o.updateEvent(userid, oldEvent, newEvent)) continue;
-			else return false ;
-		}
+		for (EventSubscriber o : subscriberlist) o.updateEvent(userid, oldEvent, newEvent);
 		EventDatabase.instance.updateEvent(oldEvent.ID, newEvent);
 		return true;
 	}

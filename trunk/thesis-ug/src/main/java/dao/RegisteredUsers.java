@@ -171,6 +171,7 @@ public enum RegisteredUsers {
 							user.password.equals(password));
 				}
 			});			
+			log.info(result.get(0).ID);
 			return result.isEmpty()? null:result.get(0).ID;			
 		} finally {
 			db.close();

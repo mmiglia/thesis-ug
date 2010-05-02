@@ -1,6 +1,5 @@
 package test;
 
-import java.util.List;
 import java.util.Properties;
 
 import junit.framework.TestCase;
@@ -14,14 +13,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.LoginReply;
-import valueobject.SingleEvent;
 import businessobject.Configuration;
 
 /**
  * Tests the server method online
  */
 public class OnlineTest extends TestCase {
-	private static final Logger log = LoggerFactory.getLogger(OnlineTest.class);
+	private static Logger log;
 	// final SimpleClient client = ProxyFactory.create(SimpleClient.class,
 	// "http://localhost:8080/ephemere");
 
@@ -44,21 +42,22 @@ public class OnlineTest extends TestCase {
 					.getProperty("HTTPS_PORT"));
 	}
 
-	@Test
 	@Ignore
+	@Test
 	public void testLogin() {
+		log = LoggerFactory.getLogger(OnlineTest.class);
 		RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
-		int i = 0;
-		while (i < 100) {
+		int i = 2;
+		while (i < 1) {
 			createThread().start();
 			i++;
 		}
-		//SimpleClient client = ProxyFactory.create(SimpleClient.class,
-		//		"http://localhost:8080/ephemere");
+		SimpleClient client = ProxyFactory.create(SimpleClient.class,
+				"http://localhost:8080/ephemere");
 
-		//LoginReply result = client.Authenticate("user2", "dummy");
-		//log.info(Integer.toString(result.status));
-		//assertNotNull(result);
+		LoginReply result = client.Authenticate("user", "dummy");
+		log.info(Integer.toString(result.status));
+		assertNotNull(result);
 	}
 
 	private Thread createThread() {
@@ -80,7 +79,7 @@ public class OnlineTest extends TestCase {
 		return result;
 	}
 
-	@Ignore("not ready yet")
+	/*@Ignore("not ready yet")
 	@Test
 	public void testEvent() {
 		SimpleClient client = ProxyFactory.create(SimpleClient.class,
@@ -90,6 +89,6 @@ public class OnlineTest extends TestCase {
 			log.info(o.title + " " + o.description + " " + o.startTime);
 		}
 		assertNotNull(result);
-	}
+	}*/
 
 }
