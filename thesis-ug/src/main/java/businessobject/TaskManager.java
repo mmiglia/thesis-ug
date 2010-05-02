@@ -103,12 +103,19 @@ public class TaskManager extends Publisher<TaskSubscriber> {
 			String description, int priority) {
 		SingleTask toAdd = new SingleTask(title, notifyTimeStart,
 				notifyTimeEnd, dueDate, description, priority);
-		for (TaskSubscriber o : subscriberlist) {
-			if (o.createTasks(userID, toAdd))
-				continue;
-			else
-				return false;
-		}
+		for (TaskSubscriber o : subscriberlist) o.createTasks(userID, toAdd);
+		TaskDatabase.instance.addTask(userID, toAdd);
+		return true;
+	}
+	
+	/**
+	 * Create new task by supplying SingleTask instance
+	 * @param userID unique UUID of the user
+	 * @param toAdd SingleTask instance
+	 * @return true if task is successfully added to database, false otherwise
+	 */
+	public boolean createTask(String userID, SingleTask toAdd){
+		for (TaskSubscriber o : subscriberlist) o.createTasks(userID, toAdd);
 		TaskDatabase.instance.addTask(userID, toAdd);
 		return true;
 	}
@@ -126,14 +133,10 @@ public class TaskManager extends Publisher<TaskSubscriber> {
 	 */
 	public boolean updateTask(String userid, SingleTask oldTask,
 			SingleTask newTask) {		
-		for (TaskSubscriber o : subscriberlist) {
-			if (o.updateTask(userid, oldTask, newTask)) continue;
-			else return false ;
-		}
+		for (TaskSubscriber o : subscriberlist) o.updateTask(userid, oldTask, newTask);
 		TaskDatabase.instance.updateTask(oldTask.ID, newTask);
 		return true;
-	}
-	
+	}	
 
 	/**
 	 * Remove an task from a database

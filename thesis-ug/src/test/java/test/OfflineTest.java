@@ -1,5 +1,6 @@
 package test;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
 
@@ -13,6 +14,7 @@ import valueobject.LoginReply;
 import valueobject.SingleEvent;
 import valueobject.SingleTask;
 import businessobject.Configuration;
+import businessobject.Converter;
 import businessobject.EventManager;
 import businessobject.LoginManager;
 import businessobject.TaskManager;
@@ -22,14 +24,12 @@ import dao.RegisteredUsers;
  * Test the server methods offline, by calling directly business logics.
  * 
  */
-public class OfflineTest extends TestCase {
-	private static Logger log ;
+public class OfflineTest extends TestCase{
 	static {
 		System.setProperty("org.apache.commons.logging.Log",
 				"org.apache.commons.logging.impl.SLF4JLog");
 		System.setProperty("log4j.configuration", "log4j.conf");
 		final Properties CONSTANTS = Configuration.getInstance().constants;
-		log = LoggerFactory.getLogger(OfflineTest.class);
 		if (CONSTANTS.containsKey("http.proxyHost"))
 			System.setProperty("http.proxyHost", CONSTANTS
 					.getProperty("HTTP_PROXY"));
@@ -45,21 +45,26 @@ public class OfflineTest extends TestCase {
 	}
 
 	@Test
-	public void addUser() throws Exception {
+	public void testaddUser() {
+		Logger log = LoggerFactory.getLogger(OfflineTest.class);
 		log.info("Adding dummy account username = 'user', password ='dummy'");
 		RegisteredUsers.instance.addUsers("user", "dummy");
+		assertTrue(true);
 	}
 
 	@Test
-	public void Login() throws Exception {
+	public void testLogin() {
+		Logger log = LoggerFactory.getLogger(OfflineTest.class);
 		log.info("Trying to login with username = 'user', password ='dummy'");
 		LoginReply result = LoginManager.login("user", "dummy");
 		log.info("Login status is " + result.status + ", session id = "
 				+ result.session);
+		assertNotNull(result);
 	}
 
 	@Test
-	public void addEvent() throws Exception {
+	public void testaddEvent() {
+		Logger log = LoggerFactory.getLogger(OfflineTest.class);
 		log.info("Trying to add event to the database");
 		EventManager manager = EventManager.getInstance();
 		manager.Authenticate("user", "dummy"); // need to call this
@@ -70,8 +75,9 @@ public class OfflineTest extends TestCase {
 	}
 
 	@Test
-	public void retrieveAllEvents() throws Exception {
-		log.info("Trying to add event to the database");
+	public void testretrieveAllEvents() {
+		Logger log = LoggerFactory.getLogger(OfflineTest.class);
+		log.info("Trying to retrieve all events from the database");
 		EventManager manager = EventManager.getInstance();
 		manager.Authenticate("user", "dummy"); // need to call this
 		List<SingleEvent> result = manager.retrieveAllEvents("user");
@@ -80,7 +86,21 @@ public class OfflineTest extends TestCase {
 		assertNotNull(result);
 	}
 
-	public void addTasks() throws Exception {
+	@Test
+	public void testretrieveEventToday() {
+		Logger log = LoggerFactory.getLogger(OfflineTest.class);
+		log.info("Trying to retrieve events that occured today");
+		EventManager manager = EventManager.getInstance();
+		manager.Authenticate("user", "dummy"); // need to call this
+		List<SingleEvent> result = manager.retrieveEventToday("user");
+		for (SingleEvent o : result)
+			log.info(o.title);
+		assertNotNull(result);
+	}
+
+	@Test
+	public void testaddTasks(){
+		Logger log = LoggerFactory.getLogger(OfflineTest.class);
 		log.info("Trying to add task to the database");
 		TaskManager manager = TaskManager.getInstance();
 		boolean result = manager.createTask("user", "jogging",
@@ -90,7 +110,9 @@ public class OfflineTest extends TestCase {
 		assertNotNull(result);
 	}
 
-	public void getFirstTasks() throws Exception {
+	@Test
+	public void testgetFirstTasks() {
+		Logger log = LoggerFactory.getLogger(OfflineTest.class);
 		log.info("Getting most important tasks");
 		TaskManager manager = TaskManager.getInstance();
 		List<SingleTask> result = manager.getFirstTasks("user");
@@ -131,11 +153,15 @@ public class OfflineTest extends TestCase {
 		// List<Hint> results = coba.searchLocalBusiness(lat, lon, "coffee");
 		assertNotNull(lon);
 	}*/
-	/**
-	 * public void testTimes() throws Exception{ Logger log =
-	 * LoggerFactory.getLogger(ClientTest.class); Calendar hallo =
-	 * Converter.toJavaTime("09:30:10-06:00"); log.info(hallo.toString()); }
-	 */
+
+	public void testTimes() {
+		Logger log = LoggerFactory.getLogger(OfflineTest.class);
+		Calendar hallo = Converter.toJavaTime("00:00:08-06:00");
+		log.info("hallo "+Converter.CalendarTimetoString(hallo));
+		Calendar kedua = Converter.toJavaDate("2010-04-19T00:00:08-06:00");
+		log.info (Converter.CalendarDatetoString(kedua));
+	}
+	 
 
 	/*
 	 * private void assertValidResults(List<Hint> results) {

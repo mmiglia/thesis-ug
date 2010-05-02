@@ -71,6 +71,7 @@ public enum TaskDatabase {
 	 */
 	public static List<SingleTask> getAllTask(final String userID){
 		ObjectContainer db = openDatabase();
+		List<SingleTask> result= new LinkedList<SingleTask>();
 		try {
 			List<TaskTuple> queryResult = db.query(new Predicate<TaskTuple>() {
 				public boolean match(TaskTuple current) {
@@ -79,9 +80,8 @@ public enum TaskDatabase {
 			});
 			if (queryResult.isEmpty()) {
 				log.warn ("Cannot find user ID "+userID);
-				return null;
-			}
-			List<SingleTask> result= new LinkedList<SingleTask>();
+				return result;
+			}			
 			for (TaskTuple o : queryResult) result.add(o.task);
 			return result;
 		} finally {
@@ -92,9 +92,10 @@ public enum TaskDatabase {
 	/**
 	 * Delete the specific task from database
 	 * @param userID unique UUID of the user
-	 * @param taskID unique UUID of the task	 
+	 * @param taskID unique UUID of the task
+	 * @return false if deletion fails 
 	 */	
-	public static void deleteTask(final String userID, final String taskID) {
+	public static boolean deleteTask(final String userID, final String taskID) {
 		ObjectContainer db = openDatabase();
 		try {
 			List<TaskTuple> result = db.query(new Predicate<TaskTuple>() {
@@ -102,9 +103,10 @@ public enum TaskDatabase {
 					return current.userID.equals(userID) && current.taskID.equals(taskID);
 				}
 			});
-			if (result.isEmpty()) return;
+			if (result.isEmpty()) return false;
 			TaskTuple toDelete = result.get(0);
 			db.delete(toDelete);
+			return true;
 		} finally {
 			db.close();
 		}

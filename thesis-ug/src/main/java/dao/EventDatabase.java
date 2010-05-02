@@ -32,16 +32,18 @@ public enum EventDatabase {
 	 * Add new event to the database
 	 * @param userID unique UUID of the user
 	 * @param event event object to be saved
+	 * @return true if addition successful
 	 */
-	public static void addEvent(String userID, SingleEvent event) {
+	public boolean addEvent(String userID, SingleEvent event) {
 		if (eventExist(event)) { //check for redundant entry, because db40 saves redundant object
 			log.warn ("Event "+event.ID+" already exist");
-			return; 
+			return false; 
 		}
 		EventTuple toAdd = instance.new EventTuple(userID, event);
 		ObjectContainer db = openDatabase();
 		try {			
 			db.store(toAdd);
+			return true;
 		} finally{
 			db.close();			
 		}
@@ -50,9 +52,10 @@ public enum EventDatabase {
 	/**
 	 * Delete the specific event from database
 	 * @param userID unique UUID of the user
-	 * @param eventID unique UUID of the task	 
+	 * @param eventID unique UUID of the task
+	 * @return true if deletion success, false otherwise 
 	 */	
-	public static void deleteEvent(final String userID, final String eventID) {
+	public static boolean deleteEvent(final String userID, final String eventID) {
 		ObjectContainer db = openDatabase();
 		try {
 			List<EventTuple> result = db.query(new Predicate<EventTuple>() {
@@ -60,9 +63,10 @@ public enum EventDatabase {
 					return current.userID.equals(userID) && current.event.ID.equals(eventID);
 				}
 			});
-			if (result.isEmpty()) return;
+			if (result.isEmpty()) return false;
 			EventTuple toDelete = result.get(0);
 			db.delete(toDelete);
+			return true;
 		} finally {
 			db.close();
 		}
@@ -103,6 +107,7 @@ public enum EventDatabase {
 	 */
 	public static List<SingleEvent> getAllEvent(final String userID){
 		ObjectContainer db = openDatabase();
+		List<SingleEvent> result= new LinkedList<SingleEvent>();
 		try {
 			List<EventTuple> queryResult = db.query(new Predicate<EventTuple>() {
 				public boolean match(EventTuple current) {
@@ -111,9 +116,8 @@ public enum EventDatabase {
 			});
 			if (queryResult.isEmpty()) {
 				log.warn ("Cannot find user ID "+userID);
-				return null;
-			}
-			List<SingleEvent> result= new LinkedList<SingleEvent>();
+				return result;
+			}			
 			for (EventTuple o : queryResult) result.add(o.event);
 			return result;
 		} finally {
@@ -132,6 +136,7 @@ public enum EventDatabase {
 		ObjectContainer db = openDatabase();
 		final Calendar startPeriod = Converter.toJavaDate(startTime);
 		final Calendar endPeriod = Converter.toJavaDate(endTime);
+		List<SingleEvent> result= new LinkedList<SingleEvent>();
 		
 		try {
 			List<EventTuple> queryResult = db.query(new Predicate<EventTuple>() {
@@ -146,9 +151,8 @@ public enum EventDatabase {
 			});
 			if (queryResult.isEmpty()) {
 				log.warn ("Cannot find user ID "+userID);
-				return null;
+				return result;
 			}
-			List<SingleEvent> result= new LinkedList<SingleEvent>();
 			for (EventTuple o : queryResult) result.add(o.event);
 			return result;
 		} finally {
