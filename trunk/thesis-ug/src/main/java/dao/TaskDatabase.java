@@ -6,11 +6,12 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import valueobject.SingleEvent;
 import valueobject.SingleTask;
+import businessobject.Configuration;
 
-import com.db4o.Db4oEmbedded;
 import com.db4o.ObjectContainer;
+import com.db4o.ObjectServer;
+import com.db4o.cs.Db4oClientServer;
 import com.db4o.query.Predicate;
 
 /**
@@ -18,8 +19,12 @@ import com.db4o.query.Predicate;
 */
 public enum TaskDatabase {
 	instance;
-	private static final String DATABASE_NAME = "src/main/resources/TaskDatabase";
+	private static final String DATABASE_NAME = Configuration.getInstance().constants.getProperty("DATABASE_FOLDER")+"/TaskDatabase";
 	private final static Logger log = LoggerFactory.getLogger(TaskDatabase.class);
+	private static ObjectServer server ; //db4o server
+	private static boolean databaseOpen = false; // true means database server is initialized
+	private static final Object lock = new Object(); // mutex lock
+	
 	/**
 	 * Add new task to the database
 	 * @param userID unique UUID of the user
@@ -153,9 +158,19 @@ public enum TaskDatabase {
 	}
 	
 	private static ObjectContainer openDatabase() {
-		ObjectContainer db = Db4oEmbedded.openFile(Db4oEmbedded
-				.newConfiguration(), DATABASE_NAME);		
-		return db;
+		if (!databaseOpen) { //outer selection to enable faster access
+			synchronized (lock){
+			/*to avoid racing condition after outer IF above
+			 e.g. possible to acquire same databaseOpen value
+			 and thus open server multiple times*/
+			if (databaseOpen) return server.openClient(); 
+			server= Db4oClientServer.openServer(Db4oClientServer
+		        .newServerConfiguration(), DATABASE_NAME, 0);
+			databaseOpen=true;
+			}
+		}
+		ObjectContainer db = server.openClient();
+		return db;	
 	}
 
 	/**

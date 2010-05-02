@@ -23,6 +23,9 @@ public class SingleEvent extends Reminder {
 	 * */
 	public String location;
 
+	private SingleEvent(){
+		super();
+	}
 	/**
 	 * Constructor for this class	 
 	 * @param title the main title for the event

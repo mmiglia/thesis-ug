@@ -28,4 +28,8 @@ public class LoginReply {
 		this.status = status;
 		this.session = session;
 	}
+	private LoginReply(){
+		status= 0;
+		session="0";
+	}
 }

@@ -32,6 +32,8 @@ public abstract class Reminder {
 	 */
 	public GPSLocation gpscoordinate;
 	
+	protected Reminder(){		
+	}
 	/**
 	 * Constructor for this class
 	 * @param ID unique ID of the event
@@ -71,7 +73,7 @@ public abstract class Reminder {
 	 * the class specifying latitude and longitude position
 	 *
 	 */
-	protected class GPSLocation{
+	protected static class GPSLocation{
 		float latitude;
 		float longitude;
 	}
