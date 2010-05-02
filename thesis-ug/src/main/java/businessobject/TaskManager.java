@@ -32,6 +32,23 @@ public class TaskManager extends Publisher<TaskSubscriber> {
 	}
 
 	/**
+	 * Authenticate to the backend service
+	 * 
+	 * @param username
+	 *            username to the service provider
+	 * @param password
+	 *            password to the service provider
+	 * @return 0 if unsuccessful, 1 if successful
+	 */
+	public boolean Authenticate(String username, String password) {
+		for (TaskSubscriber o : subscriberlist) {
+			if (o.Authenticate(username, password)) continue;
+			else return false;
+		}
+		return true;
+	}
+	
+	/**
 	 * Get all task from a given userid
 	 * 
 	 * @param userID
@@ -66,6 +83,7 @@ public class TaskManager extends Publisher<TaskSubscriber> {
 	/**
 	 * This method create a new tasks
 	 * 
+	 * @param userID unique UUID of the user
 	 * @param title
 	 *            title of the task
 	 * @param notifyTimeStart
