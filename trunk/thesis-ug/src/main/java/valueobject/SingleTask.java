@@ -15,7 +15,7 @@ import businessobject.Converter;
 @XmlRootElement
 public class SingleTask extends Reminder implements Comparable<SingleTask>{
 	/**
-	 * deadline for the execution of the task
+	 * deadline for the execution of the task (xs:dateTime format) <code>2006-04-17T15:00:00-08:00</code>
 	 */
 	public String dueDate;
 	/**

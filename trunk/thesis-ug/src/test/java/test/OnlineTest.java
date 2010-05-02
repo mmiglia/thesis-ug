@@ -18,10 +18,10 @@ import valueobject.SingleEvent;
 import businessobject.Configuration;
 
 /**
- * Run all test when server is already up and running
+ * Tests the server method online
  */
 public class OnlineTest extends TestCase {
-	Logger log = LoggerFactory.getLogger(OnlineTest.class);
+	private static final Logger log = LoggerFactory.getLogger(OnlineTest.class);
 	// final SimpleClient client = ProxyFactory.create(SimpleClient.class,
 	// "http://localhost:8080/ephemere");
 
