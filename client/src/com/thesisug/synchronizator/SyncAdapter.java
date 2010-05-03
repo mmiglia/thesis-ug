@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.thesisug.ui.synchronizator;
+package com.thesisug.synchronizator;
 
 import java.io.IOException;
 import java.util.Date;
