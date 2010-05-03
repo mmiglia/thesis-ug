@@ -167,11 +167,9 @@ public enum RegisteredUsers {
 		try {
 			List<Users> result = db.query(new Predicate<Users>() {
 				public boolean match(Users user) {
-					return (user.username.equalsIgnoreCase(username)&& 
-							user.password.equals(password));
+					return (user.username.equalsIgnoreCase(username) && user.password.equals(password));
 				}
 			});			
-			log.info(result.get(0).ID);
 			return result.isEmpty()? null:result.get(0).ID;			
 		} finally {
 			db.close();

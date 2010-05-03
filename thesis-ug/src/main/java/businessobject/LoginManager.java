@@ -23,15 +23,14 @@ public class LoginManager {
 	 * in database, if there is a match, it will create a new session ID and
 	 * save it in a SessionData.
 	 * 
-	 * @param username
-	 * @param Return
-	 * @param password
-	 * @return
+	 * @param username unique UUID of the user
+	 * @param password password of the user
+	 * @return LoginReply object
 	 */
 	public static LoginReply login(String username, String password) {
 		// put code to check in database here
-		log.info("Check for match in database");
-		String ID = RegisteredUsers.instance.checkMatch("dummy", "password");
+		log.info("Check for match in database for username ="+username+" password = "+password);
+		String ID = RegisteredUsers.instance.checkMatch(username, password);
 		if (ID == null) {
 			log.info("Username or password is wrong");
 			return new LoginReply(0, "-1");

@@ -154,13 +154,13 @@ public class OfflineTest extends TestCase{
 		assertNotNull(lon);
 	}*/
 
-	public void testTimes() {
+	/*public void testTimes() {
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
 		Calendar hallo = Converter.toJavaTime("00:00:08-06:00");
 		log.info("hallo "+Converter.CalendarTimetoString(hallo));
 		Calendar kedua = Converter.toJavaDate("2010-04-19T00:00:08-06:00");
 		log.info (Converter.CalendarDatetoString(kedua));
-	}
+	}*/
 	 
 
 	/*

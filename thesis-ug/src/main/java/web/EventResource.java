@@ -6,10 +6,10 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,16 +31,16 @@ public class EventResource {
 	 * @param toAdd SingleEvent instance to be added
 	 * @return true if successful
 	 */
-	@PUT
+	@POST
 	@Path("/add")	
 	@Consumes("application/xml")	
-	@Produces("application/xml")
-	public boolean createEvent(@PathParam("username") String userid,
+	public Response createEvent(@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid, SingleEvent toAdd) {
 		log.info("Request to create event from user " + userid + ", session "+ sessionid);
-		return EventManager.getInstance().createEvent(userid, toAdd);
+		boolean result = EventManager.getInstance().createEvent(userid, toAdd);
+		return result ? Response.ok().build() : Response.notModified().build();
 	}
-	
+		
 	/**
 	 * This method will return maximum 100 events to prevent slow transmission.
 	 * First it checks HTTP headers for session and userID and then use that
@@ -104,14 +104,14 @@ public class EventResource {
 		return EventManager.getInstance().retrieveEventsbyDate(userid, DateFrom, DateTo);
 	}
 	
-	@PUT
+	@POST
 	@Path("update")
 	@Consumes("application/xml")
-	@Produces("application/xml")
-	public boolean updateEvent(@PathParam("username") String userid,
+	public Response updateEvent(@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid, SingleEvent oldEvent, SingleEvent newEvent) {
 		log.info("Request to update event from user " + userid + ", session " + sessionid);
-		return EventManager.getInstance().updateEvent(userid, oldEvent, newEvent);
+		boolean result = EventManager.getInstance().updateEvent(userid, oldEvent, newEvent);
+		return result ? Response.ok().build() : Response.notModified().build();
 	}
 	
 	/**
@@ -124,12 +124,12 @@ public class EventResource {
 	@POST
 	@Path("/erase")
 	@Consumes("application/xml")
-	@Produces("application/xml")
-	public boolean removeEvent(String eventID,
+	public Response removeEvent(String eventID,
 			@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request to remove event " + eventID + " from user " + userid
 				+ ", session " + sessionid);
-		return EventManager.getInstance().removeEvent(userid, eventID);
+		boolean result = EventManager.getInstance().removeEvent(userid, eventID);
+		return result ? Response.ok().build() : Response.notModified().build();
 	}
 }

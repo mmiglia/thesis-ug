@@ -10,6 +10,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,14 +31,14 @@ public class TaskResource {
 	 * @param toAdd SingleTask instance
 	 * @return true upon successful addition
 	 */
-	@PUT
+	@POST
 	@Path("/add")	
 	@Consumes("application/xml")	
-	@Produces("application/xml")
-	public boolean createTask(@PathParam("username") String userid,
+	public Response createTask(@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid, SingleTask toAdd) {
 		log.info("Request to create task from user " + userid + ", session "+ sessionid);
-		return TaskManager.getInstance().createTask(userid, toAdd);
+		boolean result = TaskManager.getInstance().createTask(userid, toAdd);
+		return result ? Response.ok().build() : Response.notModified().build();
 	}
 	
 	/**
@@ -72,14 +73,14 @@ public class TaskResource {
 		return null;
 	}
 
-	@PUT
+	@POST
 	@Path("update")
 	@Consumes("application/xml")
-	@Produces("application/xml")
-	public boolean updateTasks(@PathParam("username") String userid,
+	public Response updateTasks(@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid, SingleTask oldTask, SingleTask newTask) {
 		log.info("Request to update task from user " + userid + ", session " + sessionid);
-		return TaskManager.getInstance().updateTask(userid, oldTask, newTask);		
+		boolean result = TaskManager.getInstance().updateTask(userid, oldTask, newTask);		
+		return result ? Response.ok().build() : Response.notModified().build();
 	}
 	
 	/**
@@ -94,12 +95,12 @@ public class TaskResource {
 	@POST
 	@Path("/erase")
 	@Consumes("application/xml")
-	@Produces("application/xml")
-	public boolean removeTasks(String taskID,
+	public Response removeTasks(String taskID,
 			@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request to remove task " + taskID + " from user " + userid
 				+ ", session " + sessionid);
-		return false;
+		boolean result = TaskManager.getInstance().removeTask(userid, taskID);
+		return result ? Response.ok().build() : Response.notModified().build();
 	}
 }

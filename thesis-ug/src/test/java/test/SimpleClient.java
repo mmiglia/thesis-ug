@@ -6,10 +6,10 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
 import valueobject.LoginReply;
 import valueobject.SingleEvent;
@@ -22,10 +22,9 @@ public interface SimpleClient {
 	@Produces("application/xml")
 	public LoginReply Authenticate(@PathParam("username") String username, @CookieParam ("p") String password);
 	
-	@PUT
+	@POST
 	@Path("{username}/event/add")	
-	@Produces("application/xml")
-	public boolean createEvent(@PathParam("username") String userid, @CookieParam("sessionid") String sessionid, SingleEvent toAdd);
+	public Response createEvent(@PathParam("username") String userid, @CookieParam("sessionid") String sessionid, SingleEvent toAdd);
 	
 	@GET
 	@Path("{username}/event/all")
@@ -42,20 +41,17 @@ public interface SimpleClient {
 	@Produces("application/xml")
 	public List<SingleEvent> getEvent(String DateFrom, String DateTo, @PathParam("username") String userid,	@CookieParam("sessionid") String sessionid);
 	
-	@PUT
+	@POST
 	@Path("{username}/event/update")
-	@Produces("application/xml")
-	public boolean updateEvent(@PathParam("username") String userid, @CookieParam("sessionid") String sessionid, SingleEvent oldEvent, SingleEvent newEvent);
+	public Response updateEvent(@PathParam("username") String userid, @CookieParam("sessionid") String sessionid, SingleEvent oldEvent, SingleEvent newEvent);
 	
 	@POST
 	@Path("{username}/event/erase")
-	@Produces("application/xml")
-	public boolean removeEvent(String eventID, @PathParam("username") String userid, @CookieParam("sessionid") String sessionid) ;
+	public Response removeEvent(String eventID, @PathParam("username") String userid, @CookieParam("sessionid") String sessionid) ;
 
-	@PUT
+	@POST
 	@Path("{username}/task/add")	
-	@Produces("application/xml")
-	public boolean createTask(@PathParam("username") String userid,	@CookieParam("sessionid") String sessionid, SingleTask toAdd);
+	public Response createTask(@PathParam("username") String userid,	@CookieParam("sessionid") String sessionid, SingleTask toAdd);
 	
 	@GET
 	@Path("{username}/task/all")
@@ -69,11 +65,15 @@ public interface SimpleClient {
 
 	@POST
 	@Path("{username}/task/erase")
-	@Produces("application/xml")
-	public boolean removeTasks(String taskID, @PathParam("username") String userid,	@CookieParam("sessionid") String sessionid);
+	public Response removeTasks(String taskID, @PathParam("username") String userid,	@CookieParam("sessionid") String sessionid);
 
-	@PUT
+	@POST
 	@Path("{username}/task/update")
-	@Produces("application/xml")
-	public boolean updateTasks(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid, SingleTask oldTask, SingleTask newTask);
+	public Response updateTasks(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid, SingleTask oldTask, SingleTask newTask);
+
+	@POST
+	@Path("{username}/event/coba")
+	@Consumes("application/xml")
+	public Response coba (@PathParam("username") String userid, String hallo);
+
 }
