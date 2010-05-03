@@ -1,18 +1,17 @@
 package web;
 
+import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
-
-import businessobject.LoginManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.LoginReply;
+import businessobject.LoginManager;
 
 @Path("/login/{username}")
 /**
@@ -31,7 +30,7 @@ public class LoginResource{
 
 @GET
 @Produces("application/xml")
-public LoginReply Authenticate(@PathParam("username") String username, @QueryParam ("p") String password) {	
+public LoginReply Authenticate(@PathParam("username") String username, @CookieParam ("p") String password) {	
     log.info("Receiving authentication request from client");
     LoginReply reply = LoginManager.login(username, password);
     if (reply != null) {

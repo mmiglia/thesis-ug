@@ -4,15 +4,11 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import org.jboss.resteasy.client.ClientResponse;
 import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.plugins.providers.RegisterBuiltin;
-import org.jboss.resteasy.spi.ResteasyProviderFactory;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import valueobject.LoginReply;
 import businessobject.Configuration;
 
 /**
@@ -42,7 +38,7 @@ public class OnlineTest extends TestCase {
 					.getProperty("HTTPS_PORT"));
 	}
 
-	@Ignore
+/*	@Ignore
 	@Test
 	public void testLogin() {
 		log = LoggerFactory.getLogger(OnlineTest.class);
@@ -54,10 +50,11 @@ public class OnlineTest extends TestCase {
 		}
 		SimpleClient client = ProxyFactory.create(SimpleClient.class,
 				"http://localhost:8080/ephemere");
-
+		
 		LoginReply result = client.Authenticate("user", "dummy");
-		log.info(Integer.toString(result.status));
-		assertNotNull(result);
+		log.info("Login status is " + result.status + ", session id = "
+				+ result.session);
+		assertNotNull(result);		
 	}
 
 	private Thread createThread() {
@@ -78,17 +75,33 @@ public class OnlineTest extends TestCase {
 		};
 		return result;
 	}
-
-	/*@Ignore("not ready yet")
+	
 	@Test
-	public void testEvent() {
+	public void testcreateEvent() {	
+		SimpleClient client = ProxyFactory.create(SimpleClient.class,
+		"http://localhost:8080/ephemere");
+		SingleEvent haha = new SingleEvent("sariwangi", "2010-05-10T17:00:00-08:00", "2010-04-12T17:30:00-08:00",
+				"School", "haiya", 3);
+		client.createEvent("user", "supposedtobeCookie", haha);
+	}
+	
+	
+	@Test
+	public void testGetAllEvent() {
 		SimpleClient client = ProxyFactory.create(SimpleClient.class,
 				"http://localhost:8080/ephemere");
-		List<SingleEvent> result = client.getAllEvents("hell", "cookie");
+		List<SingleEvent> result = client.getAllEvents("user", "cookie");
 		for (SingleEvent o : result) {
 			log.info(o.title + " " + o.description + " " + o.startTime);
 		}
 		assertNotNull(result);
 	}*/
 
+	@Test
+	public void testCoba() {
+		SimpleClient client = ProxyFactory.create(SimpleClient.class,
+				"http://localhost:8080/ephemere");
+		ClientResponse response = (ClientResponse) client.coba("user", "haha");
+		log.info(Integer.toString(response.getResponseStatus().getStatusCode()));
+	}
 }
