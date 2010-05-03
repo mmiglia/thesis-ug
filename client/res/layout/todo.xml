@@ -9,5 +9,5 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@id/passwordtext"
         android:layout_marginTop="15dip"
-        android:text="@string/sign_in" />
+        android:text="@string/sign_in_button" />
 </RelativeLayout>
