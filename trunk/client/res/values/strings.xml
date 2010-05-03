@@ -3,7 +3,14 @@
     <string name="app_name">Thesis UG</string>
     <string name="username">Username</string>
 	<string name="password">Password</string>
-	<string name="sign_in">Sign In</string>
+	<string name="sign_in_button">Sign In</string>
+	<string name="server_URI">http://localhost:8080/ephemere</string>
+	<string name="sign_in_new_account">Please sign in to your account</string>
+	<string name="sign_in_no_username">Please type in your username</string>	
+	<string name="sign_in_no_password">Please type in your password</string>
+	<string name="sign_in_failed_both">The username or password isn\'t valid.</string>
+    <string name="sign_in_failed_password">Please put a valid password</string>
+	<string name="authenticating">Authenticating\u2026</string>	
     <string name="text_a">Shall I compare thee to a summer"'"s day?</string>
     <string name="text_b">Thou art more lovely and more temperate.</string>
     <string name="dialog_title">No Localisation</string>

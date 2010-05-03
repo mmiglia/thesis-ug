@@ -3,5 +3,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry kind="lib" path="/home/blu3fish/.m2/repository/org/jboss/resteasy/resteasy-jaxrs/1.2.GA/resteasy-jaxrs-1.2.GA.jar"/>
+	<classpathentry kind="lib" path="/home/blu3fish/.m2/repository/org/jboss/resteasy/jaxrs-api/1.2.GA/jaxrs-api-1.2.GA.jar"/>
+	<classpathentry kind="lib" path="/home/blu3fish/.m2/repository/javax/xml/bind/jaxb-api/2.1/jaxb-api-2.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
