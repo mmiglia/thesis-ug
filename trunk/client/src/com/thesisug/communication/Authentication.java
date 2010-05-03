@@ -1,17 +1,19 @@
 package com.thesisug.communication;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.apache.http.client.HttpClient;
 import org.jboss.resteasy.client.ClientResponseFailure;
-import org.jboss.resteasy.client.ProxyFactory;
 
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
 import com.thesis.communication.valueobject.LoginReply;
-import com.thesisug.R;
 import com.thesisug.ui.Login;
 
-public class Authentication {
+public class Authentication implements LoginResource{
 	private static final String TAG = new String("communication.Authentication");
 	/**
 	 * Creates and run background thread to do authentication
@@ -34,8 +36,7 @@ public class Authentication {
 	
 	private static void authenticate(String username, String password,
 	        Handler handler, final Context context) {
-		   
-		SimpleClient client = ProxyFactory.create(SimpleClient.class,context.getText(R.string.server_URI).toString());
+		HttpClient client = ClientFactory.getClient();
 		try {
 			LoginReply result = client.Authenticate(username, password);
 			if (result.status == 1) {
@@ -96,4 +97,20 @@ public class Authentication {
             }
         });
     }
+    
+    
+	public LoginReply Authenticate(String username, String password) {
+		SAXParserFactory factory = SAXParserFactory.newInstance();
+        try {
+            SAXParser parser = factory.newSAXParser();
+            RssHandler handler = new RssHandler();
+            parser.parse(this.getInputStream(), handler);
+            return handler.getMessages();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } 
+
+	}
+	
+	private class 
 }
