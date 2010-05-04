@@ -1,24 +1,7 @@
 package com.thesisug.communication;
 
-import java.util.List;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
-
-import com.thesis.communication.valueobject.LoginReply;
-import com.thesis.communication.valueobject.SingleEvent;
-import com.thesis.communication.valueobject.SingleTask;
-
-
-@Consumes("application/xml")
 public interface SimpleClient {
-	@GET
+	/*@GET
 	@Path("/login/{username}")
 	@Produces("application/xml")
 	public LoginReply Authenticate(@PathParam("username") String username, @CookieParam ("p") String password);
@@ -75,6 +58,6 @@ public interface SimpleClient {
 	@POST
 	@Path("{username}/event/coba")
 	@Consumes("application/xml")
-	public Response coba (@PathParam("username") String userid, String hallo);
+	public Response coba (@PathParam("username") String userid, String hallo);*/
 
 }

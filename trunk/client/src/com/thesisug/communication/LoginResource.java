@@ -1,9 +1,101 @@
 package com.thesisug.communication;
 
+import java.io.IOException;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.xml.sax.SAXException;
+
+import android.content.Context;
+import android.os.Handler;
+import android.util.Log;
+
 import com.thesis.communication.valueobject.LoginReply;
+import com.thesisug.communication.xmlparser.LoginReplyHandler;
+import com.thesisug.ui.Login;
 
-public interface LoginResource {
+public class LoginResource{
+	private static final String TAG = new String("LoginResource");
+	public static final String BASE_LOGIN = "/login";
+	  
+	@SuppressWarnings("finally")
+	public static LoginReply Authenticate(String username, String password) {
+       
+        	LoginReply result = new LoginReply();
+        	HttpClient newClient = NetworkUtilities.createClient();
+        	// provide username and password in correct param
+            HttpGet request = new HttpGet(NetworkUtilities.SERVER_URI+BASE_LOGIN+"/"+username+"");
+            request.addHeader("cookie", "p="+password);
+            // send the request to network
+            HttpResponse response = NetworkUtilities.sendRequest(newClient, request);
+            if (response == null) return result;
+            try { // parsing XML message
+				result = LoginReplyHandler.parse(response.getEntity().getContent());
+			} catch (IllegalStateException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (SAXException e) {
+				e.printStackTrace();
+			} finally {
+				return result;
+			}
+	}
+	
+	/**
+	 * Creates and run background thread to do authentication
+	 * @param username username of the user
+	 * @param password password of the user
+	 * @param handler handler for the thread
+	 * @param context activity that calls for authentication
+	 * @return thread running authentication
+	 */
+	public static Thread signIn(final String username,
+	        final String password, final Handler handler, final Context context) {
+	        final Runnable runnable = new Runnable() {
+	            public void run() {
+	                tryAuthenticate(username, password, handler, context);
+	            }
+	        };
+	        // start authenticating
+	        return NetworkUtilities.startBackgroundThread(runnable);
+	    }
+	
+	private static void tryAuthenticate(String username, String password,
+			Handler handler, final Context context) {
 
-	public LoginReply Authenticate(String username, String password);
-
+		LoginReply result = Authenticate(username, password);
+		if (result.status == 1) {
+			if (Log.isLoggable(TAG, Log.VERBOSE)) {
+				Log.v(TAG, "Successful authentication");
+			}
+			sendResult(true, handler, context);
+		} else {
+			if (Log.isLoggable(TAG, Log.VERBOSE)) {
+				Log.v(TAG, "Unsuccessful authentication");
+			}
+			sendResult(false, handler, context);
+		}
+	}
+    
+    /**
+     * Sends the authentication response from server back to the caller main UI
+     * thread through its handler.
+     * 
+     * @param result The boolean holding authentication result
+     * @param handler The main UI thread's handler instance.
+     * @param context The caller Activity's context.
+     */
+    private static void sendResult(final Boolean result, final Handler handler,
+        final Context context) {
+        if (handler == null || context == null) {
+            return;
+        }
+        handler.post(new Runnable() {
+            public void run() {
+                ((Login) context).showResult(result);
+            }
+        });
+    }
 }

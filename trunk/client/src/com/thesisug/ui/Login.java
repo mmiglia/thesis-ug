@@ -18,7 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.thesisug.R;
-import com.thesisug.communication.Authentication;
+import com.thesisug.communication.LoginResource;
 
 /**
  * This activity is shown when the user add new account service in
@@ -87,7 +87,7 @@ public class Login extends AccountAuthenticatorActivity {
             message.setText(getMessage());
         } else {
             showDialog(0); //will call onCreateDialog method
-            authenticationThread = Authentication.signIn(username, password, handler, this);
+            authenticationThread = LoginResource.signIn(username, password, handler, this);
         }
     }
     

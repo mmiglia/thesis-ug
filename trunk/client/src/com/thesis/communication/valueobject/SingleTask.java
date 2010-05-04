@@ -3,13 +3,9 @@ package com.thesis.communication.valueobject;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * This is the basic task object that will be used for communications to client
  */
-@XmlRootElement
 public class SingleTask extends Reminder {
 	/**
 	 * deadline for the execution of the task (xs:dateTime format) <code>2006-04-17T15:00:00-08:00</code>

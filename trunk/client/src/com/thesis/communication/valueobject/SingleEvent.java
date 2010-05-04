@@ -2,13 +2,10 @@ package com.thesis.communication.valueobject;
 
 import java.util.UUID;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * This is the basic event object that will be used for communication
  * to clients
 */
-@XmlRootElement
 public class SingleEvent extends Reminder {
 	/**
 	 * start time of event execution (xs:dateTime format) <code>2006-04-17T15:00:00-08:00</code>
