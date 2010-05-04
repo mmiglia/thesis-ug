@@ -16,7 +16,7 @@ public class LoginReplyHandler {
 	private static final String TAG = "Login Reply Handler";
 	
     public static LoginReply parse(InputStream toParse) throws IOException, SAXException {
-		RootElement root = new RootElement("LoginReply");
+		RootElement root = new RootElement("loginReply");
 		final LoginReply result = new LoginReply();
         root.getChild("status").setEndTextElementListener(new EndTextElementListener(){
             public void end(String body) {
