@@ -4,8 +4,12 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
+import org.apache.http.conn.HttpHostConnectException;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.jboss.resteasy.client.ClientResponse;
+import org.jboss.resteasy.client.ClientResponseFailure;
 import org.jboss.resteasy.client.ProxyFactory;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
 import org.junit.Test;
 import org.slf4j.Logger;
 
@@ -97,11 +101,22 @@ public class OnlineTest extends TestCase {
 		assertNotNull(result);
 	}*/
 
-	@Test
+	/*@Test
 	public void testCoba() {
+		ApacheHttpClient4Executor clientExecutor = new ApacheHttpClient4Executor(new DefaultHttpClient());
+		   SimpleClient delegate = ProxyFactory.create(SimpleClient.class, "http://localhost:8080/ephemere", clientExecutor);
+		   
 		SimpleClient client = ProxyFactory.create(SimpleClient.class,
 				"http://localhost:8080/ephemere");
-		ClientResponse response = (ClientResponse) client.coba("user", "haha");
-		log.info(Integer.toString(response.getResponseStatus().getStatusCode()));
-	}
+		try {
+			delegate.coba("user","haha");
+			log.info(Integer.toString(response.getResponseStatus()
+					.getStatusCode()));
+		} catch (ClientResponseFailure failure) {
+			   log.info(Integer.toString(failure.getResponse().getStatus()));
+		} catch (RuntimeException e) {
+		} finally {
+			   System.out.println("yippie");
+		}
+	}*/
 }

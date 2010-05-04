@@ -9,7 +9,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
 
 import valueobject.LoginReply;
 import valueobject.SingleEvent;
@@ -24,7 +23,7 @@ public interface SimpleClient {
 	
 	@POST
 	@Path("{username}/event/add")	
-	public Response createEvent(@PathParam("username") String userid, @CookieParam("sessionid") String sessionid, SingleEvent toAdd);
+	public void createEvent(@PathParam("username") String userid, @CookieParam("sessionid") String sessionid, SingleEvent toAdd);
 	
 	@GET
 	@Path("{username}/event/all")
@@ -43,15 +42,15 @@ public interface SimpleClient {
 	
 	@POST
 	@Path("{username}/event/update")
-	public Response updateEvent(@PathParam("username") String userid, @CookieParam("sessionid") String sessionid, SingleEvent oldEvent, SingleEvent newEvent);
+	public void updateEvent(@PathParam("username") String userid, @CookieParam("sessionid") String sessionid, SingleEvent oldEvent, SingleEvent newEvent);
 	
 	@POST
 	@Path("{username}/event/erase")
-	public Response removeEvent(String eventID, @PathParam("username") String userid, @CookieParam("sessionid") String sessionid) ;
+	public void removeEvent(String eventID, @PathParam("username") String userid, @CookieParam("sessionid") String sessionid) ;
 
 	@POST
 	@Path("{username}/task/add")	
-	public Response createTask(@PathParam("username") String userid,	@CookieParam("sessionid") String sessionid, SingleTask toAdd);
+	public void createTask(@PathParam("username") String userid,	@CookieParam("sessionid") String sessionid, SingleTask toAdd);
 	
 	@GET
 	@Path("{username}/task/all")
@@ -65,15 +64,10 @@ public interface SimpleClient {
 
 	@POST
 	@Path("{username}/task/erase")
-	public Response removeTasks(String taskID, @PathParam("username") String userid,	@CookieParam("sessionid") String sessionid);
+	public void removeTasks(String taskID, @PathParam("username") String userid,	@CookieParam("sessionid") String sessionid);
 
 	@POST
 	@Path("{username}/task/update")
-	public Response updateTasks(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid, SingleTask oldTask, SingleTask newTask);
-
-	@POST
-	@Path("{username}/event/coba")
-	@Consumes("application/xml")
-	public Response coba (@PathParam("username") String userid, String hallo);
+	public void updateTasks(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid, SingleTask oldTask, SingleTask newTask);
 
 }

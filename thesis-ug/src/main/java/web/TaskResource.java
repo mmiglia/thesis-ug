@@ -6,17 +6,15 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import businessobject.TaskManager;
 import valueobject.SingleTask;
+import businessobject.TaskManager;
 
 /**
  * Task Resource is responsible for GETTING the task from the server
@@ -34,11 +32,10 @@ public class TaskResource {
 	@POST
 	@Path("/add")	
 	@Consumes("application/xml")	
-	public Response createTask(@PathParam("username") String userid,
+	public void createTask(@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid, SingleTask toAdd) {
 		log.info("Request to create task from user " + userid + ", session "+ sessionid);
-		boolean result = TaskManager.getInstance().createTask(userid, toAdd);
-		return result ? Response.ok().build() : Response.notModified().build();
+		TaskManager.getInstance().createTask(userid, toAdd);
 	}
 	
 	/**
@@ -76,11 +73,10 @@ public class TaskResource {
 	@POST
 	@Path("update")
 	@Consumes("application/xml")
-	public Response updateTasks(@PathParam("username") String userid,
+	public void updateTasks(@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid, SingleTask oldTask, SingleTask newTask) {
 		log.info("Request to update task from user " + userid + ", session " + sessionid);
-		boolean result = TaskManager.getInstance().updateTask(userid, oldTask, newTask);		
-		return result ? Response.ok().build() : Response.notModified().build();
+		TaskManager.getInstance().updateTask(userid, oldTask, newTask);		
 	}
 	
 	/**
@@ -95,12 +91,11 @@ public class TaskResource {
 	@POST
 	@Path("/erase")
 	@Consumes("application/xml")
-	public Response removeTasks(String taskID,
+	public void removeTasks(String taskID,
 			@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request to remove task " + taskID + " from user " + userid
 				+ ", session " + sessionid);
-		boolean result = TaskManager.getInstance().removeTask(userid, taskID);
-		return result ? Response.ok().build() : Response.notModified().build();
+		TaskManager.getInstance().removeTask(userid, taskID);
 	}
 }

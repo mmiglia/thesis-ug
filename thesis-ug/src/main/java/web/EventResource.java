@@ -9,7 +9,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,11 +33,10 @@ public class EventResource {
 	@POST
 	@Path("/add")	
 	@Consumes("application/xml")	
-	public Response createEvent(@PathParam("username") String userid,
+	public void createEvent(@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid, SingleEvent toAdd) {
 		log.info("Request to create event from user " + userid + ", session "+ sessionid);
-		boolean result = EventManager.getInstance().createEvent(userid, toAdd);
-		return result ? Response.ok().build() : Response.notModified().build();
+		EventManager.getInstance().createEvent(userid, toAdd);
 	}
 		
 	/**
@@ -107,11 +105,10 @@ public class EventResource {
 	@POST
 	@Path("update")
 	@Consumes("application/xml")
-	public Response updateEvent(@PathParam("username") String userid,
+	public void updateEvent(@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid, SingleEvent oldEvent, SingleEvent newEvent) {
 		log.info("Request to update event from user " + userid + ", session " + sessionid);
-		boolean result = EventManager.getInstance().updateEvent(userid, oldEvent, newEvent);
-		return result ? Response.ok().build() : Response.notModified().build();
+		EventManager.getInstance().updateEvent(userid, oldEvent, newEvent);
 	}
 	
 	/**
@@ -124,12 +121,11 @@ public class EventResource {
 	@POST
 	@Path("/erase")
 	@Consumes("application/xml")
-	public Response removeEvent(String eventID,
+	public void removeEvent(String eventID,
 			@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request to remove event " + eventID + " from user " + userid
 				+ ", session " + sessionid);
-		boolean result = EventManager.getInstance().removeEvent(userid, eventID);
-		return result ? Response.ok().build() : Response.notModified().build();
+		EventManager.getInstance().removeEvent(userid, eventID);
 	}
 }
