@@ -1,10 +1,8 @@
 package com.thesis.communication.valueobject;
 
-import javax.xml.bind.annotation.XmlRootElement;
 /**
  * This is the parent class for event and task that has common field for them.
  */
-@XmlRootElement
 public abstract class Reminder {
 	/**
 	 * unique ID of the task. It is implemented as an automatically generated

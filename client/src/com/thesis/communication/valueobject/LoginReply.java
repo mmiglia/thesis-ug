@@ -1,11 +1,9 @@
 package com.thesis.communication.valueobject;
 
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * value returned after client attempts to login.
  */
-@XmlRootElement
 public class LoginReply {
 	/**
 	 * 1 is successful login, 0 is unsuccessful login
@@ -28,7 +26,7 @@ public class LoginReply {
 		this.status = status;
 		this.session = session;
 	}
-	private LoginReply(){
+	public LoginReply(){
 		status= 0;
 		session="0";
 	}
