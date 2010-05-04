@@ -87,7 +87,7 @@ public class Login extends AccountAuthenticatorActivity {
             message.setText(getMessage());
         } else {
             showDialog(0); //will call onCreateDialog method
-            authenticationThread = LoginResource.signIn(username, password, handler, this);
+            authenticationThread = LoginResource.signIn(username, password, handler, Login.this);
         }
     }
     
@@ -113,11 +113,10 @@ public class Login extends AccountAuthenticatorActivity {
      * Called after authentication process is finished
      */
     public void showResult(boolean result) {
-        Log.i(TAG, "result is (" + result + ")");
         dismissDialog(0); //disable the progress dialog
         if (result) {
             if (!confirmCredentials) {
-                finishLogin();
+            	finishLogin();
             } else {
                 finishConfirmCredentials(true);
             }
@@ -143,22 +142,27 @@ public class Login extends AccountAuthenticatorActivity {
 
     protected void finishLogin() {
         final Account account = new Account(username, com.thesisug.Constants.ACCOUNT_TYPE);
-
+        Log.i(TAG, "finish login");
         if (usernameIsEmpty) {
             accountManager.addAccountExplicitly(account, password, null);
             // Set contacts sync for this account.
             ContentResolver.setSyncAutomatically(account,
                 ContactsContract.AUTHORITY, true);
-        } 
+        } else {
+        	//this line has to be there to complete authorization process
+            accountManager.setPassword(account, password); 
+        }
         final Intent intent = new Intent();
-
+        Log.i(TAG, "after intent");
         intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, com.thesisug.Constants.ACCOUNT_TYPE);
         if (authtokenType != null && authtokenType.equals(com.thesisug.Constants.AUTHTOKEN_TYPE)) {
                 intent.putExtra(AccountManager.KEY_AUTHTOKEN, password);
             }
         setAccountAuthenticatorResult(intent.getExtras());
+        Log.i(TAG, "after intent haha");
         setResult(RESULT_OK, intent);
+        Log.i(TAG, "after intent haha222");
         finish();
     }
     
@@ -170,7 +174,8 @@ public class Login extends AccountAuthenticatorActivity {
      * @param the confirmCredentials result.
      */
     protected void finishConfirmCredentials(boolean result) {
-        final Account account = new Account(username, com.thesisug.Constants.ACCOUNT_TYPE);
+        Log.i(TAG, "confirm credentials");
+    	final Account account = new Account(username, com.thesisug.Constants.ACCOUNT_TYPE);
         accountManager.setPassword(account, password);
         final Intent intent = new Intent();
         intent.putExtra(AccountManager.KEY_BOOLEAN_RESULT, result);

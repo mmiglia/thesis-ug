@@ -2,7 +2,6 @@ package com.thesisug.communication;
 
 import java.io.IOException;
 
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -12,12 +11,15 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
+import android.util.Log;
+
 public class NetworkUtilities {
+	private static final String TAG = new String("NetworkUtilities");
 	private static final int REGISTRATION_TIMEOUT = 30000;
-	public static final String SERVER_URI = "http://10.188.19.144:8080/ephemere";
+	public static final String SERVER_URI = "http://10.0.2.2:8080/ephemere";
 	
-	public static HttpClient createClient() {
-		HttpClient client = new DefaultHttpClient();
+	public static DefaultHttpClient createClient() {
+		DefaultHttpClient client = new DefaultHttpClient();
 		final HttpParams params = client.getParams();
 		HttpConnectionParams.setConnectionTimeout(params, REGISTRATION_TIMEOUT);
 		HttpConnectionParams.setSoTimeout(params, REGISTRATION_TIMEOUT);
@@ -25,17 +27,23 @@ public class NetworkUtilities {
 		return client;
 	}
 	
-	@SuppressWarnings("finally")
-	public static HttpResponse sendRequest (HttpClient client, HttpRequest request){
+	public static HttpResponse sendRequest (HttpClient client, HttpUriRequest request){
 		HttpResponse response = null;
 		try {
-			response = client.execute((HttpUriRequest)request);
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
+			Log.i(TAG, "Before send request");
+			response = client.execute(request);			
+			Log.i(TAG, "Successfully send request");
 			return response;
+		} catch (ClientProtocolException e) {
+			Log.i(TAG, "ClientProtocol exception catched");
+			e.printStackTrace();
+			return response;
+		} catch (IOException e) {
+			Log.i(TAG, "IOException catched");
+			e.printStackTrace();
+			return response;
+		} finally {
+			Log.i(TAG, "finally");
 		}
 	}
 	
