@@ -178,3 +178,20 @@ grant {
 //      permission java.net.SocketPermission "*.noaa.gov:80", "connect";
 // };
 
+grant codeBase "file:${catalina.home}/wtpwebapps/ephemere/WEB-INF/classes/-" {
+   permission java.util.PropertyPermission "user.home", "read"; 
+   permission java.util.PropertyPermission "java.fullversion", "read";
+   permission java.io.FilePermission "/home/blu3fish/workspace/ephemere/src/main/resources", "read";
+   permission java.io.FilePermission "/home/blu3fish/workspace/ephemere/src/main/resources/RegisteredUsers", "read, write";
+   permission java.io.FilePermission "/home/blu3fish/workspace/ephemere/src/main/resources/SessionData", "read, write";
+   permission java.io.FilePermission "/home/blu3fish/workspace/ephemere/src/main/resources/EventDatabase", "read, write";
+   permission java.io.FilePermission "/home/blu3fish/workspace/ephemere/src/main/resources/TaskDatabase", "read, write";
+};
+
+// The permissions granted to the context WEB-INF/lib directory, containing db4o jar
+grant codeBase "file:${catalina.home}/wtpwebapps/ephemere/WEB-INF/lib/-" {
+   permission java.io.FilePermission "/home/blu3fish/workspace/ephemere/src/main/resources/RegisteredUsers", "read, write";
+   permission java.io.FilePermission "/home/blu3fish/workspace/ephemere/src/main/resources/SessionData", "read, write";
+   permission java.io.FilePermission "/home/blu3fish/workspace/ephemere/src/main/resources/EventDatabase", "read, write";
+   permission java.io.FilePermission "/home/blu3fish/workspace/ephemere/src/main/resources/TaskDatabase", "read, write";
+};
