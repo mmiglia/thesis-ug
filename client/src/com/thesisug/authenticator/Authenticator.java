@@ -40,6 +40,7 @@ class Authenticator extends AbstractAccountAuthenticator {
 				response);
 		final Bundle bundle = new Bundle();
 		bundle.putParcelable(AccountManager.KEY_INTENT, intent);
+		Log.i(TAG, "returned from Login Activity");
 		return bundle;
 	}
 

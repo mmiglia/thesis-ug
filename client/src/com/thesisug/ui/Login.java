@@ -2,6 +2,7 @@ package com.thesisug.ui;
 
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
+import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -86,7 +87,7 @@ public class Login extends AccountAuthenticatorActivity {
         if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
             message.setText(getMessage());
         } else {
-            showDialog(0); //will call onCreateDialog method
+            showDialog(0); //will call onCreateDialog method            
             authenticationThread = LoginResource.signIn(username, password, handler, Login.this);
         }
     }
@@ -146,13 +147,13 @@ public class Login extends AccountAuthenticatorActivity {
         if (usernameIsEmpty) {
             accountManager.addAccountExplicitly(account, password, null);
             // Set contacts sync for this account.
-            ContentResolver.setSyncAutomatically(account,
-                ContactsContract.AUTHORITY, true);
+           // ContentResolver.setSyncAutomatically(account,
+              //  ContactsContract.AUTHORITY, true);
         } else {
         	//this line has to be there to complete authorization process
             accountManager.setPassword(account, password); 
         }
-        final Intent intent = new Intent();
+        Intent intent = getIntent();
         Log.i(TAG, "after intent");
         intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, com.thesisug.Constants.ACCOUNT_TYPE);
@@ -161,7 +162,8 @@ public class Login extends AccountAuthenticatorActivity {
             }
         setAccountAuthenticatorResult(intent.getExtras());
         Log.i(TAG, "after intent haha");
-        setResult(RESULT_OK, intent);
+        AccountAuthenticatorResponse response = intent.getExtras().getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
+        response.onResult(intent.getExtras());
         Log.i(TAG, "after intent haha222");
         finish();
     }
