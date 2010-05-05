@@ -22,6 +22,10 @@ public class SingleTask extends Reminder {
 	 */
 	public String notifyTimeEnd;
 
+	public SingleTask(){
+		super();
+	}
+	
 	/**
 	 * Basic constructor for the class
 	 * 
@@ -86,6 +90,18 @@ public class SingleTask extends Reminder {
 		this.dueDate = dueDate;
 		this.notifyTimeEnd = "00:00:00" + timezone.format(now);
 		this.notifyTimeEnd = "23:59:59" + timezone.format(now);
-		
+	}
+	
+	public SingleTask copy(){
+		SingleTask newcopy = new SingleTask();
+		newcopy.ID = ID;
+		newcopy.priority = priority;
+		newcopy.description = description;
+		newcopy.title = title;
+		newcopy.type = type;
+		newcopy.dueDate = dueDate;
+		newcopy.notifyTimeStart = notifyTimeStart;
+		newcopy.notifyTimeEnd = notifyTimeEnd;
+		return newcopy;
 	}
 }
