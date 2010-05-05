@@ -28,6 +28,10 @@ public class SingleTask extends Reminder implements Comparable<SingleTask>{
 	 * "09:30:10-06:00"). Default value is "23:59:59"
 	 */
 	public String notifyTimeEnd;
+	
+	private SingleTask(){
+		super();
+	}
 
 	/**
 	 * Basic constructor for the class
