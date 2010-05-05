@@ -2,11 +2,31 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#ffffff">
-    <TextView    
-        android:id="@+id/usernametext"
-        android:layout_width="80dip"
+    android:orientation="vertical">
+    
+    <TextView
+        android:id="@+id/input_label"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dip"
-        android:text="input"/>
-</RelativeLayout>
+        android:paddingBottom="4dip"
+        android:text="@string/input_prompt" />
+    <EditText
+        android:id="@+id/input_text"
+        android:layout_width="fill_parent"
+        android:layout_height="200dip"
+        android:layout_marginRight="15dip"
+        android:layout_below="@id/input_label"
+        android:background="@android:drawable/editbox_background"/>           
+    <Button android:id="@+id/btn_speak"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/input_text" 
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/ic_tab_artists"/>
+        
+    <ListView android:id="@+id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="0dip"
+        android:layout_weight="1" />
+
+ </RelativeLayout>
