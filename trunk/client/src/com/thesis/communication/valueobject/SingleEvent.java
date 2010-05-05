@@ -60,4 +60,17 @@ public class SingleEvent extends Reminder {
 	public void setLocation(float longitude, float latitude){
 		super.setGPS(longitude, latitude);
 	}	
+	
+	public SingleEvent copy(){
+		SingleEvent newcopy = new SingleEvent();
+		newcopy.ID = ID;
+		newcopy.priority = priority;
+		newcopy.description = description;
+		newcopy.title = title;
+		newcopy.type = type;
+		newcopy.startTime = startTime;
+		newcopy.endTime = endTime;
+		newcopy.location = location;
+		return newcopy;
+	}
 }

@@ -22,20 +22,20 @@ public class ParentTab extends TabActivity {
         intent = new Intent().setClass(this, Todo.class);
 
         // Initialize a TabSpec for each tab and add it to the TabHost
-        spec = tabHost.newTabSpec("artists").setIndicator("Artists",
+        spec = tabHost.newTabSpec("Todo").setIndicator("Activities",
                           res.getDrawable(R.drawable.ic_tab_artists))
                       .setContent(intent);
         tabHost.addTab(spec);
 
         // Do the same for the other tabs
         intent = new Intent().setClass(this, Map.class);
-        spec = tabHost.newTabSpec("albums").setIndicator("Albums",
+        spec = tabHost.newTabSpec("Map").setIndicator("Maps",
                           res.getDrawable(R.drawable.ic_tab_artists))
                       .setContent(intent);
         tabHost.addTab(spec);
 
         intent = new Intent().setClass(this, Input.class);
-        spec = tabHost.newTabSpec("songs").setIndicator("Songs",
+        spec = tabHost.newTabSpec("Input").setIndicator("Input",
                           res.getDrawable(R.drawable.ic_tab_artists))
                       .setContent(intent);
         tabHost.addTab(spec);
