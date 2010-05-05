@@ -20,7 +20,7 @@ public class SingleEvent extends Reminder {
 	 * */
 	public String location;
 
-	private SingleEvent(){
+	public SingleEvent(){
 		super();
 	}
 	/**
