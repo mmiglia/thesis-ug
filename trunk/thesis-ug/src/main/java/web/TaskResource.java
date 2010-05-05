@@ -51,7 +51,7 @@ public class TaskResource {
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request to get all tasks from user " + userid + ", session "
 				+ sessionid);
-		return null;
+		return TaskManager.getInstance().retrieveAllTask(userid);
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class TaskResource {
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request to get first important tasks from user " + userid
 				+ ", session " + sessionid);
-		return null;
+		return TaskManager.getInstance().getFirstTasks(userid);
 	}
 
 	@POST

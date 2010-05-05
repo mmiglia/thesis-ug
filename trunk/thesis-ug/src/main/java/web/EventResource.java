@@ -36,7 +36,7 @@ public class EventResource {
 	public void createEvent(@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid, SingleEvent toAdd) {
 		log.info("Request to create event from user " + userid + ", session "+ sessionid);
-		EventManager.getInstance().createEvent(userid, toAdd);
+		EventManager.getInstance().createEvent(userid, toAdd);		
 	}
 		
 	/**
