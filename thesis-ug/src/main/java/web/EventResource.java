@@ -9,6 +9,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,7 +96,7 @@ public class EventResource {
 	@GET
 	@Path("/between")
 	@Produces("application/xml")
-	public List<SingleEvent> getEvent(String DateFrom, String DateTo,
+	public List<SingleEvent> getEvent(@QueryParam("s")String DateFrom, @QueryParam("e")String DateTo,
 			@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request to get events between "+DateFrom+" until "+DateTo+" from user "+userid+" session "+sessionid);

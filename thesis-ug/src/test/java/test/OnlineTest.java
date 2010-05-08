@@ -1,17 +1,15 @@
 package test;
 
+import java.util.ArrayList;
 import java.util.Properties;
 
 import junit.framework.TestCase;
 
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.jboss.resteasy.client.ClientResponse;
-import org.jboss.resteasy.client.ClientResponseFailure;
-import org.jboss.resteasy.client.ProxyFactory;
-import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
-import org.junit.Test;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import businessobject.Configuration;
 
@@ -119,4 +117,14 @@ public class OnlineTest extends TestCase {
 			   System.out.println("yippie");
 		}
 	}*/
+	/* Test of between range of dates
+	 * http://localhost:8080/ephemere/user/event/between/?s=2006-04-17T15:00:00-08:00&e=2012-04-17T15:00:00-08:00
+	 */
+	public void testURL(){
+		log = LoggerFactory.getLogger(OnlineTest.class);
+		ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("s", "564474"));
+		params.add(new BasicNameValuePair("e", "DateTo"));
+		log.info( URLEncodedUtils.format(params, "UTF-8"));
+	}
 }
