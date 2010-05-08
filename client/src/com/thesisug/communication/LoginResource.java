@@ -62,27 +62,27 @@ public class LoginResource{
 	 * @param context activity that calls for authentication
 	 * @return thread running authentication
 	 */
-	public static Thread signIn(final String username,
-	        final String password, final Handler handler, final Context context) {
-	        final Runnable runnable = new Runnable() {
-	            public void run() {
-	            	LoginReply result = Authenticate(username, password);
-	        		if (result.status == 1) {
-	        			if (Log.isLoggable(TAG, Log.VERBOSE)) {
-	        				Log.v(TAG, "Successful authentication");
-	        			}
-	        			sendResult(true, handler, context);
-	        		} else {
-	        			if (Log.isLoggable(TAG, Log.VERBOSE)) {
-	        				Log.v(TAG, "Unsuccessful authentication");
-	        			}
-	        			sendResult(false, handler, context);
-	        		}
-	            }
-	        };
-	        // start authenticating
-	        return NetworkUtilities.startBackgroundThread(runnable);
-	    }
+	public static Thread signIn(final String username, final String password,
+			final Handler handler, final Context context) {
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				LoginReply result = Authenticate(username, password);
+				if (result.status == 1) {
+					if (Log.isLoggable(TAG, Log.VERBOSE)) {
+						Log.v(TAG, "Successful authentication");
+					}
+					sendResult(true, handler, context);
+				} else {
+					if (Log.isLoggable(TAG, Log.VERBOSE)) {
+						Log.v(TAG, "Unsuccessful authentication");
+					}
+					sendResult(false, handler, context);
+				}
+			}
+		};
+		// start authenticating
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
 	    
     /**
      * Sends the authentication response from server back to the caller main UI
