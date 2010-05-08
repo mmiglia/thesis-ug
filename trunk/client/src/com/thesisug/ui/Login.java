@@ -6,12 +6,10 @@ import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -161,10 +159,8 @@ public class Login extends AccountAuthenticatorActivity {
                 intent.putExtra(AccountManager.KEY_AUTHTOKEN, password);
             }
         setAccountAuthenticatorResult(intent.getExtras());
-        Log.i(TAG, "after intent haha");
         AccountAuthenticatorResponse response = intent.getExtras().getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
         response.onResult(intent.getExtras());
-        Log.i(TAG, "after intent haha222");
         finish();
     }
     
