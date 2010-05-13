@@ -17,7 +17,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import com.thesis.communication.valueobject.SingleEvent;
+import com.thesisug.communication.valueobject.SingleEvent;
 import com.thesisug.communication.xmlparser.SingleEventHandler;
 import com.thesisug.ui.Todo;
 

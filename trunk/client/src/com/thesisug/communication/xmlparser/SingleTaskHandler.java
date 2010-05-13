@@ -14,7 +14,7 @@ import android.sax.RootElement;
 import android.util.Log;
 import android.util.Xml;
 
-import com.thesis.communication.valueobject.SingleTask;
+import com.thesisug.communication.valueobject.SingleTask;
 
 public class SingleTaskHandler {
 private static final String TAG = "Single Task Handler";

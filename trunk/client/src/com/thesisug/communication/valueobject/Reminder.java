@@ -1,4 +1,4 @@
-package com.thesis.communication.valueobject;
+package com.thesisug.communication.valueobject;
 
 /**
  * This is the parent class for event and task that has common field for them.

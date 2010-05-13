@@ -16,9 +16,9 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
-import com.thesis.communication.valueobject.SingleEvent;
 import com.thesisug.R;
 import com.thesisug.communication.EventResource;
+import com.thesisug.communication.valueobject.SingleEvent;
 
 public class Todo extends ListActivity {
 	public final static String TAG = "TodoActivity";
