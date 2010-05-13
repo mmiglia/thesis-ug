@@ -2,7 +2,7 @@ package com.thesisug.communication;
 
 import java.util.List;
 
-import com.thesis.communication.valueobject.SingleTask;
+import com.thesisug.communication.valueobject.SingleTask;
 
 public interface TaskResource {
 

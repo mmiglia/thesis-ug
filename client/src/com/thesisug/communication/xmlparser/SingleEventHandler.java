@@ -14,7 +14,7 @@ import android.sax.RootElement;
 import android.util.Log;
 import android.util.Xml;
 
-import com.thesis.communication.valueobject.SingleEvent;
+import com.thesisug.communication.valueobject.SingleEvent;
 
 public class SingleEventHandler {
 private static final String TAG = "Single Event Handler";

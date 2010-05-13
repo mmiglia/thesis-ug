@@ -1,4 +1,4 @@
-package com.thesis.communication.valueobject;
+package com.thesisug.communication.valueobject;
 
 import java.util.UUID;
 

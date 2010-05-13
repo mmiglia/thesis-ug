@@ -10,7 +10,7 @@ import android.sax.RootElement;
 import android.util.Log;
 import android.util.Xml;
 
-import com.thesis.communication.valueobject.LoginReply;
+import com.thesisug.communication.valueobject.LoginReply;
 
 public class LoginReplyHandler {
 	private static final String TAG = "Login Reply Handler";

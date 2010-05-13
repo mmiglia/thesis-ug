@@ -16,7 +16,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import com.thesis.communication.valueobject.LoginReply;
+import com.thesisug.communication.valueobject.LoginReply;
 import com.thesisug.communication.xmlparser.LoginReplyHandler;
 import com.thesisug.ui.Login;
 
