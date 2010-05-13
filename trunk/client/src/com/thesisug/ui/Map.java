@@ -27,10 +27,14 @@ public class Map extends MapActivity{
         MapView mapView = (MapView) findViewById(R.id.mapView);        
         List<Overlay> mapOverlays = mapView.getOverlays();
         MarkerOverlay marker = new MarkerOverlay(this.getResources().getDrawable(R.drawable.androidmarker));
+        MarkerOverlay place = new MarkerOverlay(this.getResources().getDrawable(R.drawable.place));
         GeoPoint point = new GeoPoint(44415692,8927861);
         OverlayItem overlayitem = new OverlayItem(point, "", "");
+        place.addOverlay(new OverlayItem(new GeoPoint(44414194, 8927099), "", ""));
+        place.addOverlay(new OverlayItem(new GeoPoint(44414976, 8925747), "haha", ""));
         marker.addOverlay(overlayitem);
         mapOverlays.add(marker);
+        mapOverlays.add(place);
         mapView.setBuiltInZoomControls(true);
         MapController mc = mapView.getController();
         mc.animateTo(point);

@@ -86,6 +86,9 @@ public class Todo extends ListActivity {
 		for (SingleEvent o : data){
 			tasks.add(createItem(o.title));
 		}
+		tasks.add(createItem ("buy milk"));
+		tasks.add(createItem ("buy train ticket"));
+		tasks.add(createItem("pay rent"));
 		
 		event.add(createItem("Meeting with supervisor", "8:30AM @ lab"));
 		event.add(createItem("Ambient Intelligence", "14:15PM @ E5"));
