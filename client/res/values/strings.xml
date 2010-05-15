@@ -15,6 +15,12 @@
 	<string name="input_prompt">Please input your task or event here</string>
 	<string name="voice_recognition_prompt">This activity demonstrates the voice recognition APIs.</string>
     <string name="speak_button">Speak!</string>
+    <string name="activity_title">Title</string>
+    <string name="from">from</string>
+    <string name="to">to</string>
+    <string name="location">Location</string>
+    <string name="priority">Priority</string>
+    <string name="description">Description</string>
     <string name="text_a">Shall I compare thee to a summer"'"s day?</string>
     <string name="text_b">Thou art more lovely and more temperate.</string>
     <string name="dialog_title">No Localisation</string>
