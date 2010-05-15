@@ -51,10 +51,18 @@ public class Todo extends ListActivity {
 		Log.i(TAG, "position " + Integer.toString(position));
 		Log.i(TAG, "id " + Long.toString(id));
 		LinkedHashMap<String,Reminder> item = (LinkedHashMap<String, Reminder>) (l.getItemAtPosition(position));
-		SingleEvent ev = (SingleEvent) item.get(ITEM_DATA);
-		Log.i(TAG,"ev "+ ev.title);
-		Intent intent = new Intent("com.thesisug.SHOW_ACTIVITY");
-		intent.putExtra("event_title", ev.title);
+		String title ;
+		Intent intent;
+		if (item.get(ITEM_DATA) instanceof SingleEvent){
+			title = ((SingleEvent) item.get(ITEM_DATA)).title;
+			intent = new Intent("com.thesisug.SHOW_EVENT");
+			}
+		else {
+			intent = new Intent("com.thesisug.SHOW_ACTIVITY");
+			title = ((SingleTask) item.get(ITEM_DATA)).title;
+		}
+		Log.i(TAG, title);
+		intent.putExtra("event_title", title);
         startActivity(intent);
 	}
 
@@ -87,13 +95,15 @@ public class Todo extends ListActivity {
 		for (SingleEvent o : data){
 			event.add(createItem(o));
 		}
-
+		tasks.add(createItem(new SingleTask("hanya", "2309", "di situ")));
+		
 		// create our list and custom adapter
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);
 		
-//		SimpleAdapter taskAdapter = new SimpleAdapter(this, tasks, R.layout.list_item,
-//				new String[] { ITEM_DATA }, new int[] { R.id.list_simple_title });
-//		adapter.addSection("Gotta do these dude !!", taskAdapter);
+		SimpleAdapter taskAdapter = new SimpleAdapter(this, tasks, R.layout.list_item,
+		new String[] { ITEM_DATA }, new int[] { R.id.list_simple_title });
+		taskAdapter.setViewBinder(new TaskBinder());
+		adapter.addSection("Gotta do these dude !!", taskAdapter);
 		
 		SimpleAdapter eventAdapter = new SimpleAdapter(this, event, R.layout.list_complex,
 				new String[] { ITEM_DATA, ITEM_DATA }, new int[] { R.id.list_complex_title, R.id.list_complex_caption });
