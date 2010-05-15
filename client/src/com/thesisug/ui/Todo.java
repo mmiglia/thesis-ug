@@ -100,12 +100,12 @@ public class Todo extends ListActivity {
 		// create our list and custom adapter
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);
 		
-		SimpleAdapter taskAdapter = new SimpleAdapter(this, tasks, R.layout.list_item,
+		SimpleAdapter taskAdapter = new SimpleAdapter(this, tasks, R.layout.todo_task,
 		new String[] { ITEM_DATA }, new int[] { R.id.list_simple_title });
 		taskAdapter.setViewBinder(new TaskBinder());
 		adapter.addSection("Gotta do these dude !!", taskAdapter);
 		
-		SimpleAdapter eventAdapter = new SimpleAdapter(this, event, R.layout.list_complex,
+		SimpleAdapter eventAdapter = new SimpleAdapter(this, event, R.layout.todo_event,
 				new String[] { ITEM_DATA, ITEM_DATA }, new int[] { R.id.list_complex_title, R.id.list_complex_caption });
 		adapter.addSection("Today, your appointments are", eventAdapter);
 		eventAdapter.setViewBinder(new EventBinder());
