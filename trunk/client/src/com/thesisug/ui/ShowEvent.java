@@ -1,10 +1,10 @@
 package com.thesisug.ui;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -90,7 +90,6 @@ public class ShowEvent extends Activity{
 		case DELETE:
 			showDialog(0);
 			break;
-			
 		default:
 			finish();
 			break;
@@ -122,16 +121,20 @@ public class ShowEvent extends Activity{
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		if (id == 0) {
-			final ProgressDialog dialog = new ProgressDialog(this);
-			dialog.setMessage(getText(R.string.retrieving_event));
-			dialog.setIndeterminate(true);
-			dialog.setCancelable(true);
-			dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-				public void onCancel(DialogInterface dialog) {
-					Log.i(TAG, "Retrieving data is canceled");
-				}
-			});
-			return dialog;
+			return new AlertDialog.Builder(ShowEvent.this)
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .setTitle(R.string.ask_for_deletion)
+            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                	//put code to dispatch delete thread here
+                }
+            })
+            .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                	dismissDialog(0);
+                }
+            })
+            .create();
 		}
 		final ProgressDialog dialog = new ProgressDialog(this);
 		dialog.setCancelable(true);

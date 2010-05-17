@@ -103,7 +103,8 @@ public class Todo extends ListActivity {
 		for (SingleEvent o : data){
 			event.add(createItem(o));
 		}
-		tasks.add(createItem(new SingleTask("hanya", "2309", "di situ")));
+		tasks.add(createItem(new SingleTask("buy milk", "2309", "around Genoa")));
+		tasks.add(createItem(new SingleTask("buy train ticket", "2309", "Principe FS")));
 		
 		// create our list and custom adapter
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);

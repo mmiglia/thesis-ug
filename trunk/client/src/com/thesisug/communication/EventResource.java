@@ -90,6 +90,17 @@ public static Thread getAllEvent(final String username, final String sessionid,
 	return NetworkUtilities.startBackgroundThread(runnable);
 }
 
+public static Thread updateEvent(final String username, final String sessionid,
+		final Handler handler, final Context context) {
+	final Runnable runnable = new Runnable() {
+		public void run() {
+			List<SingleEvent> result = getAllEvents(username, sessionid);			
+			sendResult(result, handler, context);
+		}
+	};
+	// start authenticating
+	return NetworkUtilities.startBackgroundThread(runnable);
+}
 /**
  * Sends the authentication response from server back to the caller main UI
  * thread through its handler.
