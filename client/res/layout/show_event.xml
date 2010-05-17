@@ -23,9 +23,9 @@
         	android:layout_marginTop="15dip"
 			android:layout_alignParentRight="true"/>
         <TextView
+        	android:id="@+id/event_title"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-			android:text="pergi bersama"
 			android:layout_below="@id/title_text"
         	android:textAppearance="?android:attr/textAppearanceSmall"
             android:padding="3dip" />
@@ -54,9 +54,9 @@
         	android:layout_marginTop="15dip"
 			android:layout_alignParentRight="true"/>
         <TextView
+        	android:id="@+id/event_location"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-			android:text="Ambarawa"
 			android:layout_below="@id/location_text"
         	android:textAppearance="?android:attr/textAppearanceSmall"
             android:padding="3dip" />
@@ -85,7 +85,7 @@
         	android:layout_marginTop="25dip"
 			android:layout_alignParentRight="true"/>
         <TextView
-        	android:id="@+id/from_text"
+        	android:id="@+id/event_from"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
 			android:text="from : Sat, 6 April 2010 @ 21:45 PM"
@@ -94,11 +94,11 @@
             android:paddingTop="3dip" 
             android:paddingLeft="3dip"/>
         <TextView
-        	android:id="@+id/to_text"
+        	android:id="@+id/event_to"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
 			android:text="until  : Sat, 6 April 2010 @ 23:45 PM"
-			android:layout_below="@id/from_text"
+			android:layout_below="@id/event_from"
         	android:textAppearance="?android:attr/textAppearanceSmall"
             android:paddingLeft="3dip"
             android:paddingBottom="3dip" />
@@ -134,8 +134,9 @@
             android:layout_below="@id/priority_text"
         	android:textAppearance="?android:attr/textAppearanceSmall"
             android:padding="3dip"/>
-		<RatingBar android:id="@+id/small_ratingbar"
+		<RatingBar android:id="@+id/priority_bar"
             style="?android:attr/ratingBarStyleSmall"
+            android:numStars="5"
 			android:layout_toRightOf="@id/priority_value"
 			android:layout_below="@id/priority_text"
             android:layout_width="wrap_content"
@@ -167,9 +168,9 @@
         	android:layout_marginTop="15dip"
 			android:layout_alignParentRight="true"/>
         <TextView
+        	android:id="@+id/event_description"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-			android:text="ambil uang dari bank lalu ke belakang"
 			android:layout_below="@id/description_text"
         	android:textAppearance="?android:attr/textAppearanceSmall"
             android:padding="3dip" />

@@ -71,9 +71,9 @@ public abstract class Reminder {
 	 * the class specifying latitude and longitude position
 	 *
 	 */
-	protected static class GPSLocation{
-		float latitude;
-		float longitude;
+	public static class GPSLocation{
+		public float latitude;
+		public float longitude;
 	}
 	
 	@Override

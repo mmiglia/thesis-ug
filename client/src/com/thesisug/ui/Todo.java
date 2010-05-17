@@ -51,18 +51,26 @@ public class Todo extends ListActivity {
 		Log.i(TAG, "position " + Integer.toString(position));
 		Log.i(TAG, "id " + Long.toString(id));
 		LinkedHashMap<String,Reminder> item = (LinkedHashMap<String, Reminder>) (l.getItemAtPosition(position));
-		String title ;
 		Intent intent;
 		if (item.get(ITEM_DATA) instanceof SingleEvent){
-			title = ((SingleEvent) item.get(ITEM_DATA)).title;
+			SingleEvent ev = (SingleEvent) item.get(ITEM_DATA);
 			intent = new Intent("com.thesisug.SHOW_EVENT");
+			intent.putExtra("title", ev.title);
+			intent.putExtra("location", ev.location);
+			intent.putExtra("startTime", ev.startTime);
+			intent.putExtra("endTime", ev.startTime);
+			intent.putExtra("priority", ev.priority);
+			intent.putExtra("description", ev.description);
+			intent.putExtra("id", ev.ID);
+			if (ev.gpscoordinate != null){
+				intent.putExtra("longitude", ev.gpscoordinate.longitude);
+				intent.putExtra("latitude", ev.gpscoordinate.latitude);
 			}
+		}
 		else {
 			intent = new Intent("com.thesisug.SHOW_ACTIVITY");
-			title = ((SingleTask) item.get(ITEM_DATA)).title;
+			//title = ((SingleTask) item.get(ITEM_DATA)).title;
 		}
-		Log.i(TAG, title);
-		intent.putExtra("event_title", title);
         startActivity(intent);
 	}
 
