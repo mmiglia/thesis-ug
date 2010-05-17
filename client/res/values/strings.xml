@@ -35,6 +35,10 @@
     <string name="October">October</string>
     <string name="November">November</string>
     <string name="December">December</string>
+    <string name="ask_for_deletion">Are you sure you want to remove this event ?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    
     <string name="text_a">Shall I compare thee to a summer"'"s day?</string>
     <string name="text_b">Thou art more lovely and more temperate.</string>
     <string name="dialog_title">No Localisation</string>
