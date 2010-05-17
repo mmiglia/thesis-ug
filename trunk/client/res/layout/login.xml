@@ -34,6 +34,7 @@
         android:layout_marginRight="15dip"
         android:layout_toRightOf="@id/usernametext"
         android:layout_alignBaseline="@id/usernametext"
+        android:singleLine="true"
         android:maxLines="1"
         android:background="@android:drawable/editbox_background"/>        
 
@@ -51,6 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="15dip"
         android:maxLines="1"
+        android:singleLine="true"
         android:password="true"
         android:background="@android:drawable/editbox_background"
         android:layout_toRightOf="@id/passwordtext"

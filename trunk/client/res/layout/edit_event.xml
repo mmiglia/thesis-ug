@@ -1,102 +1,207 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:paddingBottom="15dip"
-    android:paddingLeft="5dip"
-    android:paddingRight="5dip">
-    <TextView    
-        android:id="@+id/title_text"
-        android:layout_width="60dip"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dip"
-        android:text="@string/activity_title"/>
-    <EditText
-        android:id="@+id/event_title"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/title_text"
-        android:layout_alignBaseline="@id/title_text"
-        android:maxLines="1"
-        android:background="@android:drawable/editbox_background"/>
-        
-    <TextView    
-        android:id="@+id/from_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-		android:layout_marginTop="15dip"
-        android:layout_below="@id/title_text"
-        android:text="@string/from"/>
-     <Button
-        android:id="@+id/date_from"
-        android:layout_width="60dip"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/from_text"
-        android:layout_alignBaseline="@id/from_text"        
- 		android:layout_alignLeft="@id/event_title"
-        android:layout_centerHorizontal="true"
-        android:background="@android:drawable/btn_default_small"/>
-     <Button
-        android:id="@+id/time_from"
-        android:layout_width="40dip"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/date_from"
-        android:layout_alignBaseline="@id/date_from"
-        android:background="@android:drawable/btn_default_small"/>
-    <TextView    
-        android:id="@+id/to_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="15dip"
-        android:layout_toRightOf="@id/time_from"
-        android:layout_alignBaseline="@id/time_from"
-        android:text="@string/to"/>
-     <Button
-        android:id="@+id/date_to"
-        android:layout_width="60dip"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/to_text"
-        android:layout_alignBaseline="@id/to_text"
-        android:background="@android:drawable/btn_default_small"/>
-     <Button
-        android:id="@+id/time_to"
-        android:layout_width="40dip"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/date_to"
-        android:layout_alignBaseline="@id/date_to"
-        android:background="@android:drawable/btn_default_small"/>
-
-    <TextView    
-        android:id="@+id/location_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-		android:layout_marginTop="15dip"
-        android:layout_below="@id/from_text"
-        android:text="@string/location"/>
-     <EditText
-        android:id="@+id/location"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/location_text"
- 		android:layout_alignLeft="@id/event_title"
-        android:layout_alignBaseline="@id/location_text"
-        android:maxLines="1"
-        android:background="@android:drawable/editbox_background"/>
-     
-    <TextView    
-        android:id="@+id/priority_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-		android:layout_marginTop="15dip"
-        android:layout_below="@id/location_text"
-        android:text="@string/priority"/>
-        
-    <TextView    
-        android:id="@+id/description_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-		android:layout_marginTop="15dip"
-        android:layout_below="@id/priority_text"
-        android:text="@string/description"/>
+    android:stretchColumns="1">
+    <ScrollView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1">
+    <TableLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:stretchColumns="1">
+    <LinearLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:padding="10dip">
+    	 <TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:id="@+id/title_text"
+            android:text="Title"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingBottom="3dip" />
+	    <EditText
+        	android:id="@+id/event_title"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+        	android:textAppearance="?android:attr/textAppearanceLarge"
+        	android:maxLines="1"
+        	android:singleLine="true"
+        	android:background="@android:drawable/edit_text"/>
+    </LinearLayout>
     
-</RelativeLayout>
+    <View
+        android:layout_height="1dip"
+        android:background="#FF333333" />
+    
+    <RelativeLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="5dip">
+    	<TextView    
+        	android:id="@+id/when_text"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingBottom="10dip"
+        	android:text="@string/when"/>     	
+    	<TextView    
+        	android:id="@+id/from_text"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_below="@id/when_text"
+        	android:textColor="#FFAAAAAA"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+        	android:text="@string/from"/>
+     	<Button
+        	android:id="@+id/date_from"
+        	android:layout_width="180dip"
+        	android:layout_height="wrap_content"
+        	android:text="30 September 2010"
+        	android:textAppearance="?android:attr/textAppearanceSmall"
+        	android:layout_toRightOf="@id/from_text"
+        	android:layout_alignBaseline="@id/from_text"/>
+     	<Button
+        	android:id="@+id/time_from"
+        	android:layout_width="90dip"
+        	android:layout_height="wrap_content"
+        	android:text="15:54 PM"
+        	android:textAppearance="?android:attr/textAppearanceSmall"
+        	android:layout_toRightOf="@id/date_from"
+        	android:layout_alignBaseline="@id/date_from"/>
+    	<TextView    
+        	android:id="@+id/to_text"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:textAppearance="?android:attr/textAppearanceMedium"
+        	android:layout_below="@id/date_from"
+        	android:textColor="#FFAAAAAA"
+        	android:paddingTop="40dip"
+            android:paddingBottom="20dip"
+        	android:text="@string/until"/>
+     	<Button
+        	android:id="@+id/date_to"
+        	android:text="30 December 2010"
+        	android:textAppearance="?android:attr/textAppearanceSmall"
+        	android:layout_width="180dip"
+        	android:layout_height="wrap_content"
+        	android:layout_alignLeft="@id/date_from"
+        	android:layout_alignBaseline="@id/to_text"/>
+     	<Button
+        	android:id="@+id/time_to"
+        	android:text="12:57 PM"
+        	android:textAppearance="?android:attr/textAppearanceSmall"
+        	android:layout_width="90dip"
+        	android:layout_height="wrap_content"
+        	android:layout_alignLeft="@id/time_from"
+        	android:layout_alignBaseline="@id/date_to"/>
+	 </RelativeLayout>
+    
+    <View
+        android:layout_height="1dip"
+        android:background="#FF333333" />
+        
+	<RelativeLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+    	<TextView    
+        	android:id="@+id/location_text"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+    		android:textAppearance="?android:attr/textAppearanceLarge"
+    		android:padding="3dip"
+        	android:text="@string/location"/>
+     	<EditText
+        	android:id="@+id/event_location"
+        	android:layout_width="250dip"
+        	android:layout_height="wrap_content"
+            android:layout_below="@id/location_text"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+        	android:maxLines="1"
+        	android:singleLine="true"/>
+       	<Button
+       		android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:text="@string/GPS" 
+        	android:layout_alignParentRight="true"
+        	android:layout_toRightOf="@id/event_location"
+        	android:layout_alignTop="@id/event_location"/>
+     </RelativeLayout>
+       
+     <View
+        android:layout_height="1dip"
+        android:background="#FF333333" />
+        
+     <LinearLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+    	<TextView    
+        	android:id="@+id/priority"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceLarge"
+        	android:text="@string/priority"/>
+ 		<RatingBar android:id="@+id/event_priority"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:stepSize="1"
+        	android:numStars="5" />
+    </LinearLayout>
+    
+    <View
+        android:layout_height="1dip"
+        android:background="#FF333333" />
+        
+     <LinearLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+    	<TextView    
+        	android:id="@+id/description_text"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+        	android:text="@string/description"/>
+       	<EditText
+        	android:id="@+id/event_description"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+    </LinearLayout>
+    </TableLayout>
+</ScrollView>
+	<LinearLayout 
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content" 
+		android:orientation="horizontal"
+		android:background="#FFCCCCCC">
+		<Button 
+			android:id="@+id/save_button"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent" 
+			android:layout_weight="1"
+			android:text="Save" 
+			android:layout_margin="3dip"/>
+		<Button 
+			android:id="@+id/back_button"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent" 
+			android:layout_weight="1"
+			android:text="Back" 
+			android:layout_margin="3dip"/>
+	</LinearLayout>
+
+</TableLayout>
