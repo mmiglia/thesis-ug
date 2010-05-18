@@ -157,16 +157,13 @@ public class EventManager extends Publisher<EventSubscriber> {
 	 * 
 	 * @param userid
 	 *            unique UUID of the user
-	 * @param oldEvent
-	 *            old event object to be replaced
 	 * @param newEvent
 	 *            the new event object
 	 * @return false if unsuccessful, 1 if successful
 	 */
-	public boolean updateEvent(String userid, SingleEvent oldEvent,
-			SingleEvent newEvent) {		
-		for (EventSubscriber o : subscriberlist) o.updateEvent(userid, oldEvent, newEvent);
-		EventDatabase.instance.updateEvent(oldEvent.ID, newEvent);
+	public boolean updateEvent(String userid, SingleEvent newEvent) {		
+		for (EventSubscriber o : subscriberlist) o.updateEvent(userid, newEvent);
+		EventDatabase.instance.updateEvent(newEvent.ID, newEvent);
 		return true;
 	}
 	

@@ -43,7 +43,7 @@ public class OfflineTest extends TestCase{
 			System.setProperty("https.proxyPort", CONSTANTS
 					.getProperty("HTTPS_PORT"));
 	}
-
+/*
 	@Test
 	public void testaddUser() {
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
@@ -60,17 +60,17 @@ public class OfflineTest extends TestCase{
 		log.info("Login status is " + result.status + ", session id = "
 				+ result.session);
 		assertNotNull(result);
-	}
-
+	}*/
+/*
 	@Test
 	public void testaddEvent() {
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
 		log.info("Trying to add event to the database");
 		EventManager manager = EventManager.getInstance();
 		manager.Authenticate("user", "dummy"); // need to call this
-		boolean result = manager.createEvents("user", "dummy",
-				"2010-04-19T17:00:00-08:00", "2010-04-19T17:30:00-08:00",
-				"School", "haiya");
+		boolean result = manager.createEvents("user", "Liz Birthday",
+				"2010-05-18T08:00:00-08:00", "2010-05-18T09:00:00-08:00",
+				"her apartment", "prepare some presents");
 		assertEquals(true, result);
 	}
 
@@ -97,20 +97,20 @@ public class OfflineTest extends TestCase{
 			log.info(o.title);
 		assertNotNull(result);
 	}
-
+*/	
 	@Test
 	public void testaddTasks(){
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
 		log.info("Trying to add task to the database");
 		TaskManager manager = TaskManager.getInstance();
-		boolean result = manager.createTask("user", "jogging",
+		boolean result = manager.createTask("user", "buy train ticket",
 				"09:30:10-06:00", "14:30:10-06:00",
-				"2010-05-19T17:30:00-08:00", "around Genoa", 5);// need to call
+				"2010-05-18T17:30:00-08:00", "Stazione Principe", 2);// need to call
 																// this
 		assertNotNull(result);
 	}
 
-	@Test
+/*	@Test
 	public void testgetFirstTasks() {
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
 		log.info("Getting most important tasks");
@@ -119,7 +119,7 @@ public class OfflineTest extends TestCase{
 		for (SingleTask o : result) log.info (o.title);
 		assertNotNull (result);
 	}
-
+*/
 	/*
 	 * public void testDate() throws Exception { Logger log =
 	 * LoggerFactory.getLogger(ClientTest.class); CalendarClient haha = new
