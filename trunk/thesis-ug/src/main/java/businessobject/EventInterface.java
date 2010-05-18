@@ -50,11 +50,10 @@ public interface EventInterface {
 	/**
 	 * Update the event by a given UUID to a new one
 	 * @param userid unique UUID of the user
-	 * @param oldEvent old event object to be replaced
 	 * @param newEvent the new event object
 	 * @return false if unsuccessful, 1 if successful
 	 */
-	public boolean updateEvent(String userid, SingleEvent oldEvent, SingleEvent newEvent);
+	public boolean updateEvent(String userid, SingleEvent newEvent);
 
 	/**
 	 * retrieve all events from this user Calendar

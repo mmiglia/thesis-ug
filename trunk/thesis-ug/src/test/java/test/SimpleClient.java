@@ -43,7 +43,7 @@ public interface SimpleClient {
 	
 	@POST
 	@Path("{username}/event/update")
-	public void updateEvent(@PathParam("username") String userid, @CookieParam("sessionid") String sessionid, SingleEvent oldEvent, SingleEvent newEvent);
+	public void updateEvent(@PathParam("username") String userid, @CookieParam("sessionid") String sessionid, SingleEvent newEvent);
 	
 	@POST
 	@Path("{username}/event/erase")
@@ -69,6 +69,6 @@ public interface SimpleClient {
 
 	@POST
 	@Path("{username}/task/update")
-	public void updateTasks(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid, SingleTask oldTask, SingleTask newTask);
+	public void updateTasks(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid, SingleTask newTask);
 
 }

@@ -107,9 +107,9 @@ public class EventResource {
 	@Path("update")
 	@Consumes("application/xml")
 	public void updateEvent(@PathParam("username") String userid,
-			@CookieParam("sessionid") String sessionid, SingleEvent oldEvent, SingleEvent newEvent) {
+			@CookieParam("sessionid") String sessionid, SingleEvent newEvent) {
 		log.info("Request to update event from user " + userid + ", session " + sessionid);
-		EventManager.getInstance().updateEvent(userid, oldEvent, newEvent);
+		EventManager.getInstance().updateEvent(userid, newEvent);
 	}
 	
 	/**

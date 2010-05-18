@@ -149,6 +149,7 @@ public class CalendarClient extends EventSubscriber {
 	@Override
 	public List<SingleEvent> retrieveAllEvents(String userid) {
 		CalendarEventFeed myEvents;
+		DateTime haha = new DateTime();
 		try {
 			myEvents = myCalendar.getFeed(new URL("http://www.google.com/calendar/feeds/"
 						+ username + "@gmail.com/private/full"), CalendarEventFeed.class);
@@ -198,11 +199,10 @@ public class CalendarClient extends EventSubscriber {
 	}
 
 	@Override
-	public boolean updateEvent(String userid, SingleEvent oldEvent,
-			SingleEvent newEvent) {
+	public boolean updateEvent(String userid, SingleEvent newEvent) {
 		try {
 			String URItoUpdate = CalendarEventEntryDatabase.instance
-					.getCalendarEntry(userid, oldEvent.ID);
+					.getCalendarEntry(userid, newEvent.ID);
 			if (URItoUpdate == null)
 				return false;
 			CalendarEventEntry toUpdate = myCalendar.getEntry(new URL(
@@ -218,7 +218,7 @@ public class CalendarClient extends EventSubscriber {
 
 			// Delete-add the object in local database
 			CalendarEventEntryDatabase.instance
-					.deleteEntry(userid, oldEvent.ID);
+					.deleteEntry(userid, newEvent.ID);
 			CalendarEventEntryDatabase.instance.addEntry(userid, newEvent.ID,
 					updatedEntry.getEditLink().getHref());
 

@@ -33,6 +33,7 @@ public abstract class Reminder {
 	public GPSLocation gpscoordinate;
 	
 	protected Reminder(){		
+		gpscoordinate = new GPSLocation();
 	}
 	/**
 	 * Constructor for this class
@@ -49,6 +50,7 @@ public abstract class Reminder {
 		this.priority = priority;
 		this.description = description;
 		this.type = type;
+		gpscoordinate = new GPSLocation();
 	}
 	
 	/**
@@ -73,9 +75,9 @@ public abstract class Reminder {
 	 * the class specifying latitude and longitude position
 	 *
 	 */
-	protected static class GPSLocation{
-		float latitude;
-		float longitude;
+	public static class GPSLocation{
+		public float latitude = 0.0f;
+		public float longitude = 0.0f;
 	}
 	
 	@Override
