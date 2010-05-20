@@ -129,7 +129,7 @@ public class OnlineTest extends TestCase {
 	public void testUpdateEvent() {
 		SimpleClient client = ProxyFactory.create(SimpleClient.class,
 				"http://localhost:8080/ephemere");
-		SingleEvent newEvent = new SingleEvent("Mee titee emang enak", "2010-05-18T08:00:00-08:00", "2010-05-18T09:00:00-08:00", "her apartment", "niente");
+		SingleEvent newEvent = new SingleEvent("Thank you Jesus", "2010-01-03T08:00:00-08:00", "2010-05-22T09:00:00-08:00", "her apartment", "niente");
 		newEvent.ID="165804e0-6972-41e6-a87a-1154b307d19c";
 		client.updateEvent("user", "cookie", newEvent);
 		
