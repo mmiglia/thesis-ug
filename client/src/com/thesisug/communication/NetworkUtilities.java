@@ -3,11 +3,14 @@ package com.thesisug.communication;
 import java.io.IOException;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.ProtocolVersion;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHttpResponse;
+import org.apache.http.message.BasicStatusLine;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
@@ -41,7 +44,8 @@ public class NetworkUtilities {
 		} catch (IOException e) {
 			Log.i(TAG, "IOException catched");
 			e.printStackTrace();
-			return response;
+			//return SERVER NOT FOUND status if there's error during connection
+			return new BasicHttpResponse(new ProtocolVersion("1.1", 0 , 0), 404,"");
 		} finally {
 			Log.i(TAG, "finally");
 		}

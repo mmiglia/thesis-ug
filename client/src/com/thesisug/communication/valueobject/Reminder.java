@@ -30,7 +30,8 @@ public abstract class Reminder {
 	 */
 	public GPSLocation gpscoordinate;
 	
-	protected Reminder(){		
+	protected Reminder(){
+		gpscoordinate = new GPSLocation();
 	}
 	/**
 	 * Constructor for this class
@@ -42,6 +43,7 @@ public abstract class Reminder {
 	 */
 	public Reminder(String ID, String title, int priority, String description,
 			int type) {
+		gpscoordinate = new GPSLocation();
 		this.ID = ID;
 		this.title = title;
 		this.priority = priority;

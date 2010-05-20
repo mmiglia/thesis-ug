@@ -10,18 +10,23 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.thesisug.R;
+import com.thesisug.communication.EventResource;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 
 public class ShowEvent extends Activity{
 	private static final String TAG ="ShowEvent";
+	private static final int ASK_CONFIRMATION = 1;
+	private static final int WAIT_DELETION = 2;
 	private static final int EDIT = 1;
 	private static final int DELETE = 2;
 	private static final int BACK = 3;
@@ -30,6 +35,7 @@ public class ShowEvent extends Activity{
 	private RatingBar priority;
 	private Calendar from, to;
 	private static final XsDateTimeFormat xs_DateTime = new XsDateTimeFormat();
+	private final Handler handler = new Handler();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -78,17 +84,24 @@ public class ShowEvent extends Activity{
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case EDIT:
+			// need to recreate intent to solve the case when user 
+			// goes back and forth between edit-show
 			Intent intent = new Intent(("com.thesisug.EDIT_EVENT"));
+			intent.putExtra("username", packet.getString("username"));
+			intent.putExtra("session", packet.getString("session"));
+			intent.putExtra("id", packet.getString("id"));
 			intent.putExtra("title", title.getText().toString());
 			intent.putExtra("location", location.getText().toString());
 			intent.putExtra("startTime", new XsDateTimeFormat().format(from));
 			intent.putExtra("endTime", new XsDateTimeFormat().format(to));
 			intent.putExtra("priority", Math.round(priority.getRating()));
 			intent.putExtra("description", description.getText().toString());
+			//intent.putExtra("longitude", ev.gpscoordinate.longitude);
+			//intent.putExtra("latitude", ev.gpscoordinate.latitude);
 			startActivityForResult(intent, 0);
 			break;			
 		case DELETE:
-			showDialog(0);
+			showDialog(ASK_CONFIRMATION);
 			break;
 		default:
 			finish();
@@ -120,28 +133,38 @@ public class ShowEvent extends Activity{
 	
 	@Override
 	protected Dialog onCreateDialog(int id) {
-		if (id == 0) {
+		switch(id){
+		case ASK_CONFIRMATION :
 			return new AlertDialog.Builder(ShowEvent.this)
             .setIcon(android.R.drawable.ic_dialog_alert)
             .setTitle(R.string.ask_for_deletion)
             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                	//put code to dispatch delete thread here
+                	Thread deleteThread = EventResource.removeEvent(packet.getString("username"), packet.getString("session"), packet.getString("id"), handler, ShowEvent.this);
+                	showDialog(WAIT_DELETION);
                 }
             })
             .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                	dismissDialog(0);
+                public void onClick(DialogInterface dialog, int whichButton) {                	
                 }
             })
-            .create();
+            .create(); 
+		case WAIT_DELETION:
+			final ProgressDialog dialog = new ProgressDialog(this);
+			dialog.setCancelable(true);
+			dialog.setMessage(getText(R.string.deleting));
+			return dialog;
+		default : return new ProgressDialog(this);
 		}
-		final ProgressDialog dialog = new ProgressDialog(this);
-		dialog.setCancelable(true);
-		return dialog;
 	}
 	
 	private String printCalendar(Calendar cal){
 		return cal.getTime().toLocaleString(); 
+	}
+	
+	public void finishDeletion(boolean success){
+		dismissDialog(WAIT_DELETION);
+		if (!success) Toast.makeText(ShowEvent.this, R.string.deletion_error,
+                Toast.LENGTH_LONG).show();
 	}
 }

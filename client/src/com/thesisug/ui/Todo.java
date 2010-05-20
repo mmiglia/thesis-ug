@@ -4,6 +4,8 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
@@ -26,23 +28,37 @@ import com.thesisug.communication.valueobject.SingleTask;
 
 public class Todo extends ListActivity {
 	public final static String TAG = "TodoActivity";
+	
 	public final static String ITEM_DATA = "data";
 	private Thread downloadThread;
+	private String username, session;
+	private AccountManager accountManager;
+	private Account[] accounts;
 	private final Handler handler = new Handler();
-	private final List<LinkedHashMap<String,?>> event = new LinkedList<LinkedHashMap<String,?>>();
-	private final List<LinkedHashMap<String,?>> tasks = new LinkedList<LinkedHashMap<String,?>>();
-	
-	private LinkedHashMap<String,?> createItem(Reminder reminder) {
-		LinkedHashMap<String,Reminder> item = new LinkedHashMap<String,Reminder>();
-		item.put(ITEM_DATA, reminder);
-		return item;
-	}
+	private static List<LinkedHashMap<String,?>> event = new LinkedList<LinkedHashMap<String,?>>();
+	private static List<LinkedHashMap<String,?>> tasks = new LinkedList<LinkedHashMap<String,?>>();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		showDialog(0);
-		downloadThread = EventResource.getAllEvent("user", "", handler, this);
+        accountManager = AccountManager.get(getApplicationContext());
+        accounts = accountManager.getAccountsByType(com.thesisug.Constants.ACCOUNT_TYPE);
+        if (accounts.length == 0) {
+        	dismissDialog(0);
+        	Intent login = new Intent(getApplicationContext(),Login.class);
+        	startActivityForResult(login, LOGIN_SCREEN);
+        } else {
+        	session = accountManager.blockingGetAuthToken(accounts[0],com.thesisug.Constants.ACCOUNT_TYPE, true);
+        	username = accounts[0].name;
+    		downloadThread = EventResource.getAllEvent(username, session, handler, this);
+        }
+	}
+	
+	private LinkedHashMap<String,?> createItem(Reminder reminder) {
+		LinkedHashMap<String,Reminder> item = new LinkedHashMap<String,Reminder>();
+		item.put(ITEM_DATA, reminder);
+		return item;
 	}
 
 	@Override
@@ -55,23 +71,23 @@ public class Todo extends ListActivity {
 		if (item.get(ITEM_DATA) instanceof SingleEvent){
 			SingleEvent ev = (SingleEvent) item.get(ITEM_DATA);
 			intent = new Intent("com.thesisug.SHOW_EVENT");
+			intent.putExtra("username", username);
+			intent.putExtra("session", session);
 			intent.putExtra("title", ev.title);
 			intent.putExtra("location", ev.location);
 			intent.putExtra("startTime", ev.startTime);
-			intent.putExtra("endTime", ev.startTime);
+			intent.putExtra("endTime", ev.endTime);
 			intent.putExtra("priority", ev.priority);
 			intent.putExtra("description", ev.description);
 			intent.putExtra("id", ev.ID);
-			if (ev.gpscoordinate != null){
-				intent.putExtra("longitude", ev.gpscoordinate.longitude);
-				intent.putExtra("latitude", ev.gpscoordinate.latitude);
-			}
+			intent.putExtra("longitude", ev.gpscoordinate.longitude);
+			intent.putExtra("latitude", ev.gpscoordinate.latitude);
 		}
 		else {
 			intent = new Intent("com.thesisug.SHOW_ACTIVITY");
 			//title = ((SingleTask) item.get(ITEM_DATA)).title;
 		}
-        startActivity(intent);
+        startActivityForResult(intent, 0);
 	}
 
 	@Override
@@ -88,14 +104,19 @@ public class Todo extends ListActivity {
 			});
 			return dialog;
 		}
-		if (id == 1) {
-			final ProgressDialog dialog = new ProgressDialog(this);
-			dialog.setCancelable(true);
-			return dialog;
-		}
+	
 		final ProgressDialog dialog = new ProgressDialog(this);
 		dialog.setCancelable(true);
 		return dialog;
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent){
+		showDialog(0);
+		event = new LinkedList<LinkedHashMap<String,?>>();
+		tasks = new LinkedList<LinkedHashMap<String,?>>();
+		// refresh content from server
+		downloadThread = EventResource.getAllEvent(username, session, handler, this);
 	}
 	
 	public void afterDataLoaded(List<SingleEvent> data){
