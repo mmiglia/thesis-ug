@@ -6,9 +6,11 @@ import java.util.Calendar;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -17,8 +19,11 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RatingBar;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.thesisug.R;
+import com.thesisug.communication.EventResource;
+import com.thesisug.communication.valueobject.SingleEvent;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 
 public class EditEvent extends Activity {
@@ -27,10 +32,12 @@ public class EditEvent extends Activity {
 	private static final int DATEFROM_DIALOG_ID = 1;
 	private static final int TIMETO_DIALOG_ID = 2;
 	private static final int DATETO_DIALOG_ID = 3;
+    private static final int SAVE_DATA_ID = 4;
     
 	// date and time
     private Calendar from, to;
     
+    private final Handler handler = new Handler();
     // button
     private Button dateFrom, timeFrom, dateTo, timeTo, save, back;
     private EditText title, location, description;
@@ -38,7 +45,7 @@ public class EditEvent extends Activity {
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Bundle packet = getIntent().getExtras();
+		final Bundle packet = getIntent().getExtras();
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.edit_event);
 		dateFrom = (Button) findViewById(R.id.date_from);
@@ -74,16 +81,18 @@ public class EditEvent extends Activity {
     	});
     	save.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				//Thread savingThread = EventResource.s
-				Intent intent = new Intent();
-				intent.putExtra("title", title.getText().toString());
-				intent.putExtra("location", location.getText().toString());
-				intent.putExtra("startTime", new XsDateTimeFormat().format(from));
-				intent.putExtra("endTime", new XsDateTimeFormat().format(to));
-				intent.putExtra("priority", Math.round(priority.getRating()));
-				intent.putExtra("description", description.getText().toString());
-				setResult(RESULT_OK, intent);
-				finish();
+				SingleEvent ev = new SingleEvent();
+				ev.ID = packet.getString("id");
+				ev.title = title.getText().toString();
+				ev.location = location.getText().toString();
+				ev.startTime = new XsDateTimeFormat().format(from);
+				ev.endTime = new XsDateTimeFormat().format(to);
+				ev.priority = Math.round(priority.getRating());
+				ev.description = description.getText().toString();
+				//ev.gpscoordinate.longitude =;
+				//ev.gpscoordinate.latitude =;
+				Thread savingThread = EventResource.updateEvent(packet.getString("username"), packet.getString("session"), ev, handler, EditEvent.this);
+				showDialog(SAVE_DATA_ID);
 			}
 		});
     	back.setOnClickListener(new View.OnClickListener() {
@@ -93,7 +102,24 @@ public class EditEvent extends Activity {
 			}
 		});
 	}
-
+    
+    public void finishSave (boolean result) {
+    	dismissDialog(SAVE_DATA_ID);
+    	if (result) {
+    		Intent intent = new Intent();
+			intent.putExtra("title", title.getText().toString());
+			intent.putExtra("location", location.getText().toString());
+			intent.putExtra("startTime", new XsDateTimeFormat().format(from));
+			intent.putExtra("endTime", new XsDateTimeFormat().format(to));
+			intent.putExtra("priority", Math.round(priority.getRating()));
+			intent.putExtra("description", description.getText().toString());
+			setResult(RESULT_OK, intent);
+			finish();
+    	} else {
+    		Toast.makeText(EditEvent.this, R.string.saving_error,
+                    Toast.LENGTH_LONG).show();
+    	}    	
+    }
 	private void updateText(Bundle packet) {
 		title.setText((packet.getString("title")==null)?"":packet.getString("title"));
 		location.setText((packet.getString("location")==null)?"":packet.getString("location"));
@@ -142,6 +168,11 @@ public class EditEvent extends Activity {
 		case DATETO_DIALOG_ID:
 			return new DatePickerDialog(this, DateToSetListener, to.get(Calendar.YEAR),
 					to.get(Calendar.MONTH), to.get(Calendar.DAY_OF_MONTH));
+		case SAVE_DATA_ID:
+			final ProgressDialog dialog = new ProgressDialog(this);
+			dialog.setCancelable(true);
+			dialog.setMessage(getText(R.string.saving));
+			return dialog;
 		}
 		return null;
 	}
@@ -178,7 +209,7 @@ public class EditEvent extends Activity {
 		}
 	};	
 
-	protected CharSequence getDateString(Calendar cal) {
+	private CharSequence getDateString(Calendar cal) {
 		int year = cal.get(Calendar.YEAR);
 		int month = cal.get(Calendar.MONTH);
 		int day = cal.get(Calendar.DAY_OF_MONTH);
@@ -201,7 +232,7 @@ public class EditEvent extends Activity {
 		return String.valueOf(day)+" "+monthChar+" "+String.valueOf(year);
 	}
 
-	protected CharSequence getTimeString(Calendar cal) {
+	private CharSequence getTimeString(Calendar cal) {
 		int hour = cal.get(Calendar.HOUR);
 		int minute = cal.get(Calendar.MINUTE);
 		return String.valueOf((hour==0)?12:hour)+":"+((minute<10)?"0":"")+String.valueOf(minute)+ ((hour>=12)?" PM":" AM");

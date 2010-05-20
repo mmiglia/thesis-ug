@@ -160,7 +160,8 @@ public class Login extends AccountAuthenticatorActivity {
             }
         setAccountAuthenticatorResult(intent.getExtras());
         AccountAuthenticatorResponse response = intent.getExtras().getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
-        response.onResult(intent.getExtras());
+        if (response!=null) response.onResult(intent.getExtras());
+        setResult(RESULT_OK);
         finish();
     }
     
