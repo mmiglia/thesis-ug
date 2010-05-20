@@ -104,7 +104,7 @@ public class EventResource {
 	}
 	
 	@POST
-	@Path("update")
+	@Path("/update")
 	@Consumes("application/xml")
 	public void updateEvent(@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid, SingleEvent newEvent) {
