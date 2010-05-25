@@ -18,7 +18,7 @@ public class XsDateTimeFormat extends Format {
   final boolean parseDate;
     final boolean parseTime;
 
-    XsDateTimeFormat(boolean pParseDate, boolean pParseTime) {
+    public XsDateTimeFormat(boolean pParseDate, boolean pParseTime) {
         parseDate = pParseDate;
         parseTime = pParseTime;
     }

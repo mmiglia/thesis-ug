@@ -74,7 +74,6 @@ private static final String TAG = "Single Event Handler";
 		singleEvent.getChild("gpscoordinate").getChild("latitude").setEndTextElementListener(new EndTextElementListener(){
             public void end(String body) {
                 current.gpscoordinate.latitude = Float.parseFloat(body);
-                Log.i(TAG, "parsing latitude = "+current.gpscoordinate.latitude);
             }
         });
 		singleEvent.getChild("gpscoordinate").getChild("longitude").setEndTextElementListener(new EndTextElementListener(){

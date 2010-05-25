@@ -109,14 +109,27 @@ private static final String TAG = "Single Task Handler";
             serializer.endTag("", "description");
             
             serializer.startTag("", "gpscoordinate");
-            serializer.startTag("", "latitude");
-            serializer.text(Float.toString(task.gpscoordinate.latitude));
-            serializer.endTag("", "latitude");
-            serializer.startTag("", "longitude");
-            serializer.text(Float.toString(task.gpscoordinate.longitude));
-            serializer.endTag("", "longitude");
+            	serializer.startTag("", "latitude");
+            	serializer.text(Float.toString(task.gpscoordinate.latitude));
+            	serializer.endTag("", "latitude");
+            	
+            	serializer.startTag("", "longitude");
+            	serializer.text(Float.toString(task.gpscoordinate.longitude));
+            	serializer.endTag("", "longitude");
             serializer.endTag("", "gpscoordinate");
+
+            serializer.startTag("", "dueDate");
+            serializer.text(task.dueDate);
+            serializer.endTag("", "dueDate");
             
+            serializer.startTag("", "notifyTimeStart");
+            serializer.text(task.notifyTimeStart);
+            serializer.endTag("", "notifyTimeStart");
+            
+            serializer.startTag("", "notifyTimeEnd");
+            serializer.text(task.notifyTimeEnd);
+            serializer.endTag("", "notifyTimeEnd");
+
             serializer.endTag("", "singleTask");
             serializer.endDocument();
             return writer.toString();

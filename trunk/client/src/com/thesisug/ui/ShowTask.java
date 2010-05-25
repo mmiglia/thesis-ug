@@ -1,6 +1,7 @@
 package com.thesisug.ui;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import android.app.Activity;
@@ -20,20 +21,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thesisug.R;
-import com.thesisug.communication.EventResource;
+import com.thesisug.communication.TaskResource;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 
 public class ShowTask extends Activity{
-	private static final String TAG ="ShowEvent";
+	private static final String TAG ="ShowTask";
 	private static final int ASK_CONFIRMATION = 1;
 	private static final int WAIT_DELETION = 2;
 	private static final int EDIT = 1;
 	private static final int DELETE = 2;
 	private static final int BACK = 3;
 	private Bundle packet;
-	private TextView title, location, fromtext, totext, priority_value, description;
+	private TextView title, priority_value, description, deadline, notifystart, notifyend;
 	private RatingBar priority;
-	private Calendar from, to;
+	private Calendar deadlinecal, nstart, nend;
 	private float latitude, longitude;
 	private static final XsDateTimeFormat xs_DateTime = new XsDateTimeFormat();
 	private final Handler handler = new Handler();
@@ -50,9 +51,9 @@ public class ShowTask extends Activity{
 		//get the fields
 		packet = getIntent().getExtras();
 		title = (TextView) findViewById(R.id.task_title); 
-		location = (TextView) findViewById(R.id.task_location);
-		fromtext = (TextView) findViewById(R.id.task_from); 
-		totext = (TextView) findViewById(R.id.task_to); 
+		deadline = (TextView) findViewById(R.id.task_deadline);
+		notifystart = (TextView) findViewById(R.id.notify_start); 
+		notifyend = (TextView) findViewById(R.id.notify_end); 
 		priority_value = (TextView) findViewById(R.id.priority_value);
 		description = (TextView) findViewById(R.id.task_description);
 		priority = (RatingBar) findViewById(R.id.priority_bar);
@@ -64,13 +65,24 @@ public class ShowTask extends Activity{
 		description.setText(packet.getString("description"));
 		latitude = packet.getFloat("latitude");
 		longitude = packet.getFloat("longitude");
+		try {
+			deadlinecal = (Calendar) new XsDateTimeFormat().parseObject(packet.getString("deadline"));
+			nstart = (Calendar) new XsDateTimeFormat(false,true).parseObject(packet.getString("notifystart"));
+			nend = (Calendar) new XsDateTimeFormat(false,true).parseObject(packet.getString("notifyend"));
+			deadline.setText(printCalendar(deadlinecal));
+			notifystart.setText(getText(R.string.from)+" : "+ printTime(nstart));
+			notifyend.setText(getText(R.string.until)+"  : "+ printTime(nend));
+		} catch (ParseException e) {
+			Log.i(TAG, "Date Parse exception catched");
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu){
-		menu.add(0,EDIT,0,"Edit Event").setIcon(R.drawable.edit);
-		menu.add(0,DELETE,0,"Delete Event").setIcon(R.drawable.trash);
-		menu.add(0,BACK,0,"Back").setIcon(R.drawable.exit);
+		menu.add(0,EDIT,0,getText(R.string.edit_task)).setIcon(R.drawable.edit);
+		menu.add(0,DELETE,0,getText(R.string.delete_task)).setIcon(R.drawable.trash);
+		menu.add(0,BACK,0,getText(R.string.back)).setIcon(R.drawable.exit);
 		return true;
 	}
 	
@@ -80,19 +92,19 @@ public class ShowTask extends Activity{
 		case EDIT:
 			// need to recreate intent to solve the case when user 
 			// goes back and forth between edit-show
-			Intent intent = new Intent(("com.thesisug.EDIT_EVENT"));
+			Intent intent = new Intent(ShowTask.this, EditTask.class);
 			intent.putExtra("username", packet.getString("username"));
 			intent.putExtra("session", packet.getString("session"));
 			intent.putExtra("id", packet.getString("id"));
 			intent.putExtra("title", title.getText().toString());
-			intent.putExtra("location", location.getText().toString());
-			intent.putExtra("startTime", new XsDateTimeFormat().format(from));
-			intent.putExtra("endTime", new XsDateTimeFormat().format(to));
+			intent.putExtra("deadline", new XsDateTimeFormat().format(deadlinecal));
+			intent.putExtra("notifystart", new XsDateTimeFormat(false,true).format(nstart));
+			intent.putExtra("notifyend", new XsDateTimeFormat(false, true).format(nend));
 			intent.putExtra("priority", Math.round(priority.getRating()));
 			intent.putExtra("description", description.getText().toString());
 			intent.putExtra("longitude", longitude);
 			intent.putExtra("latitude", latitude);
-			intent.putExtra("originator", 2); //EDIT_EVENT code in EditEvent
+			intent.putExtra("originator", 2); //EDIT_TASK code in EditTask
 			startActivityForResult(intent, 0);
 			break;			
 		case DELETE:
@@ -111,19 +123,20 @@ public class ShowTask extends Activity{
         if (intent == null) {Log.i(TAG, "no bundle "+resultCode+" "+requestCode);return ;}
         Bundle packet = intent.getExtras();
         try {
-			from = (Calendar) xs_DateTime.parseObject(packet.getString("startTime"));
-			to = (Calendar) xs_DateTime.parseObject(packet.getString("endTime"));
+			nstart = (Calendar) new XsDateTimeFormat(false,true).parseObject(packet.getString("notifystart"));
+			nend = (Calendar) new XsDateTimeFormat(false,true).parseObject(packet.getString("notifyend"));
+			deadlinecal = (Calendar) new XsDateTimeFormat().parseObject(packet.getString("deadline"));
 			//update the fields value
 			title.setText(packet.getString("title"));
-			location.setText(packet.getString("location"));
-			fromtext.setText(getText(R.string.from)+" : "+ printCalendar(from));
-			totext.setText(getText(R.string.until)+"  : "+ printCalendar(to));
+			deadline.setText(printCalendar(deadlinecal));
+			notifystart.setText(getText(R.string.from)+" : "+ printTime(nstart));
+			notifyend.setText(getText(R.string.until)+"  : "+ printTime(nend));
 			priority_value.setText(Integer.toString(packet.getInt("priority")));
 			priority.setRating(packet.getInt("priority"));
 			description.setText(packet.getString("description"));
 			latitude = packet.getFloat("latitude");
 			longitude = packet.getFloat("longitude");
-		} catch (ParseException e) {
+			} catch (ParseException e) {
 			e.printStackTrace();
 		}
 	}
@@ -137,7 +150,7 @@ public class ShowTask extends Activity{
             .setTitle(R.string.ask_for_deletion)
             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                	Thread deleteThread = EventResource.removeEvent(packet.getString("id"), handler, ShowTask.this);
+                	Thread deleteThread = TaskResource.removeTask(packet.getString("id"), handler, ShowTask.this);
                 	showDialog(WAIT_DELETION);
                 }
             })
@@ -159,10 +172,16 @@ public class ShowTask extends Activity{
 		return cal.getTime().toLocaleString(); 
 	}
 	
+	private String printTime(Calendar cal){
+		SimpleDateFormat formatter = new SimpleDateFormat("hh:mm a");
+		return formatter.format(cal.getTime());
+	}
+	
 	public void finishDeletion(boolean success){
 		dismissDialog(WAIT_DELETION);
 		if (!success) Toast.makeText(ShowTask.this, R.string.deletion_error,
                 Toast.LENGTH_LONG).show();
+		else finish();
 	}
 }
 

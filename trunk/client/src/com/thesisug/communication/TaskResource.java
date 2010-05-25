@@ -40,7 +40,11 @@ public class TaskResource {
 	
 	private static AccountManager accountManager;
 	private static Account[] accounts;
-	
+	/*public void createTask(String userid,String sessionid, SingleTask toAdd) ;	
+	public List<SingleTask> getAllTasks(String userid,	String sessionid) ;
+	public List<SingleTask> getFirstTasks(String userid, String sessionid) ;
+	public void updateTasks(String userid, String sessionid, SingleTask oldTask, SingleTask newTask) ;	
+	public void removeTasks(String taskID,	String userid, String sessionid) ;*/
 	private static List<SingleTask> runHttpGet(final String method,
 			final ArrayList<NameValuePair> params, Context c) {
 		List<SingleTask> result = new LinkedList<SingleTask>();

@@ -139,8 +139,8 @@ public class EditEvent extends Activity {
     
     public void finishSave (boolean result) {
     	switch (currentDialog){
-    		case SAVE_DATA_ID : dismissDialog(SAVE_DATA_ID); break;
-    		case CREATE_DATA_ID : dismissDialog(CREATE_DATA_ID); break;
+    		case EDIT_EVENT : dismissDialog(SAVE_DATA_ID); break;
+    		case CREATE_EVENT : dismissDialog(CREATE_DATA_ID); break;
     	}
     	if (result) {
     		Intent intent = new Intent();
@@ -207,13 +207,13 @@ public class EditEvent extends Activity {
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case TIMEFROM_DIALOG_ID:
-			return new TimePickerDialog(this, TimeFromSetListener, from.get(Calendar.HOUR),
+			return new TimePickerDialog(this, TimeFromSetListener, from.get(Calendar.HOUR_OF_DAY),
 					from.get(Calendar.MINUTE), true);
 		case DATEFROM_DIALOG_ID:
 			return new DatePickerDialog(this, DateFromSetListener, from.get(Calendar.YEAR),
 					from.get(Calendar.MONTH), from.get(Calendar.DAY_OF_MONTH));
 		case TIMETO_DIALOG_ID:
-			return new TimePickerDialog(this, TimeToSetListener, to.get(Calendar.HOUR),
+			return new TimePickerDialog(this, TimeToSetListener, to.get(Calendar.HOUR_OF_DAY),
 					to.get(Calendar.MINUTE), true);
 		case DATETO_DIALOG_ID:
 			return new DatePickerDialog(this, DateToSetListener, to.get(Calendar.YEAR),
