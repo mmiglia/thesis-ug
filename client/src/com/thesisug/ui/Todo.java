@@ -81,15 +81,21 @@ public class Todo extends ListActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent;
 		switch (item.getItemId()) {
 		case CREATE_EVENT:
 			// need to recreate intent to solve the case when user 
 			// goes back and forth between edit-show
-			Intent intent = new Intent(("com.thesisug.EDIT_EVENT"));
+			intent = new Intent(Todo.this, EditEvent.class);
 			intent.putExtra("originator", 1);// CREATE_EVENT code in EditEvent
 			startActivityForResult(intent, 0);
 			break;			
 		case CREATE_TASK:
+			// need to recreate intent to solve the case when user 
+			// goes back and forth between edit-show
+			intent = new Intent(Todo.this, EditTask.class);
+			intent.putExtra("originator", 1);// CREATE_EVENT code in EditEvent
+			startActivityForResult(intent, 0);
 			break;
 		case VOICE_INPUT:
 			break;
@@ -129,6 +135,9 @@ public class Todo extends ListActivity {
 			intent.putExtra("session", session);
 			intent.putExtra("title", task.title);
 			intent.putExtra("priority", task.priority);
+			intent.putExtra("deadline", task.dueDate);
+			intent.putExtra("notifystart", task.notifyTimeStart);
+			intent.putExtra("notifyend", task.notifyTimeEnd);
 			intent.putExtra("description", task.description);
 			intent.putExtra("id", task.ID);
 			intent.putExtra("longitude", task.gpscoordinate.longitude);

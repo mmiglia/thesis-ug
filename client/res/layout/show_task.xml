@@ -13,7 +13,7 @@
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
         	android:id="@+id/title_text"
-            android:text="Title"
+            android:text="@string/activity_title"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:padding="3dip" />
         <ImageView
@@ -41,23 +41,23 @@
     	android:paddingLeft="10dip"
     	android:paddingRight="10dip">
         <TextView
-        	android:id="@+id/location_text"
+        	android:id="@+id/deadline_text"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-            android:text="Location"
+            android:text="@string/deadline"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:padding="3dip" />
         <ImageView
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-        	android:src="@drawable/location"
+        	android:src="@drawable/calendar"
         	android:layout_marginTop="15dip"
 			android:layout_alignParentRight="true"/>
         <TextView
-        	android:id="@+id/task_location"
+        	android:id="@+id/task_deadline"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-			android:layout_below="@id/location_text"
+			android:layout_below="@id/deadline_text"
         	android:textAppearance="?android:attr/textAppearanceSmall"
             android:padding="3dip" />
     </RelativeLayout>
@@ -72,10 +72,10 @@
     	android:paddingLeft="10dip"
     	android:paddingRight="10dip">
         <TextView
-        	android:id="@+id/when_text"
+        	android:id="@+id/notify_text"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-            android:text="When"
+            android:text="@string/notification"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:padding="3dip" />
         <ImageView
@@ -85,18 +85,18 @@
         	android:layout_marginTop="25dip"
 			android:layout_alignParentRight="true"/>
         <TextView
-        	android:id="@+id/task_from"
+        	android:id="@+id/notify_start"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-			android:layout_below="@id/when_text"
+			android:layout_below="@id/notify_text"
         	android:textAppearance="?android:attr/textAppearanceSmall"
             android:paddingTop="3dip" 
             android:paddingLeft="3dip"/>
         <TextView
-        	android:id="@+id/task_to"
+        	android:id="@+id/notify_end"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-			android:layout_below="@id/task_from"
+			android:layout_below="@id/notify_start"
         	android:textAppearance="?android:attr/textAppearanceSmall"
             android:paddingLeft="3dip"
             android:paddingBottom="3dip" />
@@ -115,7 +115,7 @@
         	android:id="@+id/priority_text"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-            android:text="Priority"
+            android:text="@string/priority"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:padding="3dip" />
        <ImageView
@@ -128,7 +128,6 @@
         	android:id="@+id/priority_value"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-			android:text="5"
             android:layout_below="@id/priority_text"
         	android:textAppearance="?android:attr/textAppearanceSmall"
             android:padding="3dip"/>
@@ -156,7 +155,7 @@
         	android:id="@+id/description_text"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-            android:text="Description"
+            android:text="@string/description"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:padding="3dip" />
         <ImageView

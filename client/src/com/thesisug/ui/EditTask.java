@@ -22,24 +22,24 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.thesisug.R;
-import com.thesisug.communication.EventResource;
-import com.thesisug.communication.valueobject.SingleEvent;
+import com.thesisug.communication.TaskResource;
+import com.thesisug.communication.valueobject.SingleTask;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 
 public class EditTask extends Activity {
-	private static final String TAG = "EditEvent";
+	private static final String TAG = "EditTask";
 	// constants for dialog box choosing
-	private static final int TIMEFROM_DIALOG_ID = 0, DATEFROM_DIALOG_ID = 1, TIMETO_DIALOG_ID = 2, DATETO_DIALOG_ID = 3, SAVE_DATA_ID = 4, CREATE_DATA_ID = 5;
+	private static final int TIMEFROM_DIALOG_ID = 0, DEADLINE_DATE_ID = 1, TIMETO_DIALOG_ID = 2, DEADLINE_TIME_ID = 3, SAVE_DATA_ID = 4, CREATE_DATA_ID = 5;
     // constants for origin activity chooser
-	private static final int CREATE_EVENT = 1, EDIT_EVENT = 2; 
+	private static final int CREATE_TASK = 1, EDIT_TASK = 2; 
     
 	// date and time
-    private Calendar from=Calendar.getInstance(), to = Calendar.getInstance();
+    private Calendar deadline=Calendar.getInstance(), notifyStart = Calendar.getInstance(), notifyEnd = Calendar.getInstance();
     
     private final Handler handler = new Handler();
     // button
-    private Button dateFrom, timeFrom, dateTo, gps, timeTo, save, back;
-    private EditText title, location, description;
+    private Button deadlineDate, deadlineTime, timeFrom, timeTo, save, back;
+    private EditText title, description;
     private RatingBar priority;
     private float latitude, longitude;
 	private int currentDialog;
@@ -49,33 +49,38 @@ public class EditTask extends Activity {
 		super.onCreate(savedInstanceState);
 		final Bundle packet = getIntent().getExtras();
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.edit_event);
-		dateFrom = (Button) findViewById(R.id.date_from);
+		setContentView(R.layout.edit_task);
+		title = (EditText) findViewById(R.id.task_title);
+		deadlineDate = (Button) findViewById(R.id.date_deadline);
+		deadlineTime = (Button) findViewById(R.id.time_deadline);
+		
+		// set default notification time for a task
+		notifyStart.set(Calendar.HOUR_OF_DAY, 6);
+		notifyStart.set(Calendar.MINUTE, 0);
+		notifyEnd.set(Calendar.HOUR_OF_DAY, 21);
+		notifyEnd.set(Calendar.MINUTE, 0);
+		
 		timeFrom = (Button) findViewById(R.id.time_from);
-		dateTo = (Button) findViewById(R.id.date_to);
 		timeTo = (Button) findViewById(R.id.time_to);
-		gps = (Button) findViewById(R.id.event_gps);
         save = (Button) findViewById(R.id.save_button);
         back = (Button) findViewById(R.id.back_button);
-		title = (EditText) findViewById(R.id.event_title);
-        location = (EditText) findViewById(R.id.event_location);
-        description = (EditText) findViewById(R.id.event_description);
-		priority = (RatingBar) findViewById(R.id.event_priority);
+        description = (EditText) findViewById(R.id.task_description);
+		priority = (RatingBar) findViewById(R.id.task_priority);
 		if (packet !=null) updateText(packet);
 		
-        dateFrom.setOnClickListener(new View.OnClickListener() {
+		deadlineDate.setOnClickListener(new View.OnClickListener() {
     		public void onClick(View v) {
-    			showDialog(DATEFROM_DIALOG_ID);
+    			showDialog(DEADLINE_DATE_ID);
     		}
     	});
-    	timeFrom.setOnClickListener(new View.OnClickListener() {
+		deadlineTime.setOnClickListener(new View.OnClickListener() {
+    		public void onClick(View v) {
+    			showDialog(DEADLINE_TIME_ID);
+    		}
+    	});
+		timeFrom.setOnClickListener(new View.OnClickListener() {
     		public void onClick(View v) {
     			showDialog(TIMEFROM_DIALOG_ID);
-    		}
-    	});
-    	dateTo.setOnClickListener(new View.OnClickListener() {
-    		public void onClick(View v) {
-    			showDialog(DATETO_DIALOG_ID);
     		}
     	});
     	timeTo.setOnClickListener(new View.OnClickListener() {
@@ -83,45 +88,37 @@ public class EditTask extends Activity {
     			showDialog(TIMETO_DIALOG_ID);
     		}
     	});
-    	gps.setOnClickListener(new View.OnClickListener() {
-    		public void onClick(View v) {
-    			Intent intent = new Intent(EditTask.this, EditGPS.class);
-    			intent.putExtra("latitude", latitude);
-    			intent.putExtra("longitude", longitude);
-    			startActivityForResult(intent, 1);
-    		}
-    	});
 		save.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				SingleEvent ev;
+				SingleTask task;
 				currentDialog = packet.getInt("originator");
 				switch (currentDialog) {
-				case EDIT_EVENT:
+				case EDIT_TASK:
 					showDialog(SAVE_DATA_ID);
-					ev = new SingleEvent();
-					ev.ID = packet.getString("id");
-					ev.title = title.getText().toString();
-					ev.location = location.getText().toString();
-					ev.startTime = new XsDateTimeFormat().format(from);
-					ev.endTime = new XsDateTimeFormat().format(to);
-					ev.priority = Math.round(priority.getRating());
-					ev.description = description.getText().toString();
-					ev.gpscoordinate.longitude = longitude;
-					ev.gpscoordinate.latitude = latitude;
-					Thread savingThread = EventResource.updateEvent(ev,
+					task = new SingleTask();
+					task.ID = packet.getString("id");
+					task.title = title.getText().toString();
+					task.dueDate = new XsDateTimeFormat().format(deadline);
+					task.notifyTimeStart = new XsDateTimeFormat(false,true).format(notifyStart);
+					task.notifyTimeEnd = new XsDateTimeFormat(false,true).format(notifyEnd);
+					task.priority = Math.round(priority.getRating());
+					task.description = description.getText().toString();
+					task.gpscoordinate.longitude = longitude;
+					task.gpscoordinate.latitude = latitude;
+					Thread savingThread = TaskResource.updateTask(task,
 							handler, EditTask.this);
 					break;
-				case CREATE_EVENT:
+				case CREATE_TASK:
 					showDialog(CREATE_DATA_ID);
-					ev = new SingleEvent(title.getText().toString(),
-							new XsDateTimeFormat().format(from),
-							new XsDateTimeFormat().format(to), location
-									.getText().toString(), description
-									.getText().toString(), Math.round(priority
-									.getRating()));
-					ev.gpscoordinate.longitude = longitude;
-					ev.gpscoordinate.latitude = latitude;
-					Thread creationThread = EventResource.createEvent(ev,
+					task = new SingleTask(title.getText().toString(), 
+							new XsDateTimeFormat(false,true).format(notifyStart),
+							new XsDateTimeFormat(false,true).format(notifyEnd), 
+							new XsDateTimeFormat().format(deadline), 
+							description.getText().toString(),
+							Math.round(priority.getRating()));
+					task.gpscoordinate.longitude = longitude;
+					task.gpscoordinate.latitude = latitude;
+					Thread creationThread = TaskResource.createTask(task,
 							handler, EditTask.this);
 					break;
 				default:
@@ -139,15 +136,15 @@ public class EditTask extends Activity {
     
     public void finishSave (boolean result) {
     	switch (currentDialog){
-    		case SAVE_DATA_ID : dismissDialog(SAVE_DATA_ID); break;
-    		case CREATE_DATA_ID : dismissDialog(CREATE_DATA_ID); break;
+    		case EDIT_TASK : dismissDialog(SAVE_DATA_ID); break;
+    		case CREATE_TASK : dismissDialog(CREATE_DATA_ID); break;
     	}
     	if (result) {
     		Intent intent = new Intent();
 			intent.putExtra("title", title.getText().toString());
-			intent.putExtra("location", location.getText().toString());
-			intent.putExtra("startTime", new XsDateTimeFormat().format(from));
-			intent.putExtra("endTime", new XsDateTimeFormat().format(to));
+			intent.putExtra("deadline", new XsDateTimeFormat().format(deadline));
+			intent.putExtra("notifystart", new XsDateTimeFormat(false,true).format(notifyStart));
+			intent.putExtra("notifyend", new XsDateTimeFormat(false,true).format(notifyEnd));
 			intent.putExtra("priority", Math.round(priority.getRating()));
 			intent.putExtra("description", description.getText().toString());
 			intent.putExtra("latitude", latitude);
@@ -170,32 +167,39 @@ public class EditTask extends Activity {
     
 	private void updateText(Bundle packet) {
 		title.setText((packet.getString("title")==null)?"":packet.getString("title"));
-		location.setText((packet.getString("location")==null)?"":packet.getString("location"));
 		description.setText((packet.getString("description")==null)?"":packet.getString("description"));
 		priority.setRating((packet.getInt("priority")==0)?3:packet.getInt("priority"));
-		Log.i(TAG, "xsDateTime start"+packet.getString("startTime"));
-		if (packet.getString("startTime")!=null) extractDate(packet.getString("startTime"), DATEFROM_DIALOG_ID);
-		if (packet.getString("endTime")!=null) extractDate(packet.getString("endTime"), DATETO_DIALOG_ID);
-		dateFrom.setText(getDateString(from));
-		timeFrom.setText(getTimeString(from));
-		dateTo.setText(getDateString(to));
-		timeTo.setText(getTimeString(to));
+		if (packet.getString("deadline")!=null) extractDate(packet.getString("deadline"), DEADLINE_DATE_ID);
+		if (packet.getString("notifystart")!=null) extractDate(packet.getString("notifystart"), TIMEFROM_DIALOG_ID);
+		if (packet.getString("notifyend")!=null) extractDate(packet.getString("notifyend"), TIMETO_DIALOG_ID);
+		deadlineDate.setText(getDateString(deadline));
+		deadlineTime.setText(getTimeString(deadline));
+		timeFrom.setText(getTimeString(notifyStart));
+		timeTo.setText(getTimeString(notifyEnd));
 		latitude = packet.getFloat("latitude");
 		longitude = packet.getFloat("longitude");
 	}
 
 	private void extractDate(String xsDateTime, int code) {
-		XsDateTimeFormat formatter = new XsDateTimeFormat();
 		try {
-			Calendar cal = (Calendar)formatter.parseObject(xsDateTime);
+			Calendar cal ;
 			switch (code){
-			case DATEFROM_DIALOG_ID:
-				from = Calendar.getInstance();
-				from.setTimeInMillis(cal.getTimeInMillis());
+			case DEADLINE_DATE_ID:
+				cal = (Calendar)new XsDateTimeFormat().parseObject(xsDateTime);
+				deadline = Calendar.getInstance();
+				deadline.setTimeInMillis(cal.getTimeInMillis());
 				break;
-			case DATETO_DIALOG_ID:
-				to = Calendar.getInstance();
-				to.setTimeInMillis(cal.getTimeInMillis());
+			case TIMEFROM_DIALOG_ID:
+				cal = (Calendar)new XsDateTimeFormat(false,true).parseObject(xsDateTime);
+				notifyStart = Calendar.getInstance();
+				notifyStart.setTimeInMillis(cal.getTimeInMillis());
+				Log.i(TAG, "notifystart is = "+notifyStart.getTime().toLocaleString());
+				break;
+			case TIMETO_DIALOG_ID:
+				cal = (Calendar)new XsDateTimeFormat(false,true).parseObject(xsDateTime);
+				notifyEnd = Calendar.getInstance();
+				notifyEnd.setTimeInMillis(cal.getTimeInMillis());
+				Log.i(TAG, "notifyend is = "+notifyEnd.getTime().toLocaleString());
 				break;
 			}
 		} catch (ParseException e) {
@@ -206,18 +210,18 @@ public class EditTask extends Activity {
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
-		case TIMEFROM_DIALOG_ID:
-			return new TimePickerDialog(this, TimeFromSetListener, from.get(Calendar.HOUR),
-					from.get(Calendar.MINUTE), true);
-		case DATEFROM_DIALOG_ID:
-			return new DatePickerDialog(this, DateFromSetListener, from.get(Calendar.YEAR),
-					from.get(Calendar.MONTH), from.get(Calendar.DAY_OF_MONTH));
+		case DEADLINE_TIME_ID:
+			return new TimePickerDialog(this, DeadlineTimeSetListener, deadline.get(Calendar.HOUR),
+					deadline.get(Calendar.MINUTE), true);
+		case DEADLINE_DATE_ID:
+			return new DatePickerDialog(this, DeadlineDateSetListener, deadline.get(Calendar.YEAR),
+					deadline.get(Calendar.MONTH), deadline.get(Calendar.DAY_OF_MONTH));
 		case TIMETO_DIALOG_ID:
-			return new TimePickerDialog(this, TimeToSetListener, to.get(Calendar.HOUR),
-					to.get(Calendar.MINUTE), true);
-		case DATETO_DIALOG_ID:
-			return new DatePickerDialog(this, DateToSetListener, to.get(Calendar.YEAR),
-					to.get(Calendar.MONTH), to.get(Calendar.DAY_OF_MONTH));
+			return new TimePickerDialog(this, TimeToSetListener, notifyEnd.get(Calendar.HOUR),
+					notifyEnd.get(Calendar.MINUTE), true);
+		case TIMEFROM_DIALOG_ID:
+			return new TimePickerDialog(this, TimeFromSetListener, notifyStart.get(Calendar.HOUR),
+					notifyStart.get(Calendar.MINUTE), true);
 		case SAVE_DATA_ID:
 			final ProgressDialog savedialog = new ProgressDialog(this);
 			savedialog.setCancelable(true);
@@ -232,35 +236,35 @@ public class EditTask extends Activity {
 		return null;
 	}
 
-	private DatePickerDialog.OnDateSetListener DateFromSetListener = new DatePickerDialog.OnDateSetListener() {
+	private DatePickerDialog.OnDateSetListener DeadlineDateSetListener = new DatePickerDialog.OnDateSetListener() {
 		public void onDateSet(DatePicker view, int year, int monthOfYear,
 				int dayOfMonth) {
-			from.set(year, monthOfYear, dayOfMonth);
-			dateFrom.setText(getDateString(from));
+			deadline.set(year, monthOfYear, dayOfMonth);
+			deadlineDate.setText(getDateString(deadline));
 		}
 	};
 
-	private TimePickerDialog.OnTimeSetListener TimeFromSetListener = new TimePickerDialog.OnTimeSetListener() {
+	private TimePickerDialog.OnTimeSetListener DeadlineTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
 		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-			from.set(Calendar.HOUR, hourOfDay);
-			from.set(Calendar.MINUTE, minute);
-			timeFrom.setText(getTimeString(from));
+			deadline.set(Calendar.HOUR_OF_DAY, hourOfDay);
+			deadline.set(Calendar.MINUTE, minute);
+			deadlineTime.setText(getTimeString(deadline));
 		}
 	};
 	
-	private DatePickerDialog.OnDateSetListener DateToSetListener = new DatePickerDialog.OnDateSetListener() {
-		public void onDateSet(DatePicker view, int year, int monthOfYear,
-				int dayOfMonth) {
-			to.set(year, monthOfYear, dayOfMonth);
-			dateTo.setText(getDateString(to));
+	private TimePickerDialog.OnTimeSetListener TimeFromSetListener = new TimePickerDialog.OnTimeSetListener() {
+		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+			notifyStart.set(Calendar.HOUR_OF_DAY, hourOfDay);
+			notifyStart.set(Calendar.MINUTE, minute);
+			timeFrom.setText(getTimeString(notifyStart));
 		}
 	};
-
+	
 	private TimePickerDialog.OnTimeSetListener TimeToSetListener = new TimePickerDialog.OnTimeSetListener() {
 		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-			to.set(Calendar.HOUR, hourOfDay);
-			to.set(Calendar.MINUTE, minute);
-			timeTo.setText(getTimeString(to));
+			notifyEnd.set(Calendar.HOUR_OF_DAY, hourOfDay);
+			notifyEnd.set(Calendar.MINUTE, minute);
+			timeTo.setText(getTimeString(notifyEnd));
 		}
 	};	
 

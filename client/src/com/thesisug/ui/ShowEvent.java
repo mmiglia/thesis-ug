@@ -77,9 +77,9 @@ public class ShowEvent extends Activity{
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu){
-		menu.add(0,EDIT,0,"Edit Event").setIcon(R.drawable.edit);
-		menu.add(0,DELETE,0,"Delete Event").setIcon(R.drawable.trash);
-		menu.add(0,BACK,0,"Back").setIcon(R.drawable.exit);
+		menu.add(0,EDIT,0,getText(R.string.edit_event)).setIcon(R.drawable.edit);
+		menu.add(0,DELETE,0,getText(R.string.delete_event)).setIcon(R.drawable.trash);
+		menu.add(0,BACK,0,getText(R.string.back)).setIcon(R.drawable.exit);
 		return true;
 	}
 	
@@ -89,7 +89,7 @@ public class ShowEvent extends Activity{
 		case EDIT:
 			// need to recreate intent to solve the case when user 
 			// goes back and forth between edit-show
-			Intent intent = new Intent(("com.thesisug.EDIT_EVENT"));
+			Intent intent = new Intent(ShowEvent.this, EditEvent.class);
 			intent.putExtra("username", packet.getString("username"));
 			intent.putExtra("session", packet.getString("session"));
 			intent.putExtra("id", packet.getString("id"));
@@ -172,5 +172,6 @@ public class ShowEvent extends Activity{
 		dismissDialog(WAIT_DELETION);
 		if (!success) Toast.makeText(ShowEvent.this, R.string.deletion_error,
                 Toast.LENGTH_LONG).show();
+		else finish();
 	}
 }

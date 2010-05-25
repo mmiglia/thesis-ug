@@ -18,7 +18,6 @@ public class AccountUtil {
 		try {
 			accountManager = AccountManager.get(c);
 			accounts = accountManager.getAccountsByType(com.thesisug.Constants.ACCOUNT_TYPE);
-			Log.i(TAG, "token is "+accountManager.blockingGetAuthToken(accounts[0],com.thesisug.Constants.ACCOUNT_TYPE, false));
 			return accountManager.blockingGetAuthToken(accounts[0],com.thesisug.Constants.ACCOUNT_TYPE, true);
 		} catch (OperationCanceledException e) {
 			e.printStackTrace();
