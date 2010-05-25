@@ -149,8 +149,8 @@ public class Login extends AccountAuthenticatorActivity {
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, com.thesisug.Constants.ACCOUNT_TYPE);
         intent.putExtra(AccountManager.KEY_AUTHTOKEN, result.session);
         if (usernameIsEmpty) {
-        	accountManager.addAccountExplicitly(account, result.session, intent.getExtras());
-        	accountManager.setPassword(account, password); 
+        	accountManager.addAccountExplicitly(account, password, intent.getExtras());
+        	accountManager.setAuthToken(account, com.thesisug.Constants.AUTHTOKEN_TYPE, result.session);
         	// Set contacts sync for this account.
         	// ContentResolver.setSyncAutomatically(account,
         	//  ContactsContract.AUTHORITY, true);

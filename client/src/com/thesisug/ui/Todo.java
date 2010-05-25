@@ -14,6 +14,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -22,15 +24,21 @@ import android.widget.SimpleAdapter.ViewBinder;
 
 import com.thesisug.R;
 import com.thesisug.communication.EventResource;
+import com.thesisug.communication.TaskResource;
 import com.thesisug.communication.valueobject.Reminder;
 import com.thesisug.communication.valueobject.SingleEvent;
 import com.thesisug.communication.valueobject.SingleTask;
 
 public class Todo extends ListActivity {
 	public final static String TAG = "TodoActivity";
-	
 	public final static String ITEM_DATA = "data";
-	private Thread downloadThread;
+	public final static int CREATE_EVENT = 1;
+	public final static int CREATE_TASK = 2;
+	public final static int VOICE_INPUT = 3;
+	public final static int BACK = 4;
+	
+	private Thread downloadEventThread, downloadTaskThread;
+	private static int counter = 0; // counter for task and event thread completion
 	private static String username, session;
 	private AccountManager accountManager;
 	private Account[] accounts;
@@ -51,7 +59,8 @@ public class Todo extends ListActivity {
         	setListAdapter(adapter);
         	showDialog(0);
         	username = accounts[0].name;
-    		downloadThread = EventResource.getAllEvent(handler, this);
+    		downloadEventThread = EventResource.getAllEvent(handler, this);
+    		downloadTaskThread = TaskResource.getAllTask(handler, this);
         }
 	}
 	
@@ -62,6 +71,36 @@ public class Todo extends ListActivity {
 	}
 
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu){
+		menu.add(0,CREATE_EVENT,0,"Create Event").setIcon(R.drawable.edit);
+		menu.add(0,CREATE_TASK,0,"Create Task").setIcon(R.drawable.edit);
+		menu.add(0,VOICE_INPUT,0,"Voice Input").setIcon(R.drawable.edit);
+		menu.add(0,BACK,0,"Back").setIcon(R.drawable.exit);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case CREATE_EVENT:
+			// need to recreate intent to solve the case when user 
+			// goes back and forth between edit-show
+			Intent intent = new Intent(("com.thesisug.EDIT_EVENT"));
+			intent.putExtra("originator", 1);// CREATE_EVENT code in EditEvent
+			startActivityForResult(intent, 0);
+			break;			
+		case CREATE_TASK:
+			break;
+		case VOICE_INPUT:
+			break;
+		default:
+			finish();
+			break;
+		}
+		return true;
+	}
+	
+	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		LinkedHashMap<String,Reminder> item = (LinkedHashMap<String, Reminder>) (l.getItemAtPosition(position));
 		Intent intent;
@@ -69,7 +108,7 @@ public class Todo extends ListActivity {
 			SingleEvent ev = (SingleEvent) item.get(ITEM_DATA);
 			// return if there are no event today
 			if (ev.title == getText(R.string.no_event_today).toString()) return;
-			intent = new Intent("com.thesisug.SHOW_EVENT");
+			intent = new Intent(Todo.this, ShowEvent.class);
 			intent.putExtra("username", username);
 			intent.putExtra("session", session);
 			intent.putExtra("title", ev.title);
@@ -81,11 +120,19 @@ public class Todo extends ListActivity {
 			intent.putExtra("id", ev.ID);
 			intent.putExtra("longitude", ev.gpscoordinate.longitude);
 			intent.putExtra("latitude", ev.gpscoordinate.latitude);
-			Log.i(TAG, "onListItemClick longitude = "+ev.gpscoordinate.longitude + " latitude = "+ ev.gpscoordinate.latitude);
 		}
 		else {
-			intent = new Intent("com.thesisug.SHOW_ACTIVITY");
-			//title = ((SingleTask) item.get(ITEM_DATA)).title;
+			SingleTask task = (SingleTask) item.get(ITEM_DATA);
+			if (task.title == getText(R.string.no_task_today).toString()) return;
+			intent = new Intent(Todo.this, ShowTask.class);
+			intent.putExtra("username", username);
+			intent.putExtra("session", session);
+			intent.putExtra("title", task.title);
+			intent.putExtra("priority", task.priority);
+			intent.putExtra("description", task.description);
+			intent.putExtra("id", task.ID);
+			intent.putExtra("longitude", task.gpscoordinate.longitude);
+			intent.putExtra("latitude", task.gpscoordinate.latitude);
 		}
         startActivityForResult(intent, 0);
 	}
@@ -121,32 +168,49 @@ public class Todo extends ListActivity {
         accounts = accountManager.getAccountsByType(com.thesisug.Constants.ACCOUNT_TYPE);
         username = accounts[0].name;
 		// refresh content from server
-		downloadThread = EventResource.getAllEvent(handler, this);
+		downloadEventThread = EventResource.getAllEvent(handler, this);
+		downloadTaskThread = TaskResource.getAllTask(handler, this);
 		Log.i(TAG, "onActivityResult create new thread to download");
 	}
 	
-	public void afterDataLoaded(List<SingleEvent> data){
-		Log.i(TAG, "after data is loaded, dismissed dialog 0");
-		dismissDialog(0); //disable the progress dialog
-		event = new LinkedList<LinkedHashMap<String,?>>();
+	public void afterTaskLoaded(List<SingleTask> data){
 		tasks = new LinkedList<LinkedHashMap<String,?>>();
+		if (data.isEmpty()) tasks.add(createItem (new SingleTask(getText(R.string.no_task_today).toString(), "", "", "", "")));
+		else {
+			for (SingleTask o : data){
+				tasks.add(createItem(o));
+			}
+		}
+		if (dataComplete()) combineResult();
+	}
+	
+	public void afterEventLoaded(List<SingleEvent> data){
+		event = new LinkedList<LinkedHashMap<String,?>>();
 		if (data.isEmpty()) event.add(createItem (new SingleEvent(getText(R.string.no_event_today).toString(), "", "", "", "")));
 		else {
 			for (SingleEvent o : data){
 				event.add(createItem(o));
 			}
 		}
-		tasks.add(createItem(new SingleTask("buy milk", "2309", "around Genoa")));
-		//tasks.add(createItem(new SingleTask("buy train ticket", "2309", "Principe FS")));
-		
+		if (dataComplete()) combineResult();
+	}
+	
+	private synchronized boolean dataComplete(){
+		counter++;
+		return (counter >= 2) ? true:false;
+	}
+	
+	public void combineResult(){
+		Log.i(TAG, "after data is loaded, dismissed dialog 0");
+		dismissDialog(0); //disable the progress dialog
+		counter = 0; // reset the counter
+
 		// create our list and custom adapter
-		SeparatedListAdapter adapter = new SeparatedListAdapter(this);
-		
+		SeparatedListAdapter adapter = new SeparatedListAdapter(this);		
 		SimpleAdapter taskAdapter = new SimpleAdapter(this, tasks, R.layout.todo_task,
 		new String[] { ITEM_DATA }, new int[] { R.id.list_simple_title });
 		taskAdapter.setViewBinder(new TaskBinder());
 		adapter.addSection(getText(R.string.task_list_header).toString(), taskAdapter);
-		
 		SimpleAdapter eventAdapter = new SimpleAdapter(this, event, R.layout.todo_event,
 				new String[] { ITEM_DATA, ITEM_DATA }, new int[] { R.id.list_complex_title, R.id.list_complex_caption });
 		adapter.addSection(getText(R.string.event_list_header).toString(), eventAdapter);

@@ -26,7 +26,7 @@ import com.thesisug.communication.EventResource;
 import com.thesisug.communication.valueobject.SingleEvent;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 
-public class EditEvent extends Activity {
+public class EditTask extends Activity {
 	private static final String TAG = "EditEvent";
 	// constants for dialog box choosing
 	private static final int TIMEFROM_DIALOG_ID = 0, DATEFROM_DIALOG_ID = 1, TIMETO_DIALOG_ID = 2, DATETO_DIALOG_ID = 3, SAVE_DATA_ID = 4, CREATE_DATA_ID = 5;
@@ -85,7 +85,7 @@ public class EditEvent extends Activity {
     	});
     	gps.setOnClickListener(new View.OnClickListener() {
     		public void onClick(View v) {
-    			Intent intent = new Intent(EditEvent.this, EditGPS.class);
+    			Intent intent = new Intent(EditTask.this, EditGPS.class);
     			intent.putExtra("latitude", latitude);
     			intent.putExtra("longitude", longitude);
     			startActivityForResult(intent, 1);
@@ -109,7 +109,7 @@ public class EditEvent extends Activity {
 					ev.gpscoordinate.longitude = longitude;
 					ev.gpscoordinate.latitude = latitude;
 					Thread savingThread = EventResource.updateEvent(ev,
-							handler, EditEvent.this);
+							handler, EditTask.this);
 					break;
 				case CREATE_EVENT:
 					showDialog(CREATE_DATA_ID);
@@ -122,7 +122,7 @@ public class EditEvent extends Activity {
 					ev.gpscoordinate.longitude = longitude;
 					ev.gpscoordinate.latitude = latitude;
 					Thread creationThread = EventResource.createEvent(ev,
-							handler, EditEvent.this);
+							handler, EditTask.this);
 					break;
 				default:
 					break;
@@ -155,7 +155,7 @@ public class EditEvent extends Activity {
 			setResult(RESULT_OK, intent);
 			finish();
     	} else {
-    		Toast.makeText(EditEvent.this, R.string.saving_error,
+    		Toast.makeText(EditTask.this, R.string.saving_error,
                     Toast.LENGTH_LONG).show();
     	}    	
     }

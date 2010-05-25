@@ -2,10 +2,12 @@ package com.thesisug.communication.xmlparser;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.xml.sax.SAXException;
+import org.xmlpull.v1.XmlSerializer;
 
 import android.sax.Element;
 import android.sax.EndElementListener;
@@ -23,7 +25,7 @@ private static final String TAG = "Single Task Handler";
 		final List<SingleTask> combine = new LinkedList<SingleTask>();
     	final SingleTask current = new SingleTask();
 		RootElement root = new RootElement("collection");
-		Element SingleTask = root.getChild("SingleTask");
+		Element SingleTask = root.getChild("singleTask");
 		SingleTask.setEndElementListener(new EndElementListener(){
             public void end() {
                 combine.add(current.copy());
@@ -72,5 +74,54 @@ private static final String TAG = "Single Task Handler";
         Log.i(TAG, "parsing Single Task XML message");
         Xml.parse(toParse, Xml.Encoding.UTF_8, root.getContentHandler());
         return combine;
+    }
+    
+    public static String format (SingleTask task){
+    	XmlSerializer serializer = Xml.newSerializer();
+        StringWriter writer = new StringWriter();
+        try {
+            serializer.setOutput(writer);
+            serializer.startDocument("UTF-8", true);
+            serializer.startTag("", "singleTask");
+            
+            serializer.startTag("", "ID");
+            serializer.text(task.ID);
+            serializer.endTag("", "ID");
+            
+            serializer.startTag("", "priority");
+            serializer.text(Integer.toString(task.priority));
+            serializer.endTag("", "priority");
+            
+            serializer.startTag("", "description");
+            serializer.text(task.description);
+            serializer.endTag("", "description");
+            
+            serializer.startTag("", "title");
+            serializer.text(task.title);
+            serializer.endTag("", "title");
+            
+            serializer.startTag("", "type");
+            serializer.text(Integer.toString(task.type));
+            serializer.endTag("", "type");
+            
+            serializer.startTag("", "description");
+            serializer.text(task.description);
+            serializer.endTag("", "description");
+            
+            serializer.startTag("", "gpscoordinate");
+            serializer.startTag("", "latitude");
+            serializer.text(Float.toString(task.gpscoordinate.latitude));
+            serializer.endTag("", "latitude");
+            serializer.startTag("", "longitude");
+            serializer.text(Float.toString(task.gpscoordinate.longitude));
+            serializer.endTag("", "longitude");
+            serializer.endTag("", "gpscoordinate");
+            
+            serializer.endTag("", "singleTask");
+            serializer.endDocument();
+            return writer.toString();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } 
     }
 }
