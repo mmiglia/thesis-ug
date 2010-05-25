@@ -242,7 +242,7 @@ public class EditEvent extends Activity {
 
 	private TimePickerDialog.OnTimeSetListener TimeFromSetListener = new TimePickerDialog.OnTimeSetListener() {
 		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-			from.set(Calendar.HOUR, hourOfDay);
+			from.set(Calendar.HOUR_OF_DAY, hourOfDay);
 			from.set(Calendar.MINUTE, minute);
 			timeFrom.setText(getTimeString(from));
 		}
@@ -258,7 +258,7 @@ public class EditEvent extends Activity {
 
 	private TimePickerDialog.OnTimeSetListener TimeToSetListener = new TimePickerDialog.OnTimeSetListener() {
 		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-			to.set(Calendar.HOUR, hourOfDay);
+			to.set(Calendar.HOUR_OF_DAY, hourOfDay);
 			to.set(Calendar.MINUTE, minute);
 			timeTo.setText(getTimeString(to));
 		}
