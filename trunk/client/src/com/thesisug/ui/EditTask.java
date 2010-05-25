@@ -217,10 +217,10 @@ public class EditTask extends Activity {
 			return new DatePickerDialog(this, DeadlineDateSetListener, deadline.get(Calendar.YEAR),
 					deadline.get(Calendar.MONTH), deadline.get(Calendar.DAY_OF_MONTH));
 		case TIMETO_DIALOG_ID:
-			return new TimePickerDialog(this, TimeToSetListener, notifyEnd.get(Calendar.HOUR),
+			return new TimePickerDialog(this, TimeToSetListener, notifyEnd.get(Calendar.HOUR_OF_DAY),
 					notifyEnd.get(Calendar.MINUTE), true);
 		case TIMEFROM_DIALOG_ID:
-			return new TimePickerDialog(this, TimeFromSetListener, notifyStart.get(Calendar.HOUR),
+			return new TimePickerDialog(this, TimeFromSetListener, notifyStart.get(Calendar.HOUR_OF_DAY),
 					notifyStart.get(Calendar.MINUTE), true);
 		case SAVE_DATA_ID:
 			final ProgressDialog savedialog = new ProgressDialog(this);
