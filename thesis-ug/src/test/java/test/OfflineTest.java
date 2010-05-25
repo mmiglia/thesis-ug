@@ -103,7 +103,7 @@ public class OfflineTest extends TestCase{
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
 		log.info("Trying to add task to the database");
 		TaskManager manager = TaskManager.getInstance();
-		boolean result = manager.createTask("user", "buy train ticket",
+		boolean result = manager.createTask("user", "Remember me",
 				"09:30:10-06:00", "14:30:10-06:00",
 				"2010-05-18T17:30:00-08:00", "Stazione Principe", 2);// need to call
 																// this
