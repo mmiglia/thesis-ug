@@ -36,12 +36,11 @@ public class EventResource {
 	private static final String BETWEEN_EVENTS = "/event/between";
 	private static final String UPDATE_EVENT = "/event/update";
 	private static final String REMOVE_EVENT = "/event/erase";
+	private static final String CREATE_EVENT = "/event/add";
+	
 	private static AccountManager accountManager;
 	private static Account[] accounts;
 	
-	public void createEvent(String userid, String sessionid, SingleEvent toAdd) {
-	}
-
 	private static List<SingleEvent> runHttpGet(final String method,
 			final ArrayList<NameValuePair> params, Context c) {
 		List<SingleEvent> result = new LinkedList<SingleEvent>();
@@ -103,6 +102,25 @@ public class EventResource {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+
+	public static Thread createEvent(final SingleEvent toAdd, final Handler handler, final Context context) {
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				String body = SingleEventHandler.format(toAdd);
+				final boolean result = runHttpPost(CREATE_EVENT, null, body, context);
+				if (handler == null || context == null) {
+					return;
+				}
+				handler.post(new Runnable() {
+					public void run() {
+						((EditEvent) context).finishSave(result);
+					}
+				});
+			}
+		};
+		return NetworkUtilities.startBackgroundThread(runnable);
 	}
 
 	public static Thread updateEvent(final SingleEvent newEvent, final Handler handler,
@@ -200,7 +218,7 @@ public class EventResource {
 		}
 		handler.post(new Runnable() {
 			public void run() {
-				((Todo) context).afterDataLoaded(result);
+				((Todo) context).afterEventLoaded(result);
 			}
 		});
 	}

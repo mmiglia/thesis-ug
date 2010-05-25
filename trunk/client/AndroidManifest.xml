@@ -69,45 +69,25 @@
         </activity>
         <activity android:name=".ui.Todo"
                   android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">                  
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
         <activity android:name=".ui.Map"
                   android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">                  
-            <intent-filter>
-                <action android:name="android.intent.action.view" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
-                <activity android:name=".ui.EditGPS"
+        <activity android:name=".ui.Input"
+                  android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">                  
+        </activity>
+        <activity android:name=".ui.EditGPS"
                   android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">                  
             <intent-filter>
                 <action android:name="android.intent.action.EDIT" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.Input"
-                  android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">                  
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".ui.ShowActivities"
-                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
-            <intent-filter>
-                <action android:name="com.thesisug.SHOW_ACTIVITY" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-          <activity android:name=".ui.ShowEvent" android:windowSoftInputMode="stateVisible|adjustPan"
+         <activity android:name=".ui.ShowEvent" android:windowSoftInputMode="stateVisible|adjustPan"
           			android:label="@string/app_name" android:theme="@style/CustomTitleTheme">                  
-            <intent-filter>
-                <action android:name="com.thesisug.SHOW_EVENT" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
+        </activity>
+                 <activity android:name=".ui.ShowTask" android:windowSoftInputMode="stateVisible|adjustPan"
+          			android:label="@string/app_name" android:theme="@style/CustomTitleTheme">                  
         </activity>
         <activity android:name=".ui.EditEvent"
                   android:label="@string/app_name" android:theme="@android:style/Theme">                  
@@ -117,9 +97,6 @@
             </intent-filter>
         </activity>
     <uses-library android:name="com.google.android.maps" />
-    <uses-library android:name="android.test.runner" />
     </application>
 	<uses-sdk android:minSdkVersion="7" />
-	<instrumentation android:name="android.test.InstrumentationTestRunner"
-       android:targetPackage=".communication.xmlparser" android:label="Tests for My App" />
 </manifest> 

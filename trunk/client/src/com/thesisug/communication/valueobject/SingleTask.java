@@ -102,6 +102,8 @@ public class SingleTask extends Reminder {
 		newcopy.dueDate = dueDate;
 		newcopy.notifyTimeStart = notifyTimeStart;
 		newcopy.notifyTimeEnd = notifyTimeEnd;
+		newcopy.gpscoordinate.latitude = gpscoordinate.latitude;
+		newcopy.gpscoordinate.longitude = gpscoordinate.longitude;
 		return newcopy;
 	}
 }

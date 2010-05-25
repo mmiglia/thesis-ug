@@ -23,7 +23,7 @@
         	android:layout_marginTop="15dip"
 			android:layout_alignParentRight="true"/>
         <TextView
-        	android:id="@+id/event_title"
+        	android:id="@+id/task_title"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
 			android:layout_below="@id/title_text"
@@ -54,7 +54,7 @@
         	android:layout_marginTop="15dip"
 			android:layout_alignParentRight="true"/>
         <TextView
-        	android:id="@+id/event_location"
+        	android:id="@+id/task_location"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
 			android:layout_below="@id/location_text"
@@ -85,7 +85,7 @@
         	android:layout_marginTop="25dip"
 			android:layout_alignParentRight="true"/>
         <TextView
-        	android:id="@+id/event_from"
+        	android:id="@+id/task_from"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
 			android:layout_below="@id/when_text"
@@ -93,10 +93,10 @@
             android:paddingTop="3dip" 
             android:paddingLeft="3dip"/>
         <TextView
-        	android:id="@+id/event_to"
+        	android:id="@+id/task_to"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-			android:layout_below="@id/event_from"
+			android:layout_below="@id/task_from"
         	android:textAppearance="?android:attr/textAppearanceSmall"
             android:paddingLeft="3dip"
             android:paddingBottom="3dip" />
@@ -166,7 +166,7 @@
         	android:layout_marginTop="15dip"
 			android:layout_alignParentRight="true"/>
         <TextView
-        	android:id="@+id/event_description"
+        	android:id="@+id/task_description"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
 			android:layout_below="@id/description_text"

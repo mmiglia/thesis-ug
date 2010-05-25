@@ -23,7 +23,7 @@ import com.thesisug.R;
 import com.thesisug.communication.EventResource;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 
-public class ShowEvent extends Activity{
+public class ShowTask extends Activity{
 	private static final String TAG ="ShowEvent";
 	private static final int ASK_CONFIRMATION = 1;
 	private static final int WAIT_DELETION = 2;
@@ -42,37 +42,28 @@ public class ShowEvent extends Activity{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
-		setContentView(R.layout.show_event);
+		setContentView(R.layout.show_task);
 		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_titlebar);
 		TextView titlebar = (TextView) findViewById(R.id.customtitlebar);
-		titlebar.setText("Event");
+		titlebar.setText("Task");
 		
 		//get the fields
 		packet = getIntent().getExtras();
-		title = (TextView) findViewById(R.id.event_title); 
-		location = (TextView) findViewById(R.id.event_location);
-		fromtext = (TextView) findViewById(R.id.event_from); 
-		totext = (TextView) findViewById(R.id.event_to); 
+		title = (TextView) findViewById(R.id.task_title); 
+		location = (TextView) findViewById(R.id.task_location);
+		fromtext = (TextView) findViewById(R.id.task_from); 
+		totext = (TextView) findViewById(R.id.task_to); 
 		priority_value = (TextView) findViewById(R.id.priority_value);
-		description = (TextView) findViewById(R.id.event_description);
+		description = (TextView) findViewById(R.id.task_description);
 		priority = (RatingBar) findViewById(R.id.priority_bar);
 		
 		//set fields value
 		title.setText(packet.getString("title"));
-		location.setText(packet.getString("location"));
 		priority_value.setText(Integer.toString(packet.getInt("priority")));
 		priority.setRating(packet.getInt("priority"));
 		description.setText(packet.getString("description"));
 		latitude = packet.getFloat("latitude");
 		longitude = packet.getFloat("longitude");
-		try {
-			from = (Calendar) xs_DateTime.parseObject(packet.getString("startTime"));
-			to = (Calendar) xs_DateTime.parseObject(packet.getString("endTime"));
-			fromtext.setText(getText(R.string.from)+" : "+ printCalendar(from));
-			totext.setText(getText(R.string.until)+"  : "+ printCalendar(to));
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	@Override
@@ -141,12 +132,12 @@ public class ShowEvent extends Activity{
 	protected Dialog onCreateDialog(int id) {
 		switch(id){
 		case ASK_CONFIRMATION :
-			return new AlertDialog.Builder(ShowEvent.this)
+			return new AlertDialog.Builder(ShowTask.this)
             .setIcon(android.R.drawable.ic_dialog_alert)
             .setTitle(R.string.ask_for_deletion)
             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                	Thread deleteThread = EventResource.removeEvent(packet.getString("id"), handler, ShowEvent.this);
+                	Thread deleteThread = EventResource.removeEvent(packet.getString("id"), handler, ShowTask.this);
                 	showDialog(WAIT_DELETION);
                 }
             })
@@ -170,7 +161,8 @@ public class ShowEvent extends Activity{
 	
 	public void finishDeletion(boolean success){
 		dismissDialog(WAIT_DELETION);
-		if (!success) Toast.makeText(ShowEvent.this, R.string.deletion_error,
+		if (!success) Toast.makeText(ShowTask.this, R.string.deletion_error,
                 Toast.LENGTH_LONG).show();
 	}
 }
+
