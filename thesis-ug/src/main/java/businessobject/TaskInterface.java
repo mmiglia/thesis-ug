@@ -66,8 +66,7 @@ public interface TaskInterface {
 	 *            the new task object
 	 * @return false if unsuccessful, 1 if successful
 	 */
-	public boolean updateTask(String userid, SingleTask oldTask,
-			SingleTask newTask);
+	public boolean updateTask(String userid, SingleTask newTask);
 
 	/**
 	 * retrieve all tasks from this user Calendar
