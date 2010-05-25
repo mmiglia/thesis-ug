@@ -131,10 +131,9 @@ public class TaskManager extends Publisher<TaskSubscriber> {
 	 *            the new task object
 	 * @return false if unsuccessful, 1 if successful
 	 */
-	public boolean updateTask(String userid, SingleTask oldTask,
-			SingleTask newTask) {		
-		for (TaskSubscriber o : subscriberlist) o.updateTask(userid, oldTask, newTask);
-		TaskDatabase.instance.updateTask(oldTask.ID, newTask);
+	public boolean updateTask(String userid, SingleTask newTask) {		
+		for (TaskSubscriber o : subscriberlist) o.updateTask(userid, newTask);
+		TaskDatabase.instance.updateTask(newTask.ID, newTask);
 		return true;
 	}	
 

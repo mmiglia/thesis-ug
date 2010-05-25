@@ -74,9 +74,9 @@ public class TaskResource {
 	@Path("update")
 	@Consumes("application/xml")
 	public void updateTasks(@PathParam("username") String userid,
-			@CookieParam("sessionid") String sessionid, SingleTask oldTask, SingleTask newTask) {
+			@CookieParam("sessionid") String sessionid, SingleTask newTask) {
 		log.info("Request to update task from user " + userid + ", session " + sessionid);
-		TaskManager.getInstance().updateTask(userid, oldTask, newTask);		
+		TaskManager.getInstance().updateTask(userid, newTask);		
 	}
 	
 	/**
