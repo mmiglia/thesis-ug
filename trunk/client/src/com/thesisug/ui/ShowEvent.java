@@ -34,6 +34,7 @@ public class ShowEvent extends Activity{
 	private TextView title, location, fromtext, totext, priority_value, description;
 	private RatingBar priority;
 	private Calendar from, to;
+	private float latitude, longitude;
 	private static final XsDateTimeFormat xs_DateTime = new XsDateTimeFormat();
 	private final Handler handler = new Handler();
 	
@@ -62,6 +63,8 @@ public class ShowEvent extends Activity{
 		priority_value.setText(Integer.toString(packet.getInt("priority")));
 		priority.setRating(packet.getInt("priority"));
 		description.setText(packet.getString("description"));
+		latitude = packet.getFloat("latitude");
+		longitude = packet.getFloat("longitude");
 		try {
 			from = (Calendar) xs_DateTime.parseObject(packet.getString("startTime"));
 			to = (Calendar) xs_DateTime.parseObject(packet.getString("endTime"));
@@ -96,8 +99,8 @@ public class ShowEvent extends Activity{
 			intent.putExtra("endTime", new XsDateTimeFormat().format(to));
 			intent.putExtra("priority", Math.round(priority.getRating()));
 			intent.putExtra("description", description.getText().toString());
-			//intent.putExtra("longitude", ev.gpscoordinate.longitude);
-			//intent.putExtra("latitude", ev.gpscoordinate.latitude);
+			intent.putExtra("longitude", longitude);
+			intent.putExtra("latitude", latitude);
 			startActivityForResult(intent, 0);
 			break;			
 		case DELETE:
@@ -126,6 +129,8 @@ public class ShowEvent extends Activity{
 			priority_value.setText(Integer.toString(packet.getInt("priority")));
 			priority.setRating(packet.getInt("priority"));
 			description.setText(packet.getString("description"));
+			latitude = packet.getFloat("latitude");
+			longitude = packet.getFloat("longitude");
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -140,7 +145,7 @@ public class ShowEvent extends Activity{
             .setTitle(R.string.ask_for_deletion)
             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                	Thread deleteThread = EventResource.removeEvent(packet.getString("username"), packet.getString("session"), packet.getString("id"), handler, ShowEvent.this);
+                	Thread deleteThread = EventResource.removeEvent(packet.getString("id"), handler, ShowEvent.this);
                 	showDialog(WAIT_DELETION);
                 }
             })

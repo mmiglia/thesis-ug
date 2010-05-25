@@ -71,6 +71,8 @@ public class SingleEvent extends Reminder {
 		newcopy.startTime = startTime;
 		newcopy.endTime = endTime;
 		newcopy.location = location;
+		newcopy.gpscoordinate.latitude = gpscoordinate.latitude;
+		newcopy.gpscoordinate.longitude = gpscoordinate.longitude;
 		return newcopy;
 	}
 }

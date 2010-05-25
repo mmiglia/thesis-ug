@@ -67,17 +67,8 @@ public class LoginResource{
 		final Runnable runnable = new Runnable() {
 			public void run() {
 				LoginReply result = Authenticate(username, password);
-				if (result.status == 1) {
-					if (Log.isLoggable(TAG, Log.VERBOSE)) {
-						Log.v(TAG, "Successful authentication");
-					}
-					sendResult(true, handler, context);
-				} else {
-					if (Log.isLoggable(TAG, Log.VERBOSE)) {
-						Log.v(TAG, "Unsuccessful authentication");
-					}
-					sendResult(false, handler, context);
-				}
+				Log.v(TAG, (result.status == 1)? "Successful authentication": "Unsuccessful authentication");
+				sendResult(result, handler, context);
 			}
 		};
 		// start authenticating
@@ -92,7 +83,7 @@ public class LoginResource{
      * @param handler The main UI thread's handler instance.
      * @param context The caller Activity's context.
      */
-    private static void sendResult(final Boolean result, final Handler handler,
+    private static void sendResult(final LoginReply result, final Handler handler,
         final Context context) {
         if (handler == null || context == null) {
             return;

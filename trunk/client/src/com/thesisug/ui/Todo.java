@@ -31,7 +31,7 @@ public class Todo extends ListActivity {
 	
 	public final static String ITEM_DATA = "data";
 	private Thread downloadThread;
-	private String username, session;
+	private static String username, session;
 	private AccountManager accountManager;
 	private Account[] accounts;
 	private final Handler handler = new Handler();
@@ -41,17 +41,17 @@ public class Todo extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		showDialog(0);
         accountManager = AccountManager.get(getApplicationContext());
         accounts = accountManager.getAccountsByType(com.thesisug.Constants.ACCOUNT_TYPE);
         if (accounts.length == 0) {
-        	dismissDialog(0);
         	Intent login = new Intent(getApplicationContext(),Login.class);
-        	startActivityForResult(login, LOGIN_SCREEN);
+        	startActivityForResult(login, 0);
         } else {
-        	session = accountManager.blockingGetAuthToken(accounts[0],com.thesisug.Constants.ACCOUNT_TYPE, true);
+        	SeparatedListAdapter adapter = new SeparatedListAdapter(this);
+        	setListAdapter(adapter);
+        	showDialog(0);
         	username = accounts[0].name;
-    		downloadThread = EventResource.getAllEvent(username, session, handler, this);
+    		downloadThread = EventResource.getAllEvent(handler, this);
         }
 	}
 	
@@ -63,13 +63,12 @@ public class Todo extends ListActivity {
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		Log.i(TAG, "hallo");
-		Log.i(TAG, "position " + Integer.toString(position));
-		Log.i(TAG, "id " + Long.toString(id));
 		LinkedHashMap<String,Reminder> item = (LinkedHashMap<String, Reminder>) (l.getItemAtPosition(position));
 		Intent intent;
 		if (item.get(ITEM_DATA) instanceof SingleEvent){
 			SingleEvent ev = (SingleEvent) item.get(ITEM_DATA);
+			// return if there are no event today
+			if (ev.title == getText(R.string.no_event_today).toString()) return;
 			intent = new Intent("com.thesisug.SHOW_EVENT");
 			intent.putExtra("username", username);
 			intent.putExtra("session", session);
@@ -82,6 +81,7 @@ public class Todo extends ListActivity {
 			intent.putExtra("id", ev.ID);
 			intent.putExtra("longitude", ev.gpscoordinate.longitude);
 			intent.putExtra("latitude", ev.gpscoordinate.latitude);
+			Log.i(TAG, "onListItemClick longitude = "+ev.gpscoordinate.longitude + " latitude = "+ ev.gpscoordinate.latitude);
 		}
 		else {
 			intent = new Intent("com.thesisug.SHOW_ACTIVITY");
@@ -102,6 +102,7 @@ public class Todo extends ListActivity {
 					Log.i(TAG, "Retrieving data is canceled");
 				}
 			});
+			Log.i(TAG, "created dialog"+id);
 			return dialog;
 		}
 	
@@ -110,22 +111,33 @@ public class Todo extends ListActivity {
 		return dialog;
 	}
 	
+	/**
+	 * Called when user returns after login screen
+	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent){
 		showDialog(0);
-		event = new LinkedList<LinkedHashMap<String,?>>();
-		tasks = new LinkedList<LinkedHashMap<String,?>>();
+		accountManager = AccountManager.get(getApplicationContext());
+        accounts = accountManager.getAccountsByType(com.thesisug.Constants.ACCOUNT_TYPE);
+        username = accounts[0].name;
 		// refresh content from server
-		downloadThread = EventResource.getAllEvent(username, session, handler, this);
+		downloadThread = EventResource.getAllEvent(handler, this);
+		Log.i(TAG, "onActivityResult create new thread to download");
 	}
 	
 	public void afterDataLoaded(List<SingleEvent> data){
+		Log.i(TAG, "after data is loaded, dismissed dialog 0");
 		dismissDialog(0); //disable the progress dialog
-		for (SingleEvent o : data){
-			event.add(createItem(o));
+		event = new LinkedList<LinkedHashMap<String,?>>();
+		tasks = new LinkedList<LinkedHashMap<String,?>>();
+		if (data.isEmpty()) event.add(createItem (new SingleEvent(getText(R.string.no_event_today).toString(), "", "", "", "")));
+		else {
+			for (SingleEvent o : data){
+				event.add(createItem(o));
+			}
 		}
 		tasks.add(createItem(new SingleTask("buy milk", "2309", "around Genoa")));
-		tasks.add(createItem(new SingleTask("buy train ticket", "2309", "Principe FS")));
+		//tasks.add(createItem(new SingleTask("buy train ticket", "2309", "Principe FS")));
 		
 		// create our list and custom adapter
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);
@@ -133,15 +145,14 @@ public class Todo extends ListActivity {
 		SimpleAdapter taskAdapter = new SimpleAdapter(this, tasks, R.layout.todo_task,
 		new String[] { ITEM_DATA }, new int[] { R.id.list_simple_title });
 		taskAdapter.setViewBinder(new TaskBinder());
-		adapter.addSection("Gotta do these dude !!", taskAdapter);
+		adapter.addSection(getText(R.string.task_list_header).toString(), taskAdapter);
 		
 		SimpleAdapter eventAdapter = new SimpleAdapter(this, event, R.layout.todo_event,
 				new String[] { ITEM_DATA, ITEM_DATA }, new int[] { R.id.list_complex_title, R.id.list_complex_caption });
-		adapter.addSection("Today, your appointments are", eventAdapter);
+		adapter.addSection(getText(R.string.event_list_header).toString(), eventAdapter);
 		eventAdapter.setViewBinder(new EventBinder());
 		
 		setListAdapter(adapter);
-
 	}
 	
 

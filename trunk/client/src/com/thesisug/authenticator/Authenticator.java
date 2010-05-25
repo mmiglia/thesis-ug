@@ -17,7 +17,7 @@ import com.thesisug.ui.Login;
  * Implementation of AbstractAccountAuthenticator for authenticating accounts in
  * the com.thesisug domain.
  */
-class Authenticator extends AbstractAccountAuthenticator {
+public class Authenticator extends AbstractAccountAuthenticator {
 	private final Context context;
 	private static final String TAG = "Authenticator";
 

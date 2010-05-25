@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.thesisug.R;
 import com.thesisug.communication.LoginResource;
+import com.thesisug.communication.valueobject.LoginReply;
 
 /**
  * This activity is shown when the user add new account service in
@@ -111,11 +112,11 @@ public class Login extends AccountAuthenticatorActivity {
     /**
      * Called after authentication process is finished
      */
-    public void showResult(boolean result) {
+    public void showResult(LoginReply result) {
         dismissDialog(0); //disable the progress dialog
-        if (result) {
+        if (result.status == 1) {
             if (!confirmCredentials) {
-            	finishLogin();
+            	finishLogin(result);
             } else {
                 finishConfirmCredentials(true);
             }
@@ -139,25 +140,24 @@ public class Login extends AccountAuthenticatorActivity {
      * @param the confirmCredentials result.
      */
 
-    protected void finishLogin() {
+    protected void finishLogin(LoginReply result) {
         final Account account = new Account(username, com.thesisug.Constants.ACCOUNT_TYPE);
         Log.i(TAG, "finish login");
-        if (usernameIsEmpty) {
-            accountManager.addAccountExplicitly(account, password, null);
-            // Set contacts sync for this account.
-           // ContentResolver.setSyncAutomatically(account,
-              //  ContactsContract.AUTHORITY, true);
-        } else {
-        	//this line has to be there to complete authorization process
-            accountManager.setPassword(account, password); 
-        }
         Intent intent = getIntent();
         Log.i(TAG, "after intent");
         intent.putExtra(AccountManager.KEY_ACCOUNT_NAME, username);
         intent.putExtra(AccountManager.KEY_ACCOUNT_TYPE, com.thesisug.Constants.ACCOUNT_TYPE);
-        if (authtokenType != null && authtokenType.equals(com.thesisug.Constants.AUTHTOKEN_TYPE)) {
-                intent.putExtra(AccountManager.KEY_AUTHTOKEN, password);
-            }
+        intent.putExtra(AccountManager.KEY_AUTHTOKEN, result.session);
+        if (usernameIsEmpty) {
+        	accountManager.addAccountExplicitly(account, result.session, intent.getExtras());
+        	accountManager.setPassword(account, password); 
+        	// Set contacts sync for this account.
+        	// ContentResolver.setSyncAutomatically(account,
+        	//  ContactsContract.AUTHORITY, true);
+        } else {
+        	//this line has to be there to complete authorization process
+        	accountManager.setPassword(account, password); 
+        }
         setAccountAuthenticatorResult(intent.getExtras());
         AccountAuthenticatorResponse response = intent.getExtras().getParcelable(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE);
         if (response!=null) response.onResult(intent.getExtras());

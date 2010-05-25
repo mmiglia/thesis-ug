@@ -16,12 +16,15 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.xml.sax.SAXException;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
 import com.thesisug.communication.valueobject.SingleEvent;
 import com.thesisug.communication.xmlparser.SingleEventHandler;
+import com.thesisug.authenticator.Authenticator;
 import com.thesisug.ui.EditEvent;
 import com.thesisug.ui.ShowEvent;
 import com.thesisug.ui.Todo;
@@ -33,24 +36,28 @@ public class EventResource {
 	private static final String BETWEEN_EVENTS = "/event/between";
 	private static final String UPDATE_EVENT = "/event/update";
 	private static final String REMOVE_EVENT = "/event/erase";
+	private static AccountManager accountManager;
+	private static Account[] accounts;
 	
 	public void createEvent(String userid, String sessionid, SingleEvent toAdd) {
 	}
 
-	private static List<SingleEvent> runHttpGet(String userid,
-			String sessionid, final String method,
-			final ArrayList<NameValuePair> params) {
+	private static List<SingleEvent> runHttpGet(final String method,
+			final ArrayList<NameValuePair> params, Context c) {
 		List<SingleEvent> result = new LinkedList<SingleEvent>();
 		DefaultHttpClient newClient = NetworkUtilities.createClient();
 		String query = (params == null) ? "" : URLEncodedUtils.format(params,
 				"UTF-8");
+		AccountUtil util = new AccountUtil();
 		HttpGet request = new HttpGet(NetworkUtilities.SERVER_URI + "/"
-				+ userid + method + query);
+				+ util.getUsername(c) + method + query);
+		request.addHeader("Cookie", "sessionid="+util.getToken(c));
 		// send the request to network
 		HttpResponse response = NetworkUtilities
 				.sendRequest(newClient, request);
 		// if we cannot connect to the server
 		if (response.getStatusLine().getStatusCode() != 200) {
+			Log.i(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
 			return result;
 		}
 		try { // parsing XML message
@@ -75,14 +82,15 @@ public class EventResource {
 	/*
 	 * return true upon successful POST, false otherwise
 	 */
-	private static boolean runHttpPost(String userid,
-			String sessionid, final String method,
-			final ArrayList<NameValuePair> params, final String msgBody) {
+	private static boolean runHttpPost(final String method,
+			final ArrayList<NameValuePair> params, final String msgBody, Context c) {
 		DefaultHttpClient newClient = NetworkUtilities.createClient();
 		String query = (params == null) ? "" : URLEncodedUtils.format(params,
 				"UTF-8");
+		AccountUtil util = new AccountUtil();
 		HttpPost request = new HttpPost(NetworkUtilities.SERVER_URI + "/"
-				+ userid + method + query);
+				+ util.getUsername(c) + method + query);
+		request.addHeader("Cookie", "sessionid="+util.getToken(c));
 		try {
 			request.setHeader("Content-Type", "application/xml");
 			request.setEntity(new StringEntity(msgBody));
@@ -97,14 +105,12 @@ public class EventResource {
 		}
 	}
 
-	public static Thread updateEvent(final String username,
-			final String sessionid, final SingleEvent newEvent, final Handler handler,
+	public static Thread updateEvent(final SingleEvent newEvent, final Handler handler,
 			final Context context) {
 		final Runnable runnable = new Runnable() {
 			public void run() {
 				String body = SingleEventHandler.format(newEvent);
-				final boolean result = runHttpPost(username, sessionid,
-						UPDATE_EVENT, null, body);
+				final boolean result = runHttpPost(UPDATE_EVENT, null, body, context);
 				if (handler == null || context == null) {
 					return;
 				}
@@ -119,13 +125,11 @@ public class EventResource {
 		return NetworkUtilities.startBackgroundThread(runnable);
 	}
 
-	public static Thread removeEvent(final String username,
-			final String sessionid, final String eventID, final Handler handler,
+	public static Thread removeEvent(final String eventID, final Handler handler,
 			final Context context) {
 		final Runnable runnable = new Runnable() {
 			public void run() {				
-				final boolean result = runHttpPost(username, sessionid,
-						REMOVE_EVENT, null, eventID);
+				final boolean result = runHttpPost(REMOVE_EVENT, null, eventID, context);
 				if (handler == null || context == null) {
 					return;
 				}
@@ -152,12 +156,10 @@ public class EventResource {
 	 *            activity that calls for authentication
 	 * @return thread running authentication
 	 */
-	public static Thread getAllEvent(final String username,
-			final String sessionid, final Handler handler, final Context context) {
+	public static Thread getAllEvent(final Handler handler, final Context context) {
 		final Runnable runnable = new Runnable() {
 			public void run() {
-				List<SingleEvent> result = runHttpGet(username, sessionid,
-						ALL_EVENTS, null);
+				List<SingleEvent> result = runHttpGet(ALL_EVENTS, null, context);
 				sendResult(result, handler, context);
 			}
 		};
@@ -165,12 +167,10 @@ public class EventResource {
 		return NetworkUtilities.startBackgroundThread(runnable);
 	}
 
-	public static Thread getEventToday(final String username,
-			final String sessionid, final Handler handler, final Context context) {
+	public static Thread getEventToday(final Handler handler, final Context context) {
 		final Runnable runnable = new Runnable() {
 			public void run() {
-				List<SingleEvent> result = runHttpGet(username, sessionid,
-						TODAY_EVENTS, null);
+				List<SingleEvent> result = runHttpGet(TODAY_EVENTS, null, context);
 				sendResult(result, handler, context);
 			}
 		};
@@ -178,16 +178,14 @@ public class EventResource {
 		return NetworkUtilities.startBackgroundThread(runnable);
 	}
 
-	public static Thread getEvent(final String username,
-			final String sessionid, final String DateFrom, final String DateTo,
+	public static Thread getEvent(final String DateFrom, final String DateTo,
 			final Handler handler, final Context context) {
 		final Runnable runnable = new Runnable() {
 			public void run() {
 				ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 				params.add(new BasicNameValuePair("s", DateFrom));
 				params.add(new BasicNameValuePair("e", DateTo));
-				List<SingleEvent> result = runHttpGet(username, sessionid,
-						BETWEEN_EVENTS, params);
+				List<SingleEvent> result = runHttpGet(BETWEEN_EVENTS, params, context);
 				sendResult(result, handler, context);
 			}
 		};
