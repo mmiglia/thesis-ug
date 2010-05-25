@@ -1,15 +1,13 @@
 package com.thesisug.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Message;
-import android.util.Log;
-import android.widget.LinearLayout;
-import android.widget.ZoomControls;
 
 import com.google.android.maps.GeoPoint;
+import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
@@ -24,7 +22,7 @@ public class Map extends MapActivity{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map);  
-        MapView mapView = (MapView) findViewById(R.id.mapView);        
+        MapView mapView = (MapView) findViewById(R.id.mapView1);        
         List<Overlay> mapOverlays = mapView.getOverlays();
         MarkerOverlay marker = new MarkerOverlay(this.getResources().getDrawable(R.drawable.androidmarker));
         MarkerOverlay place = new MarkerOverlay(this.getResources().getDrawable(R.drawable.place));
@@ -45,4 +43,29 @@ public class Map extends MapActivity{
     protected boolean isRouteDisplayed() {
         return false;
     }
+}
+
+class MarkerOverlay extends ItemizedOverlay {
+
+	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
+	
+	public MarkerOverlay(Drawable defaultMarker) {
+		super(boundCenterBottom(defaultMarker));
+	}
+
+	@Override
+	protected OverlayItem createItem(int i) {
+		return mOverlays.get(i);
+	}
+
+	@Override
+	public int size() {
+		return mOverlays.size();
+	}
+	
+	public void addOverlay(OverlayItem overlay) {
+	    mOverlays.add(overlay);
+	    populate();
+	}
+
 }

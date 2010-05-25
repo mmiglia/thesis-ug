@@ -46,8 +46,6 @@ public class NetworkUtilities {
 			e.printStackTrace();
 			//return SERVER NOT FOUND status if there's error during connection
 			return new BasicHttpResponse(new ProtocolVersion("1.1", 0 , 0), 404,"");
-		} finally {
-			Log.i(TAG, "finally");
 		}
 	}
 	

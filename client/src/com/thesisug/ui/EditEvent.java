@@ -39,9 +39,11 @@ public class EditEvent extends Activity {
     
     private final Handler handler = new Handler();
     // button
-    private Button dateFrom, timeFrom, dateTo, timeTo, save, back;
+    private Button dateFrom, timeFrom, dateTo, gps, timeTo, save, back;
     private EditText title, location, description;
     private RatingBar priority;
+    private float latitude, longitude;
+    
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -52,6 +54,7 @@ public class EditEvent extends Activity {
 		timeFrom = (Button) findViewById(R.id.time_from);
 		dateTo = (Button) findViewById(R.id.date_to);
 		timeTo = (Button) findViewById(R.id.time_to);
+		gps = (Button) findViewById(R.id.event_gps);
         save = (Button) findViewById(R.id.save_button);
         back = (Button) findViewById(R.id.back_button);
 		title = (EditText) findViewById(R.id.event_title);
@@ -79,6 +82,14 @@ public class EditEvent extends Activity {
     			showDialog(TIMETO_DIALOG_ID);
     		}
     	});
+    	gps.setOnClickListener(new View.OnClickListener() {
+    		public void onClick(View v) {
+    			Intent intent = new Intent(EditEvent.this, EditGPS.class);
+    			intent.putExtra("latitude", latitude);
+    			intent.putExtra("longitude", longitude);
+    			startActivityForResult(intent, 1);
+    		}
+    	});
     	save.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				SingleEvent ev = new SingleEvent();
@@ -89,9 +100,9 @@ public class EditEvent extends Activity {
 				ev.endTime = new XsDateTimeFormat().format(to);
 				ev.priority = Math.round(priority.getRating());
 				ev.description = description.getText().toString();
-				//ev.gpscoordinate.longitude =;
-				//ev.gpscoordinate.latitude =;
-				Thread savingThread = EventResource.updateEvent(packet.getString("username"), packet.getString("session"), ev, handler, EditEvent.this);
+				ev.gpscoordinate.longitude = longitude;
+				ev.gpscoordinate.latitude = latitude;
+				Thread savingThread = EventResource.updateEvent(ev, handler, EditEvent.this);
 				showDialog(SAVE_DATA_ID);
 			}
 		});
@@ -113,6 +124,8 @@ public class EditEvent extends Activity {
 			intent.putExtra("endTime", new XsDateTimeFormat().format(to));
 			intent.putExtra("priority", Math.round(priority.getRating()));
 			intent.putExtra("description", description.getText().toString());
+			intent.putExtra("latitude", latitude);
+			intent.putExtra("longitude", longitude);
 			setResult(RESULT_OK, intent);
 			finish();
     	} else {
@@ -120,6 +133,15 @@ public class EditEvent extends Activity {
                     Toast.LENGTH_LONG).show();
     	}    	
     }
+    
+    @Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent){
+        super.onActivityResult(requestCode, resultCode, intent);
+        latitude = intent.getFloatExtra("latitude", 0);
+        longitude = intent.getFloatExtra("longitude", 0);
+        Log.i(TAG, "latitude = "+latitude+" longitude = "+longitude);
+    }
+    
 	private void updateText(Bundle packet) {
 		title.setText((packet.getString("title")==null)?"":packet.getString("title"));
 		location.setText((packet.getString("location")==null)?"":packet.getString("location"));
@@ -132,6 +154,8 @@ public class EditEvent extends Activity {
 		timeFrom.setText(getTimeString(from));
 		dateTo.setText(getDateString(to));
 		timeTo.setText(getTimeString(to));
+		latitude = packet.getFloat("latitude");
+		longitude = packet.getFloat("longitude");
 	}
 
 	private void extractDate(String xsDateTime, int code) {
@@ -233,9 +257,9 @@ public class EditEvent extends Activity {
 	}
 
 	private CharSequence getTimeString(Calendar cal) {
-		int hour = cal.get(Calendar.HOUR);
+		int hour = cal.get(Calendar.HOUR_OF_DAY);
 		int minute = cal.get(Calendar.MINUTE);
-		return String.valueOf((hour==0)?12:hour)+":"+((minute<10)?"0":"")+String.valueOf(minute)+ ((hour>=12)?" PM":" AM");
+		return String.valueOf((hour==0)?12:cal.get(Calendar.HOUR))+":"+((minute<10)?"0":"")+String.valueOf(minute)+ ((hour>=12)?" PM":" AM");
 	}
     
 }
