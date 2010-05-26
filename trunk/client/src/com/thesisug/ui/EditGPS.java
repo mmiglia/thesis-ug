@@ -45,7 +45,7 @@ public class EditGPS extends MapActivity implements LocationListener{
         mapView.setBuiltInZoomControls(true);
         MapController mc = mapView.getController();
         lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) 0, 0.0f, this);    
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) 0, 0.0f, this);
         Location gpslocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         latitude = (int) (getIntent().getFloatExtra(LATITUDE, 0)*1e6);
         longitude = (int) (getIntent().getFloatExtra(LONGITUDE, 0)*1e6);
