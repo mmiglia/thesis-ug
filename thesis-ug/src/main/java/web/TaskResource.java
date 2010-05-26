@@ -19,7 +19,7 @@ import businessobject.TaskManager;
 /**
  * Task Resource is responsible for GETTING the task from the server
  */
-@Path("{username}/task")
+@Path("/{username}/task")
 public class TaskResource {
 	private static Logger log = LoggerFactory.getLogger(TaskResource.class);
 
