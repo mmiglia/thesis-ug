@@ -34,19 +34,6 @@ public class Converter {
 			log.warn("Cannot parse string :"+xsDateTime);
 		}
 		return result;
-		/*String toParse = new String(xsDateTime);
-		int stringLength = toParse.length();
-		// removes the colon ':' at the 3rd position from the end to match ISO 8601
-		SimpleDateFormat ISO_8601_DATE = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");//NOT thread safe
-		toParse=toParse.substring(0, stringLength-3)+toParse.substring(stringLength-2,stringLength);
-		try {
-			Calendar now = Calendar.getInstance();
-			now.setTime(ISO_8601_DATE.parse(toParse));
-			return now;
-		} catch (ParseException e) {
-			e.printStackTrace();
-			return null;
-		}*/
 	}
 	
 	/**
@@ -65,20 +52,6 @@ public class Converter {
 			log.warn("Cannot parse string :"+xsTime);
 		}
 		return result;
-		/*String toParse = new String(xsTime);
-		int stringLength = toParse.length();
-		// removes the colon ':' at the 3rd position from the end to match ISO 8601
-		SimpleDateFormat ISO_8601_TIME = new SimpleDateFormat("HH:mm:ssZ");//NOT thread safe
-		toParse=toParse.substring(0, stringLength-3)+toParse.substring(stringLength-2,stringLength);
-		try {
-			Calendar result = Calendar.getInstance();
-			result.setTime(ISO_8601_TIME.parse(toParse));
-			return result;
-		} catch (ParseException e) {
-			log.warn("Cannot parse string :"+toParse);
-			e.printStackTrace();
-			return null;
-		}*/
 	}
 	
 	/**
@@ -88,11 +61,6 @@ public class Converter {
 	 */
 	public static String CalendarDatetoString (Calendar xsDateTime) {
 		return new XsDateTimeFormat().format(xsDateTime);
-		/*SimpleDateFormat ISO_8601_DATE = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");//NOT thread safe
-		log.debug("Converting Calendar Date to xs:Datetime string");
-		String result = ISO_8601_DATE.format(xsDateTime.getTime());
-		int stringLength = result.length();
-		return result.substring(0, stringLength-2)+":"+result.substring(stringLength-2,stringLength);*/
 	}
 	
 	/**
@@ -102,12 +70,6 @@ public class Converter {
 	 */
 	public static String CalendarTimetoString (Calendar xsTime) {		
 		return new XsDateTimeFormat(false,true).format(xsTime);
-
-		/*SimpleDateFormat ISO_8601_TIME = new SimpleDateFormat("HH:mm:ssZ");//NOT thread safe
-		log.debug("Converting Calendar Time to xs:Time string");
-		String result = ISO_8601_TIME.format(xsTime.getTime());
-		int stringLength = result.length();
-		return result.substring(0, stringLength-2)+":"+result.substring(stringLength-2,stringLength);*/
 	}
 }
 
