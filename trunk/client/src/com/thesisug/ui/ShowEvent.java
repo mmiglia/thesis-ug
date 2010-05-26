@@ -79,7 +79,7 @@ public class ShowEvent extends Activity{
 	public boolean onCreateOptionsMenu(Menu menu){
 		menu.add(0,EDIT,0,getText(R.string.edit_event)).setIcon(R.drawable.edit);
 		menu.add(0,DELETE,0,getText(R.string.delete_event)).setIcon(R.drawable.trash);
-		menu.add(0,BACK,0,getText(R.string.back)).setIcon(R.drawable.exit);
+		menu.add(0,BACK,0,getText(R.string.back)).setIcon(R.drawable.back);
 		return true;
 	}
 	
