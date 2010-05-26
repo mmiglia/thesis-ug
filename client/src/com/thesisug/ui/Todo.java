@@ -60,7 +60,7 @@ public class Todo extends ListActivity {
         	showDialog(0);
         	username = accounts[0].name;
     		downloadEventThread = EventResource.getAllEvent(handler, this);
-    		downloadTaskThread = TaskResource.getAllTask(handler, this);
+    		downloadTaskThread = TaskResource.getFirstTask(handler, this);
         }
 	}
 	
@@ -72,10 +72,10 @@ public class Todo extends ListActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu){
-		menu.add(0,CREATE_EVENT,0,"Create Event").setIcon(R.drawable.edit);
-		menu.add(0,CREATE_TASK,0,"Create Task").setIcon(R.drawable.edit);
-		menu.add(0,VOICE_INPUT,0,"Voice Input").setIcon(R.drawable.edit);
-		menu.add(0,BACK,0,"Back").setIcon(R.drawable.exit);
+		menu.add(0,CREATE_EVENT,0,"Create Event").setIcon(R.drawable.event);
+		menu.add(0,CREATE_TASK,0,"Create Task").setIcon(R.drawable.task);
+		menu.add(0,VOICE_INPUT,0,"Voice Input").setIcon(R.drawable.voice);
+		menu.add(0,BACK,0,"EXIT").setIcon(R.drawable.exit);
 		return true;
 	}
 	
@@ -178,7 +178,7 @@ public class Todo extends ListActivity {
         username = accounts[0].name;
 		// refresh content from server
 		downloadEventThread = EventResource.getAllEvent(handler, this);
-		downloadTaskThread = TaskResource.getAllTask(handler, this);
+		downloadTaskThread = TaskResource.getFirstTask(handler, this);
 		Log.i(TAG, "onActivityResult create new thread to download");
 	}
 	

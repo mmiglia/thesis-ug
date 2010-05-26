@@ -32,8 +32,7 @@ import com.thesisug.ui.Todo;
 public class TaskResource {
 	private static final String TAG = new String("EventResource");
 	private static final String ALL_TASKS = "/task/all";
-	private static final String TODAY_TASKS = "/task/today";
-	private static final String BETWEEN_TASKS = "/task/between";
+	private static final String FIRST_TASKS = "/task/first";
 	private static final String UPDATE_TASK = "/task/update";
 	private static final String REMOVE_TASK = "/task/erase";
 	private static final String CREATE_TASK = "/task/add";
@@ -188,26 +187,11 @@ public class TaskResource {
 		// start authenticating
 		return NetworkUtilities.startBackgroundThread(runnable);
 	}
-
-	public static Thread getTaskToday(final Handler handler, final Context context) {
+	
+	public static Thread getFirstTask(final Handler handler, final Context context) {
 		final Runnable runnable = new Runnable() {
-			public void run() {
-				List<SingleTask> result = runHttpGet(TODAY_TASKS, null, context);
-				sendResult(result, handler, context);
-			}
-		};
-		// start authenticating
-		return NetworkUtilities.startBackgroundThread(runnable);
-	}
-
-	public static Thread getTask(final String DateFrom, final String DateTo,
-			final Handler handler, final Context context) {
-		final Runnable runnable = new Runnable() {
-			public void run() {
-				ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-				params.add(new BasicNameValuePair("s", DateFrom));
-				params.add(new BasicNameValuePair("e", DateTo));
-				List<SingleTask> result = runHttpGet(BETWEEN_TASKS, params, context);
+			public void run() {				
+				List<SingleTask> result = runHttpGet(FIRST_TASKS, null, context);
 				sendResult(result, handler, context);
 			}
 		};
