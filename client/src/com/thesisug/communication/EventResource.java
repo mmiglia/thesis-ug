@@ -38,9 +38,6 @@ public class EventResource {
 	private static final String REMOVE_EVENT = "/event/erase";
 	private static final String CREATE_EVENT = "/event/add";
 	
-	private static AccountManager accountManager;
-	private static Account[] accounts;
-	
 	private static List<SingleEvent> runHttpGet(final String method,
 			final ArrayList<NameValuePair> params, Context c) {
 		List<SingleEvent> result = new LinkedList<SingleEvent>();

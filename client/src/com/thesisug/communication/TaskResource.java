@@ -14,7 +14,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.xml.sax.SAXException;
 
 import android.accounts.Account;
@@ -25,6 +24,7 @@ import android.util.Log;
 
 import com.thesisug.communication.valueobject.SingleTask;
 import com.thesisug.communication.xmlparser.SingleTaskHandler;
+import com.thesisug.notification.TaskNotification;
 import com.thesisug.ui.EditTask;
 import com.thesisug.ui.ShowTask;
 import com.thesisug.ui.Todo;
@@ -36,14 +36,7 @@ public class TaskResource {
 	private static final String UPDATE_TASK = "/task/update";
 	private static final String REMOVE_TASK = "/task/erase";
 	private static final String CREATE_TASK = "/task/add";
-	
-	private static AccountManager accountManager;
-	private static Account[] accounts;
-	/*public void createTask(String userid,String sessionid, SingleTask toAdd) ;	
-	public List<SingleTask> getAllTasks(String userid,	String sessionid) ;
-	public List<SingleTask> getFirstTasks(String userid, String sessionid) ;
-	public void updateTasks(String userid, String sessionid, SingleTask oldTask, SingleTask newTask) ;	
-	public void removeTasks(String taskID,	String userid, String sessionid) ;*/
+
 	private static List<SingleTask> runHttpGet(final String method,
 			final ArrayList<NameValuePair> params, Context c) {
 		List<SingleTask> result = new LinkedList<SingleTask>();
@@ -206,7 +199,9 @@ public class TaskResource {
 		}
 		handler.post(new Runnable() {
 			public void run() {
-				((Todo) context).afterTaskLoaded(result);
+				if (context instanceof Todo)
+				 ((Todo)context).afterTaskLoaded(result);
+				else ((TaskNotification)context).afterTaskLoaded(result);
 			}
 		});
 	}

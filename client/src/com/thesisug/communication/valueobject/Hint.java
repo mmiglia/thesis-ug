@@ -26,6 +26,8 @@ public class Hint {
 	public List<PhoneNumber> phoneNumbers;
 	public List<String> addressLines;
 
+	public Hint(){}
+	
 	@Override
 	public String toString() {
 		return build(this);
@@ -84,5 +86,41 @@ public class Hint {
 		{
 			return build(this);
 		}
-	}	
+		public PhoneNumber copy(){
+			PhoneNumber newcopy = new PhoneNumber();
+			newcopy.type = type;
+			newcopy.number = number;
+			return newcopy;
+		}
+	}
+	
+	public Hint copy() {
+		Hint newcopy = new Hint();
+		newcopy.city = city;
+		newcopy.content = content;
+		newcopy.country = country;
+		newcopy.ddUrl = ddUrl;
+		newcopy.ddUrlFromHere = ddUrlFromHere;
+		newcopy.ddUrlToHere = ddUrlToHere;
+		newcopy.lat = lat;
+		newcopy.listingType = listingType;
+		newcopy.lng = lng;
+		newcopy.region = region;
+		newcopy.staticMapUrl = staticMapUrl;
+		newcopy.streetAddress = streetAddress;
+		newcopy.title = title;
+		newcopy.titleNoFormatting = titleNoFormatting;
+		newcopy.url = url;
+		PhoneNumber tempphone ;
+		for (PhoneNumber o : phoneNumbers){
+			tempphone = new PhoneNumber();
+			tempphone.type = o.type;
+			tempphone.number = o.number;
+			newcopy.phoneNumbers.add(tempphone);
+		}
+		for (String address : addressLines){
+			newcopy.addressLines.add(new String(address));
+		}
+		return newcopy;
+	}
 }
