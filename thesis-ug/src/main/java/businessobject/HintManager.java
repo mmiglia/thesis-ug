@@ -2,6 +2,7 @@ package businessobject;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -35,10 +36,12 @@ public class HintManager {
 	public static List<Hint> filterLocation(int userDistance, float currentLat,
 			float currentLong, List<Hint> solution) {
 		log.info("Filtering hints result based on locations distance");
-		for (Hint o : solution) {
+		Iterator<Hint> iterator = solution.iterator();
+		while (iterator.hasNext()){
+			Hint o = iterator.next();
 			if (userDistance < (calculateDistance(currentLat, currentLong,
 					Float.parseFloat(o.lat), Float.parseFloat(o.lng))))
-				solution.remove(o);
+			iterator.remove();
 		}
 		return solution;
 	}

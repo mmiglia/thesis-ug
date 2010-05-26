@@ -30,7 +30,7 @@ public class MapsClient extends MapSubscriber {
 	private HttpClient httpClient;
 	private static final String LOCAL_SEARCH_URI = "http://ajax.googleapis.com/ajax/services/search/local";
 	private final static Logger log = LoggerFactory.getLogger(MapsClient.class);
-
+		
 	public MapsClient() {
 		this(new DefaultHttpClient());
 	}
@@ -81,7 +81,6 @@ public class MapsClient extends MapSubscriber {
 			params.put("v", "1.0");
 		}
 		String json = sendHttpRequest("GET", url, params);
-		log.info("JSON : " + json);
 		GsonBuilder builder = new GsonBuilder();
 		Gson gson = builder.create();
 		Response r = gson.fromJson(json, Response.class);

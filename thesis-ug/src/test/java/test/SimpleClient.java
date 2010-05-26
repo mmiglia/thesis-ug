@@ -5,12 +5,16 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
+import businessobject.LocationAwareManager;
+
+import valueobject.Hint;
 import valueobject.LoginReply;
 import valueobject.SingleEvent;
 import valueobject.SingleTask;
@@ -71,4 +75,10 @@ public interface SimpleClient {
 	@Path("{username}/task/update")
 	public void updateTasks(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid, SingleTask newTask);
 
+	@GET
+	@Path("/{username}/context/location")
+	@Produces("application/xml")
+	public List<Hint> checkLocation(@QueryParam("lat") float latitude, @QueryParam("lon") float longitude, @QueryParam("dist") int distance,
+			@PathParam("username") String userid,
+			@CookieParam("sessionid") String sessionid) ;
 }

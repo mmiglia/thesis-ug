@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.Hint;
+import businessobject.google.MapsClient;
 
 /**
  * This SINGLETON class is the only manager/publisher for map/geolocation services. All implemented
@@ -51,6 +52,7 @@ public class MapManager extends Publisher<MapSubscriber> {
 	 */
 	public List<Hint> searchLocalBusiness(float latitude, float longitude,
 			String business) {
-		return null;
+		MapsClient google = new MapsClient(); // currently there's only google, so we use direct call
+		return google.searchLocalBusiness(latitude, longitude, business);
 	}
 }
