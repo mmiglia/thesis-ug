@@ -1,14 +1,14 @@
 package test;
 
+import java.util.List;
 import java.util.Properties;
 
 import junit.framework.TestCase;
 
 import org.jboss.resteasy.client.ProxyFactory;
-import org.junit.Test;
 import org.slf4j.Logger;
 
-import valueobject.SingleEvent;
+import valueobject.Hint;
 import businessobject.Configuration;
 
 /**
@@ -126,12 +126,21 @@ public class OnlineTest extends TestCase {
 		log.info( URLEncodedUtils.format(params, "UTF-8"));
 	}*/
 	
-	public void testUpdateEvent() {
+	/*public void testUpdateEvent() {
 		SimpleClient client = ProxyFactory.create(SimpleClient.class,
 				"http://localhost:8080/ephemere");
 		SingleEvent newEvent = new SingleEvent("Thank you Jesus", "2010-01-03T08:00:00-08:00", "2010-05-22T09:00:00-08:00", "her apartment", "niente");
 		newEvent.ID="165804e0-6972-41e6-a87a-1154b307d19c";
 		client.updateEvent("user", "cookie", newEvent);
 		
+	}*/
+	
+	public void testLocationManager() {
+		SimpleClient client = ProxyFactory.create(SimpleClient.class,
+				"http://localhost:8080/ephemere");
+		float latitude = 40.759011f;
+		float longitude = -73.9844722f;
+		List<Hint> result = client.checkLocation(latitude, longitude, 100, "user", "dummy");
+		assertNotNull(result);
 	}
 }

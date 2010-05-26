@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 public class OntologyReasoner {
 	private final static Logger log = LoggerFactory
 			.getLogger(OntologyReasoner.class);
-	private final static String ONTOLOGY_FILE = "src/main/resources/HintsOntology.owl";
+	private final static String ONTOLOGY_FILE = Configuration.getInstance().constants.getProperty("DATABASE_FOLDER")+"/HintsOntology.owl";
 	
 	/**
 	* Get a list of location that might satisfy the need
@@ -41,7 +41,6 @@ public class OntologyReasoner {
 		OWLOntology ontology;
 		try {
 			// load the ontology file
-			log.info("Loading ontology file");
 			ontology = manager.loadOntologyFromOntologyDocument(new File(
 					ONTOLOGY_FILE));
 			String base = ontology.getOntologyID().getOntologyIRI().toString();
@@ -53,7 +52,6 @@ public class OntologyReasoner {
 
 			// runs classification with the HermiT reasoner
 			Reasoner hermit = new Reasoner(manager, ontology);
-			log.info("Classifying with HermiT reasoner");
 			hermit.classify();
 			hermit.classifyObjectProperties();
 			NodeSet<OWLNamedIndividual> inferredlocation = hermit
