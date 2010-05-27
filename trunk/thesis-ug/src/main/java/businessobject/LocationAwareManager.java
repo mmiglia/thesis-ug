@@ -55,7 +55,6 @@ public class LocationAwareManager {
 		log.info("result are "+result.size());
 		// filter the result
 		List<Hint> toReturn = HintManager.filterLocation(distance, latitude, longitude, result);
-		log.info("filtered result are "+toReturn.size()+toReturn.toString());
 		return toReturn;
 	}
 	
@@ -94,7 +93,6 @@ public class LocationAwareManager {
 					latitude, longitude, query));
 		// filter the result
 		List<Hint> toReturn = HintManager.filterLocation(distance, latitude, longitude, result);
-		log.info("filtered result are "+toReturn.size()+toReturn.toString());
 		return toReturn;
 	}
 }

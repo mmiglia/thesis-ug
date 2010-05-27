@@ -76,7 +76,7 @@ public interface SimpleClient {
 	public void updateTasks(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid, SingleTask newTask);
 
 	@GET
-	@Path("/{username}/context/location")
+	@Path("/{username}/location/all")
 	@Produces("application/xml")
 	public List<Hint> checkLocation(@QueryParam("lat") float latitude, @QueryParam("lon") float longitude, @QueryParam("dist") int distance,
 			@PathParam("username") String userid,

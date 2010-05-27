@@ -2,6 +2,7 @@ package businessobject;
 
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -71,10 +72,12 @@ public class TaskManager extends Publisher<TaskSubscriber> {
 		List<SingleTask> result = TaskDatabase.instance.getAllTask(userID);
 		Calendar now = Calendar.getInstance();
 		Calendar compare;
-		for (SingleTask o:result){
+		Iterator<SingleTask> iterator = result.iterator();
+		while (iterator.hasNext()){
+			SingleTask o = iterator.next();
 			compare = Converter.toJavaDate(o.dueDate);
 			// delete if task's deadline is already passed
-			if(now.after(compare)) result.remove(o);			
+			if(now.after(compare)) iterator.remove();			
 		}
 		Collections.sort(result); // sort based on compareTo method
 		return (result.size()<=5)? result : result.subList(0, 4); // trim the result
