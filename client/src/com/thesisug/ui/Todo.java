@@ -257,12 +257,10 @@ public class Todo extends ListActivity {
 		public boolean setViewValue(View view, Object data,
 				String textRepresentation) {
 			if (view instanceof CheckBox){
-				Log.i(TAG, "instance of checkbox event "+data.toString());
 				CheckBox temp = (CheckBox) view;
 				temp.setChecked((Boolean)data);
 				return true;
 			} else if (view instanceof TextView) {
-				Log.i(TAG, "instance of TextView event "+data.toString() +" viewnya = "+view.toString());
 				SingleEvent event = (SingleEvent) data;
 				TextView temp = (TextView) view;
 				if (temp.getId()==R.id.list_complex_title) temp.setText(event.title);
@@ -279,12 +277,10 @@ public class Todo extends ListActivity {
 		public boolean setViewValue(View view, Object data,
 				String textRepresentation) {
 			if (view instanceof CheckBox){
-				Log.i(TAG, "instance of Checkbox "+data.toString()+ " viewnya = "+ view.toString());
 				CheckBox temp = (CheckBox) view;
 				temp.setChecked((Boolean)data);
 				return true;
 			} else if (view instanceof TextView) {
-				Log.i(TAG, "instance of TExtView "+data.toString()+ " viewnya = " + view.toString());
 				SingleTask task = (SingleTask) data;
 				TextView temp = (TextView) view;
 				Log.i(TAG, "TaskBinder "+temp.getId());

@@ -3,11 +3,15 @@ package com.thesisug.communication.valueobject;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.LinkedList;
 import java.util.List;
+
+import android.os.Parcel;
+import android.os.Parcelable;
 /**
  * This class represents the location hints that will be sent to client
  */
-public class Hint {
+public class Hint implements Parcelable {
 	public String title;
 	public String url;
 	public String content;
@@ -26,7 +30,10 @@ public class Hint {
 	public List<PhoneNumber> phoneNumbers;
 	public List<String> addressLines;
 
-	public Hint(){}
+	public Hint(){
+		phoneNumbers = new LinkedList<PhoneNumber>();
+		addressLines = new LinkedList<String>();
+	}
 	
 	@Override
 	public String toString() {
@@ -123,4 +130,76 @@ public class Hint {
 		}
 		return newcopy;
 	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel out, int flag) {
+		out.writeString(title);
+		out.writeString(url);
+		out.writeString(content);
+		out.writeString(titleNoFormatting);
+		out.writeString(lat);
+		out.writeString(lng);
+		out.writeString(streetAddress);
+		out.writeString(city);
+		out.writeString(ddUrl);
+		out.writeString(ddUrlToHere);
+		out.writeString(ddUrlFromHere);
+		out.writeString(staticMapUrl);
+		out.writeString(listingType);
+		out.writeString(region);
+		out.writeString(country);
+		out.writeInt(phoneNumbers.size());
+		for (PhoneNumber o : phoneNumbers){
+			out.writeString(o.type);
+			out.writeString(o.number);
+		}
+		out.writeInt(addressLines.size());
+		for (String s : addressLines) out.writeString (s);
+	}
+	private void readFromParcel(Parcel in) {
+		title = in.readString();
+		url = in.readString();
+		content = in.readString();
+		titleNoFormatting = in.readString();
+		lat = in.readString();
+		lng = in.readString();
+		streetAddress = in.readString();
+		city = in.readString();
+		ddUrl = in.readString();
+		ddUrlToHere = in.readString();
+		ddUrlFromHere = in.readString();
+		staticMapUrl = in.readString();
+		listingType = in.readString();
+		region = in.readString();
+		country = in.readString();
+		int count = in.readInt();
+		for (int i=0; i<count;i++){
+			PhoneNumber phone = new PhoneNumber();
+			phone.type = in.readString();
+			phone.number = in.readString();
+			phoneNumbers.add(phone);
+		} 
+		count = in.readInt();
+		for (int i=0; i<count; i++)	addressLines.add(in.readString());
+    }
+
+	private Hint(Parcel in){
+		this();
+		readFromParcel(in);
+	}
+
+	public static final Parcelable.Creator<Hint> CREATOR = new Parcelable.Creator<Hint>() {
+        public Hint createFromParcel(Parcel in) {
+            return new Hint(in);
+        }
+
+        public Hint[] newArray(int size) {
+            return new Hint[size];
+        }
+    };
 }
