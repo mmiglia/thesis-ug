@@ -22,7 +22,7 @@ import businessobject.TaskManager;
 /**
  * Responsible for getting the right task/event near user location/time.
  */
-@Path("/{username}/context")
+@Path("/{username}/location")
 public class ContextListener {
 	private static Logger log = LoggerFactory.getLogger(ContextListener.class);
 
@@ -42,7 +42,7 @@ public class ContextListener {
 	 * @return list of tasks that can be completed nearby
 	 */
 	@GET
-	@Path("/location/all")
+	@Path("/all")
 	@Consumes("application/xml")
 	@Produces("application/xml")
 	public List<Hint> checkLocationAll(@QueryParam("lat") float latitude, @QueryParam("lon") float longitude, @QueryParam("dist") int distance,
@@ -69,7 +69,7 @@ public class ContextListener {
 	 * @return list of tasks that can be completed nearby
 	 */
 	@GET
-	@Path("/location/single")
+	@Path("/single")
 	@Consumes("application/xml")
 	@Produces("application/xml")
 	public List<Hint> checkLocationSingle(@QueryParam("q")String sentence, @QueryParam("lat") float latitude, @QueryParam("lon") float longitude, @QueryParam("dist") int distance,
