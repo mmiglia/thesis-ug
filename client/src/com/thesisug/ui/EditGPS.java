@@ -100,8 +100,7 @@ public class EditGPS extends MapActivity implements LocationListener{
 	public void onProviderEnabled(String provider) {}
 
 	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {
-	}
+	public void onStatusChanged(String provider, int status, Bundle extras) {}
 	
 	class MyLocation extends MyLocationOverlay {
 

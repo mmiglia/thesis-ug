@@ -48,11 +48,6 @@ private static final String TAG = "Hint Handler";
                 current.content = body;
             }
         });
-		hint.getChild("url").setEndTextElementListener(new EndTextElementListener(){
-            public void end(String body) {
-                current.url = body;
-            }
-        });
 		hint.getChild("titleNoFormatting").setEndTextElementListener(new EndTextElementListener(){
             public void end(String body) {
                 current.titleNoFormatting = body;

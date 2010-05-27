@@ -34,7 +34,7 @@ public class ContextResource{
 				"UTF-8");
 		AccountUtil util = new AccountUtil();
 		HttpGet request = new HttpGet(NetworkUtilities.SERVER_URI + "/"
-				+ util.getUsername(c) + method + query);
+				+ util.getUsername(c) + method + "?" + query);
 		request.addHeader("Cookie", "sessionid="+util.getToken(c));
 		// send the request to network
 		HttpResponse response = NetworkUtilities

@@ -217,7 +217,7 @@ public class HintList extends ListActivity {
 		// create our list and custom adapter
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);		
 		SimpleAdapter taskAdapter = new SimpleAdapter(this, tasks, R.layout.todo_task,
-		new String[] { ITEM_DATA }, new int[] { R.id.list_simple_title });
+		new String[] { ITEM_DATA }, new int[] { R.id.list_complex_title });
 		taskAdapter.setViewBinder(new TaskBinder());
 		adapter.addSection(getText(R.string.task_list_header).toString(), taskAdapter);
 		SimpleAdapter eventAdapter = new SimpleAdapter(this, event, R.layout.todo_event,
