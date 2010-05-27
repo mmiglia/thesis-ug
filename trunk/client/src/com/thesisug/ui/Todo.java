@@ -11,12 +11,14 @@ import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -32,6 +34,7 @@ import com.thesisug.communication.valueobject.SingleTask;
 public class Todo extends ListActivity {
 	public final static String TAG = "TodoActivity";
 	public final static String ITEM_DATA = "data";
+	public final static String REMIND_ME = "remindme";
 	public final static int CREATE_EVENT = 1;
 	public final static int CREATE_TASK = 2;
 	public final static int VOICE_INPUT = 3;
@@ -43,6 +46,7 @@ public class Todo extends ListActivity {
 	private AccountManager accountManager;
 	private Account[] accounts;
 	private final Handler handler = new Handler();
+	private static SharedPreferences usersettings;
 	private static List<LinkedHashMap<String,?>> event = new LinkedList<LinkedHashMap<String,?>>();
 	private static List<LinkedHashMap<String,?>> tasks = new LinkedList<LinkedHashMap<String,?>>();
 	
@@ -51,6 +55,7 @@ public class Todo extends ListActivity {
 		super.onCreate(savedInstanceState);
         accountManager = AccountManager.get(getApplicationContext());
         accounts = accountManager.getAccountsByType(com.thesisug.Constants.ACCOUNT_TYPE);
+        usersettings = getSharedPreferences(com.thesisug.Constants.ACCOUNT_TYPE, 0);
         if (accounts.length == 0) {
         	Intent login = new Intent(getApplicationContext(),Login.class);
         	startActivityForResult(login, 0);
@@ -64,9 +69,27 @@ public class Todo extends ListActivity {
         }
 	}
 	
-	private LinkedHashMap<String,?> createItem(Reminder reminder) {
-		LinkedHashMap<String,Reminder> item = new LinkedHashMap<String,Reminder>();
+	@Override
+	public void onPause() {
+		super.onPause();
+		Log.i (TAG, "Todo Activity is onPause, saving preferences");
+		// save checkbox states on pause
+		ListView currentlist = getListView();
+		SharedPreferences.Editor editor = usersettings.edit();
+		for( int i=0;i<currentlist.getChildCount();i++ ) { 
+			View currentview = (View)currentlist.getChildAt(i);
+		    TextView title = (TextView) currentview.findViewById(R.id.list_complex_title);
+			CheckBox cbox = (CheckBox) currentview.findViewById(R.id.complex_checkbox);
+			if (title == null || cbox == null) continue;
+		    editor.putBoolean(title.getText().toString(), cbox.isChecked());
+		}
+		editor.commit();
+	}
+	
+	private LinkedHashMap<String,?> createItem(Reminder reminder, boolean remindme) {
+		LinkedHashMap item = new LinkedHashMap();
 		item.put(ITEM_DATA, reminder);
+		item.put(REMIND_ME, remindme);
 		return item;
 	}
 
@@ -108,7 +131,7 @@ public class Todo extends ListActivity {
 	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-		LinkedHashMap<String,Reminder> item = (LinkedHashMap<String, Reminder>) (l.getItemAtPosition(position));
+		LinkedHashMap item = (LinkedHashMap) (l.getItemAtPosition(position));
 		Intent intent;
 		if (item.get(ITEM_DATA) instanceof SingleEvent){
 			SingleEvent ev = (SingleEvent) item.get(ITEM_DATA);
@@ -184,10 +207,10 @@ public class Todo extends ListActivity {
 	
 	public void afterTaskLoaded(List<SingleTask> data){
 		tasks = new LinkedList<LinkedHashMap<String,?>>();
-		if (data.isEmpty()) tasks.add(createItem (new SingleTask(getText(R.string.no_task_today).toString(), "", "", "", "")));
+		if (data.isEmpty()) tasks.add(createItem (new SingleTask(getText(R.string.no_task_today).toString(), "", "", "", ""), false));
 		else {
 			for (SingleTask o : data){
-				tasks.add(createItem(o));
+				tasks.add(createItem(o, usersettings.getBoolean(o.title, true)));
 			}
 		}
 		if (dataComplete()) combineResult();
@@ -195,10 +218,10 @@ public class Todo extends ListActivity {
 	
 	public void afterEventLoaded(List<SingleEvent> data){
 		event = new LinkedList<LinkedHashMap<String,?>>();
-		if (data.isEmpty()) event.add(createItem (new SingleEvent(getText(R.string.no_event_today).toString(), "", "", "", "")));
+		if (data.isEmpty()) event.add(createItem (new SingleEvent(getText(R.string.no_event_today).toString(), "", "", "", ""), false));
 		else {
 			for (SingleEvent o : data){
-				event.add(createItem(o));
+				event.add(createItem(o, usersettings.getBoolean(o.title, true)));
 			}
 		}
 		if (dataComplete()) combineResult();
@@ -217,11 +240,11 @@ public class Todo extends ListActivity {
 		// create our list and custom adapter
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);		
 		SimpleAdapter taskAdapter = new SimpleAdapter(this, tasks, R.layout.todo_task,
-		new String[] { ITEM_DATA }, new int[] { R.id.list_simple_title });
+		new String[] { ITEM_DATA, REMIND_ME }, new int[] { R.id.list_complex_title, R.id.complex_checkbox });
 		taskAdapter.setViewBinder(new TaskBinder());
 		adapter.addSection(getText(R.string.task_list_header).toString(), taskAdapter);
 		SimpleAdapter eventAdapter = new SimpleAdapter(this, event, R.layout.todo_event,
-				new String[] { ITEM_DATA, ITEM_DATA }, new int[] { R.id.list_complex_title, R.id.list_complex_caption });
+				new String[] { ITEM_DATA, ITEM_DATA, REMIND_ME }, new int[] { R.id.list_complex_title, R.id.list_complex_caption, R.id.complex_checkbox });
 		adapter.addSection(getText(R.string.event_list_header).toString(), eventAdapter);
 		eventAdapter.setViewBinder(new EventBinder());
 		
@@ -233,13 +256,19 @@ public class Todo extends ListActivity {
 		@Override
 		public boolean setViewValue(View view, Object data,
 				String textRepresentation) {
-			if (view instanceof TextView) {
-				TextView temp = (TextView) view;
+			if (view instanceof CheckBox){
+				Log.i(TAG, "instance of checkbox event "+data.toString());
+				CheckBox temp = (CheckBox) view;
+				temp.setChecked((Boolean)data);
+				return true;
+			} else if (view instanceof TextView) {
+				Log.i(TAG, "instance of TextView event "+data.toString() +" viewnya = "+view.toString());
 				SingleEvent event = (SingleEvent) data;
+				TextView temp = (TextView) view;
 				if (temp.getId()==R.id.list_complex_title) temp.setText(event.title);
 				else if (temp.getId()==R.id.list_complex_caption) temp.setText(event.description);
 				return true;
-            } 
+			}
 			return false;
 		}
 	}
@@ -249,13 +278,19 @@ public class Todo extends ListActivity {
 		@Override
 		public boolean setViewValue(View view, Object data,
 				String textRepresentation) {
-			if (view instanceof TextView) {
-				TextView temp = (TextView) view;
+			if (view instanceof CheckBox){
+				Log.i(TAG, "instance of Checkbox "+data.toString()+ " viewnya = "+ view.toString());
+				CheckBox temp = (CheckBox) view;
+				temp.setChecked((Boolean)data);
+				return true;
+			} else if (view instanceof TextView) {
+				Log.i(TAG, "instance of TExtView "+data.toString()+ " viewnya = " + view.toString());
 				SingleTask task = (SingleTask) data;
+				TextView temp = (TextView) view;
 				Log.i(TAG, "TaskBinder "+temp.getId());
 				temp.setText(task.title);
 				return true;
-            } 
+			}
 			return false;
 		}
 	}

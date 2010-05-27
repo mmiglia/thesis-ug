@@ -9,12 +9,15 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.thesisug.R;
@@ -26,21 +29,24 @@ import com.thesisug.ui.HintList;
 
 public class TaskNotification extends Service{
 	private static final String TAG = "TaskNotificationService";
-	private static final int TASK_NOTIFICATION = R.drawable.icon;
+	private static final int TASK_NOTIFICATION = R.layout.notification;
 	
 	 // variable which controls the notification thread 
     private ConditionVariable condvar, downloadlock;
-    private NotificationManager manager;
     private Thread downloadTaskThread;
     private List<SingleTask> tasks;
     private Handler handler=new Handler();
     private LocationManager lm;
+    private NotificationManager manager;
     Location gpslocation;
+    private RemoteViews contentView;
     
     @Override
     public void onCreate() {
+    	contentView = new RemoteViews(getPackageName(), R.layout.notification);
     	manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     	lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+    	lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) 0, 0.0f, new GPSListener());
     	Thread notifyingThread = new Thread(null, mainthread, "NotifyingService");
         condvar = new ConditionVariable(false);
         downloadlock = new ConditionVariable(false);
@@ -49,14 +55,15 @@ public class TaskNotification extends Service{
     
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG, "Received start id " + startId + ": " + intent);
         // We want this service to continue running until it is explicitly
         // stopped, so return sticky.
+    	Log.i(TAG, "Task Notification service is started");
         return START_STICKY;
     }
     
     @Override
     public void onDestroy() {
+    	Log.i(TAG, "Task Notification service is stopped");
         // Cancel the persistent notification.
         manager.cancel(TASK_NOTIFICATION);
         // Stop the thread from generating further notifications
@@ -68,6 +75,7 @@ public class TaskNotification extends Service{
     private Runnable mainthread = new Runnable() {
         public void run() {
         	while (true){
+        		if (condvar.block(20000)) break;
         		List<Thread> threads = new LinkedList<Thread>();
         		// get current location
         		gpslocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -82,7 +90,6 @@ public class TaskNotification extends Service{
 							(int) Math.floor(gpslocation.getLongitude() * 1e6),
 							50, handler, TaskNotification.this));
 				}
-        		condvar.block(8000);
         	}
         }
     };
@@ -95,9 +102,15 @@ public class TaskNotification extends Service{
     public void afterHintsAcquired (String sentence, List<Hint> result){
     	String message = "You can "+sentence+" around here";
     	Notification newnotification = new Notification(R.drawable.icon, message, System.currentTimeMillis());
-    	Intent notificationIntent = new Intent(this, HintList.class);
-    	PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0);
-    	newnotification.setLatestEventInfo(getApplicationContext(), message, "click here to see the list of hints ...", contentIntent);
+    	Intent notificationIntent = new Intent(getApplicationContext(), HintList.class);
+    	notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
+    	PendingIntent contentIntent = PendingIntent.getActivity(TaskNotification.this, 0, notificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+    	contentView.setTextViewText(R.id.text, sentence);
+    	newnotification.contentView = contentView;
+    	newnotification.contentIntent = contentIntent;
+    	Log.i(TAG, "I'm here, before notifying");
+    	manager.notify(TASK_NOTIFICATION, newnotification);
+    	Log.i(TAG, "after notifying");
     }
     
     @Override
@@ -108,8 +121,23 @@ public class TaskNotification extends Service{
 	private final IBinder mBinder = new LocalBinder();
 	
 	public class LocalBinder extends Binder {
-        TaskNotification getService() {
+        public TaskNotification getService() {
             return TaskNotification.this;
         }
     }
+	
+	private class GPSListener implements LocationListener{
+		@Override
+		public void onLocationChanged(Location location) {}
+
+		@Override
+		public void onProviderDisabled(String provider) {}
+
+		@Override
+		public void onProviderEnabled(String provider) {}
+
+		@Override
+		public void onStatusChanged(String provider, int status,
+				Bundle extras) {}
+	}
 }

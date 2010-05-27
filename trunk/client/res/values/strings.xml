@@ -34,6 +34,7 @@
     <string name="priority">Priority</string>
     <string name="deadline">Deadline</string>
     <string name="notification">Allow Notification</string>
+    <string name="task_notification_started">Task Notification Service is started</string>
     <string name="task_notification_stopped">Task Notification Service is stopped</string>
     <string name="between">between</string>
     <string name="and">and</string>
