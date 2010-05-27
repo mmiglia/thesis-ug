@@ -1,5 +1,6 @@
 package com.thesisug.notification;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -64,8 +65,6 @@ public class TaskNotification extends Service{
     @Override
     public void onDestroy() {
     	Log.i(TAG, "Task Notification service is stopped");
-        // Cancel the persistent notification.
-        manager.cancel(TASK_NOTIFICATION);
         // Stop the thread from generating further notifications
         condvar.open();
         // Tell the user we stopped.
@@ -86,9 +85,9 @@ public class TaskNotification extends Service{
         		for (SingleTask o : tasks){
         			// dispatch thread to get hints
 					threads.add(ContextResource.checkLocationSingle(o.title,
-							(int) Math.floor(gpslocation.getLatitude() * 1e6),
-							(int) Math.floor(gpslocation.getLongitude() * 1e6),
-							50, handler, TaskNotification.this));
+							new Float(gpslocation.getLatitude()),
+							new Float(gpslocation.getLongitude()),
+							2000, handler, TaskNotification.this));
 				}
         	}
         }
@@ -100,16 +99,23 @@ public class TaskNotification extends Service{
     }
     
     public void afterHintsAcquired (String sentence, List<Hint> result){
-    	String message = "You can "+sentence+" around here";
+    	if (result.isEmpty()) {
+    		Log.i(TAG, "No hints for task : "+sentence);
+    		return; // immediately return if there is no result
+    	} else Log.i(TAG, "Received "+result.size()+ " hints for task : "+sentence);
+    	String message = getText(R.string.capable)+" "+sentence+" "+getText(R.string.around_location);
     	Notification newnotification = new Notification(R.drawable.icon, message, System.currentTimeMillis());
     	Intent notificationIntent = new Intent(getApplicationContext(), HintList.class);
+    	notificationIntent.putParcelableArrayListExtra("hints", new ArrayList<Hint>(result));
+    	notificationIntent.putExtra("tasktitle", sentence);
     	notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
-    	PendingIntent contentIntent = PendingIntent.getActivity(TaskNotification.this, 0, notificationIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-    	contentView.setTextViewText(R.id.text, sentence);
+    	PendingIntent contentIntent = PendingIntent.getActivity(TaskNotification.this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    	contentView.setTextViewText(R.id.notification_title, getText(R.string.want_to)+" "+sentence+" "+getText(R.string.now)+" ?");
+    	contentView.setTextViewText(R.id.notification_content, getText(R.string.click_hint));
     	newnotification.contentView = contentView;
     	newnotification.contentIntent = contentIntent;
     	Log.i(TAG, "I'm here, before notifying");
-    	manager.notify(TASK_NOTIFICATION, newnotification);
+    	manager.notify(sentence.hashCode(), newnotification);
     	Log.i(TAG, "after notifying");
     }
     

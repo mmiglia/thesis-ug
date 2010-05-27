@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="horizontal"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
-              android:padding="3dp"
+              android:padding="3dip"
               >
     <ImageView android:id="@+id/notification_image"
               android:layout_width="wrap_content"
@@ -11,9 +11,22 @@
               android:layout_marginRight="10dp"
               android:src="@drawable/icon"
               />
-    <TextView android:id="@+id/text"
+    <TextView android:id="@+id/notification_title"
               android:layout_width="wrap_content"
-              android:layout_height="fill_parent"
+              android:layout_height="wrap_content"
               android:textColor="#000"
+              android:textStyle="bold"
+              android:layout_toRightOf="@id/notification_image"
+              android:layout_alignTop="@id/notification_image"
+              android:textAppearance="?android:attr/textAppearanceSmall"
+              android:paddingTop="8dip"
               />
-</LinearLayout>
+   	<TextView android:id="@+id/notification_content"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textColor="#006"
+              android:layout_toRightOf="@id/notification_image"
+              android:layout_below="@id/notification_title"
+              android:textAppearance="?android:attr/textAppearanceSmall"
+              />
+</RelativeLayout>
