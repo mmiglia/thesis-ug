@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="User Preferences">
+		<ListPreference
+			android:title="Query period"
+			android:summary="Interval to ask server for hints "
+			android:key="queryperiod"
+			android:defaultValue="300"
+			android:entries="@array/period"
+			android:entryValues="@array/periodValue" />
+		<ListPreference
+			android:title="Maximum Distance"
+			android:summary="Allow notification if location distance from me is below the value"
+			android:key="maxdistance"
+			android:defaultValue="50000"
+			android:entries="@array/distance"
+			android:entryValues="@array/distanceValue" />
+	</PreferenceCategory>
+</PreferenceScreen>

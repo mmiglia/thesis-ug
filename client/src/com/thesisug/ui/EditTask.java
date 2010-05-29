@@ -4,10 +4,12 @@ import java.text.ParseException;
 import java.util.Calendar;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,7 +31,7 @@ import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 public class EditTask extends Activity {
 	private static final String TAG = "EditTask";
 	// constants for dialog box choosing
-	private static final int TIMEFROM_DIALOG_ID = 0, DEADLINE_DATE_ID = 1, TIMETO_DIALOG_ID = 2, DEADLINE_TIME_ID = 3, SAVE_DATA_ID = 4, CREATE_DATA_ID = 5;
+	private static final int TIMEFROM_DIALOG_ID = 0, DEADLINE_DATE_ID = 1, TIMETO_DIALOG_ID = 2, DEADLINE_TIME_ID = 3, SAVE_DATA_ID = 4, CREATE_DATA_ID = 5, DATE_ERROR_ID=6;
     // constants for origin activity chooser
 	private static final int CREATE_TASK = 1, EDIT_TASK = 2; 
     
@@ -57,6 +59,7 @@ public class EditTask extends Activity {
 		// set default notification time for a task
 		notifyStart.set(Calendar.HOUR_OF_DAY, 6);
 		notifyStart.set(Calendar.MINUTE, 0);
+		notifyEnd.setTimeInMillis(notifyStart.getTimeInMillis());
 		notifyEnd.set(Calendar.HOUR_OF_DAY, 21);
 		notifyEnd.set(Calendar.MINUTE, 0);
 		
@@ -90,6 +93,7 @@ public class EditTask extends Activity {
     	});
 		save.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
+				if (!timeIsValid(notifyStart, notifyEnd)) {showDialog(DATE_ERROR_ID); return;}
 				SingleTask task;
 				currentDialog = packet.getInt("originator");
 				switch (currentDialog) {
@@ -232,6 +236,14 @@ public class EditTask extends Activity {
 			createdialog.setCancelable(true);
 			createdialog.setMessage(getText(R.string.creating));
 			return createdialog;
+		case DATE_ERROR_ID:
+			return new AlertDialog.Builder(this)
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .setTitle(R.string.notification_time_wrong)
+            .setPositiveButton(R.string.change, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {}
+            })
+            .create();
 		}
 		return null;
 	}
@@ -267,6 +279,10 @@ public class EditTask extends Activity {
 			timeTo.setText(getTimeString(notifyEnd));
 		}
 	};	
+	
+	private boolean timeIsValid (Calendar starting, Calendar ending){
+		return (starting.before(ending));
+	}
 
 	private CharSequence getDateString(Calendar cal) {
 		int year = cal.get(Calendar.YEAR);

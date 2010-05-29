@@ -20,6 +20,7 @@ import android.util.Log;
 import com.thesisug.communication.valueobject.Hint;
 import com.thesisug.communication.xmlparser.HintHandler;
 import com.thesisug.notification.TaskNotification;
+import com.thesisug.ui.Map;
 
 public class ContextResource{
 	private static final String TAG = new String("ContextResource");
@@ -100,7 +101,8 @@ public class ContextResource{
 		}
 		handler.post(new Runnable() {
 			public void run() {
-				((TaskNotification) context).afterHintsAcquired(sentence, result);
+				if (context instanceof TaskNotification) ((TaskNotification) context).afterHintsAcquired(sentence, result);
+				else ((Map) context).afterHintsAcquired(result);
 			}
 		});
 	}

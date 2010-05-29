@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/input_text" 
         android:layout_centerHorizontal="true"
-        android:background="@drawable/ic_tab_artists"/>
+        android:background="@drawable/preferences"/>
         
     <ListView android:id="@+id/list"
         android:layout_width="fill_parent"

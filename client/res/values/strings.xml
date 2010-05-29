@@ -34,11 +34,15 @@
     <string name="priority">Priority</string>
     <string name="deadline">Deadline</string>
     <string name="notification">Allow Notification</string>
+    <string name="have_appointment">Appointment due: </string>
     <string name="task_notification_started">Task Notification Service is started</string>
     <string name="task_notification_stopped">Task Notification Service is stopped</string>
     <string name="between">between</string>
     <string name="and">and</string>
+    <string name="date_wrong">The event is finished before it\'s even started</string>
+    <string name="notification_time_wrong">Notification is finished before it\'s even started</string>
     <string name="description">Description</string>
+    <string name="change">change</string>
     <string name="January">January</string>
     <string name="February">February</string>
     <string name="March">March</string>
@@ -66,6 +70,7 @@
     <string name="around_location">around here</string>
     <string name="now">now</string>
     <string name="click_hint">click here to see the list of hints</string>
+    <string name="click_details">click here to see the details</string>
 	<string name="creating">Creating new content in server \u2026</string>
 	<string name="saving_error">Oops, problem found while saving to server. You might want to try again later or check your connection.</string>
 	<string name="deleting">Deleting content in server \u2026</string>

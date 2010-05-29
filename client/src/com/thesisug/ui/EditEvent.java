@@ -4,10 +4,12 @@ import java.text.ParseException;
 import java.util.Calendar;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,7 +31,7 @@ import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 public class EditEvent extends Activity {
 	private static final String TAG = "EditEvent";
 	// constants for dialog box choosing
-	private static final int TIMEFROM_DIALOG_ID = 0, DATEFROM_DIALOG_ID = 1, TIMETO_DIALOG_ID = 2, DATETO_DIALOG_ID = 3, SAVE_DATA_ID = 4, CREATE_DATA_ID = 5;
+	private static final int TIMEFROM_DIALOG_ID = 0, DATEFROM_DIALOG_ID = 1, TIMETO_DIALOG_ID = 2, DATETO_DIALOG_ID = 3, SAVE_DATA_ID = 4, CREATE_DATA_ID = 5, DATE_ERROR_ID=6;
     // constants for origin activity chooser
 	private static final int CREATE_EVENT = 1, EDIT_EVENT = 2; 
     
@@ -93,6 +95,7 @@ public class EditEvent extends Activity {
     	});
 		save.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
+				if (!dateIsValid(from, to)) {showDialog(DATE_ERROR_ID); return;}
 				SingleEvent ev;
 				currentDialog = packet.getInt("originator");
 				switch (currentDialog) {
@@ -228,6 +231,14 @@ public class EditEvent extends Activity {
 			createdialog.setCancelable(true);
 			createdialog.setMessage(getText(R.string.creating));
 			return createdialog;
+		case DATE_ERROR_ID:
+			return new AlertDialog.Builder(this)
+            .setIcon(android.R.drawable.ic_dialog_alert)
+            .setTitle(R.string.date_wrong)
+            .setPositiveButton(R.string.change, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {}
+            })
+            .create();
 		}
 		return null;
 	}
@@ -235,7 +246,7 @@ public class EditEvent extends Activity {
 	private DatePickerDialog.OnDateSetListener DateFromSetListener = new DatePickerDialog.OnDateSetListener() {
 		public void onDateSet(DatePicker view, int year, int monthOfYear,
 				int dayOfMonth) {
-			from.set(year, monthOfYear, dayOfMonth);
+			from.set(year, monthOfYear, dayOfMonth);	
 			dateFrom.setText(getDateString(from));
 		}
 	};
@@ -264,6 +275,10 @@ public class EditEvent extends Activity {
 		}
 	};	
 
+	private boolean dateIsValid (Calendar starting, Calendar ending){
+		return (starting.before(ending));
+	}
+	
 	private CharSequence getDateString(Calendar cal) {
 		int year = cal.get(Calendar.YEAR);
 		int month = cal.get(Calendar.MONTH);
