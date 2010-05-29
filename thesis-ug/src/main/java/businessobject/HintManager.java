@@ -24,7 +24,7 @@ public class HintManager {
 	 * location
 	 * 
 	 * @param userDistance
-	 *            farthest distance from user location (in meter)
+	 *            farthest distance from user location (in meter), 0 to disable filtering
 	 * @param currentLat
 	 *            current user latitude
 	 * @param currentLong
@@ -35,7 +35,8 @@ public class HintManager {
 	 */
 	public static List<Hint> filterLocation(int userDistance, float currentLat,
 			float currentLong, List<Hint> solution) {
-		log.info("Filtering hints result based on locations distance");
+		int counter = solution.size();
+		if (userDistance == 0 || solution.size()==0) return solution;
 		Iterator<Hint> iterator = solution.iterator();
 		while (iterator.hasNext()){
 			Hint o = iterator.next();
@@ -43,6 +44,7 @@ public class HintManager {
 					Float.parseFloat(o.lat), Float.parseFloat(o.lng))))
 			iterator.remove();
 		}
+		log.info("Filtered hints result distance from "+counter+" results to "+solution.size());
 		return solution;
 	}
 
