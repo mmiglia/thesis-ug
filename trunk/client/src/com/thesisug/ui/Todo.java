@@ -1,19 +1,24 @@
 package com.thesisug.ui;
 
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +35,8 @@ import com.thesisug.communication.TaskResource;
 import com.thesisug.communication.valueobject.Reminder;
 import com.thesisug.communication.valueobject.SingleEvent;
 import com.thesisug.communication.valueobject.SingleTask;
+import com.thesisug.communication.xmlparser.XsDateTimeFormat;
+import com.thesisug.notification.EventNotification;
 
 public class Todo extends ListActivity {
 	public final static String TAG = "TodoActivity";
@@ -44,9 +51,12 @@ public class Todo extends ListActivity {
 	private static int counter = 0; // counter for task and event thread completion
 	private static String username, session;
 	private AccountManager accountManager;
+	private AlarmManager am;
 	private Account[] accounts;
 	private final Handler handler = new Handler();
 	private static SharedPreferences usersettings;
+	private Intent eventNotificationIntent;
+	private static PendingIntent alarmIntent;
 	private static List<LinkedHashMap<String,?>> event = new LinkedList<LinkedHashMap<String,?>>();
 	private static List<LinkedHashMap<String,?>> tasks = new LinkedList<LinkedHashMap<String,?>>();
 	
@@ -55,7 +65,11 @@ public class Todo extends ListActivity {
 		super.onCreate(savedInstanceState);
         accountManager = AccountManager.get(getApplicationContext());
         accounts = accountManager.getAccountsByType(com.thesisug.Constants.ACCOUNT_TYPE);
-        usersettings = getSharedPreferences(com.thesisug.Constants.ACCOUNT_TYPE, 0);
+        am = (AlarmManager)getSystemService(ALARM_SERVICE);
+        eventNotificationIntent = new Intent(Todo.this, EventNotification.class);
+        alarmIntent = PendingIntent.getBroadcast(Todo.this,
+                0, eventNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        usersettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         if (accounts.length == 0) {
         	Intent login = new Intent(getApplicationContext(),Login.class);
         	startActivityForResult(login, 0);
@@ -213,18 +227,41 @@ public class Todo extends ListActivity {
 				tasks.add(createItem(o, usersettings.getBoolean(o.title, true)));
 			}
 		}
-		if (dataComplete()) combineResult();
+		if (dataComplete()) combineResult(); //if events is already loaded too
 	}
 	
 	public void afterEventLoaded(List<SingleEvent> data){
 		event = new LinkedList<LinkedHashMap<String,?>>();
 		if (data.isEmpty()) event.add(createItem (new SingleEvent(getText(R.string.no_event_today).toString(), "", "", "", ""), false));
 		else {
-			for (SingleEvent o : data){
+			Calendar cal;
+			int counter = 0;
+            for (SingleEvent o : data){
+				// add to the listview
 				event.add(createItem(o, usersettings.getBoolean(o.title, true)));
+				try {
+					cal = (Calendar) new XsDateTimeFormat().parseObject(o.startTime);
+					eventNotificationIntent.putExtra("username", username);
+					eventNotificationIntent.putExtra("session", session);
+					eventNotificationIntent.putExtra("title", o.title);
+					eventNotificationIntent.putExtra("location", o.location);
+					eventNotificationIntent.putExtra("startTime", o.startTime);
+					eventNotificationIntent.putExtra("endTime", o.endTime);
+					eventNotificationIntent.putExtra("priority", o.priority);
+					eventNotificationIntent.putExtra("description", o.description);
+					eventNotificationIntent.putExtra("id", o.ID);
+					eventNotificationIntent.putExtra("longitude", o.gpscoordinate.longitude);
+					eventNotificationIntent.putExtra("latitude", o.gpscoordinate.latitude);
+					alarmIntent = PendingIntent.getBroadcast(Todo.this,
+			                counter++, eventNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+					if (usersettings.getBoolean(o.title, true))	am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), alarmIntent);
+				} catch (ParseException e) {
+					Log.i(TAG, "Error when adding parsing event time to be added to alarm manager");
+					e.printStackTrace();
+				}
 			}
 		}
-		if (dataComplete()) combineResult();
+		if (dataComplete()) combineResult(); // if tasks is already downloaded too
 	}
 	
 	private synchronized boolean dataComplete(){

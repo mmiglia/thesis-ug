@@ -3,39 +3,70 @@ package com.thesisug.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.Notification;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
+import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.thesisug.R;
+import com.thesisug.communication.ContextResource;
+import com.thesisug.communication.valueobject.Hint;
+import com.thesisug.notification.TaskNotification;
 
-public class Map extends MapActivity{
+public class Map extends MapActivity implements LocationListener{
 	private static final String TAG = "Map Activity";
-	
-    @Override
+	private LocationManager lm;
+	private Thread downloadThread;
+	private Handler handler = new Handler();
+	private MarkerOverlay place, marker;
+	private List<Overlay> mapOverlays;
+    private MapController mc;
+	@Override
     public void onCreate(Bundle savedInstanceState) {
+    	// get the drawables and setup of overlays
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map);  
-        MapView mapView = (MapView) findViewById(R.id.mapView1);        
-        List<Overlay> mapOverlays = mapView.getOverlays();
-        MarkerOverlay marker = new MarkerOverlay(this.getResources().getDrawable(R.drawable.androidmarker));
-        MarkerOverlay place = new MarkerOverlay(this.getResources().getDrawable(R.drawable.place));
-        GeoPoint point = new GeoPoint(44415692,8927861);
-        OverlayItem overlayitem = new OverlayItem(point, "", "");
-        place.addOverlay(new OverlayItem(new GeoPoint(44414194, 8927099), "", ""));
-        place.addOverlay(new OverlayItem(new GeoPoint(44414976, 8925747), "haha", ""));
-        marker.addOverlay(overlayitem);
+        
+        MapView mapView = (MapView) findViewById(R.id.mapView1);    
+        mc = mapView.getController();
+        MyLocationOverlay center = new MyLocationOverlay(this, mapView);
+        mapOverlays = mapView.getOverlays();
+        marker = new MarkerOverlay(this.getResources().getDrawable(R.drawable.androidmarker));
+        place = new MarkerOverlay(this.getResources().getDrawable(R.drawable.place));
+        
+        // get the GPS coordinate
+        lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) 0, 0.0f, this);
+        Location gpslocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        downloadThread = ContextResource.checkLocationAll(
+        		new Float(gpslocation.getLatitude()),
+				new Float(gpslocation.getLongitude()),
+				0, handler, Map.this);
+		
+        // add the overlays
+        GeoPoint currentLocation = new GeoPoint((int)Math.floor (gpslocation.getLatitude()*1e6), (int) Math.floor(gpslocation.getLongitude()*1e6));
+        marker.addOverlay(new OverlayItem(currentLocation, "", ""));
         mapOverlays.add(marker);
-        mapOverlays.add(place);
+        mapOverlays.add(center);
+        
+        // set up zoom and center of the map
         mapView.setBuiltInZoomControls(true);
-        MapController mc = mapView.getController();
-        mc.animateTo(point);
+        mc.animateTo(currentLocation);
         mc.setZoom(17);
     }
     
@@ -43,6 +74,36 @@ public class Map extends MapActivity{
     protected boolean isRouteDisplayed() {
         return false;
     }
+    
+    @Override
+	public void onLocationChanged(Location location) {
+    	marker.removeOverlay(0);
+    	GeoPoint current = new GeoPoint((int)Math.floor (location.getLatitude()*1e6), (int) Math.floor(location.getLongitude()*1e6)); 
+    	mc.animateTo(current);
+    	marker.addOverlay(new OverlayItem(current, "", ""));
+    	mapOverlays.add(marker);
+    	ContextResource.checkLocationAll(new Float(location.getLatitude()),
+				new Float(location.getLongitude()),
+				0, handler, Map.this);
+    }
+
+	@Override
+	public void onProviderDisabled(String provider) {}
+
+	@Override
+	public void onProviderEnabled(String provider) {}
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {}
+	
+	public void afterHintsAcquired (List<Hint> result){
+    	if (result.isEmpty()) return; // immediately return if there is no result
+    	mapOverlays.remove(place);
+    	for (Hint o : result){
+    		place.addOverlay(new OverlayItem(new GeoPoint((int)(Float.parseFloat(o.lat)*1e6),(int)(Float.parseFloat(o.lng)*1e6)), o.titleNoFormatting,o.listingType));
+    	}
+    	mapOverlays.add(place);
+	}
 }
 
 class MarkerOverlay extends ItemizedOverlay {
@@ -65,6 +126,16 @@ class MarkerOverlay extends ItemizedOverlay {
 	
 	public void addOverlay(OverlayItem overlay) {
 	    mOverlays.add(overlay);
+	    populate();
+	}
+	
+	public void removeOverlay(OverlayItem overlay) {
+	    mOverlays.remove(overlay);
+	    populate();
+	}
+	
+	public void removeOverlay(int index) {
+	    mOverlays.remove(index);
 	    populate();
 	}
 

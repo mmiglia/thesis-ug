@@ -19,7 +19,7 @@
               android:layout_toRightOf="@id/notification_image"
               android:layout_alignTop="@id/notification_image"
               android:textAppearance="?android:attr/textAppearanceSmall"
-              android:paddingTop="8dip"
+              android:paddingTop="3dip"
               />
    	<TextView android:id="@+id/notification_content"
               android:layout_width="wrap_content"

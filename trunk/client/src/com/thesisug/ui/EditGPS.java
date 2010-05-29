@@ -21,43 +21,53 @@ import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.thesisug.R;
+import com.thesisug.communication.ContextResource;
+import com.thesisug.notification.TaskNotification;
 
 public class EditGPS extends MapActivity implements LocationListener{
 	private static final String TAG = "EditGPS Activity";
 	private static final String LATITUDE = "latitude";
 	private static final String LONGITUDE = "longitude";
-	private MyLocation center;
+	private MyLocationOverlay center;
 	private LocationManager lm;
 	private LocationOverlay lo;
 	private List<Overlay> mapOverlays;
 	private int latitude;
 	private int longitude;
 	private Intent intent = new Intent();
-	
+
 	@Override
     public void onCreate(Bundle savedInstanceState) {
+		// get the drawables and setup of overlays
 		super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_gps); 
         MapView mapView = (MapView) findViewById(R.id.mapView);     
         mapOverlays = mapView.getOverlays();
-        center = new MyLocation(EditGPS.this, mapView);
+        center = new MyLocationOverlay(EditGPS.this, mapView);
         lo = new LocationOverlay(this.getResources().getDrawable(R.drawable.place));
         mapView.setBuiltInZoomControls(true);
         MapController mc = mapView.getController();
+        
+        // get the GPS positions
         lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) 0, 0.0f, this);
         Location gpslocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        
+        // get latitude and longitude from intent
         latitude = (int) (getIntent().getFloatExtra(LATITUDE, 0)*1e6);
         longitude = (int) (getIntent().getFloatExtra(LONGITUDE, 0)*1e6);
         Log.i(TAG, "from Intent latitude = "+latitude+", longitude ="+longitude);
         GeoPoint point;
+        // if GPS coordinate is specified, we use it. Otherwise use GPS
         point = ( latitude == 0 && longitude == 0) ?
         	new GeoPoint((int)Math.floor (gpslocation.getLatitude()*1e6), (int) Math.floor(gpslocation.getLongitude()*1e6))
         	:new GeoPoint (latitude , longitude);
         lo.addOverlay(new OverlayItem(point, "", ""));
+        
+        // add overlays, setting the zoom and center
         mapOverlays.add(lo);
         mapOverlays.add(center);
-        mc.setCenter(point);
+        mc.animateTo(point);
         mc.setZoom(17);
         intent.putExtra(LATITUDE, new Float(new Integer(latitude).floatValue() / 1e6));
 		intent.putExtra(LONGITUDE, new Float (new Integer(longitude).floatValue() / 1e6));
@@ -102,14 +112,6 @@ public class EditGPS extends MapActivity implements LocationListener{
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {}
 	
-	class MyLocation extends MyLocationOverlay {
-
-		public MyLocation(Context context, MapView mapView) {
-			super(context, mapView);
-		}
-
-	}
-
 	class LocationOverlay extends ItemizedOverlay {
 		private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
 		

@@ -20,12 +20,12 @@ public class ParentTab extends TabActivity {
 	AccountManager accountManager;
 	String username, session;
 	Account[] accounts;
-	private TaskNotification taskNotificationService;
 	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.parenttab);
+        // start Task Notification service
         startService(new Intent(ParentTab.this, TaskNotification.class));
         Resources res = getResources(); // Resource object to get Drawables
         TabHost tabHost = getTabHost();  // The activity TabHost
@@ -44,9 +44,9 @@ public class ParentTab extends TabActivity {
         		.setContent(map);
         tabHost.addTab(spec);
 
-        Intent input = new Intent(ParentTab.this, Input.class);
-        spec = tabHost.newTabSpec("Input").setIndicator("Input",
-        		res.getDrawable(R.drawable.ic_tab_artists))
+        Intent input = new Intent(ParentTab.this, Preferences.class);
+        spec = tabHost.newTabSpec("Preferences").setIndicator("Preferences",
+        		res.getDrawable(R.drawable.preferences))
         		.setContent(input);
         tabHost.addTab(spec);
 

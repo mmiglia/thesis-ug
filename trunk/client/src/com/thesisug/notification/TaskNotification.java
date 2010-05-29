@@ -9,6 +9,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -17,6 +18,7 @@ import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
@@ -30,7 +32,6 @@ import com.thesisug.ui.HintList;
 
 public class TaskNotification extends Service{
 	private static final String TAG = "TaskNotificationService";
-	private static final int TASK_NOTIFICATION = R.layout.notification;
 	
 	 // variable which controls the notification thread 
     private ConditionVariable condvar, downloadlock;
@@ -39,6 +40,7 @@ public class TaskNotification extends Service{
     private Handler handler=new Handler();
     private LocationManager lm;
     private NotificationManager manager;
+    private static SharedPreferences usersettings;
     Location gpslocation;
     private RemoteViews contentView;
     
@@ -47,6 +49,7 @@ public class TaskNotification extends Service{
     	contentView = new RemoteViews(getPackageName(), R.layout.notification);
     	manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     	lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+    	usersettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
     	lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) 0, 0.0f, new GPSListener());
     	Thread notifyingThread = new Thread(null, mainthread, "NotifyingService");
         condvar = new ConditionVariable(false);
@@ -74,7 +77,12 @@ public class TaskNotification extends Service{
     private Runnable mainthread = new Runnable() {
         public void run() {
         	while (true){
-        		if (condvar.block(20000)) break;
+        		// get preference on query period, return default 5 min if not set
+        		int delay = Integer.parseInt(usersettings.getString("queryperiod", "10")) * 1000;
+        		Log.i(TAG, "delay is "+delay);
+        		if (condvar.block(delay)) break;
+        		// get preference on distance, return default 0 (dont filter distance) if not set
+        		int distance = Integer.parseInt(usersettings.getString("maxdistance", "0"));
         		List<Thread> threads = new LinkedList<Thread>();
         		// get current location
         		gpslocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -83,11 +91,13 @@ public class TaskNotification extends Service{
         		//block execution to make it synchronous
         		downloadlock.block();
         		for (SingleTask o : tasks){
+        			// if user has chose not to be reminded for this task
+        			if (!usersettings.getBoolean(o.title, true)) continue; 
         			// dispatch thread to get hints
 					threads.add(ContextResource.checkLocationSingle(o.title,
 							new Float(gpslocation.getLatitude()),
 							new Float(gpslocation.getLongitude()),
-							2000, handler, TaskNotification.this));
+							distance, handler, TaskNotification.this));
 				}
         	}
         }
@@ -114,9 +124,7 @@ public class TaskNotification extends Service{
     	contentView.setTextViewText(R.id.notification_content, getText(R.string.click_hint));
     	newnotification.contentView = contentView;
     	newnotification.contentIntent = contentIntent;
-    	Log.i(TAG, "I'm here, before notifying");
     	manager.notify(sentence.hashCode(), newnotification);
-    	Log.i(TAG, "after notifying");
     }
     
     @Override
