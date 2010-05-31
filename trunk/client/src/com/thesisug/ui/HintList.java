@@ -14,11 +14,13 @@ import android.widget.SimpleAdapter;
 
 import com.thesisug.R;
 import com.thesisug.communication.valueobject.Hint;
+import com.thesisug.communication.valueobject.Hint.PhoneNumber;
 
 public class HintList extends ListActivity {
 	public final static String TAG = "HintListActivity";
 	public final static String HINT_TITLE = "data";
 	public final static String HINT_ADDRESS = "address";
+	public final static String HINT_PHONE = "phone";
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -32,11 +34,9 @@ public class HintList extends ListActivity {
        		setListAdapter(adapter);
        		return;
        	} else {
-       		for (Hint o : hintlist){
-       			hints.add(createItem(o));
-       		}
+       		for (Hint o : hintlist) hints.add(createItem(o));
        	SimpleAdapter hintAdapter = new SimpleAdapter(this, hints, R.layout.hint_list,
-       			new String[] { HINT_TITLE, HINT_ADDRESS }, new int[] { R.id.hint_complex_title, R.id.hint_complex_caption });
+       			new String[] { HINT_TITLE, HINT_ADDRESS, HINT_PHONE }, new int[] { R.id.hint_complex_title, R.id.hint_complex_caption, R.id.hint_phone_caption });
        	adapter.addSection(getText(R.string.capable)+" "+getIntent().getExtras().getString("tasktitle")+" in", hintAdapter);
        	setListAdapter(adapter);
        	}
@@ -46,6 +46,14 @@ public class HintList extends ListActivity {
 		LinkedHashMap<String,String> item = new LinkedHashMap<String,String>();
 		item.put(HINT_TITLE, currenthint.titleNoFormatting);
 		item.put(HINT_ADDRESS, currenthint.streetAddress);
+		if (currenthint.phoneNumbers.size()>0){
+			String phones = "";
+			for (PhoneNumber o : currenthint.phoneNumbers){
+				phones += o.number.replaceAll(" ", "")+" ,";
+			}
+			item.put(HINT_PHONE, phones.substring(0, phones.length()-2));
+		}
+		else item.put(HINT_PHONE, "");
 		return item;
 	}
 
