@@ -2,12 +2,10 @@ package com.thesisug.communication.xmlparser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.xml.sax.SAXException;
-import org.xmlpull.v1.XmlSerializer;
 
 import android.sax.Element;
 import android.sax.EndElementListener;
@@ -31,6 +29,8 @@ private static final String TAG = "Hint Handler";
 		hint.setEndElementListener(new EndElementListener(){
             public void end() {
                 combine.add(current.copy());
+                current.phoneNumbers = new LinkedList<PhoneNumber>();
+                current.addressLines = new LinkedList<String>();
             }
         });
 		hint.getChild("title").setEndTextElementListener(new EndTextElementListener(){
