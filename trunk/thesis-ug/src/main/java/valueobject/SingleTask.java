@@ -95,7 +95,7 @@ public class SingleTask extends Reminder implements Comparable<SingleTask>{
 		Date now = new Date();
 		SimpleDateFormat timezone = new SimpleDateFormat("Z");
 		this.dueDate = dueDate;
-		this.notifyTimeEnd = "00:00:00" + timezone.format(now);
+		this.notifyTimeStart = "00:00:00" + timezone.format(now);
 		this.notifyTimeEnd = "23:59:59" + timezone.format(now);
 		
 	}

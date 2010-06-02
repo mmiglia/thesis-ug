@@ -5,15 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import businessobject.ParserManager;
 import businessobject.parser.command.Verb;
 import businessobject.parser.nountype.ArbitraryObject;
 
 public class Parser {
-	private final static Logger log = LoggerFactory.getLogger(Parser.class);
 	private List<Verb> command = new LinkedList<Verb>();
 	private List<SemanticRoles> roles;
 	
@@ -26,7 +21,6 @@ public class Parser {
 	}
 	
 	public boolean startParse(String userid, String text) {
-		log.info("Start parsing : "+text);
 		 //step 1: split words/arguments + case markers (DONE)
 		 //step 2: pick possible Verbs
 		int index;
@@ -84,6 +78,7 @@ public class Parser {
 								 ExtractArgumentReturn extractResult = extractArgument(vargs, sr.delimiter); 
 								 vaIterator.remove();
 								 if (!extractResult.remainder.isEmpty()) {
+									 System.out.println(va.verb.getName()+" remainder "+extractResult.remainder);
 									 vaIterator.add(extractResult.remainder);
 								 }
 								 Arguments toSave = new Arguments(arg.role, arg.noun);
@@ -97,6 +92,7 @@ public class Parser {
 				 }
 			 }
 			 if (va.args.size()>0){
+				 System.out.println(va.verb.getName()+" got excess "+va.args.size()+" : "+va.args.toString() );
 				 for (String s:va.args){
 					 Arguments toSave = new Arguments(SemanticRoles.RoleType.OBJECT, new ArbitraryObject());
 					 toSave.setContent(s);
@@ -110,22 +106,19 @@ public class Parser {
 			 step4result.add(new PossibleParses(va.verb, findarg, findcount == va.verb.getArguments().size(), score));
 		 }
 		 
-		 /*for (PossibleParses p : step4result){
+		 for (PossibleParses p : step4result){
 			 System.out.println(p.verb.getName()+" "+p.complete+" "+p.score);
 			 for (Arguments f : p.args){
 				 System.out.println("Arguments:"+f.content+" role: "+f.role);
 			 }
-		 }*/
+		 }
 		 double maxscore = 0.0;
 		 PossibleParses bestresult = null;
 		 for (PossibleParses p : step4result){
 			 if (!p.complete) continue;
 			 else if (p.score > maxscore) bestresult = p;
 		 }
-		 
-		 // return if parser does not understand fully
-		 if (bestresult.score < 1.4) return false;
-		 // execute
+		
 		 return bestresult.verb.execute(userid, bestresult.args);
 		 //step 5: anaphora substitution (DONE)
 		 //step 6: suggest normalized arguments (DONE)
@@ -236,10 +229,12 @@ public class Parser {
 		if (temps.charAt(temps.length()-1)==' ') temps=temps.substring(0, temps.length()-1);
 		int argumentlocation = temps.indexOf(delimiter)+delimiter.length();
 		boolean[] mask = bitmaskString(temps.substring(argumentlocation, temps.length()));
-		for (int i=0; i<mask.length; i++){
+		int i;
+		for (i=0; i<mask.length; i++){
 			if (!mask[i]) result.realargument+=temps.charAt(argumentlocation+i);
-			else result.remainder += temps.charAt(argumentlocation+i);
+			else break;
 		}
+		while (i<mask.length) result.remainder += temps.charAt(argumentlocation+i++);
 		if (temps.indexOf(delimiter)!=0){
 			result.remainder = temps.substring(0, temps.indexOf(delimiter)-1)+" "+result.remainder;
 		}
