@@ -54,7 +54,7 @@ public class LocationAwareManager {
 					latitude, longitude, query));
 		log.info("result are "+result.size());
 		// filter the result
-		List<Hint> toReturn = HintManager.filterLocation(distance, latitude, longitude, result);
+		List<Hint> toReturn = new HintManager().filterLocation(distance, latitude, longitude, result);
 		return toReturn;
 	}
 	
@@ -92,7 +92,7 @@ public class LocationAwareManager {
 			result.addAll(MapManager.getInstance().searchLocalBusiness(
 					latitude, longitude, query));
 		// filter the result
-		List<Hint> toReturn = HintManager.filterLocation(distance, latitude, longitude, result);
+		List<Hint> toReturn = new HintManager().filterLocation(distance, latitude, longitude, result);
 		return toReturn;
 	}
 }
