@@ -135,12 +135,18 @@ public class OnlineTest extends TestCase {
 		
 	}*/
 	
-	public void testLocationManager() {
+	/*public void testLocationManager() {
 		SimpleClient client = ProxyFactory.create(SimpleClient.class,
 				"http://localhost:8080/ephemere");
 		float latitude = 40.759011f;
 		float longitude = -73.9844722f;
 		List<Hint> result = client.checkLocation(latitude, longitude, 100, "user", "dummy");
 		assertNotNull(result);
+	}*/
+	
+	public void testInputString(){
+		SimpleClient client = ProxyFactory.create(SimpleClient.class,
+		"http://localhost:8080/ephemere");
+		client.input("user", "dummy", "add event jogging at wednesday");
 	}
 }

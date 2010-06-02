@@ -33,7 +33,7 @@ public class HintManager {
 	 *            solution list of hints to be filtered
 	 * @return list of hints that is inside userDistance radius
 	 */
-	public static List<Hint> filterLocation(int userDistance, float currentLat,
+	public List<Hint> filterLocation(int userDistance, float currentLat,
 			float currentLong, List<Hint> solution) {
 		int counter = solution.size();
 		if (userDistance == 0 || solution.size()==0) return solution;
@@ -57,7 +57,7 @@ public class HintManager {
 	 *            list of tasks to be filtered
 	 * @return list of tasks that has lower priority than limit
 	 */
-	public static List<SingleTask> filterPriority(int upperlimit,
+	public List<SingleTask> filterPriority(int upperlimit,
 			List<SingleTask> solution) {
 		log.info("Removing tasks higher than priority " + upperlimit);
 		for (SingleTask o : solution) {
@@ -74,7 +74,7 @@ public class HintManager {
 	 *            list of tasks to be filtered
 	 * @return list of tasks that can be executed NOW (current time in server)
 	 */
-	public static List<SingleTask> filterTime(List<SingleTask> solution) {
+	public List<SingleTask> filterTime(List<SingleTask> solution) {
 		Calendar now = Calendar.getInstance();
 		log.info("Removing tasks outside notify period");
 		log.info("Current time on server : "
@@ -97,7 +97,7 @@ public class HintManager {
 	 *            list of tasks to be filtered
 	 * @return list of tasks that can be executed
 	 */
-	public static List<SingleTask> filterAll(int upperlimit,
+	public List<SingleTask> filterAll(int upperlimit,
 			List<SingleTask> solution) {
 		solution = filterPriority(upperlimit, solution);
 		solution = filterTime(solution);
@@ -117,7 +117,7 @@ public class HintManager {
 	 *            longitude of point B
 	 * @return distance in meter
 	 */
-	private static double calculateDistance(float latA, float longA,
+	private double calculateDistance(float latA, float longA,
 			float latB, float longB) {
 		final double EARTH_RADIUS = 6378.14; // in kilometer, according to
 		// WolframAlpha

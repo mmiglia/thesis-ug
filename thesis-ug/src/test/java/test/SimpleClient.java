@@ -81,4 +81,10 @@ public interface SimpleClient {
 	public List<Hint> checkLocation(@QueryParam("lat") float latitude, @QueryParam("lon") float longitude, @QueryParam("dist") int distance,
 			@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid) ;
+	
+	@GET
+	@Path("/{username}/input")
+	@Produces("application/xml")
+	public void input(@PathParam("username") String userid,
+			@CookieParam("sessionid") String sessionid,@QueryParam("q") String command) ;
 }
