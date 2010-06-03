@@ -5,10 +5,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import businessobject.Configuration;
 import businessobject.parser.command.Verb;
 import businessobject.parser.nountype.ArbitraryObject;
 
 public class Parser {
+	private static final Logger log = LoggerFactory.getLogger(Parser.class);
 	private List<Verb> command = new LinkedList<Verb>();
 	private List<SemanticRoles> roles;
 	
@@ -54,11 +59,6 @@ public class Parser {
 				if (current.verb.equals(o) && current.score<maxVerbScore) va.remove(); 
 			}
 		}
-		/*System.out.println("Step2result "+step2result.size());
-		for (VerbArgs re:step2result){
-			System.out.println(re.verb.getName()+ " arguments: "+re.args.toString());
-		}*/
-		
 		 //step 3: pick possible clitics (DONE)
 		 //step 4: group into arguments
 		LinkedList<PossibleParses> step4result = new LinkedList<PossibleParses>();
@@ -78,7 +78,6 @@ public class Parser {
 								 ExtractArgumentReturn extractResult = extractArgument(vargs, sr.delimiter); 
 								 vaIterator.remove();
 								 if (!extractResult.remainder.isEmpty()) {
-									 System.out.println(va.verb.getName()+" remainder "+extractResult.remainder);
 									 vaIterator.add(extractResult.remainder);
 								 }
 								 Arguments toSave = new Arguments(arg.role, arg.noun);
@@ -92,7 +91,6 @@ public class Parser {
 				 }
 			 }
 			 if (va.args.size()>0){
-				 System.out.println(va.verb.getName()+" got excess "+va.args.size()+" : "+va.args.toString() );
 				 for (String s:va.args){
 					 Arguments toSave = new Arguments(SemanticRoles.RoleType.OBJECT, new ArbitraryObject());
 					 toSave.setContent(s);
@@ -106,19 +104,15 @@ public class Parser {
 			 step4result.add(new PossibleParses(va.verb, findarg, findcount == va.verb.getArguments().size(), score));
 		 }
 		 
-		 for (PossibleParses p : step4result){
-			 System.out.println(p.verb.getName()+" "+p.complete+" "+p.score);
-			 for (Arguments f : p.args){
-				 System.out.println("Arguments:"+f.content+" role: "+f.role);
-			 }
-		 }
 		 double maxscore = 0.0;
 		 PossibleParses bestresult = null;
 		 for (PossibleParses p : step4result){
 			 if (!p.complete) continue;
 			 else if (p.score > maxscore) bestresult = p;
 		 }
-		
+		 if (bestresult == null){
+			 log.info("Parser could not understand user input");
+		 } else log.info("Parser successfully parsed user input");
 		 return bestresult.verb.execute(userid, bestresult.args);
 		 //step 5: anaphora substitution (DONE)
 		 //step 6: suggest normalized arguments (DONE)

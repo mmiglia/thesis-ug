@@ -92,12 +92,16 @@ public class SingleTask extends Reminder implements Comparable<SingleTask>{
 	 */
 	public SingleTask(String title, String dueDate, String description) {
 		super(UUID.randomUUID().toString(), title, 3, description, 2);
-		Date now = new Date();
-		SimpleDateFormat timezone = new SimpleDateFormat("Z");
 		this.dueDate = dueDate;
-		this.notifyTimeStart = "00:00:00" + timezone.format(now);
-		this.notifyTimeEnd = "23:59:59" + timezone.format(now);
-		
+		Calendar now = Calendar.getInstance();
+		now.set(Calendar.HOUR_OF_DAY, 6);
+		now.set(Calendar.MINUTE, 0);
+		now.set(Calendar.SECOND, 0);
+		this.notifyTimeStart = Converter.CalendarTimetoString(now);
+		now.set(Calendar.HOUR_OF_DAY, 21);
+		now.set(Calendar.MINUTE, 0);
+		now.set(Calendar.SECOND, 0);
+		this.notifyTimeEnd = Converter.CalendarTimetoString(now);
 	}
 
 	/**
