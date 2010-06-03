@@ -135,6 +135,8 @@ public class Todo extends ListActivity {
 			startActivityForResult(intent, 0);
 			break;
 		case VOICE_INPUT:
+			intent = new Intent(Todo.this, Input.class);
+			startActivityForResult(intent, 0);
 			break;
 		default:
 			finish();

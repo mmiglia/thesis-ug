@@ -8,35 +8,48 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.RecognizerIntent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.EditText;
 
 import com.thesisug.R;
+import com.thesisug.communication.InputResource;
 
 public class Input extends Activity implements OnClickListener{
     private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
-
-    private ListView mList;
-
+    private EditText commandbox;
     /**
      * Called with the activity is first created.
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND,
+                WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
         // Inflate our UI from its XML layout description.
         setContentView(R.layout.input);
         
         // Get display items for later interaction
         Button speakButton = (Button) findViewById(R.id.btn_speak);
-
-        mList = (ListView) findViewById(R.id.list);
-
+        Button sendButton = (Button) findViewById (R.id.btn_send);
+        commandbox =(EditText) findViewById (R.id.input_text);
+        sendButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				String text = commandbox.getText().toString();
+				// filter trash command
+				if (text.length()<5) return;
+				Thread sendcommand = InputResource.input(text, new Handler(), Input.this);
+				setResult(RESULT_OK);
+				finish();
+			}
+		});
         // Check to see if a recognition activity is present
         PackageManager pm = getPackageManager();
         List<ResolveInfo> activities = pm.queryIntentActivities(
@@ -73,15 +86,14 @@ public class Input extends Activity implements OnClickListener{
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == VOICE_RECOGNITION_REQUEST_CODE && resultCode == RESULT_OK) {
             // Fill the list view with the strings the recognizer thought it could have heard
             ArrayList<String> matches = data.getStringArrayListExtra(
                     RecognizerIntent.EXTRA_RESULTS);
-            mList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,
-                    matches));
+            commandbox.setText(matches.get(0));
         }
 
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
 }
