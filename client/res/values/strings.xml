@@ -16,9 +16,10 @@
 	<string name="event_list_header">Today, your appointments are</string>
 	<string name="no_event_today">You don\'t have any appointment today</string>
 	<string name="no_task_today">Relax, there\'s no tasks</string>
-	<string name="input_prompt">Please input your task or event here</string>
+	<string name="input_prompt">Type your command or click microphone button to speak</string>
 	<string name="voice_recognition_prompt">This activity demonstrates the voice recognition APIs.</string>
     <string name="speak_button">Speak!</string>
+    <string name="send">send</string>
     <string name="activity_title">Title</string>
     <string name="when">When</string>
     <string name="date">date</string>

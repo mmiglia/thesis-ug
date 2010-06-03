@@ -174,6 +174,8 @@ public class ShowTask extends Activity{
 	
 	private String printTime(Calendar cal){
 		SimpleDateFormat formatter = new SimpleDateFormat("hh:mm a");
+		Calendar temp = Calendar.getInstance();
+		cal.set(temp.get(Calendar.YEAR), temp.get(Calendar.MONTH), temp.get(Calendar.DAY_OF_MONTH));
 		return formatter.format(cal.getTime());
 	}
 	

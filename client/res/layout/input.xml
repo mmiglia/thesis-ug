@@ -2,31 +2,27 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical">
-    
-    <TextView
-        android:id="@+id/input_label"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="4dip"
-        android:text="@string/input_prompt" />
+    android:padding="10dip">
     <EditText
         android:id="@+id/input_text"
         android:layout_width="fill_parent"
-        android:layout_height="200dip"
-        android:layout_marginRight="15dip"
-        android:layout_below="@id/input_label"
-        android:background="@android:drawable/editbox_background"/>           
-    <Button android:id="@+id/btn_speak"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/input_text" 
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/preferences"/>
-        
-    <ListView android:id="@+id/list"
-        android:layout_width="fill_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1" />
-
+        android:lines="5"
+        android:hint="@string/input_prompt"
+        android:background="@android:drawable/edit_text"/>  
+    <RelativeLayout
+    	android:layout_width="wrap_content"
+    	android:layout_height="wrap_content"
+    	android:layout_below="@id/input_text"
+    	android:layout_centerHorizontal="true">
+	    <Button android:id="@+id/btn_speak"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:background="@drawable/mic"/>
+	     <Button android:id="@+id/btn_send"
+	     	android:text="@string/send"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_toRightOf="@id/btn_speak"/>
+    </RelativeLayout>
  </RelativeLayout>
