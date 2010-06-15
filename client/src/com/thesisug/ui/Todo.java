@@ -71,9 +71,11 @@ public class Todo extends ListActivity {
                 0, eventNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         usersettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         if (accounts.length == 0) {
+        	Log.i(TAG, "accounts.length");
         	Intent login = new Intent(getApplicationContext(),Login.class);
         	startActivityForResult(login, 0);
         } else {
+        	Log.i(TAG, "jumlah ="+accounts.length);
         	SeparatedListAdapter adapter = new SeparatedListAdapter(this);
         	setListAdapter(adapter);
         	showDialog(0);
