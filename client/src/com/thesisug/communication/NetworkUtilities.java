@@ -19,7 +19,7 @@ import android.util.Log;
 public class NetworkUtilities {
 	private static final String TAG = new String("NetworkUtilities");
 	private static final int REGISTRATION_TIMEOUT = 30000;
-	public static final String SERVER_URI = "http://10.0.2.2:8080/ephemere";
+	public static final String SERVER_URI = "http://130.251.12.216/ephemere-0.0.1-SNAPSHOT";
 	
 	public static DefaultHttpClient createClient() {
 		DefaultHttpClient client = new DefaultHttpClient();
