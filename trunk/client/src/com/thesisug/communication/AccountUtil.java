@@ -18,7 +18,7 @@ public class AccountUtil {
 		try {
 			accountManager = AccountManager.get(c);
 			accounts = accountManager.getAccountsByType(com.thesisug.Constants.ACCOUNT_TYPE);
-			return accountManager.blockingGetAuthToken(accounts[0],com.thesisug.Constants.ACCOUNT_TYPE, true);
+			return (accounts.length>0)? accountManager.blockingGetAuthToken(accounts[0],com.thesisug.Constants.ACCOUNT_TYPE, true):"";
 		} catch (OperationCanceledException e) {
 			e.printStackTrace();
 			Log.i(TAG, "OperationCanceledException caught");
@@ -35,6 +35,6 @@ public class AccountUtil {
 	public String getUsername(Context c) {
 		accountManager = AccountManager.get(c);
 		accounts = accountManager.getAccountsByType(com.thesisug.Constants.ACCOUNT_TYPE);
-		return accounts[0].name;
+		return (accounts.length>0)? accounts[0].name:"";
 	}
 }
