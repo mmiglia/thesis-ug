@@ -11,8 +11,11 @@ import businessobject.Configuration;
 
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectServer;
+import com.db4o.ObjectSet;
 import com.db4o.cs.Db4oClientServer;
+import com.db4o.query.Constraint;
 import com.db4o.query.Predicate;
+import com.db4o.query.Query;
 
 /**
  * Singleton class that acts as a database that will save all the tasks
@@ -69,20 +72,20 @@ public enum TaskDatabase {
 	 * @param userID unique UUID of the user
 	 * @return list containing all tasks from the user
 	 */
-	public static List<SingleTask> getAllTask(final String userID){
+	public static List<SingleTask> getAllTask(final String userID) {
 		ObjectContainer db = openDatabase();
-		List<SingleTask> result= new LinkedList<SingleTask>();
+		List<SingleTask> result = new LinkedList<SingleTask>();
 		try {
-			List<TaskTuple> queryResult = db.query(new Predicate<TaskTuple>() {
-				public boolean match(TaskTuple current) {
-					return (current.userID.equals(userID));
-				}
-			});
+			Query query = db.query();
+			query.constrain(TaskTuple.class);
+			query.descend("userID").constrain(userID);
+			ObjectSet<TaskTuple> queryResult = query.execute();
 			if (queryResult.isEmpty()) {
-				log.warn ("Cannot find user ID "+userID);
+				log.warn("Cannot find user ID " + userID);
 				return result;
-			}			
-			for (TaskTuple o : queryResult) result.add(o.task);
+			}
+			for (TaskTuple o : queryResult)
+				result.add(o.task);
 			return result;
 		} finally {
 			db.close();
@@ -98,11 +101,11 @@ public enum TaskDatabase {
 	public static boolean deleteTask(final String userID, final String taskID) {
 		ObjectContainer db = openDatabase();
 		try {
-			List<TaskTuple> result = db.query(new Predicate<TaskTuple>() {
-				public boolean match(TaskTuple current) {
-					return current.userID.equals(userID) && current.taskID.equals(taskID);
-				}
-			});
+			Query query = db.query();
+			query.constrain(TaskTuple.class);
+			Constraint constr=query.descend("taskID").constrain(taskID);
+			query.descend("userID").constrain(userID).and(constr);
+			ObjectSet<TaskTuple> result = query.execute();
 			if (result.isEmpty()) return false;
 			TaskTuple toDelete = result.get(0);
 			db.delete(toDelete);
@@ -121,11 +124,10 @@ public enum TaskDatabase {
 	public static boolean updateTask(final String taskID, final SingleTask task){
 		ObjectContainer db = openDatabase();
 		try {
-			List<TaskTuple> result = db.query(new Predicate<TaskTuple>() {
-				public boolean match(TaskTuple current) {
-					return (current.taskID.equals(taskID));
-				}
-			});
+			Query query = db.query();
+			query.constrain(TaskTuple.class);
+			query.descend("taskID").constrain(taskID);
+			ObjectSet<TaskTuple> result = query.execute();
 			if (result.isEmpty()) {
 				log.warn ("Cannot find task with ID "+taskID);
 				return false;

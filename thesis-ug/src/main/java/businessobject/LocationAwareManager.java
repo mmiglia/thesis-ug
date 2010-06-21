@@ -46,7 +46,7 @@ public class LocationAwareManager {
 		needs.addAll(needsfilter);
 		log.info("needs are "+ needs.size()+" : "+needs.toString());
 		List<String> queryList = new ArrayList<String>(); // list of inferred search query string
-		for (String o : needs) queryList.addAll(OntologyReasoner.getSearchQuery(o));
+		for (String o : needs) queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
 		log.info("querylist are "+ queryList.size()+" : "+queryList.toString());
 		List<Hint> result = new LinkedList<Hint>(); // list of search result
 		for (String query : queryList) 
@@ -85,7 +85,7 @@ public class LocationAwareManager {
 		needs.addAll(needsfilter);
 
 		List<String> queryList = new ArrayList<String>(); // list of inferred search query string
-		for (String o : needs) queryList.addAll(OntologyReasoner.getSearchQuery(o));
+		for (String o : needs) queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
 		log.info("querylist are "+ queryList.size()+" : "+queryList.toString());
 		List<Hint> result = new LinkedList<Hint>(); // list of search result
 		for (String query : queryList) 

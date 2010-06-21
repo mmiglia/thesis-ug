@@ -1,19 +1,21 @@
 package valueobject;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 import businessobject.Converter;
 
+import com.db4o.activation.ActivationPurpose;
+import com.db4o.activation.Activator;
+import com.db4o.ta.Activatable;
+
 /**
  * This is the basic task object that will be used for communications to client
  */
 @XmlRootElement
-public class SingleTask extends Reminder implements Comparable<SingleTask>{
+public class SingleTask extends Reminder implements Comparable<SingleTask>, Activatable{
 	/**
 	 * deadline for the execution of the task (xs:dateTime format) <code>2006-04-17T15:00:00-08:00</code>
 	 */
@@ -120,5 +122,17 @@ public class SingleTask extends Reminder implements Comparable<SingleTask>{
 				return (this.priority > compare.priority) ? -1 : 1;
 		} else
 			return (thisobject.after(datecompare)) ? 1 : -1;
+	}
+
+	@Override
+	public void activate(ActivationPurpose arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void bind(Activator arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }
