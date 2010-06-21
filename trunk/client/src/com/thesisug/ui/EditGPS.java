@@ -6,6 +6,7 @@ import java.util.List;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -51,7 +52,10 @@ public class EditGPS extends MapActivity implements LocationListener{
         // get the GPS positions
         lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) 0, 0.0f, this);
-        Location gpslocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Criteria criteria = new Criteria();
+		criteria.setAccuracy(Criteria.ACCURACY_FINE);
+		String provider = lm.getBestProvider(criteria, true);
+        Location gpslocation = lm.getLastKnownLocation(provider);
         
         // get latitude and longitude from intent
         latitude = (int) (getIntent().getFloatExtra(LATITUDE, 0)*1e6);
@@ -59,7 +63,7 @@ public class EditGPS extends MapActivity implements LocationListener{
         Log.i(TAG, "from Intent latitude = "+latitude+", longitude ="+longitude);
         GeoPoint point;
         // if GPS coordinate is specified, we use it. Otherwise use GPS
-        point = ( latitude == 0 && longitude == 0) ?
+        point = ( latitude == 0 && longitude == 0 && gpslocation != null ) ?
         	new GeoPoint((int)Math.floor (gpslocation.getLatitude()*1e6), (int) Math.floor(gpslocation.getLongitude()*1e6))
         	:new GeoPoint (latitude , longitude);
         lo.addOverlay(new OverlayItem(point, "", ""));
