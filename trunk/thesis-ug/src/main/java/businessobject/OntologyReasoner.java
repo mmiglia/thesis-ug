@@ -34,7 +34,7 @@ public class OntologyReasoner {
 	private static OWLOntologyManager manager;
 	
 	private OntologyReasoner() {
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		manager = OWLManager.createOWLOntologyManager();
 		// load the ontology file
 		try {
 			ontology = manager.loadOntologyFromOntologyDocument(new File(

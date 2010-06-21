@@ -38,8 +38,8 @@ public class MapsClient extends MapSubscriber {
 	public MapsClient(HttpClient hClient) {
 		super();
 		this.httpClient = hClient;
-		if (CONSTANTS.containsKey("http.proxyHost")
-				&& CONSTANTS.containsKey("http.proxyPort")) {
+		if (CONSTANTS.containsKey("HTTP_PROXY")
+				&& CONSTANTS.containsKey("HTTP_PORT")) {
 			HttpHost proxy = new HttpHost(CONSTANTS.getProperty("HTTP_PROXY"),
 					Integer.parseInt(CONSTANTS.getProperty("HTTP_PORT")));
 			this.httpClient.getParams().setParameter(
