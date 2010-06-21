@@ -215,7 +215,7 @@ public class EditTask extends Activity {
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case DEADLINE_TIME_ID:
-			return new TimePickerDialog(this, DeadlineTimeSetListener, deadline.get(Calendar.HOUR),
+			return new TimePickerDialog(this, DeadlineTimeSetListener, deadline.get(Calendar.HOUR_OF_DAY),
 					deadline.get(Calendar.MINUTE), true);
 		case DEADLINE_DATE_ID:
 			return new DatePickerDialog(this, DeadlineDateSetListener, deadline.get(Calendar.YEAR),
