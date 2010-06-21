@@ -10,6 +10,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -84,8 +85,12 @@ public class TaskNotification extends Service{
         		// get preference on distance, return default 0 (dont filter distance) if not set
         		int distance = Integer.parseInt(usersettings.getString("maxdistance", "0"));
         		List<Thread> threads = new LinkedList<Thread>();
-        		// get current location
-        		gpslocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+				// get current location
+				Criteria criteria = new Criteria();
+				criteria.setAccuracy(Criteria.ACCURACY_FINE);
+				String provider = lm.getBestProvider(criteria, true);
+				gpslocation = lm.getLastKnownLocation(provider);				
+        		if (gpslocation == null) continue;
         		//asynchronous operation to download thread
         		downloadTaskThread = TaskResource.getFirstTask(handler, TaskNotification.this);
         		//block execution to make it synchronous

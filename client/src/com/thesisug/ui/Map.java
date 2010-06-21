@@ -3,17 +3,14 @@ package com.thesisug.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
@@ -26,7 +23,6 @@ import com.google.android.maps.OverlayItem;
 import com.thesisug.R;
 import com.thesisug.communication.ContextResource;
 import com.thesisug.communication.valueobject.Hint;
-import com.thesisug.notification.TaskNotification;
 
 public class Map extends MapActivity implements LocationListener{
 	private static final String TAG = "Map Activity";
@@ -52,21 +48,26 @@ public class Map extends MapActivity implements LocationListener{
         // get the GPS coordinate
         lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) 0, 0.0f, this);
-        Location gpslocation = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        String provider = lm.getBestProvider(criteria, true);
+        Location gpslocation = lm.getLastKnownLocation(provider);
+        GeoPoint currentLocation=null;
+        if (gpslocation != null){
         downloadThread = ContextResource.checkLocationAll(
         		new Float(gpslocation.getLatitude()),
 				new Float(gpslocation.getLongitude()),
 				0, handler, Map.this);
 		
         // add the overlays
-        GeoPoint currentLocation = new GeoPoint((int)Math.floor (gpslocation.getLatitude()*1e6), (int) Math.floor(gpslocation.getLongitude()*1e6));
+        currentLocation = new GeoPoint((int)Math.floor (gpslocation.getLatitude()*1e6), (int) Math.floor(gpslocation.getLongitude()*1e6));
         marker.addOverlay(new OverlayItem(currentLocation, "", ""));
         mapOverlays.add(marker);
         mapOverlays.add(center);
-        
+        }
         // set up zoom and center of the map
         mapView.setBuiltInZoomControls(true);
-        mc.animateTo(currentLocation);
+        if (currentLocation != null) mc.animateTo(currentLocation);
         mc.setZoom(17);
     }
     
