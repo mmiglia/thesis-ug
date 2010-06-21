@@ -48,7 +48,7 @@ public class ContextListener {
 	public List<Hint> checkLocationAll(@QueryParam("lat") float latitude, @QueryParam("lon") float longitude, @QueryParam("dist") int distance,
 			@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid) {
-		log.info("Receive request for context listener from user " + userid + " from location "
+		log.info("Receive ALL context from user " + userid + " from location "
 				+ latitude + ":" + longitude);
 		return LocationAwareManager.checkLocationAll(userid, latitude, longitude, distance);
 	}
@@ -75,7 +75,7 @@ public class ContextListener {
 	public List<Hint> checkLocationSingle(@QueryParam("q")String sentence, @QueryParam("lat") float latitude, @QueryParam("lon") float longitude, @QueryParam("dist") int distance,
 			@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid) {
-		log.info("Receive request for single context listener from user " + userid + " from location "
+		log.info("Request single context from user " + userid + " sentence "+sentence+" from location "
 				+ latitude + ":" + longitude);
 		return LocationAwareManager.checkLocationSingle(userid, sentence, latitude, longitude, distance);
 	}
