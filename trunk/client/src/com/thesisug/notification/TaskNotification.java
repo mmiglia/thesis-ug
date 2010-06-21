@@ -80,6 +80,7 @@ public class TaskNotification extends Service{
         	while (true){
         		// get preference on query period, return default 5 min if not set
         		int delay = Integer.parseInt(usersettings.getString("queryperiod", "300")) * 1000;
+        		if (delay == 0) {condvar.block(60000); continue;}
         		Log.i(TAG, "delay is "+delay);
         		if (condvar.block(delay)) break;
         		// get preference on distance, return default 0 (dont filter distance) if not set
