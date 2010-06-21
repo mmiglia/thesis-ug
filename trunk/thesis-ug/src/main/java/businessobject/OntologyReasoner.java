@@ -29,6 +29,25 @@ public class OntologyReasoner {
 	private final static Logger log = LoggerFactory
 			.getLogger(OntologyReasoner.class);
 	private final static String ONTOLOGY_FILE = Configuration.getInstance().constants.getProperty("DATABASE_FOLDER")+"/HintsOntology.owl";
+	private final static OntologyReasoner instance = new OntologyReasoner();
+	private static OWLOntology ontology;
+	private static OWLOntologyManager manager;
+	
+	private OntologyReasoner() {
+		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+		// load the ontology file
+		try {
+			ontology = manager.loadOntologyFromOntologyDocument(new File(
+					ONTOLOGY_FILE));
+		} catch (OWLOntologyCreationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public static OntologyReasoner getInstance(){
+		return instance;
+	}
 	
 	/**
 	* Get a list of location that might satisfy the need
@@ -36,13 +55,7 @@ public class OntologyReasoner {
 	* @param need String from a parsed user query / task that needs to be done
 	* @return list of location that can satisfy the need
 	*/
-	public static List<String> getSearchQuery(String need) {
-		OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-		OWLOntology ontology;
-		try {
-			// load the ontology file
-			ontology = manager.loadOntologyFromOntologyDocument(new File(
-					ONTOLOGY_FILE));
+	public static List<String> getSearchQuery(String need) {		
 			String base = ontology.getOntologyID().getOntologyIRI().toString();
 			OWLDataFactory dataFactory = manager.getOWLDataFactory();
 			OWLNamedIndividual item = dataFactory.getOWLNamedIndividual(IRI
@@ -63,10 +76,6 @@ public class OntologyReasoner {
 				result.add(o.toStringID().replaceFirst(base + "#", ""));
 			}
 			return result;
-		} catch (OWLOntologyCreationException e) {
-			log.error("Cannot open ontology file");
-			e.printStackTrace();
-			return null;
-		}
+		
 	}
 }

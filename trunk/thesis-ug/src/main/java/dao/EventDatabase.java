@@ -13,8 +13,11 @@ import businessobject.Converter;
 
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectServer;
+import com.db4o.ObjectSet;
 import com.db4o.cs.Db4oClientServer;
+import com.db4o.query.Constraint;
 import com.db4o.query.Predicate;
+import com.db4o.query.Query;
 
 
 /**
@@ -58,11 +61,11 @@ public enum EventDatabase {
 	public static boolean deleteEvent(final String userID, final String eventID) {
 		ObjectContainer db = openDatabase();
 		try {
-			List<EventTuple> result = db.query(new Predicate<EventTuple>() {
-				public boolean match(EventTuple current) {
-					return current.userID.equals(userID) && current.event.ID.equals(eventID);
-				}
-			});
+			Query query = db.query();
+			query.constrain(EventTuple.class);
+			Constraint constr=query.descend("eventID").constrain(eventID);
+			query.descend("userID").constrain(userID).and(constr);
+			ObjectSet<EventTuple> result = query.execute();
 			if (result.isEmpty()) return false;
 			EventTuple toDelete = result.get(0);
 			db.delete(toDelete);
@@ -81,11 +84,10 @@ public enum EventDatabase {
 	public static boolean updateEvent(final String eventID, final SingleEvent event){
 		ObjectContainer db = openDatabase();
 		try {
-			List<EventTuple> result = db.query(new Predicate<EventTuple>() {
-				public boolean match(EventTuple current) {
-					return (current.event.ID.equals(eventID));
-				}
-			});
+			Query query = db.query();
+			query.constrain(EventTuple.class);
+			query.descend("eventID").constrain(eventID);
+			ObjectSet<EventTuple> result = query.execute();
 			if (result.isEmpty()) {
 				log.warn ("Cannot find task with ID "+eventID);
 				return false;
@@ -109,11 +111,10 @@ public enum EventDatabase {
 		ObjectContainer db = openDatabase();
 		List<SingleEvent> result= new LinkedList<SingleEvent>();
 		try {
-			List<EventTuple> queryResult = db.query(new Predicate<EventTuple>() {
-				public boolean match(EventTuple current) {
-					return (current.userID.equals(userID));
-				}
-			});
+			Query query = db.query();
+			query.constrain(EventTuple.class);
+			query.descend("userID").constrain(userID);
+			ObjectSet<EventTuple> queryResult = query.execute();
 			if (queryResult.isEmpty()) {
 				log.warn ("Cannot find user ID "+userID);
 				return result;
@@ -168,12 +169,11 @@ public enum EventDatabase {
 	private static boolean eventExist(final SingleEvent event) {
 		ObjectContainer db = openDatabase();
 		try {
-		List <EventTuple> result = db.query(new Predicate<EventTuple>() {
-			public boolean match(EventTuple current) {
-		        return current.event.equals(event);
-		    }
-		});
-		return !result.isEmpty();
+			Query query = db.query();
+			query.constrain(EventTuple.class);
+			query.descend("eventID").constrain(event.ID);
+			ObjectSet<EventTuple> result = query.execute();
+			return !result.isEmpty();
 		}finally{
 			db.close();
 		}		
@@ -200,6 +200,7 @@ public enum EventDatabase {
 		 * UUID of the user
 		 */
 		public String userID;
+		public String eventID;
 		/**
 		 * list of events saved in the database
 		 */
@@ -207,6 +208,7 @@ public enum EventDatabase {
 	
 		public EventTuple (String userID, SingleEvent event){
 			this.userID = userID;
+			this.eventID = event.ID;
 			this.event = event;
 		}
 	}
