@@ -125,7 +125,7 @@ public class TaskNotification extends Service{
     	notificationIntent.putParcelableArrayListExtra("hints", new ArrayList<Hint>(result));
     	notificationIntent.putExtra("tasktitle", sentence);
     	notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
-    	PendingIntent contentIntent = PendingIntent.getActivity(TaskNotification.this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    	PendingIntent contentIntent = PendingIntent.getActivity(TaskNotification.this, sentence.hashCode(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     	contentView.setTextViewText(R.id.notification_title, getText(R.string.want_to)+" "+sentence+" "+getText(R.string.now)+" ?");
     	contentView.setTextViewText(R.id.notification_content, getText(R.string.click_hint));
     	newnotification.contentView = contentView;
