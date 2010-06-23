@@ -71,9 +71,9 @@ public class OntologyReasoner {
 					.getObjectPropertyValues(item, location);
 			Set<OWLNamedIndividual> locationvalues = inferredlocation
 					.getFlattened();
-			List<String> result = new LinkedList<String>();
-			for (OWLNamedIndividual o : locationvalues) {
-				result.add(o.toStringID().replaceFirst(base + "#", ""));
+			List<String> result = new LinkedList<String>();			
+			for (OWLNamedIndividual o : locationvalues) {				
+				result.add(o.toStringID().replace('_', ' ').replaceFirst(base + "#", ""));
 			}
 			return result;
 		

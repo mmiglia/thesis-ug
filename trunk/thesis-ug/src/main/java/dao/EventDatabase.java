@@ -71,7 +71,11 @@ public enum EventDatabase {
 			Constraint constr=query.descend("eventID").constrain(eventID);
 			query.descend("userID").constrain(userID).and(constr);
 			ObjectSet<EventTuple> result = query.execute();
-			if (result.isEmpty()) return false;
+			if (result.isEmpty()) {
+				log.info("cannot delete event");
+				return false;
+			}
+			log.info("Deletion successful");
 			EventTuple toDelete = result.get(0);
 			db.delete(toDelete);
 			return true;
