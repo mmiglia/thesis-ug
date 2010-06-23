@@ -63,8 +63,8 @@ public class Map extends MapActivity implements LocationListener{
         currentLocation = new GeoPoint((int)Math.floor (gpslocation.getLatitude()*1e6), (int) Math.floor(gpslocation.getLongitude()*1e6));
         marker.addOverlay(new OverlayItem(currentLocation, "", ""));
         mapOverlays.add(marker);
-        mapOverlays.add(center);
         }
+        mapOverlays.add(center);
         // set up zoom and center of the map
         mapView.setBuiltInZoomControls(true);
         if (currentLocation != null) mc.animateTo(currentLocation);
@@ -78,7 +78,7 @@ public class Map extends MapActivity implements LocationListener{
     
     @Override
 	public void onLocationChanged(Location location) {
-    	marker.removeOverlay(0);
+    	if (marker.size() > 0) marker.removeOverlay(0);
     	GeoPoint current = new GeoPoint((int)Math.floor (location.getLatitude()*1e6), (int) Math.floor(location.getLongitude()*1e6)); 
     	mc.animateTo(current);
     	marker.addOverlay(new OverlayItem(current, "", ""));
