@@ -1,6 +1,5 @@
 package dao;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -10,8 +9,14 @@ import businessobject.Configuration;
 
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectServer;
+import com.db4o.ObjectSet;
+import com.db4o.activation.ActivationPurpose;
+import com.db4o.activation.Activator;
 import com.db4o.cs.Db4oClientServer;
-import com.db4o.query.Predicate;
+import com.db4o.cs.config.ServerConfiguration;
+import com.db4o.query.Query;
+import com.db4o.ta.Activatable;
+import com.db4o.ta.TransparentActivationSupport;
 
 /**
  * Singleton class that acts as a database that will save the current logged-in users
@@ -52,11 +57,10 @@ public enum SessionData {
 	public static void removeAllSessionbyUser (final String userID){
 		ObjectContainer db = openDatabase();
 		try {			
-			List <Session> result = db.query(new Predicate<Session>() {
-			    public boolean match(Session session) {
-			        return session.userID.equals(userID);
-			    }
-			});
+			Query query = db.query();
+			query.constrain(Session.class);
+			query.descend("userID").constrain(userID);
+			ObjectSet<Session> result = query.execute();
 			while (result.iterator().hasNext())	db.delete(result.iterator().next());			
 		} finally {
 			db.close();
@@ -71,12 +75,15 @@ public enum SessionData {
 	private static String checkUserLogin(final String userID){
 		ObjectContainer db = openDatabase();
 		try {			
-			List <Session> result = db.query(new Predicate<Session>() {
-			    public boolean match(Session session) {
-			        return session.userID.equals(userID);
-			    }
-			});
-			return result.isEmpty() ? "-1":result.get(0).sessionkey;
+			Query query = db.query();
+			query.constrain(Session.class);
+			query.descend("userID").constrain(userID);
+			ObjectSet<Session> result = query.execute();
+			if (!result.isEmpty()){
+				result.get(0).activateRead();
+				return result.get(0).sessionkey;
+			}
+			else return  "-1";
 		} finally {
 			db.close();
 		}
@@ -88,9 +95,11 @@ public enum SessionData {
 			/*to avoid racing condition after outer IF above
 			 e.g. possible to acquire same databaseOpen value
 			 and thus open server multiple times*/
+			ServerConfiguration config = Db4oClientServer.newServerConfiguration();
+			config.common().add(new TransparentActivationSupport());
+			config.common().activationDepth(2);
 			if (databaseOpen) return server.openClient(); 
-			server= Db4oClientServer.openServer(Db4oClientServer
-		        .newServerConfiguration(), DATABASE_NAME, 0);
+			server= Db4oClientServer.openServer(config, DATABASE_NAME, 0);
 			databaseOpen=true;
 			}
 		}
@@ -103,15 +112,16 @@ public enum SessionData {
 	 * The basic class to be saved in SessionData database
 	 *
 	 */
-	private class Session {
+	private class Session implements Activatable{
+		private transient Activator _activator;
 		/**
 		 * UUID of the user
 		 */
-		public String userID;
+		private String userID;
 		/**
 		 * generated session key for this user
 		 */
-		public String sessionkey;
+		private String sessionkey;
 		/**
 		 * Constructor for the class
 		 * @param userID UUID of the user
@@ -120,6 +130,32 @@ public enum SessionData {
 		public Session (String userID, String sessionKey){
 			this.userID = userID;
 			this.sessionkey = sessionKey;
+		}
+		
+		public void activateWrite(){
+			activate(ActivationPurpose.WRITE);	
+		}
+		
+		public void activateRead(){
+			activate(ActivationPurpose.READ);	
+		}
+		
+		@Override
+		public void activate(ActivationPurpose purpose) {
+			 if(_activator != null) {
+		            _activator.activate(purpose);
+		        }
+		}
+
+		@Override
+		public void bind(Activator activator) {
+		       if (_activator == activator) {
+		            return;
+		        }
+		        if (activator != null && _activator != null) {
+		            throw new IllegalStateException();
+		        }
+		        _activator = activator;
 		}
 	}
 }

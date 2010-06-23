@@ -12,10 +12,15 @@ import businessobject.Configuration;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectServer;
 import com.db4o.ObjectSet;
+import com.db4o.activation.ActivationPurpose;
+import com.db4o.activation.Activator;
 import com.db4o.cs.Db4oClientServer;
+import com.db4o.cs.config.ServerConfiguration;
 import com.db4o.query.Constraint;
 import com.db4o.query.Predicate;
 import com.db4o.query.Query;
+import com.db4o.ta.Activatable;
+import com.db4o.ta.TransparentActivationSupport;
 
 /**
  * Singleton class that acts as a database that will save all the tasks
@@ -84,8 +89,10 @@ public enum TaskDatabase {
 				log.warn("Cannot find user ID " + userID);
 				return result;
 			}
-			for (TaskTuple o : queryResult)
+			for (TaskTuple o : queryResult){
+				o.activateRead();
 				result.add(o.task);
+			}
 			return result;
 		} finally {
 			db.close();
@@ -133,6 +140,7 @@ public enum TaskDatabase {
 				return false;
 			}
 			TaskTuple toChange = result.get(0);
+			toChange.activateWrite();
 			task.ID = taskID; //make sure ID is the same
 			toChange.task = task;
 			db.store(toChange);
@@ -152,6 +160,7 @@ public enum TaskDatabase {
 		try {
 		List <TaskTuple> result = db.query(new Predicate<TaskTuple>() {
 			public boolean match(TaskTuple current) {
+				current.activateRead();
 		        return current.task.equals(task);
 		    }
 		});
@@ -167,9 +176,10 @@ public enum TaskDatabase {
 			/*to avoid racing condition after outer IF above
 			 e.g. possible to acquire same databaseOpen value
 			 and thus open server multiple times*/
+			ServerConfiguration config = Db4oClientServer.newServerConfiguration();
+			config.common().add(new TransparentActivationSupport());
 			if (databaseOpen) return server.openClient(); 
-			server= Db4oClientServer.openServer(Db4oClientServer
-		        .newServerConfiguration(), DATABASE_NAME, 0);
+			server= Db4oClientServer.openServer(config, DATABASE_NAME, 0);
 			databaseOpen=true;
 			}
 		}
@@ -181,7 +191,8 @@ public enum TaskDatabase {
 	 * The basic class to be saved in TaskDatabase
 	 *
 	 */
-	private class TaskTuple {
+	private class TaskTuple implements Activatable {
+		private transient Activator _activator;
 		/**
 		 * UUID of the user
 		 */
@@ -199,6 +210,32 @@ public enum TaskDatabase {
 			this.userID=userID;
 			this.taskID=taskID;
 			this.task=task;
+		}
+		
+		public void activateWrite(){
+			activate(ActivationPurpose.WRITE);	
+		}
+		
+		public void activateRead(){
+			activate(ActivationPurpose.READ);	
+		}
+		
+		@Override
+		public void activate(ActivationPurpose purpose) {
+			 if(_activator != null) {
+		            _activator.activate(purpose);
+		        }
+		}
+
+		@Override
+		public void bind(Activator activator) {
+		       if (_activator == activator) {
+		            return;
+		        }
+		        if (activator != null && _activator != null) {
+		            throw new IllegalStateException();
+		        }
+		        _activator = activator;
 		}
 	}
 }

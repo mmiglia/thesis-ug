@@ -10,8 +10,16 @@ import businessobject.Configuration;
 
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectServer;
+import com.db4o.ObjectSet;
+import com.db4o.activation.ActivationPurpose;
+import com.db4o.activation.Activator;
 import com.db4o.cs.Db4oClientServer;
+import com.db4o.cs.config.ServerConfiguration;
+import com.db4o.query.Constraint;
 import com.db4o.query.Predicate;
+import com.db4o.query.Query;
+import com.db4o.ta.Activatable;
+import com.db4o.ta.TransparentActivationSupport;
 
 /**
  * Singleton class that acts as a database that will saves unique UUID of the user, username and password to this
@@ -73,12 +81,15 @@ public enum RegisteredUsers {
 	public static String getID(final String username) {
 		ObjectContainer db = openDatabase();
 		try {
-		List <Users> result = db.query(new Predicate<Users>() {
-		    public boolean match(Users user) {
-		        return user.username.equalsIgnoreCase(username);
-		    }
-		});
-		return result.isEmpty()? null:result.get(0).ID;		
+			Query query = db.query();
+			query.constrain(Users.class);
+			query.descend("username").constrain(username);
+			ObjectSet<Users> result = query.execute();
+			if (!result.isEmpty()){
+				result.get(0).activateRead();
+				return result.get(0).ID;
+			}
+			else return null;
 		}finally{
 			db.close();
 		}
@@ -91,11 +102,10 @@ public enum RegisteredUsers {
 	public static void deleteUsers(final String ID) {
 		ObjectContainer db = openDatabase();
 		try {
-			List<Users> result = db.query(new Predicate<Users>() {
-				public boolean match(Users user) {
-					return user.ID.equals(ID);
-				}
-			});
+			Query query = db.query();
+			query.constrain(Users.class);
+			query.descend("ID").constrain(ID);
+			ObjectSet<Users> result = query.execute();
 			if (result.isEmpty()) {
 				log.warn("Cannot find user with ID "+ID);
 				return;
@@ -115,16 +125,16 @@ public enum RegisteredUsers {
 	public static void setGoogleUsername(final String ID, String googleID){
 		ObjectContainer db = openDatabase();
 		try {
-			List<Users> result = db.query(new Predicate<Users>() {
-				public boolean match(Users user) {
-					return user.ID.equals(ID);
-				}
-			});
+			Query query = db.query();
+			query.constrain(Users.class);
+			query.descend("ID").constrain(ID);
+			ObjectSet<Users> result = query.execute();
 			if (result.isEmpty()) {
 				log.warn("Cannot find user with ID "+ID);
 				return;
 			}
 			Users toChange = result.get(0);
+			toChange.activateWrite();
 			toChange.googleUsername = googleID;
 			db.store(toChange);
 		} finally {
@@ -140,16 +150,16 @@ public enum RegisteredUsers {
 	public static void setGooglePassword(final String ID, String googlePassword){
 		ObjectContainer db = openDatabase();
 		try {
-			List<Users> result = db.query(new Predicate<Users>() {
-				public boolean match(Users user) {
-					return user.ID.equals(ID);
-				}
-			});
+			Query query = db.query();
+			query.constrain(Users.class);
+			query.descend("ID").constrain(ID);
+			ObjectSet<Users> result = query.execute();
 			if (result.isEmpty()) {
 				log.warn("Cannot find user with ID "+ID);
 				return;
 			}
 			Users toChange = result.get(0);
+			toChange.activateWrite();
 			toChange.googlePassword = googlePassword;
 			db.store(toChange);
 		} finally {
@@ -165,12 +175,16 @@ public enum RegisteredUsers {
 	public static String checkMatch(final String username, final String password){
 		ObjectContainer db = openDatabase();
 		try {
-			List<Users> result = db.query(new Predicate<Users>() {
-				public boolean match(Users user) {
-					return (user.username.equalsIgnoreCase(username) && user.password.equals(password));
-				}
-			});			
-			return result.isEmpty()? null:result.get(0).ID;			
+			Query query = db.query();
+			query.constrain(Users.class);
+			Constraint constr=query.descend("password").constrain(password);
+			query.descend("username").constrain(username).and(constr);
+			ObjectSet<Users> result = query.execute();
+			if (!result.isEmpty()){
+				result.get(0).activateRead();
+				return result.get(0).ID;
+			}
+			else return null;	
 		} finally {
 			db.close();
 		}		
@@ -182,9 +196,11 @@ public enum RegisteredUsers {
 			/*to avoid racing condition after outer IF above
 			 e.g. possible to acquire same databaseOpen value
 			 and thus open server multiple times*/
+			ServerConfiguration config = Db4oClientServer.newServerConfiguration();
+			config.common().add(new TransparentActivationSupport());
+			config.common().activationDepth(2);
 			if (databaseOpen) return server.openClient(); 
-			server= Db4oClientServer.openServer(Db4oClientServer
-		        .newServerConfiguration(), DATABASE_NAME, 0);
+			server= Db4oClientServer.openServer(config, DATABASE_NAME, 0);
 			databaseOpen=true;
 			}
 		}
@@ -210,27 +226,28 @@ public enum RegisteredUsers {
 	 * The basic class to be saved in the RegisteredUsers database
 	 *
 	 */
-	private class Users {
+	private class Users implements Activatable{
+		private transient Activator _activator;
 		/**
 		 * unique UUID for each user
 		*/
-		public String ID;
+		private String ID;
 		/**
 		 * unique username for each user
 		*/
-		public String username;
+		private String username;
 		/**
 		 * password set by the user
 		*/
-		public String password;
+		private String password;
 		/**
 		 * Google Account username of the user
 		*/
-		public String googleUsername;
+		private String googleUsername;
 		/**
 		 * Google Account password of the user
 		*/
-		public String googlePassword;
+		private String googlePassword;
 		public Users (String username, String password){
 			this.ID = UUID.randomUUID().toString();
 			this.username=username;
@@ -244,6 +261,32 @@ public enum RegisteredUsers {
 			this.password=password;
 			this.googleUsername=googleusername;
 			this.googlePassword=googlepassword;
+		}
+		
+		public void activateWrite(){
+			activate(ActivationPurpose.WRITE);	
+		}
+		
+		public void activateRead(){
+			activate(ActivationPurpose.READ);	
+		}
+		
+		@Override
+		public void activate(ActivationPurpose purpose) {
+			 if(_activator != null) {
+		            _activator.activate(purpose);
+		        }
+		}
+
+		@Override
+		public void bind(Activator activator) {
+		       if (_activator == activator) {
+		            return;
+		        }
+		        if (activator != null && _activator != null) {
+		            throw new IllegalStateException();
+		        }
+		        _activator = activator;
 		}
 	}
 }

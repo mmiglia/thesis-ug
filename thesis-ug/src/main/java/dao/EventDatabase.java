@@ -14,10 +14,15 @@ import businessobject.Converter;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectServer;
 import com.db4o.ObjectSet;
+import com.db4o.activation.ActivationPurpose;
+import com.db4o.activation.Activator;
 import com.db4o.cs.Db4oClientServer;
+import com.db4o.cs.config.ServerConfiguration;
 import com.db4o.query.Constraint;
 import com.db4o.query.Predicate;
 import com.db4o.query.Query;
+import com.db4o.ta.Activatable;
+import com.db4o.ta.TransparentActivationSupport;
 
 
 /**
@@ -93,6 +98,7 @@ public enum EventDatabase {
 				return false;
 			}
 			EventTuple toChange = result.get(0);
+			toChange.activateWrite();
 			event.ID = eventID; //make sure ID is the same
 			toChange.event = event;
 			db.store(toChange);
@@ -119,7 +125,10 @@ public enum EventDatabase {
 				log.warn ("Cannot find user ID "+userID);
 				return result;
 			}			
-			for (EventTuple o : queryResult) result.add(o.event);
+			for (EventTuple o : queryResult) {
+				o.activateRead();
+				result.add(o.event);
+			}
 			return result;
 		} finally {
 			db.close();
@@ -154,7 +163,10 @@ public enum EventDatabase {
 				log.warn ("Cannot find user ID "+userID);
 				return result;
 			}
-			for (EventTuple o : queryResult) result.add(o.event);
+			for (EventTuple o : queryResult) {
+				o.activateRead();
+				result.add(o.event);
+			}
 			return result;
 		} finally {
 			db.close();
@@ -185,9 +197,11 @@ public enum EventDatabase {
 			/*to avoid racing condition after outer IF above
 			 e.g. possible to acquire same databaseOpen value
 			 and thus open server multiple times*/
+			ServerConfiguration config = Db4oClientServer.newServerConfiguration();
+			config.common().add(new TransparentActivationSupport());
+			config.common().activationDepth(3);
 			if (databaseOpen) return server.openClient(); 
-			server= Db4oClientServer.openServer(Db4oClientServer
-		        .newServerConfiguration(), DATABASE_NAME, 0);
+			server= Db4oClientServer.openServer(config, DATABASE_NAME, 0);
 			databaseOpen=true;
 			}
 		}
@@ -195,7 +209,8 @@ public enum EventDatabase {
 		return db;
 	}
 	
-	private class EventTuple {
+	private class EventTuple implements Activatable{
+		private transient Activator _activator;
 		/**
 		 * UUID of the user
 		 */
@@ -210,6 +225,31 @@ public enum EventDatabase {
 			this.userID = userID;
 			this.eventID = event.ID;
 			this.event = event;
+		}
+		public void activateWrite(){
+			activate(ActivationPurpose.WRITE);	
+		}
+		
+		public void activateRead(){
+			activate(ActivationPurpose.READ);	
+		}
+		
+		@Override
+		public void activate(ActivationPurpose purpose) {
+			 if(_activator != null) {
+		            _activator.activate(purpose);
+		        }
+		}
+
+		@Override
+		public void bind(Activator activator) {
+		       if (_activator == activator) {
+		            return;
+		        }
+		        if (activator != null && _activator != null) {
+		            throw new IllegalStateException();
+		        }
+		        _activator = activator;
 		}
 	}
 }

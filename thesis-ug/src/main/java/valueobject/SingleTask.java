@@ -15,7 +15,7 @@ import com.db4o.ta.Activatable;
  * This is the basic task object that will be used for communications to client
  */
 @XmlRootElement
-public class SingleTask extends Reminder implements Comparable<SingleTask>, Activatable{
+public class SingleTask extends Reminder implements Comparable<SingleTask>{
 	/**
 	 * deadline for the execution of the task (xs:dateTime format) <code>2006-04-17T15:00:00-08:00</code>
 	 */
@@ -124,15 +124,5 @@ public class SingleTask extends Reminder implements Comparable<SingleTask>, Acti
 			return (thisobject.after(datecompare)) ? 1 : -1;
 	}
 
-	@Override
-	public void activate(ActivationPurpose arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void bind(Activator arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 }
