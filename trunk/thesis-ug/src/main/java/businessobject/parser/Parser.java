@@ -8,10 +8,16 @@ import java.util.ListIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import businessobject.Configuration;
 import businessobject.parser.command.Verb;
 import businessobject.parser.nountype.ArbitraryObject;
 
+/**
+ * This class is the main entry point for parser subsystem
+ * all logic that happened in the parser are defined here.
+ * Most of the implementation are inspired by parser.js in
+ * Ubiquity project.
+ *
+ */
 public class Parser {
 	private static final Logger log = LoggerFactory.getLogger(Parser.class);
 	private List<Verb> command = new LinkedList<Verb>();

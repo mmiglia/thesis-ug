@@ -4,7 +4,6 @@ import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParseException;
 import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -23,8 +22,7 @@ public class Converter {
 	 * @param xsDateTime xs:DateTime format
 	 * @return java calendar object
 	 */
-	public static Calendar toJavaDate (final String xsDateTime){
-		log.debug("Converting xs:DateTime "+xsDateTime+" to Java Calendar");
+	public static Calendar toJavaDate (final String xsDateTime){		
 		XsDateTimeFormat tool = new XsDateTimeFormat();
 		Calendar result = null;
 		try {
@@ -42,7 +40,6 @@ public class Converter {
 	 * @return java calendar object TODAY, same time
 	 */
 	public static Calendar toJavaTime (final String xsTime){
-		log.debug("Converting xs:Time "+xsTime+" to Java Calendar");
 		XsDateTimeFormat tool = new XsDateTimeFormat(false,true);
 		Calendar result = null;
 		try {
@@ -75,6 +72,8 @@ public class Converter {
 
 /** <p>An instance of {@link java.text.Format}, which may be used
  * to parse and format <code>xs:dateTime</code> values.</p>
+ * This part of the code is retrieved from 
+ * https://www.docjar.com/html/api/org/apache/cxf/aegis/util/date/XsDateTimeFormat.java.html
  */
 class XsDateTimeFormat extends Format {
   private static final long serialVersionUID = 3258131340871479609L;

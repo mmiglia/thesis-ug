@@ -19,7 +19,7 @@ public interface TaskInterface {
 	 *            SingleTask object from local database
 	 * @return boolean 0 if unsuccessful, 1 if successful
 	 */
-	public boolean createTasks(String userid, SingleTask task);
+	public boolean createTask(String userid, SingleTask task);
 
 	/**
 	 * this method will remove the specific task
@@ -75,5 +75,5 @@ public interface TaskInterface {
 	 *            unique UUID of the user
 	 * @return list that contains all tasks from the user
 	 */
-	public List<SingleTask> retrieveAllTasks(String userid);
+	public List<SingleTask> retrieveAllTask(String userid);
 }

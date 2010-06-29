@@ -13,7 +13,11 @@ import org.slf4j.LoggerFactory;
 public class Configuration{
 	private static final Logger log = LoggerFactory.getLogger(Configuration.class);
 	public static final Properties constants = new Properties();
+	private static final Configuration INSTANCE = new Configuration();
 	
+	/**
+	 * Private constructor, accessed once by singleton instance
+	 */
 	private Configuration(){
 		try {
 			constants.load(this.getClass().getClassLoader().getResourceAsStream("system.conf"));
@@ -23,11 +27,11 @@ public class Configuration{
 		}
 	}
 	
+	/**
+	 * Retrieval of singleton instance
+	 * @return single static instance of this class
+	 */
 	public static Configuration getInstance(){
-		return InstanceHolder.INSTANCE;
-	}
-	
-	private static class InstanceHolder { 
-	     private static final Configuration INSTANCE = new Configuration();
+		return INSTANCE;
 	}
 }

@@ -32,9 +32,9 @@ public class InputResource {
 	@GET
 	@Consumes("application/xml")
 	@Produces("application/xml")
-	public void input(@PathParam("username") String userid,
+	public QueryReply input(@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid,@QueryParam("q") String command) {
 		log.info("Receive request from "+userid+" to parse '"+command+"'");
-		new ParserManager().inputQuery(userid, command);
+		return new QueryReply(new ParserManager().inputQuery(userid, command));
 	}
 }

@@ -16,7 +16,7 @@ import dao.TaskDatabase;
  * methods are just doing the operation in local database, and then calling all
  * subsequent methods in the subscriber (3rd party database)
  */
-public class TaskManager extends Publisher<TaskSubscriber> {
+public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterface{
 	private final static Logger log = LoggerFactory
 			.getLogger(TaskManager.class);
 
@@ -106,7 +106,7 @@ public class TaskManager extends Publisher<TaskSubscriber> {
 			String description, int priority) {
 		SingleTask toAdd = new SingleTask(title, notifyTimeStart,
 				notifyTimeEnd, dueDate, description, priority);
-		for (TaskSubscriber o : subscriberlist) o.createTasks(userID, toAdd);
+		for (TaskSubscriber o : subscriberlist) o.createTask(userID, toAdd);
 		TaskDatabase.instance.addTask(userID, toAdd);
 		return true;
 	}
@@ -118,7 +118,7 @@ public class TaskManager extends Publisher<TaskSubscriber> {
 	 * @return true if task is successfully added to database, false otherwise
 	 */
 	public boolean createTask(String userID, SingleTask toAdd){
-		for (TaskSubscriber o : subscriberlist) o.createTasks(userID, toAdd);
+		for (TaskSubscriber o : subscriberlist) o.createTask(userID, toAdd);
 		TaskDatabase.instance.addTask(userID, toAdd);
 		return true;
 	}
@@ -152,6 +152,15 @@ public class TaskManager extends Publisher<TaskSubscriber> {
 			else return false;
 		}
 		TaskDatabase.instance.deleteTask(userid, taskID);
+		return true;
+	}
+
+	@Override
+	public boolean quickAdd(String userid, String toParse) {
+		for (TaskSubscriber o : subscriberlist) {
+			if (o.quickAdd(userid, toParse)) continue;
+			else return false;
+		}
 		return true;
 	}
 }

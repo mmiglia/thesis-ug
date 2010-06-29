@@ -18,7 +18,7 @@ public interface EventInterface {
 	 * @param event SingleEvent object from local database
 	 * @return boolean 0 if unsuccessful, 1 if successful
 	 */
-	public boolean createEvents(String userid, SingleEvent event);
+	public boolean createEvent(String userid, SingleEvent event);
 	
 	/**
 	 * this method will remove the specific event
