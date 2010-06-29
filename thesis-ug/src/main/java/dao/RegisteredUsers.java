@@ -171,6 +171,7 @@ public enum RegisteredUsers {
 	 * This method find a username in database, and check whether its password is equals
 	 * @param username username to the system
 	 * @param password password to the system
+	 * @return specific userID of the match
 	 */
 	public static String checkMatch(final String username, final String password){
 		ObjectContainer db = openDatabase();

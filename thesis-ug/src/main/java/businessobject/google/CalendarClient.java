@@ -86,7 +86,7 @@ public class CalendarClient extends EventSubscriber {
 	}
 
 	@Override
-	public boolean createEvents(String userid, SingleEvent event) {
+	public boolean createEvent(String userid, SingleEvent event) {
 		try {
 			URL postUrl;
 			postUrl = new URL("http://www.google.com/calendar/feeds/"

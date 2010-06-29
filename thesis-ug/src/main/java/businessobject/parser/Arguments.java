@@ -4,7 +4,7 @@ import businessobject.parser.nountype.Noun;
 
 /**
  * Basic class to be used as an argument to the parser
- *
+ * an argument is a set of {role, noun} pair.
  */
 public class Arguments {
 	public Noun noun;

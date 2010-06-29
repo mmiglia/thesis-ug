@@ -2,7 +2,6 @@ package businessobject;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +14,7 @@ import businessobject.google.MapsClient;
  * subsequent methods in the subscriber (3rd party database)
  * 
  */
-public class MapManager extends Publisher<MapSubscriber> {
+public class MapManager extends Publisher<MapSubscriber> implements MapInterface{
 	private final static Logger log = LoggerFactory.getLogger(MapManager.class);
 
 	private MapManager() {
@@ -31,8 +30,10 @@ public class MapManager extends Publisher<MapSubscriber> {
 	}
 
 	/**
-	 * @param Return
-	 * @return
+	 * NOT USED. This method was meant to set up an initial configuration
+	 * needed to open connection with the third party servers
+	 * @return boolean false or true upon setting up connection
+	 * 
 	 */
 	public boolean openConnection() {
 		

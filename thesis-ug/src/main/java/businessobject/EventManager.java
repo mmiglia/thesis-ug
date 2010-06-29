@@ -15,7 +15,7 @@ import dao.EventDatabase;
  * subsequent methods in the subscriber (3rd party database)
  * 
  */
-public class EventManager extends Publisher<EventSubscriber> {
+public class EventManager extends Publisher<EventSubscriber> implements EventInterface {
 	private final static Logger log = LoggerFactory
 			.getLogger(EventManager.class);
 
@@ -118,7 +118,7 @@ public class EventManager extends Publisher<EventSubscriber> {
 			String endTime, String location, String description) {
 		SingleEvent toAdd = new SingleEvent(title, startTime, endTime,
 				location, description);		
-		for (EventSubscriber o : subscriberlist) o.createEvents(userid, toAdd);
+		for (EventSubscriber o : subscriberlist) o.createEvent(userid, toAdd);
 		EventDatabase.instance.addEvent(userid, toAdd);
 		return true;
 	}
@@ -130,7 +130,7 @@ public class EventManager extends Publisher<EventSubscriber> {
 	 * @return true is successful
 	 */
 	public boolean createEvent(String userID, SingleEvent toAdd){
-		for (EventSubscriber o : subscriberlist) o.createEvents(userID, toAdd);
+		for (EventSubscriber o : subscriberlist) o.createEvent(userID, toAdd);
 		EventDatabase.instance.addEvent(userID, toAdd);
 		return true;
 	}
