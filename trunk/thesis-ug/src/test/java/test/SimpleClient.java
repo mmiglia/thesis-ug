@@ -5,24 +5,29 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
-import businessobject.LocationAwareManager;
-
 import valueobject.Hint;
 import valueobject.LoginReply;
+import valueobject.QueryReply;
 import valueobject.SingleEvent;
 import valueobject.SingleTask;
 
 @Consumes("application/xml")
 public interface SimpleClient {
 	@GET
-	@Path("/login/{username}")
+	@Path("/{username}/login")
+	@Consumes("application/xml")
+	@Produces("application/xml")
+	public QueryReply input(@PathParam("username") String userid,
+			@CookieParam("sessionid") String sessionid,@QueryParam("q") String command);
+	
+	@GET
+	@Path("/{username}/login")
 	@Produces("application/xml")
 	public LoginReply Authenticate(@PathParam("username") String username, @CookieParam ("p") String password);
 	
@@ -82,9 +87,5 @@ public interface SimpleClient {
 			@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid) ;
 	
-	@GET
-	@Path("/{username}/input")
-	@Produces("application/xml")
-	public void input(@PathParam("username") String userid,
-			@CookieParam("sessionid") String sessionid,@QueryParam("q") String command) ;
+	
 }

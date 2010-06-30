@@ -103,6 +103,12 @@ public class EventResource {
 		return EventManager.getInstance().retrieveEventsbyDate(userid, DateFrom, DateTo);
 	}
 	
+	/**
+	 * Update the event specified by newEvent.ID 
+	 * @param userid userid of the user
+	 * @param sessionid session token acquired by login
+	 * @param newEvent the new event that will replace the old one
+	 */
 	@POST
 	@Path("/update")
 	@Consumes("application/xml")

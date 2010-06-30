@@ -11,23 +11,23 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class Hint {
-	public String title;
-	public String url;
-	public String content;
-	public String titleNoFormatting;
-	public String lat;
-	public String lng;
-	public String streetAddress;
-	public String city;
-	public String ddUrl;
-	public String ddUrlToHere;
-	public String ddUrlFromHere;
-	public String staticMapUrl;
-	public String listingType;
-	public String region;
-	public String country;
-	public List<PhoneNumber> phoneNumbers;
-	public List<String> addressLines;
+	public String title; // title with HTML formatting
+	public String url; //Google local business URL
+	public String content; // snippet associated with KML result
+	public String titleNoFormatting;//same like title, without HTML formatting
+	public String lat;// latitude coordinate of the place
+	public String lng;//longitude coordinate of the place
+	public String streetAddress; //street address and number for a given result
+	public String city;//city name of the result
+	public String ddUrl;//url that can be used as a search direction from center of set of result to this result
+	public String ddUrlToHere;//url that can be used as a search direction from url supplied location to this result
+	public String ddUrlFromHere;//url that can be used as a search direction to url supplied location from this result
+	public String staticMapUrl;//url to the static image representation of the current result
+	public String listingType; //can be either 'local' for local search listing, or 'KML' for KML listing
+	public String region; //region name of the result
+	public String country; //country name of the result
+	public List<PhoneNumber> phoneNumbers; //list of phone numbers associated with this result
+	public List<String> addressLines; //an array consisting mailing address for this result, to support correct rendering of address
 
 	public Hint(){}
 	
