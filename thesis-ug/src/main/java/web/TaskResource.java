@@ -55,7 +55,7 @@ public class TaskResource {
 	}
 
 	/**
-	 * get first few top priority tasks
+	 * get first few top 5 priority tasks
 	 * @param userid user id of the user
 	 * @param sessionid session token acquired by login
 	 * @return list of top priority tasks
@@ -70,6 +70,12 @@ public class TaskResource {
 		return TaskManager.getInstance().getFirstTasks(userid);
 	}
 
+	/**
+	 * Update the task identified by newTask.ID in the database
+	 * @param userid user id of the user
+	 * @param sessionid session token acquired by login
+	 * @param newTask SingleTask object that will replace the old task
+	 */
 	@POST
 	@Path("update")
 	@Consumes("application/xml")

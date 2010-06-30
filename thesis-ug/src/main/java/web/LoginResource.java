@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import valueobject.LoginReply;
 import businessobject.LoginManager;
 
-@Path("/login/{username}")
+@Path("/{username}/login")
 /**
  * Resource class for login to the system by providing user ID and password
 */
@@ -22,9 +22,8 @@ public class LoginResource{
 /**
  * This method will authenticate the user based on a given params. It will call BO.LoginManager.Login() method to do authentication in database.
  * Upon successful completion, LoginReply object is created and returned as a JAXB annotated XML
- * @param result result is JAXB annotated LoginReply
  * @param username unique ID of the user
- * @param password 
+ * @param password password of the user
  * @return result is JAXB annotated LoginReply
 */
 

@@ -35,6 +35,9 @@ public class LoginManager {
 			log.info("Username or password is wrong");
 			return new LoginReply(0, "-1");
 		} else {
+			//it would be better, instead of bluntly creating new session token, 
+			//to check for session token validity in the database first
+			//if there's no valid token, then create new token.
 			log.info("Found matching record, create new session key for user");
 			return new LoginReply(1, SessionData.instance.createSessionforUser(ID));
 		}

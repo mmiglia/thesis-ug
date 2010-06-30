@@ -77,25 +77,5 @@ public class ContextListener {
 		log.info("Request single context from user " + userid + " sentence "+sentence+" from location "
 				+ latitude + ":" + longitude);
 		return LocationAwareManager.checkLocationSingle(userid, sentence, latitude, longitude, distance);
-	}
-	
-	/**
-	 * Check the first few task that is sorted based on a closeness to deadline
-	 * 
-	 * @param userid
-	 *            user id of the user
-	 * @param sessionid
-	 *            session token acquired by login
-	 * @return list of tasks that is near deadline
-	 */
-	@GET
-	@Produces("application/xml")
-	public List<SingleTask> checkNearDeadlineTask(
-			@PathParam("username") String userid,
-			@CookieParam("sessionid") String sessionid) {
-		log.info("Receive request to check near deadline tasks from user "
-				+ userid + ", session " + sessionid);
-		// currently is just returning the result from task manager
-		return TaskManager.getInstance().getFirstTasks(userid);
-	}
+	}	
 }
