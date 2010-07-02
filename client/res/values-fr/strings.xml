@@ -76,8 +76,13 @@
 	<string name="saving_error">Oups, problème rencontré lors de la sauvegarde serveur. Veuillez réessayer plus tard ou vérifiez votre connexion.</string>
 	<string name="deleting">Effacement du contenu du serveur \u2026</string>
 	<string name="deletion_error">Oups, problème rencontré lors de l\'effacement du serveur. Veuillez réessayer plus tard ou vérifiez votre connexion.</string>
-    <string name="text_a">Pourrais-je comparer à une journée d\'été ?</string>
-    <string name="text_b">Tu es plus charmant et plus modéré.</string>
-    <string name="dialog_title">Pas de Localisation</string>
-    <string name="dialog_text">Cette boîte de dialogue n\'est pas localisée. Pour tous les paramètres régionaux, ce texte apparaîtra en conseil.xml.</string>
+	<string name="error_connect_task">Oups, vos tâches ne peuvent être récupérées sur le serveur.</string>
+	<string name="error_connect_event">Oups, vos évènements ne peuvent être récupérés sur le serveur.</string>
+	<string name="parsing_success">Yes! le système comprend et exécute votre commande avec succès.</string>
+	<string name="parsing_error">Humm .. désolé, votre commande ne peut ni être comprise ni exécutée.</string>
+	<string name="user_preferences">Préférences d\'utilisateur</string>
+	<string name="q_period">En recherche</string>
+	<string name="interval">Intervalle pour demander des allusions au serveur</string>
+	<string name="max_distance">Distance maximale</string>
+	<string name="max_distance_desc">Permettre la notification si la distance de localisation à partir de moi est inférieure à la valeur</string>
 </resources>

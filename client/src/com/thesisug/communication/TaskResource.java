@@ -53,7 +53,7 @@ public class TaskResource {
 		// if we cannot connect to the server
 		if (response.getStatusLine().getStatusCode() != 200) {
 			Log.i(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
-			return result;
+			return null; // return null if there's problem with connection
 		}
 		try { // parsing XML message
 			result = SingleTaskHandler

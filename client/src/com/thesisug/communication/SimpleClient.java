@@ -1,5 +1,12 @@
 package com.thesisug.communication;
 
+/*
+ * This class was intended to use using RESTEasy client implementation
+ * it would be straightforward to use RESTEasy library.
+ * However, Android does not support importing RESTEasy library
+ * hence, we implement our own XML parser and HTTP call for each resources
+ * We saved this class for future reference (in case RESTEasy got supported by Android)
+ */
 public interface SimpleClient {
 	/*@GET
 	@Path("/login/{username}")

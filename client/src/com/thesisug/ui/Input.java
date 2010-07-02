@@ -10,17 +10,20 @@ import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.RecognizerIntent;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.thesisug.R;
 import com.thesisug.communication.InputResource;
 
 public class Input extends Activity implements OnClickListener{
+	private static final String TAG = new String("Input Activity");
     private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
     private EditText commandbox;
     /**
@@ -94,6 +97,16 @@ public class Input extends Activity implements OnClickListener{
             commandbox.setText(matches.get(0));
         }
 
+    }
+    /**
+     * Called after authentication process is finished
+     */
+    public void showResult(boolean result) {
+    	Log.i(TAG, "in showResult "+result);
+    	if (result) Toast.makeText(getApplicationContext(), R.string.parsing_success,
+                Toast.LENGTH_LONG).show();
+		else Toast.makeText(getApplicationContext(), R.string.parsing_error,
+                Toast.LENGTH_LONG).show();
     }
 
 }

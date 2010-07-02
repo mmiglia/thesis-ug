@@ -225,7 +225,8 @@ public class Todo extends ListActivity {
 	
 	public void afterTaskLoaded(List<SingleTask> data){
 		tasks = new LinkedList<LinkedHashMap<String,?>>();
-		if (data.isEmpty()) tasks.add(createItem (new SingleTask(getText(R.string.no_task_today).toString(), "", "", "", ""), false));
+		if (data == null)  tasks.add(createItem (new SingleTask(getText(R.string.error_connect_task).toString(), "", "", "", ""), false));
+		else if (data.isEmpty()) tasks.add(createItem (new SingleTask(getText(R.string.no_task_today).toString(), "", "", "", ""), false));
 		else {
 			for (SingleTask o : data){
 				tasks.add(createItem(o, usersettings.getBoolean(o.title, true)));
@@ -236,7 +237,8 @@ public class Todo extends ListActivity {
 	
 	public void afterEventLoaded(List<SingleEvent> data){
 		event = new LinkedList<LinkedHashMap<String,?>>();
-		if (data.isEmpty()) event.add(createItem (new SingleEvent(getText(R.string.no_event_today).toString(), "", "", "", ""), false));
+		if (data == null)  event.add(createItem (new SingleEvent(getText(R.string.error_connect_event).toString(), "", "", "", ""), false));
+		else if (data.isEmpty()) event.add(createItem (new SingleEvent(getText(R.string.no_event_today).toString(), "", "", "", ""), false));
 		else {
 			Calendar cal;
 			int counter = 0;
@@ -270,7 +272,10 @@ public class Todo extends ListActivity {
 	
 	private synchronized boolean dataComplete(){
 		counter++;
-		return (counter >= 2) ? true:false;
+		if (counter >=2 ){
+			counter = 0;
+			return true;
+		} else return false;
 	}
 	
 	public void combineResult(){
