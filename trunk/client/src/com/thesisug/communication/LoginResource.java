@@ -29,7 +29,7 @@ public class LoginResource{
         	LoginReply result = new LoginReply();
         	DefaultHttpClient newClient = NetworkUtilities.createClient();
         	// provide username and password in correct param
-            HttpGet request = new HttpGet(NetworkUtilities.SERVER_URI+BASE_LOGIN+"/"+username+"");
+            HttpGet request = new HttpGet(NetworkUtilities.SERVER_URI+"/"+username+BASE_LOGIN);
             request.addHeader("Cookie", "p="+password);
             // send the request to network
             HttpResponse response = NetworkUtilities.sendRequest(newClient, request);

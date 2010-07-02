@@ -76,8 +76,13 @@
 	<string name="saving_error">Oops, problem found while saving to server. You might want to try again later or check your connection.</string>
 	<string name="deleting">Deleting content in server \u2026</string>
 	<string name="deletion_error">Oops, problem found while deleting from server. You might want to try again later or check your connection.</string>
-    <string name="text_a">Shall I compare thee to a summer"'"s day?</string>
-    <string name="text_b">Thou art more lovely and more temperate.</string>
-    <string name="dialog_title">No Localisation</string>
-    <string name="dialog_text">This dialog box"'"s strings are not localised. For every locale, the text here will come from values/strings.xml.</string>
+    <string name="error_connect_task">Oops, can\'t retrieve your tasks from server.</string>
+    <string name="error_connect_event">Oops, can\'t retrieve your events from server.</string>
+    <string name="parsing_success">Yay! the system successfully understand and execute your command</string>
+    <string name="parsing_error">Humm .. so sorry, we couldn\'t understand or execute your command</string>
+    <string name="user_preferences">User Preferences</string>
+    <string name="q_period">Query Period</string>
+    <string name="interval">Interval to ask server for hints</string>
+    <string name="max_distance">Maximum distance</string>
+    <string name="max_distance_desc">Allow notification if location distance from me is below the value</string>
 </resources>
