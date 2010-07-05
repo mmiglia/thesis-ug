@@ -17,7 +17,6 @@ import com.db4o.activation.Activator;
 import com.db4o.cs.Db4oClientServer;
 import com.db4o.cs.config.ServerConfiguration;
 import com.db4o.query.Constraint;
-import com.db4o.query.Predicate;
 import com.db4o.query.Query;
 import com.db4o.ta.Activatable;
 import com.db4o.ta.TransparentActivationSupport;
@@ -44,26 +43,6 @@ public enum TaskDatabase {
 			return; 
 		}
 		TaskTuple toAdd = instance.new TaskTuple(userID, task.ID, task);
-		ObjectContainer db = openDatabase();
-		try {			
-			db.store(toAdd);
-		} finally{
-			db.close();			
-		}
-	}
-	
-	/**
-	 * Add new task to the database
-	 * @param userID unique UUID of the user
-	 * @param taskID unique UUID of the task, must be the same from the one inside task object	 
-	 * @param task task object to be saved
-	 */
-	public static void addTask(String userID, String taskID, SingleTask task) {
-		if (taskExist(task)) {//check for redundant entry, because db40 saves redundant object
-			log.warn("Task "+task.ID+" already exist");
-			return; 
-		}
-		TaskTuple toAdd = instance.new TaskTuple(userID, taskID, task);
 		ObjectContainer db = openDatabase();
 		try {			
 			db.store(toAdd);
@@ -158,13 +137,11 @@ public enum TaskDatabase {
 	private static boolean taskExist(final SingleTask task) {
 		ObjectContainer db = openDatabase();
 		try {
-		List <TaskTuple> result = db.query(new Predicate<TaskTuple>() {
-			public boolean match(TaskTuple current) {
-				current.activateRead();
-		        return current.task.equals(task);
-		    }
-		});
-		return !result.isEmpty();
+			Query query = db.query();
+			query.constrain(TaskTuple.class);
+			query.descend("taskID").constrain(task.ID);
+			ObjectSet<TaskTuple> result = query.execute();
+			return !result.isEmpty();
 		}finally{
 			db.close();
 		}		

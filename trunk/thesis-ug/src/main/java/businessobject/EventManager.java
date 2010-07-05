@@ -95,33 +95,6 @@ public class EventManager extends Publisher<EventSubscriber> implements EventInt
 		log.info("End time "+endTime);
 		return retrieveEventsbyDate(userid, startTime, endTime);
 	}
-	/**
-	 * this method will create directly an events from a specified date, and
-	 * title.
-	 * 
-	 * @param userid
-	 *            unique UUID of the user
-	 * @param title
-	 *            the main title for the event
-	 * @param startTime
-	 *            start time of event execution
-	 * @param endTime
-	 *            end time of event execution
-	 * @param location
-	 *            where this event is held
-	 * @param description
-	 *            brief descriptions regarding the event
-	 * 
-	 * @return 0 if unsuccessful , 1 if successful
-	 */
-	public boolean createEvents(String userid, String title, String startTime,
-			String endTime, String location, String description) {
-		SingleEvent toAdd = new SingleEvent(title, startTime, endTime,
-				location, description);		
-		for (EventSubscriber o : subscriberlist) o.createEvent(userid, toAdd);
-		EventDatabase.instance.addEvent(userid, toAdd);
-		return true;
-	}
 
 	/**
 	 * create events with supplied SingleEvent instance

@@ -51,7 +51,7 @@ public class OfflineTest extends TestCase{
 		RegisteredUsers.instance.addUsers("user", "dummy");
 		assertTrue(true);
 	}
-
+	
 	@Test
 	public void testLogin() {
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
