@@ -20,8 +20,7 @@ import valueobject.SingleTask;
 @Consumes("application/xml")
 public interface SimpleClient {
 	@GET
-	@Path("/{username}/login")
-	@Consumes("application/xml")
+	@Path("/{username}/input")
 	@Produces("application/xml")
 	public QueryReply input(@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid,@QueryParam("q") String command);
@@ -60,7 +59,7 @@ public interface SimpleClient {
 
 	@POST
 	@Path("{username}/task/add")	
-	public void createTask(@PathParam("username") String userid,	@CookieParam("sessionid") String sessionid, SingleTask toAdd);
+	public void createTask(@PathParam("username") String userid, @CookieParam("sessionid") String sessionid, SingleTask toAdd);
 	
 	@GET
 	@Path("{username}/task/all")

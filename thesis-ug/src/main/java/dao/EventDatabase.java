@@ -42,16 +42,15 @@ public enum EventDatabase {
 	 * @param event event object to be saved
 	 * @return true if addition successful
 	 */
-	public boolean addEvent(String userID, SingleEvent event) {
+	public static void addEvent(String userID, SingleEvent event) {
 		if (eventExist(event)) { //check for redundant entry, because db40 saves redundant object
 			log.warn ("Event "+event.ID+" already exist");
-			return false; 
+			return;
 		}
 		EventTuple toAdd = instance.new EventTuple(userID, event);
 		ObjectContainer db = openDatabase();
 		try {			
 			db.store(toAdd);
-			return true;
 		} finally{
 			db.close();			
 		}
@@ -203,7 +202,6 @@ public enum EventDatabase {
 			 and thus open server multiple times*/
 			ServerConfiguration config = Db4oClientServer.newServerConfiguration();
 			config.common().add(new TransparentActivationSupport());
-			config.common().activationDepth(3);
 			if (databaseOpen) return server.openClient(); 
 			server= Db4oClientServer.openServer(config, DATABASE_NAME, 0);
 			databaseOpen=true;

@@ -197,10 +197,10 @@ public enum RegisteredUsers {
 			/*to avoid racing condition after outer IF above
 			 e.g. possible to acquire same databaseOpen value
 			 and thus open server multiple times*/
+			if (databaseOpen) return server.openClient(); 
 			ServerConfiguration config = Db4oClientServer.newServerConfiguration();
 			config.common().add(new TransparentActivationSupport());
 			config.common().activationDepth(2);
-			if (databaseOpen) return server.openClient(); 
 			server= Db4oClientServer.openServer(config, DATABASE_NAME, 0);
 			databaseOpen=true;
 			}
