@@ -23,7 +23,7 @@ import businessobject.Configuration;
  */
 public class OnlineTest extends TestCase {
 	private static Logger log;
-	int clientnumber = 100;
+	int clientnumber = 1;
 	// final SimpleClient client = ProxyFactory.create(SimpleClient.class,
 	// "http://localhost:8080/ephemere");
 
@@ -46,7 +46,7 @@ public class OnlineTest extends TestCase {
 			System.setProperty("https.proxyPort", CONSTANTS
 					.getProperty("HTTPS_PORT"));
 	}
-/*
+
 	@Test(timeout = 20000)
 	public void testLogin() {
 		RegisterBuiltin.register(ResteasyProviderFactory.getInstance());
@@ -73,7 +73,7 @@ public class OnlineTest extends TestCase {
 				e.printStackTrace();
 			}
 		assertTrue(true);
-	}*/
+	}
 
 	/*private Thread createThread() {
 		Thread result = new Thread() {
@@ -88,7 +88,7 @@ public class OnlineTest extends TestCase {
 		return result;
 	}*/
 
-	/*@Test()
+	@Test()
 	public void testcreateEvent() {
 		int i = 0;
 		Thread[] clientthread = new Thread[clientnumber];
@@ -115,10 +115,9 @@ public class OnlineTest extends TestCase {
 				e.printStackTrace();
 			}
 		assertTrue(true);
-	}*/
+	}
 
-	
-	/*	@Test
+	@Test
 	public void testcreateTask() {
 		int i = 0;
 		Thread[] clientthread = new Thread[clientnumber];
@@ -144,7 +143,7 @@ public class OnlineTest extends TestCase {
 			}
 		assertTrue(true);
 
-	}*/
+	}
 
 	@Test
 	public void testGetAllEvent() {
@@ -161,7 +160,7 @@ public class OnlineTest extends TestCase {
 					log.info("Get All Event results :");
 					for (SingleEvent o : result) {
 						log.info(o.title + " " + o.description + " "
-								+ o.startTime+o.ID);
+								+ o.startTime+" "+o.ID);
 					}
 				};
 			};
@@ -177,7 +176,7 @@ public class OnlineTest extends TestCase {
 		assertTrue(true);
 	}
 
-/*	@Test
+	@Test
 	public void testGetAllTasks() {
 		int i = 0;
 		Thread[] clientthread = new Thread[clientnumber];
@@ -206,13 +205,13 @@ public class OnlineTest extends TestCase {
 				e.printStackTrace();
 			}
 		assertTrue(true);
-	}*/
+	}
 	/* * Test of between range of dates
 	 * http://localhost:8080/ephemere/user/event/between
 	 * /?s=2006-04-17T15:00:00-08:00&e=2012-04-17T15:00:00-08:00
 	 */
 
-	/*@Test
+	@Test
 	public void testUpdateEvent() {
 		int i = 0;
 		Thread[] clientthread = new Thread[clientnumber];
@@ -226,7 +225,7 @@ public class OnlineTest extends TestCase {
 							"2010-01-03T08:00:00-08:00",
 							"2010-05-22T09:00:00-08:00", "her apartment",
 							"niente");
-					newEvent.ID = "165804e0-6972-41e6-a87a-1154b307d19c";
+					newEvent.ID = "df53a6ed-d913-400e-908a-3035f3007a53";
 					client.updateEvent("user", "cookie", newEvent);
 
 				};
@@ -255,14 +254,19 @@ public class OnlineTest extends TestCase {
 							"http://localhost:8080/ephemere");
 					float latitude = 40.759011f;
 					float longitude = -73.9844722f;
+					try {
+						sleep(Math.round(Math.random()*5000));
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					List<Hint> result = client.checkLocation(latitude,
 							longitude, 100, "user", "dummy");
-					for (Hint o : result) {
-						log.info(o.toString());
-					}
+					
 				};
 			};
 			clientthread[i].start();
+			
 			i++;
 		}
 		for (Thread o : clientthread)
@@ -299,4 +303,4 @@ public class OnlineTest extends TestCase {
 			}
 		assertTrue(true);
 	}
-*/}
+}
