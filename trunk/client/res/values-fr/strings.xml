@@ -56,7 +56,8 @@
     <string name="October">Octobre</string>
     <string name="November">Novembre</string>
     <string name="December">Decembre</string>
-    <string name="ask_for_deletion">Êtes-vous sûr de vouloir annuler cet évènement ?</string>
+    <string name="ask_for_deletion_event">Êtes-vous sûr de vouloir annuler cet évènement ?</string>
+    <string name="ask_for_deletion_task">Êtes-vous sûr de vouloir annuler cet tâche ?</string>
     <string name="yes">Oui</string>
     <string name="no">Non</string>
     <string name="edit_event">Editer l\'évènement</string>
