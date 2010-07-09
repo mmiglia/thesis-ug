@@ -82,7 +82,7 @@ public class TaskNotification extends Service{
         		int delay = Integer.parseInt(usersettings.getString("queryperiod", "300")) * 1000;
         		if (delay == 0) {condvar.block(60000); continue;}
         		Log.i(TAG, "delay is "+delay);
-        		if (condvar.block(10000)) break;
+        		if (condvar.block(delay)) break;
         		// get preference on distance, return default 0 (dont filter distance) if not set
         		int distance = Integer.parseInt(usersettings.getString("maxdistance", "0"));
         		List<Thread> threads = new LinkedList<Thread>();

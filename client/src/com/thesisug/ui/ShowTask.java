@@ -147,7 +147,7 @@ public class ShowTask extends Activity{
 		case ASK_CONFIRMATION :
 			return new AlertDialog.Builder(ShowTask.this)
             .setIcon(android.R.drawable.ic_dialog_alert)
-            .setTitle(R.string.ask_for_deletion)
+            .setTitle(R.string.ask_for_deletion_task)
             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                 	Thread deleteThread = TaskResource.removeTask(packet.getString("id"), handler, ShowTask.this);

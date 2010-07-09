@@ -143,7 +143,7 @@ public class ShowEvent extends Activity{
 		case ASK_CONFIRMATION :
 			return new AlertDialog.Builder(ShowEvent.this)
             .setIcon(android.R.drawable.ic_dialog_alert)
-            .setTitle(R.string.ask_for_deletion)
+            .setTitle(R.string.ask_for_deletion_event)
             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                 	Thread deleteThread = EventResource.removeEvent(packet.getString("id"), handler, ShowEvent.this);
