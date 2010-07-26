@@ -105,16 +105,16 @@ public class Parser {
 				 }
 			 }
 			 double score = va.score;
-			 boolean filled = findcount == va.verb.getArguments().size(); // this verb is complete with arguments
+			 boolean filled = findcount >= va.verb.getArguments().size(); // this verb is complete with arguments
 			 score += (filled)? 1:0;
-			 step4result.add(new PossibleParses(va.verb, findarg, findcount == va.verb.getArguments().size(), score));
+			 step4result.add(new PossibleParses(va.verb, findarg, findcount >= va.verb.getArguments().size(), score));
 		 }
 		 
-		 double maxscore = 0.0;
+		 double maxscore = 1.5;// this is the threshold
 		 PossibleParses bestresult = null;
 		 for (PossibleParses p : step4result){
 			 if (!p.complete) continue;
-			 else if (p.score > maxscore) bestresult = p;
+			 else if (p.score > maxscore) {bestresult = p; maxscore=p.score;}
 		 }
 		 if (bestresult == null){
 			 log.info("Parser could not understand user input");

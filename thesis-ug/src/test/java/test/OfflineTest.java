@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import valueobject.Hint;
 import valueobject.LoginReply;
 import valueobject.SingleEvent;
 import valueobject.SingleTask;
@@ -18,11 +19,14 @@ import businessobject.Converter;
 import businessobject.EventManager;
 import businessobject.LoginManager;
 import businessobject.TaskManager;
+import businessobject.google.MapsClient;
 import dao.RegisteredUsers;
 
 /**
- * Test the server methods offline, by calling directly business logics.
- * 
+ * Contrary to the class name, this class is not meant
+ * for Offline Testing part in the thesis.
+ * It is to test the server methods offline, by calling directly business logics.
+ * To test the server method by calling the REST interfaces, we use Online Testing
  */
 public class OfflineTest extends TestCase{
 	static {
@@ -43,7 +47,7 @@ public class OfflineTest extends TestCase{
 			System.setProperty("https.proxyPort", CONSTANTS
 					.getProperty("HTTPS_PORT"));
 	}
-/*
+
 	@Test
 	public void testaddUser() {
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
@@ -60,17 +64,18 @@ public class OfflineTest extends TestCase{
 		log.info("Login status is " + result.status + ", session id = "
 				+ result.session);
 		assertNotNull(result);
-	}*/
-/*
+	}
+
 	@Test
 	public void testaddEvent() {
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
 		log.info("Trying to add event to the database");
 		EventManager manager = EventManager.getInstance();
 		manager.Authenticate("user", "dummy"); // need to call this
-		boolean result = manager.createEvents("user", "Liz Birthday",
+		SingleEvent toAdd = new SingleEvent("Liz Birthday",
 				"2010-05-18T08:00:00-08:00", "2010-05-18T09:00:00-08:00",
 				"her apartment", "prepare some presents");
+		boolean result = manager.createEvent("user", toAdd);
 		assertEquals(true, result);
 	}
 
@@ -97,20 +102,19 @@ public class OfflineTest extends TestCase{
 			log.info(o.title);
 		assertNotNull(result);
 	}
-*/	
+	
 	@Test
 	public void testaddTasks(){
-//		Logger log = LoggerFactory.getLogger(OfflineTest.class);
-//		log.info("Trying to add task to the database");
-//		TaskManager manager = TaskManager.getInstance();
-//		boolean result = manager.createTask("user", "Remember me",
-//				"09:30:10-06:00", "14:30:10-06:00",
-//				"2010-05-18T17:30:00-08:00", "Stazione Principe", 2);// need to call
-//																// this
+		Logger log = LoggerFactory.getLogger(OfflineTest.class);
+		log.info("Trying to add task to the database");
+		TaskManager manager = TaskManager.getInstance();
+		boolean result = manager.createTask("user", "buy ticket",
+				"09:30:10-06:00", "14:30:10-06:00",
+				"2010-05-18T17:30:00-08:00", "Stazione Principe", 2);
 		assertTrue(true);
 	}
 
-/*	@Test
+	@Test
 	public void testgetFirstTasks() {
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
 		log.info("Getting most important tasks");
@@ -119,58 +123,24 @@ public class OfflineTest extends TestCase{
 		for (SingleTask o : result) log.info (o.title);
 		assertNotNull (result);
 	}
-*/
-	/*
-	 * public void testDate() throws Exception { Logger log =
-	 * LoggerFactory.getLogger(ClientTest.class); CalendarClient haha = new
-	 * CalendarClient("thesisUG", "checkthesisUG"); haha.Authenticate();
-	 * EventManager.getInstance().createEvents("dummy", "gaha",
-	 * "2010-04-19T17:00:00-08:00", "2010-04-19T17:30:00-08:00", "School",
-	 * "haiya"); //EventManager.getInstance().removeEvent("dummy",
-	 * "5fde09a9-f3a3-4a0a-a5fd-4ab82d568375");
-	 * //RegisteredUsers.instance.addUsers("pras", "hanyakamu", "thesisUG",
-	 * "checkthesisUG"); }
-	 */
+	
 
-	/*
-	 * public void testDate() throws Exception { Logger log =
-	 * LoggerFactory.getLogger(ClientTest.class); String startDate = new
-	 * String("2010-04-19T17:00:00-08:00"); int stringlength =
-	 * startDate.length(); startDate=startDate.substring(0,
-	 * stringlength-3)+startDate.substring(stringlength-2,stringlength);
-	 * log.info(startDate); String endDate = new
-	 * String("2010-04-20T17:30:00-08:00"); SimpleDateFormat pf = new
-	 * SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZ"); Date start =
-	 * pf.parse(startDate); log.info("start "+start.toString()); }
-	 */
-
-	/*public void testMaps() throws Exception {
+	public void testMaps() throws Exception {
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
-		// MapsClient coba = new MapsClient();
+		MapsClient coba = new MapsClient();
 		float lat = 45.521694f;
 		float lon = -122.691806f;
 		log.info("lat = " + lat + " long = " + lon);
-		// List<Hint> results = coba.searchLocalBusiness(lat, lon, "coffee");
+		List<Hint> results = coba.searchLocalBusiness(lat, lon, "coffee");
 		assertNotNull(lon);
-	}*/
+	}
 
-	/*public void testTimes() {
+	public void testTimes() {
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
-		Calendar hallo = Converter.toJavaTime("00:00:08-06:00");
-		log.info("hallo "+Converter.CalendarTimetoString(hallo));
-		Calendar kedua = Converter.toJavaDate("2010-04-19T00:00:08-06:00");
-		log.info (Converter.CalendarDatetoString(kedua));
-	}*/
-	 
+		Calendar now = Converter.toJavaTime("00:00:08-06:00");
+		log.info(Converter.CalendarTimetoString(now));
+		Calendar future = Converter.toJavaDate("2010-04-19T00:00:08-06:00");
+		log.info (Converter.CalendarDatetoString(future));
+	}
 
-	/*
-	 * private void assertValidResults(List<Hint> results) {
-	 * assertNotNull(results); assertTrue(results.size() > 0); for (Hint o :
-	 * results) assertValid(o); // for (Result r : results)
-	 * log.info(r.phoneNumbers.get(0).number); }
-	 * 
-	 * private void assertValid(Hint r) { System.out
-	 * .println("--------------------------------------------------------");
-	 * System.out.println(r); }
-	 */
 }
