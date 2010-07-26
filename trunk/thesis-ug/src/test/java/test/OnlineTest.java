@@ -23,9 +23,7 @@ import businessobject.Configuration;
  */
 public class OnlineTest extends TestCase {
 	private static Logger log;
-	int clientnumber = 1;
-	// final SimpleClient client = ProxyFactory.create(SimpleClient.class,
-	// "http://localhost:8080/ephemere");
+	int clientnumber = 100;
 
 	static {
 		System.setProperty("org.apache.commons.logging.Log",
@@ -75,7 +73,7 @@ public class OnlineTest extends TestCase {
 		assertTrue(true);
 	}
 
-	/*private Thread createThread() {
+	private Thread createThread() {
 		Thread result = new Thread() {
 			public void run() {
 				SimpleClient client = ProxyFactory.create(SimpleClient.class,
@@ -86,7 +84,7 @@ public class OnlineTest extends TestCase {
 			};
 		};
 		return result;
-	}*/
+	}
 
 	@Test()
 	public void testcreateEvent() {
@@ -100,9 +98,9 @@ public class OnlineTest extends TestCase {
 							"http://localhost:8080/ephemere");
 					SingleEvent haha = new SingleEvent("permesso",
 							"2010-05-10T17:00:00-08:00",
-							"2010-04-12T17:30:00-08:00", "garden",
-							"only black tea", 2);
-					client.createEvent("user", "supposedtobeCookie", haha);
+							"2010-04-12T17:30:00-08:00", "brignole",
+							"bring passport", 2);
+					client.createEvent("user", "cookie", haha);
 				};
 			};
 			clientthread[i].start();
@@ -129,7 +127,7 @@ public class OnlineTest extends TestCase {
 							"http://localhost:8080/ephemere");
 					SingleTask haha = new SingleTask("buy cigarette",
 							"2010-08-10T17:00:00-08:00", "in supermarket");
-					client.createTask("user", "supposedtobeCookie", haha);
+					client.createTask("user", "cookie", haha);
 				};
 			};
 			clientthread[i].start();
@@ -223,7 +221,7 @@ public class OnlineTest extends TestCase {
 							"http://localhost:8080/ephemere");
 					SingleEvent newEvent = new SingleEvent("new event",
 							"2010-01-03T08:00:00-08:00",
-							"2010-05-22T09:00:00-08:00", "her apartment",
+							"2010-05-22T09:00:00-08:00", "some place",
 							"niente");
 					newEvent.ID = "df53a6ed-d913-400e-908a-3035f3007a53";
 					client.updateEvent("user", "cookie", newEvent);
@@ -289,7 +287,7 @@ public class OnlineTest extends TestCase {
 							SimpleClient.class,
 							"http://localhost:8080/ephemere");
 					client.input("user", "dummy",
-							"remind me to have fun before friday");
+							"remind me to buy milk before friday");
 				};
 			};
 			clientthread[i].start();
