@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog id="file:/home/blu3fish/workspace/ephemere/src/main/resources/" prefer="public" xml:base="file:/home/blu3fish/workspace/ephemere/src/main/resources/" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <uri name="http://www.semanticweb.org/ontologies/2010/3/Ontology1272291875282.owl" uri="HintsOntology.owl"/>
+</catalog>
