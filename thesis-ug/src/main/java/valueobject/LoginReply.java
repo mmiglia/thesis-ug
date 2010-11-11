@@ -3,7 +3,7 @@ package valueobject;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * value returned after client attempts to login.
+ * Value returned after client attempts to login.
  */
 @XmlRootElement
 public class LoginReply {

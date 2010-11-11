@@ -16,8 +16,7 @@ import dao.EventDatabase;
  * 
  */
 public class EventManager extends Publisher<EventSubscriber> implements EventInterface {
-	private final static Logger log = LoggerFactory
-			.getLogger(EventManager.class);
+	private final static Logger log = LoggerFactory.getLogger(EventManager.class);
 
 	private EventManager() {
 		super();
@@ -66,7 +65,7 @@ public class EventManager extends Publisher<EventSubscriber> implements EventInt
 	}
 
 	/**
-	 * retrieve all events that occur during a defined period.
+	 * retrieve all events that occur during a defined period between two days.
 	 * 
 	 * @param userid
 	 *            unique UUID of the user
@@ -80,6 +79,13 @@ public class EventManager extends Publisher<EventSubscriber> implements EventInt
 			String startDate, String endDate) {
 		return EventDatabase.instance.getEventsDuring(userid, startDate, endDate);
 	}
+	
+	/**
+	 * Get all events for the specified userID from the 0:0:0 to 23:59:59
+	 * of today. This function call retrieveEventsbyDate(userid, startTime, endTime). 
+	 * @param userid
+	 * @return
+	 */
 	
 	public List<SingleEvent> retrieveEventToday(String userid){
 		Calendar now = Calendar.getInstance();
@@ -96,17 +102,32 @@ public class EventManager extends Publisher<EventSubscriber> implements EventInt
 		return retrieveEventsbyDate(userid, startTime, endTime);
 	}
 
+	
+	@Override
+	public boolean createEvent(String userid, SingleEvent event) {
+		// TODO Auto-generated method stub
+		return createEvent(userid,event.dueDate,event.startTime,event.endTime,
+				event.location,event.title,event.description);
+	}
+
 	/**
-	 * create events with supplied SingleEvent instance
+	 * create events with the specification of all the elements for the Event and related Reminder creation
+	 * 
+	 * 
 	 * @param userID unique UUID of the user
 	 * @param toAdd SingleEvent instance
 	 * @return true is successful
 	 */
-	public boolean createEvent(String userID, SingleEvent toAdd){
+	public boolean createEvent(String userID, String dueDate,String startTime,String endTime,
+			String location,String title, String description){
+		
+		SingleEvent toAdd=EventDatabase.instance.addEvent(userID, dueDate,startTime,endTime,
+				location,title, description);
+		
 		for (EventSubscriber o : subscriberlist) o.createEvent(userID, toAdd);
-		EventDatabase.instance.addEvent(userID, toAdd);
 		return true;
 	}
+		
 	
 	/**
 	 * this method will particularly use quick add features in Google Calendar,
@@ -141,7 +162,8 @@ public class EventManager extends Publisher<EventSubscriber> implements EventInt
 	}
 	
 	/**
-	 * Remove an event from a database
+	 * Remove an event from the database
+	 * 
 	 * @param userid unique UUID of the user
 	 * @param eventID eventID to be removed
 	 * @return false if unsuccessful, 1 if successful
@@ -151,7 +173,10 @@ public class EventManager extends Publisher<EventSubscriber> implements EventInt
 			if (o.removeEvent(userid, eventID)) continue;
 			else return false;
 		}
-		EventDatabase.instance.deleteEvent(userid, eventID);
+		EventDatabase.instance.deleteEvent(eventID);
 		return true;
 	}
+
+
+
 }

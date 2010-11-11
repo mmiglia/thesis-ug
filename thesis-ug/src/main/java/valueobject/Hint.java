@@ -7,7 +7,9 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 /**
- * This class represents the location hints that will be sent to client
+ * This class represents the location hints that will be sent to client.
+ * It includes a method (build) that create a string starting from the object passed as parameter.
+ * This method is used to ovverride the toString method because of the complexity of the Hint class
  */
 @XmlRootElement
 public class Hint {
@@ -36,6 +38,12 @@ public class Hint {
 		return build(this);
 	}
 
+	/**
+	 * Create a string representing the object passed as parameter.
+	 * Here it's used in the toString() method of this class and also for PhoneNumbers
+	 * @param obj the object to be converted as string (object and fields)
+	 * @return a string representing the object and it's fields
+	 */
 	private static String build(Object obj) {
 		StringBuilder builder = new StringBuilder();
 
@@ -55,6 +63,13 @@ public class Hint {
 		return builder.toString();
 	}
 
+	/** This is a method that supports the work of the build method .
+	 * It appends fields to the string that the build method has to return
+	 * 
+	 * @param builder a reference to the StringBuilder of the build method, used to retreive the string were we have to append fields strings
+	 * @param fields list of the filed that have to be converted to string
+	 * @param obj a reference to the object that have to be converted to string by the build method
+	 */
 	private static void appendFields(StringBuilder builder, Field[] fields,
 			Object obj) {
 		Class clazz = obj.getClass();

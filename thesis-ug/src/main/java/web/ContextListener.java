@@ -20,6 +20,7 @@ import businessobject.TaskManager;
 
 /**
  * Responsible for getting the right task/event near user location/time.
+ * This class uses mainly method of LocationAwareManager class
  */
 @Path("/{username}/location")
 public class ContextListener {

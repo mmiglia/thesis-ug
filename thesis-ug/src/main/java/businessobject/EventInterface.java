@@ -6,12 +6,13 @@ import valueobject.SingleEvent;
 
 
 /**
- * Everytime the user wants to retrieve/add events, it saves in the local event
- * databases, and also to the 3rd party database (Google)
+ * This interface is used everytime the user wants to retrieve or add events,
+ * it saves in the local event databases, and also to the 3rd party database (Google)
+ * 
  */
 public interface EventInterface {
 	/**
-	 * this method will create directly an events from a specified date, and
+	 * this method will create directly an event from a specified date, and
 	 * title.
 	 * 
 	 * @param userid unique UUID of the user
@@ -64,7 +65,7 @@ public interface EventInterface {
 	public List<SingleEvent> retrieveAllEvents(String userid);
 
 	/**
-	 * retrieve all events that occur during a defined period.
+	 * retrieve all events that occur during a defined period between startTime and endTime.
 	 * 
 	 * @param userid unique UUID of the user
 	 * @param startTime start time of event execution

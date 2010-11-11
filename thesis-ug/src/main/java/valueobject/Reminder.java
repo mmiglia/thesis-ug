@@ -3,6 +3,9 @@ package valueobject;
 import javax.xml.bind.annotation.XmlRootElement;
 /**
  * This is the parent class for event and task that has common field for them.
+ * Fields that are in common between Event and Task are:
+ * ID,priority,description,title,type,gpsCoordinate
+ * where gpsCoordinate is of type GpsLocation that have a latitute and a longitude of type float
  */
 @XmlRootElement
 public abstract class Reminder {
@@ -72,7 +75,7 @@ public abstract class Reminder {
 	}
 	
 	/**
-	 * the class specifying latitude and longitude position
+	 * The class specifying latitude and longitude position.
 	 *
 	 */
 	public static class GPSLocation{

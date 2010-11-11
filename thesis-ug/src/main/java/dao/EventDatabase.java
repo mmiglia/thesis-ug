@@ -1,5 +1,9 @@
 package dao;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.SingleEvent;
+import valueobject.SingleTask;
 import businessobject.Configuration;
 import businessobject.Converter;
 
@@ -24,17 +29,27 @@ import com.db4o.query.Query;
 import com.db4o.ta.Activatable;
 import com.db4o.ta.TransparentActivationSupport;
 
+import dao.management.QueryStatus;
+import dao.management.mysql.MySQLDBManager;
+
 
 /**
- * Singleton class that acts as a database that will save all the events
+ * Singleton class that acts as a database that will save all the events, with this class
+ * you can connect to the EventDatabase (with openDatabase method) or create and manage
+ * events saved into the database
  */
 public enum EventDatabase {
 	instance; // singleton instance
 	private static final String DATABASE_NAME = Configuration.getInstance().constants.getProperty("DATABASE_FOLDER")+"/EventDatabase";
-	private final static Logger log = LoggerFactory.getLogger(EventDatabase.class);
 	private static ObjectServer server ; //db4o server
-	private static boolean databaseOpen = false; // true means database server is initialized
+	private static boolean databaseOpen = true; // true means database server is initialized
 	private static final Object lock = new Object(); // mutex lock
+	
+	private static final Logger log = LoggerFactory.getLogger(TaskDatabase.class);
+	
+	//MySQL database manager
+	private static final MySQLDBManager dbManager=new MySQLDBManager();
+	
 	
 	/**
 	 * Add new event to the database
@@ -42,17 +57,93 @@ public enum EventDatabase {
 	 * @param event event object to be saved
 	 * @return true if addition successful
 	 */
-	public static void addEvent(String userID, SingleEvent event) {
-		if (eventExist(event)) { //check for redundant entry, because db40 saves redundant object
-			log.warn ("Event "+event.ID+" already exist");
-			return;
+	public static SingleEvent addEvent(String userID,SingleEvent e){
+		return addEvent(userID,e.dueDate,e.startTime,e.endTime,e.location,
+				e.title,e.description);
+	}
+	
+	public static SingleEvent addEvent(String userID, String dueDate,String startTime,String endTime,
+			String location,String title, String description) {
+		SingleEvent eventToReturn=null;
+
+		
+		Connection conn= (Connection) dbManager.dbConnect();
+		log.info("Connected to the db");
+		QueryStatus qs=dbManager.startTransaction(conn);
+		
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			log.error("Error during transaction starting... Event not added");
+			dbManager.dbDisconnect(conn);
+			return null;
 		}
-		EventTuple toAdd = instance.new EventTuple(userID, event);
-		ObjectContainer db = openDatabase();
-		try {			
-			db.store(toAdd);
-		} finally{
-			db.close();			
+		
+		//Reminder creation
+		String insertQuery="Insert into Reminder (title,description,type) values ('"+title+"','"+description+"','1')";
+		qs=dbManager.customQuery(conn, insertQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			dbManager.rollbackTransaction(conn);
+			log.error("Error during remider adding... Event not added");
+			dbManager.dbDisconnect(conn);
+			return null;
+		}
+		log.info("Reminder added!");	
+		//Task Creation with the reminder ID. The Task has always type=2
+		insertQuery="Insert into Event (User,dueDate,startTime,endTime,location,ReminderId) values ('"+userID+"','"+dueDate+"','"+startTime+"','"+endTime+"','"+location+"',LAST_INSERT_ID())";
+		log.info(insertQuery);
+		qs=dbManager.customQuery(conn, insertQuery);
+		
+		if(qs.execError){
+			log.error(qs.explainError()+"_");
+			log.error(qs.occourtedErrorException.getMessage());
+			qs.occourtedErrorException.printStackTrace();
+			log.info(insertQuery);
+			log.error("Error during task adding... Event not added");
+			int count=0;
+			do{
+				count++;
+			}while(dbManager.rollbackTransaction(conn).execError && count < 100);	
+			dbManager.dbDisconnect(conn);
+			return null;
+			
+		}else{
+			qs=dbManager.customQuery(conn, "select * from Event join Reminder on Event.ReminderId=Reminder.id where Event.id=LAST_INSERT_ID()");
+			ResultSet rs=(ResultSet)qs.customQueryOutput;
+			try{
+			//Creating SingleTask object from data inserted into the database
+			if(rs.next()){
+				eventToReturn=new SingleEvent(
+					rs.getString("Event.id"),
+					rs.getString("title"),
+					rs.getString("startTime") ,
+					rs.getString("endTime") , 
+					rs.getString("location") ,
+					rs.getString("description") ,
+					rs.getInt("priority"),
+					rs.getString("Reminder.id")
+				);
+
+			}else{
+				dbManager.dbDisconnect(conn);
+				return null;
+			}
+			}catch(SQLException sqlE){
+				//TODO manage exception
+				sqlE.printStackTrace();
+				dbManager.dbDisconnect(conn);
+			}
+			
+			int count=0;
+			do{
+				count++;
+			}while(dbManager.commitTransaction(conn).execError && count < 100);	
+			
+			log.info("Event and related Reminder added correctly to the database");
+			return eventToReturn;
 		}
 	}	
 	
@@ -62,24 +153,25 @@ public enum EventDatabase {
 	 * @param eventID unique UUID of the task
 	 * @return true if deletion success, false otherwise 
 	 */	
-	public static boolean deleteEvent(final String userID, final String eventID) {
-		ObjectContainer db = openDatabase();
-		try {
-			Query query = db.query();
-			query.constrain(EventTuple.class);
-			Constraint constr=query.descend("eventID").constrain(eventID);
-			query.descend("userID").constrain(userID).and(constr);
-			ObjectSet<EventTuple> result = query.execute();
-			if (result.isEmpty()) {
-				log.info("cannot delete event");
+	public static boolean deleteEvent(final String eventID) {
+
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		String deleteQuery="delete from Event where id="+eventID;
+		QueryStatus qs=dbManager.customQuery(conn, deleteQuery);
+		
+    	try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			dbManager.dbDisconnect(conn);
+			if(!qs.execError){
+				return true;
+			}else{
 				return false;
 			}
-			log.info("Deletion successful");
-			EventTuple toDelete = result.get(0);
-			db.delete(toDelete);
-			return true;
-		} finally {
-			db.close();
 		}
 	}
 	
@@ -90,25 +182,94 @@ public enum EventDatabase {
 	 * @return false if update unsuccessful , true if update is successful
 	 */
 	public static boolean updateEvent(final String eventID, final SingleEvent event){
-		ObjectContainer db = openDatabase();
-		try {
-			Query query = db.query();
-			query.constrain(EventTuple.class);
-			query.descend("eventID").constrain(eventID);
-			ObjectSet<EventTuple> result = query.execute();
-			if (result.isEmpty()) {
-				log.warn ("Cannot find task with ID "+eventID);
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		int counter=0;
+		do{			
+			counter++;
+		}while(dbManager.startTransaction(conn).execError && counter<100);
+		
+		QueryStatus qs=dbManager.startTransaction(conn);
+		
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			log.error("Error during transaction starting... Event not added");
+			dbManager.dbDisconnect(conn);
+			return false;
+		}
+		
+		String updateQuery="UPDATE Event set ";
+
+		updateQuery+="dueDate='"+event.dueDate+"',";
+		updateQuery+="startTime='"+event.startTime+"',";
+		updateQuery+="endTime='"+event.endTime+"',";
+		updateQuery+="location='"+event.location+"'";
+		
+		updateQuery+=" where id="+event+"";
+		
+		updateQuery+=";";
+		
+		qs=dbManager.customQuery(conn, updateQuery);
+		
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			dbManager.rollbackTransaction(conn);
+			log.error("Error during Event update");
+			dbManager.dbDisconnect(conn);
+			return false;
+		}
+		
+		
+		updateQuery="UPDATE Reminder SET ";
+		updateQuery+="description='"+event.description+"',";
+		updateQuery+="title='"+event.title+"',";
+
+		updateQuery+="latitude='"+event.gpscoordinate.latitude+"',";
+		updateQuery+="longitude='"+event.gpscoordinate.longitude+"',";
+
+		updateQuery+="priority='"+event.priority+"',";
+		updateQuery+="title='"+event.title+"',";
+		updateQuery+="type="+event.type+"";
+		
+		updateQuery+=" where id=(select ReminderId from Event where Event.id="+eventID+");";
+		
+		
+		qs=dbManager.customQuery(conn, updateQuery);
+		System.out.println(updateQuery);
+		
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			counter=0;
+			do{
+				counter++;
+			}while(dbManager.rollbackTransaction(conn).execError && counter<100);
+			log.error("Error during Event update");
+			dbManager.dbDisconnect(conn);
+			return false;
+		}else{
+			counter=0;
+			do{
+				counter++;
+			}while(dbManager.commitTransaction(conn).execError && counter<100);			
+		}
+
+    	try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			dbManager.dbDisconnect(conn);
+			if(!qs.execError){
+				return true;
+			}else{
 				return false;
 			}
-			EventTuple toChange = result.get(0);
-			toChange.activateWrite();
-			event.ID = eventID; //make sure ID is the same
-			toChange.event = event;
-			db.store(toChange);
-			return true;
-		} finally {
-			db.close();
-		}		
+		}	
 	}
 	
 	/**
@@ -117,25 +278,45 @@ public enum EventDatabase {
 	 * @return list containing all events from the user
 	 */
 	public static List<SingleEvent> getAllEvent(final String userID){
-		ObjectContainer db = openDatabase();
-		List<SingleEvent> result= new LinkedList<SingleEvent>();
-		try {
-			Query query = db.query();
-			query.constrain(EventTuple.class);
-			query.descend("userID").constrain(userID);
-			ObjectSet<EventTuple> queryResult = query.execute();
-			if (queryResult.isEmpty()) {
-				log.warn ("Cannot find user ID "+userID);
-				return result;
-			}			
-			for (EventTuple o : queryResult) {
-				o.activateRead();
-				result.add(o.event);
+		
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		String selectQuery="Select * from Event join Reminder on Event.ReminderId=Reminder.id where Event.User="+userID;
+		
+		
+		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
+		
+		ResultSet rs=(ResultSet)qs.customQueryOutput;
+		SingleEvent event=null;
+		ArrayList<SingleEvent> eventList=new ArrayList<SingleEvent>();
+		
+		try{
+			while(rs.next()){
+				eventList.add(
+						new SingleEvent(
+								rs.getString("Event.id"),
+								rs.getString("title"),
+								rs.getString("startTime") ,
+								rs.getString("endTime") , 
+								rs.getString("location") ,
+								rs.getString("description") ,
+								rs.getInt("priority"),
+								rs.getString("Reminder.id")
+							)					
+					);
+			
+			
+			
+			
 			}
-			return result;
-		} finally {
-			db.close();
+		}catch(SQLException sqlE){
+			//TODO
+			
+		}finally{	
+			dbManager.dbDisconnect(conn);
 		}
+		
+		return eventList;
 	}
 	
 	/**
@@ -146,34 +327,49 @@ public enum EventDatabase {
 	 * @return list containing all events in that period
 	 */
 	public static List<SingleEvent> getEventsDuring(final String userID, String startTime, String endTime){
-		ObjectContainer db = openDatabase();
+		
 		final Calendar startPeriod = Converter.toJavaDate(startTime);
 		final Calendar endPeriod = Converter.toJavaDate(endTime);
-		List<SingleEvent> result= new LinkedList<SingleEvent>();
+
+
+		Connection conn= (Connection) dbManager.dbConnect();
 		
-		try {
-			List<EventTuple> queryResult = db.query(new Predicate<EventTuple>() {
-				Calendar currentStart, currentEnd;
-				public boolean match(EventTuple current) {
-					currentStart = Converter.toJavaDate(current.event.startTime);
-					currentEnd = Converter.toJavaDate(current.event.endTime);					
-					return (current.userID.equals(userID) &&
-							currentStart.after(startPeriod)&&
-							currentEnd.before(endPeriod));
-				}
-			});
-			if (queryResult.isEmpty()) {
-				log.warn ("Cannot find user ID "+userID);
-				return result;
+		String selectQuery="Select * from Event join Reminder on Event.ReminderId=Reminder.id where Event.User="+userID+ " and startTime>'"+startPeriod+"' and endTime<'"+endPeriod+"';";
+		
+		
+		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
+		
+		ResultSet rs=(ResultSet)qs.customQueryOutput;
+		SingleEvent event=null;
+		ArrayList<SingleEvent> eventList=new ArrayList<SingleEvent>();
+		
+		try{
+			while(rs.next()){
+				eventList.add(
+						new SingleEvent(
+								rs.getString("Event.id"),
+								rs.getString("title"),
+								rs.getString("startTime") ,
+								rs.getString("endTime") , 
+								rs.getString("location") ,
+								rs.getString("description") ,
+								rs.getInt("priority"),
+								rs.getString("Reminder.id")
+							)					
+					);
+			
+			
+			
+			
 			}
-			for (EventTuple o : queryResult) {
-				o.activateRead();
-				result.add(o.event);
-			}
-			return result;
-		} finally {
-			db.close();
+		}catch(SQLException sqlE){
+			//TODO
+			
+		}finally{	
+			dbManager.dbDisconnect(conn);
 		}
+		
+		return eventList;
 	}
 	
 	/**
@@ -194,6 +390,20 @@ public enum EventDatabase {
 		}		
 	}
 	
+	/**
+	 * This method is used to initialize the database and return
+	 * a reference to the client of the database 
+	 * (if the class attribute databaseOpen is set to false)
+	 * otherwise it only returns the reference to the client of the database 
+	 * (see com.db40.ObjectContainer)
+	 * TransparentActivationSupport is used to let db4o manage how objects are 
+	 * loaded in memory so we don't have to manage it in our code.
+	 * For more details about see
+	 * http://developer.db4o.com/Projects/useful_snippets/activation_in_depth.html
+	 * @return a reference to the database client
+	 * 
+	 * 
+	 */	
 	private static ObjectContainer openDatabase() {
 		if (!databaseOpen) { //outer selection to enable faster access
 			synchronized (lock){
@@ -211,6 +421,13 @@ public enum EventDatabase {
 		return db;
 	}
 	
+	/**
+	 * This class represent how an event is stored into the event database.
+	 * We can think it's like a record of the Event Table.
+	 * The table schema is: Event(userID,eventID,event)
+	 * where event is an instance of SingleEvent (see valueobject.SingleEvent)
+	 * 
+	 */	
 	private class EventTuple implements Activatable{
 		private transient Activator _activator;
 		/**

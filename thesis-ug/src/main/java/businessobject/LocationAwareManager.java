@@ -13,13 +13,18 @@ import valueobject.Hint;
 import valueobject.SingleTask;
 
 /**
+ * Check if, in the current place, there are task that can be completed. 
+ * To understand the correct word to use in the search query it uses OntologyReasoner class
+ * by passing to it all the words in the title of the task
 */
 public class LocationAwareManager {
 	private final static Logger log = LoggerFactory
 			.getLogger(LocationAwareManager.class);
 
 	/**
-	 * Check for a task that can be completed near given location
+	 * Check for a task that can be completed near given location 
+	 * between all the current task in TaskManager.
+	 * 
 	 * 
 	 * @param latitude
 	 *            GPS latitude coordinate
@@ -32,6 +37,7 @@ public class LocationAwareManager {
 	public static List<Hint> checkLocationAll(String userid, float latitude, float longitude, int distance) {
 		// get all user tasks
 		List<SingleTask> tasks= TaskManager.getInstance().retrieveAllTask(userid);
+		log.info("Retreived " + tasks.size()+" task for user "+ userid);
 		List<String> needs = new ArrayList<String>(); // list of user needs
 		/* current parser implementation is just splitting tasks-title into words
 		*  future improvement such as the use of keyword extraction is strongly encouraged*/
@@ -58,7 +64,10 @@ public class LocationAwareManager {
 	}
 	
 	/**
-	 * Check for a task that can be completed near given location
+	 * Starting from a sentence, checks if the task can be completed near given location
+	 * by searching businness based on the needs actually determined by splitting the 
+	 * sentence using spaces.
+	 *   
 	 * @param userid
 	 * 			  user id of the user
 	 * @param sentence

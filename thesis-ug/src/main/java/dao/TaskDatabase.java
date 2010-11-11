@@ -1,54 +1,125 @@
 package dao;
 
-import java.util.LinkedList;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.SingleTask;
-import businessobject.Configuration;
 
-import com.db4o.ObjectContainer;
-import com.db4o.ObjectServer;
-import com.db4o.ObjectSet;
-import com.db4o.activation.ActivationPurpose;
-import com.db4o.activation.Activator;
-import com.db4o.cs.Db4oClientServer;
-import com.db4o.cs.config.ServerConfiguration;
-import com.db4o.query.Constraint;
-import com.db4o.query.Query;
-import com.db4o.ta.Activatable;
-import com.db4o.ta.TransparentActivationSupport;
+import dao.management.mysql.MySQLDBManager;
+import dao.management.QueryStatus;
 
 /**
  * Singleton class that acts as a database that will save all the tasks
 */
 public enum TaskDatabase {
-	instance;
-	private static final String DATABASE_NAME = Configuration.getInstance().constants.getProperty("DATABASE_FOLDER")+"/TaskDatabase";
-	private final static Logger log = LoggerFactory.getLogger(TaskDatabase.class);
-	private static ObjectServer server ; //db4o server
-	private static boolean databaseOpen = false; // true means database server is initialized
-	private static final Object lock = new Object(); // mutex lock
+	instance; //singleton instance
+	private static final Logger log = LoggerFactory.getLogger(TaskDatabase.class);
+	
+	//MySQL database manager
+	private static final MySQLDBManager dbManager=new MySQLDBManager();
 	
 	/**
-	 * Add new task to the database
+	 * Add new task to the database and return a SingleTask object with data from the database
 	 * @param userID unique UUID of the user
 	 * @param task task object to be saved
 	 */
-	public static void addTask(String userID, SingleTask task) {
-		if (taskExist(task)) {//check for redundant entry, because db40 saves redundant object
-			log.warn ("Task "+task.ID+" already exist");
-			return; 
+	public static SingleTask addTask(String userID, String title,
+			String notifyTimeStart, String notifyTimeEnd, String dueDate,
+			String description, int priority) {
+		
+		
+		SingleTask taskToReturn=null;
+		
+		Connection conn= (Connection) dbManager.dbConnect();
+		log.info("Connected to the db");
+		QueryStatus qs=dbManager.startTransaction(conn);
+		
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			log.error("Error during transaction starting... Task not added");
+			dbManager.dbDisconnect(conn);
+			return null;
 		}
-		TaskTuple toAdd = instance.new TaskTuple(userID, task.ID, task);
-		ObjectContainer db = openDatabase();
-		try {			
-			db.store(toAdd);
-		} finally{
-			db.close();			
+		
+		
+		//Reminder creation
+		String insertQuery="Insert into Reminder (title,description,priority,type) values ('"+title+"','"+description+"','"+priority+"',2)";
+		qs=dbManager.customQuery(conn, insertQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			dbManager.rollbackTransaction(conn);
+			log.error("Error during remider adding... Task not added");
+			dbManager.dbDisconnect(conn);
+			return null;
 		}
+		log.info("Reminder added!");	
+		//Task Creation with the reminder ID. The Task has always type=2
+		insertQuery="Insert into Task (User,dueDate,notifyTimeStart,notifyTimeEnd,ReminderId) values ('"+userID+"','"+dueDate+"','"+notifyTimeStart+"','"+notifyTimeEnd+"',LAST_INSERT_ID())";
+		log.info(insertQuery);
+		qs=dbManager.customQuery(conn, insertQuery);
+		
+		if(qs.execError){
+			log.error(qs.explainError()+"_");
+			log.error(qs.occourtedErrorException.getMessage());
+			qs.occourtedErrorException.printStackTrace();
+			log.info(insertQuery);
+			log.error("Error during task adding... Task not added");
+			int count=0;
+			do{
+				count++;
+			}while(dbManager.rollbackTransaction(conn).execError && count < 100);	
+			dbManager.dbDisconnect(conn);
+			return null;
+			
+		}else{
+			qs=dbManager.customQuery(conn, "select * from Task join Reminder on Task.ReminderId=Reminder.id where Task.id=LAST_INSERT_ID()");
+			ResultSet rs=(ResultSet)qs.customQueryOutput;
+			try{
+			//Creating SingleTask object from data inserted into the database
+			if(rs.next()){
+				taskToReturn=new SingleTask(
+					rs.getString("Task.id"),
+					rs.getString("title"),
+					rs.getString("notifyTimeStart") ,
+					rs.getString("notifyTimeEnd") , 
+					rs.getString("dueDate") ,
+					rs.getString("description") ,
+					rs.getInt("priority"),
+					rs.getString("Reminder.id")
+				);
+			}else{
+				dbManager.dbDisconnect(conn);
+				return null;
+			}
+			}catch(SQLException sqlE){
+				//TODO manage exception
+				sqlE.printStackTrace();
+				dbManager.dbDisconnect(conn);
+			}
+			
+			int count=0;
+			do{
+				count++;
+			}while(dbManager.commitTransaction(conn).execError && count < 100);	
+			
+			log.info("Task and related Reminder added correctly to the database");
+		}
+		
+
+		
+		
+		dbManager.dbDisconnect(conn);
+	
+		return taskToReturn;
 	}
 	
 	/**
@@ -57,25 +128,45 @@ public enum TaskDatabase {
 	 * @return list containing all tasks from the user
 	 */
 	public static List<SingleTask> getAllTask(final String userID) {
-		ObjectContainer db = openDatabase();
-		List<SingleTask> result = new LinkedList<SingleTask>();
-		try {
-			Query query = db.query();
-			query.constrain(TaskTuple.class);
-			query.descend("userID").constrain(userID);
-			ObjectSet<TaskTuple> queryResult = query.execute();
-			if (queryResult.isEmpty()) {
-				log.warn("Cannot find user ID " + userID);
-				return result;
+		
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		String selectQuery="Select * from Task join Reminder on Task.ReminderId=Reminder.id where Task.User="+userID;
+		
+		
+		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
+		
+		ResultSet rs=(ResultSet)qs.customQueryOutput;
+		SingleTask task=null;
+		ArrayList<SingleTask> taskList=new ArrayList<SingleTask>();
+		
+		try{
+			while(rs.next()){
+				taskList.add(
+						new SingleTask(
+								rs.getString("Task.id"),
+								rs.getString("title"),
+								rs.getString("notifyTimeStart") ,
+								rs.getString("notifyTimeEnd") , 
+								rs.getString("dueDate") ,
+								rs.getString("description") ,
+								rs.getInt("priority"),
+								rs.getString("Reminder.id")
+							)					
+					);
+			
+			
+			
+			
 			}
-			for (TaskTuple o : queryResult){
-				o.activateRead();
-				result.add(o.task);
-			}
-			return result;
-		} finally {
-			db.close();
+		}catch(SQLException sqlE){
+			//TODO
+			
+		}finally{	
+			dbManager.dbDisconnect(conn);
 		}
+		
+		return taskList;
 	}
 	
 	/**
@@ -84,22 +175,30 @@ public enum TaskDatabase {
 	 * @param taskID unique UUID of the task
 	 * @return false if deletion fails 
 	 */	
-	public static boolean deleteTask(final String userID, final String taskID) {
-		ObjectContainer db = openDatabase();
-		try {
-			Query query = db.query();
-			query.constrain(TaskTuple.class);
-			Constraint constr=query.descend("taskID").constrain(taskID);
-			query.descend("userID").constrain(userID).and(constr);
-			ObjectSet<TaskTuple> result = query.execute();
-			if (result.isEmpty()) return false;
-			TaskTuple toDelete = result.get(0);
-			db.delete(toDelete);
-			return true;
-		} finally {
-			db.close();
+	public static boolean deleteTask(String taskID) {
+		
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		String deleteQuery="delete from Task where id="+taskID;
+		QueryStatus qs=dbManager.customQuery(conn, deleteQuery);
+		
+    	try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			dbManager.dbDisconnect(conn);
+			if(!qs.execError){
+				return true;
+			}else{
+				return false;
+			}
 		}
+		
+		
 	}
+
 	
 	/**
 	 * Update the specific task
@@ -108,111 +207,111 @@ public enum TaskDatabase {
 	 * @return false if update unsuccessful , true if update is successful
 	 */
 	public static boolean updateTask(final String taskID, final SingleTask task){
-		ObjectContainer db = openDatabase();
-		try {
-			Query query = db.query();
-			query.constrain(TaskTuple.class);
-			query.descend("taskID").constrain(taskID);
-			ObjectSet<TaskTuple> result = query.execute();
-			if (result.isEmpty()) {
-				log.warn ("Cannot find task with ID "+taskID);
+
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		int counter=0;
+		do{			
+			counter++;
+		}while(dbManager.startTransaction(conn).execError && counter<100);
+		
+		QueryStatus qs=dbManager.startTransaction(conn);
+		
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			log.error("Error during transaction starting... Task not updated");
+			dbManager.dbDisconnect(conn);
+			return false;
+		}
+		
+		String updateQuery="UPDATE Task set ";
+
+		updateQuery+="dueDate='"+task.dueDate+"',";
+		updateQuery+="notifyTimeEnd='"+task.notifyTimeEnd+"',";
+		updateQuery+="notifyTimeStart='"+task.notifyTimeStart+"'";
+		
+		updateQuery+=" where id="+taskID+"";
+		
+		updateQuery+=";";
+		
+		qs=dbManager.customQuery(conn, updateQuery);
+		
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			dbManager.rollbackTransaction(conn);
+			log.error("Error during Task update");
+			dbManager.dbDisconnect(conn);
+			return false;
+		}
+		
+		
+		updateQuery="UPDATE Reminder SET ";
+		updateQuery+="description='"+task.description+"',";
+		updateQuery+="title='"+task.title+"',";
+
+		updateQuery+="latitude='"+task.gpscoordinate.latitude+"',";
+		updateQuery+="longitude='"+task.gpscoordinate.longitude+"',";
+
+		updateQuery+="priority='"+task.priority+"',";
+		updateQuery+="title='"+task.title+"',";
+		updateQuery+="type="+task.type+"";
+		
+		updateQuery+=" where id=(select ReminderId from Task where Task.id="+taskID+");";
+		
+		
+		qs=dbManager.customQuery(conn, updateQuery);
+		System.out.println(updateQuery);
+		
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			counter=0;
+			do{
+				counter++;
+			}while(dbManager.rollbackTransaction(conn).execError && counter<100);
+			log.error("Error during Task update");
+			dbManager.dbDisconnect(conn);
+			return false;
+		}else{
+			counter=0;
+			do{
+				counter++;
+			}while(dbManager.commitTransaction(conn).execError && counter<100);			
+		}
+
+    	try {
+			conn.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			dbManager.dbDisconnect(conn);
+			if(!qs.execError){
+				return true;
+			}else{
 				return false;
 			}
-			TaskTuple toChange = result.get(0);
-			toChange.activateWrite();
-			task.ID = taskID; //make sure ID is the same
-			toChange.task = task;
-			db.store(toChange);
-			return true;
-		} finally {
-			db.close();
 		}		
+		
 	}
-	
-	/**
-	 * This method check if the task exist in the database
-	 * @param task object to be checked against database
-	 * @return 1 if event is exist, 0 otherwise
-	 */
-	private static boolean taskExist(final SingleTask task) {
-		ObjectContainer db = openDatabase();
-		try {
-			Query query = db.query();
-			query.constrain(TaskTuple.class);
-			query.descend("taskID").constrain(task.ID);
-			ObjectSet<TaskTuple> result = query.execute();
-			return !result.isEmpty();
-		}finally{
-			db.close();
-		}		
-	}
-	
-	private static ObjectContainer openDatabase() {
-		if (!databaseOpen) { //outer selection to enable faster access
-			synchronized (lock){
-			/*to avoid racing condition after outer IF above
-			 e.g. possible to acquire same databaseOpen value
-			 and thus open server multiple times*/
-			ServerConfiguration config = Db4oClientServer.newServerConfiguration();
-			config.common().add(new TransparentActivationSupport());
-			if (databaseOpen) return server.openClient(); 
-			server= Db4oClientServer.openServer(config, DATABASE_NAME, 0);
-			databaseOpen=true;
+		
+
+	public static void main(String[] args){
+		String userID="1";	
+
+			
+			List<SingleTask> taskList=TaskDatabase.instance.getAllTask(userID);
+			SingleTask t=taskList.get(1);
+			
+			System.out.println("da:"+t.description);
+			t.description="nuova descrizione!?!?!";
+			System.out.println("a:"+t.description);
+			System.out.println("ID:"+t.taskID);
+			if(!TaskDatabase.instance.updateTask(t.taskID,t)){
+				System.out.println("Errore");
 			}
-		}
-		ObjectContainer db = server.openClient();
-		return db;	
-	}
-
-	/**
-	 * The basic class to be saved in TaskDatabase
-	 *
-	 */
-	private class TaskTuple implements Activatable {
-		private transient Activator _activator;
-		/**
-		 * UUID of the user
-		 */
-		private String userID;
-		/**
-		 * the ID of the task 
-		 */
-		private String taskID;
-		/**
-		 * list of tasks that is saved in the database
-		 */
-		private SingleTask task;
-
-		public TaskTuple (String userID, String taskID, SingleTask task){
-			this.userID=userID;
-			this.taskID=taskID;
-			this.task=task;
-		}
-		
-		public void activateWrite(){
-			activate(ActivationPurpose.WRITE);	
-		}
-		
-		public void activateRead(){
-			activate(ActivationPurpose.READ);	
-		}
-		
-		@Override
-		public void activate(ActivationPurpose purpose) {
-			 if(_activator != null) {
-		            _activator.activate(purpose);
-		        }
-		}
-
-		@Override
-		public void bind(Activator activator) {
-		       if (_activator == activator) {
-		            return;
-		        }
-		        if (activator != null && _activator != null) {
-		            throw new IllegalStateException();
-		        }
-		        _activator = activator;
-		}
 	}
 }

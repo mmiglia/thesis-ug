@@ -13,7 +13,11 @@ import valueobject.SingleTask;
 
 /**
  * Hint Manager is a pipe (filter) that accepts the result from MapManager and
- * filter it based on user preferences.
+ * filter it based on user preferences that can be:
+ * 		- priority
+ * 		- time
+ * 		- time and priority
+ * 		- distance
  */
 public class HintManager {
 	private final static Logger log = LoggerFactory
@@ -21,7 +25,7 @@ public class HintManager {
 
 	/**
 	 * filter the result from MapManager according to distance from current
-	 * location
+	 * location. If userDistance = 0 it returns all the results
 	 * 
 	 * @param userDistance
 	 *            farthest distance from user location (in meter), 0 to disable filtering
@@ -89,7 +93,9 @@ public class HintManager {
 
 	/**
 	 * This method filter the task list based on user priority limit, and
-	 * allowed notification time
+	 * allowed notification time using 
+	 * 
+	 * filterTime(filterPriority(upperLimit,solution)) 
 	 * 
 	 * @param upperlimit
 	 *            upper limit on the priority

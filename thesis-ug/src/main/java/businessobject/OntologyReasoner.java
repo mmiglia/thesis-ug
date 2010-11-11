@@ -50,7 +50,8 @@ public class OntologyReasoner {
 	}
 	
 	/**
-	* Get a list of location that might satisfy the need
+	* Get a list of location that might satisfy the need.
+	* Location are determined using the HermiT reasoner
 	* 
 	* @param need String from a parsed user query / task that needs to be done
 	* @return list of location that can satisfy the need

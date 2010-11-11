@@ -18,7 +18,8 @@ import valueobject.SingleEvent;
 import businessobject.EventManager;
 
 /**
- * Event Resource is responsible for GETTING the result from the server
+ * Event Resource is responsible for GETTING events from the server.
+ * This class uses mainly method of EventManager class
  */
 @Path("/{username}/event")
 public class EventResource {

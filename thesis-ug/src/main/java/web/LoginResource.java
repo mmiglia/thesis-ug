@@ -15,7 +15,8 @@ import businessobject.LoginManager;
 
 @Path("/{username}/login")
 /**
- * Resource class for login to the system by providing user ID and password
+ * Resource class for login to the system by providing user ID and password.
+ * This class uses mainly method of LoginManager class
 */
 public class LoginResource{
 	private static Logger log = LoggerFactory.getLogger(LoginResource.class);

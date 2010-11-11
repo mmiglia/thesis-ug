@@ -27,7 +27,10 @@ import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
 /**
- * Implementation for Google Calendar API
+ * Implementation for Google Calendar API.
+ * This class by extending EventSubscriber have to implement all the methods
+ * defined by the EventInterface. Furthermore this class is included into the list
+ * that the EventManager query to get all the events
  * 
  */
 public class CalendarClient extends EventSubscriber {
@@ -234,6 +237,12 @@ public class CalendarClient extends EventSubscriber {
 		}
 	}
 	
+	/**
+	 * Create a SingleEvent from a CalendarEventEntry
+	 * 
+	 * @param e the CalendarEventEntry that is used to create the SingleEvent
+	 * @return
+	 */
 	private SingleEvent convertToSingleEvent (CalendarEventEntry e){
 		SingleEvent result = new SingleEvent(e.getTitle().getPlainText(),
 				e.getTimes().get(0).getStartTime().toString(),
@@ -242,6 +251,13 @@ public class CalendarClient extends EventSubscriber {
 				((TextContent)e.getContent()).getContent().getPlainText());
 		return result;
 	}
+	
+	/**
+	 * Create a CalendarEventEntry from a SingleEvent
+	 * 
+	 * @param e the SingleEvent that is used to create the CalendarEventEntry
+	 * @return
+	 */
 	
 	private CalendarEventEntry convertToCalendarEntry (SingleEvent e){
 		CalendarEventEntry result = new CalendarEventEntry();
@@ -261,6 +277,12 @@ public class CalendarClient extends EventSubscriber {
 		return result;
 	}
 
+	/**
+	 * To understand this visit
+	 * http://download.oracle.com/javase/1.5.0/docs/guide/language/enums.html
+	 * @author jaxer
+	 *
+	 */
 	private static enum CalendarEventEntryDatabase {
 		instance;
 		private static final String DATABASE_NAME = "src/main/resources/GoogleCalendarEntry.db";

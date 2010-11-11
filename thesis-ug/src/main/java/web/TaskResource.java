@@ -17,7 +17,8 @@ import valueobject.SingleTask;
 import businessobject.TaskManager;
 
 /**
- * Task Resource is responsible for GETTING the task from the server
+ * Task Resource is responsible for GETTING the task from the server.
+ * This class uses mainly method of TaskManager class
  */
 @Path("/{username}/task")
 public class TaskResource {

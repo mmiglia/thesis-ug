@@ -9,8 +9,10 @@ import dao.SessionData;
 import valueobject.LoginReply;
 
 
+
 /**
  * Business Object that will handle transaction for login process.
+ * 
  */
 public class LoginManager {
 	private final static Logger log = LoggerFactory.getLogger(LoginManager.class);
@@ -31,9 +33,11 @@ public class LoginManager {
 		// put code to check in database here
 		log.info("Check for match in database for username ="+username+" password = "+password);
 		String ID = RegisteredUsers.instance.checkMatch(username, password);
+		log.info("Found id ("+ID + ") for the user with username "+username);
+		
 		if (ID == null) {
 			log.info("Username or password is wrong");
-			return new LoginReply(0, "-1");
+			return new LoginReply(0, SessionData.instance.createSessionforUser(""));
 		} else {
 			//it would be better, instead of bluntly creating new session token, 
 			//to check for session token validity in the database first
@@ -41,5 +45,14 @@ public class LoginManager {
 			log.info("Found matching record, create new session key for user");
 			return new LoginReply(1, SessionData.instance.createSessionforUser(ID));
 		}
+	}
+	
+	public static void logout(String username) {
+		// put code to check in database here
+		log.info("Starting logout for user "+username);
+		RegisteredUsers.instance.logout(username);
+		log.info("User "+username+" successfully logged out");
+		
+		
 	}
 }
