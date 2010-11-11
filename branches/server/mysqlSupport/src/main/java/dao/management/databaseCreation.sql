@@ -1,68 +1,108 @@
-/*User(ID,username,password,sessionKey,active)*/
-drop table User;
- create table User (
-		username varchar(50),
-		password varchar(50),
-		sessionKey varchar(50),
-		active int(1) default 0
-       )TYPE=innodb;
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+
+--
+-- Database: `thesisug`
+--
+CREATE DATABASE `thesisug` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+USE `thesisug`;
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `Event`
+--
+
+DROP TABLE IF EXISTS `Event`;
+CREATE TABLE IF NOT EXISTS `Event` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `User` varchar(50) DEFAULT NULL,
+  `dueDate` varchar(50) DEFAULT NULL,
+  `startTime` varchar(50) DEFAULT NULL,
+  `endTime` varchar(50) DEFAULT NULL,
+  `location` varchar(200) DEFAULT NULL,
+  `ReminderId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 
+-- --------------------------------------------------------
 
-/*ExternalService(ID,Name,ServiceType,Description)*/
-drop table ExternalService;
- create table ExternalService (
-		id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-		name varchar(100),
-		Description varchar(250),
-		ServiceType ENUM('EventService', 'TaskService')
-       )TYPE=innodb;
+--
+-- Struttura della tabella `ExternalService`
+--
 
-
-/*ExternalServiceCredentials(UserID,ExternalServiceID,username,password)*/
-drop table ExternalServiceCredentials;
- create table ExternalServiceCredentials (
-		User varchar(50),
-		ExternalServiceID INT,
-		username varchar(50),
-		password varchar(50)
-       )TYPE=innodb;
+DROP TABLE IF EXISTS `ExternalService`;
+CREATE TABLE IF NOT EXISTS `ExternalService` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) DEFAULT NULL,
+  `Description` varchar(250) DEFAULT NULL,
+  `ServiceType` enum('EventService','TaskService') DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 
-/*Task(ID,userId,dueDate,notifyTimeStart,notifyTimeEnd,Reminder.ID)*/
-drop table Task;
- create table Task (
-		id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-		User varchar(50),
-		dueDate varchar(50),
-		notifyTimeStart varchar(50),
-		notifyTimeEnd varchar(50),
-		ReminderId INT
-       )TYPE=innodb;
+-- --------------------------------------------------------
 
-/*Event(ID,userId,startTime,endTime,latitude,longitude,Reminder.ID)*/
-drop table Event;
- create table Event (
-		id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-		User varchar(50),
-		dueDate varchar(50),
-		startTime varchar(50),
-		endTime varchar(50),
-		location varchar(200),
-		ReminderId INT
-       )TYPE=innodb;
-       
-/*Reminder(ID,priority,description,title,type,latitude,longitude)*/
-drop table Reminder;
- create table Reminder (
-		id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-		priority INT,
-		description varchar(350),
-		title varchar(200),
-		type INT,
-		latitude varchar(30),
-		longitude varchar(30)
-       )TYPE=innodb;
+--
+-- Struttura della tabella `ExternalServiceCredentials`
+--
+
+DROP TABLE IF EXISTS `ExternalServiceCredentials`;
+CREATE TABLE IF NOT EXISTS `ExternalServiceCredentials` (
+  `User` varchar(50) DEFAULT NULL,
+  `ExternalServiceID` int(11) DEFAULT NULL,
+  `username` varchar(50) DEFAULT NULL,
+  `password` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
+-- --------------------------------------------------------
 
+--
+-- Struttura della tabella `Reminder`
+--
+
+DROP TABLE IF EXISTS `Reminder`;
+CREATE TABLE IF NOT EXISTS `Reminder` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `priority` int(11) DEFAULT NULL,
+  `description` varchar(350) DEFAULT NULL,
+  `title` varchar(200) DEFAULT NULL,
+  `type` int(11) DEFAULT NULL,
+  `latitude` varchar(30) DEFAULT NULL,
+  `longitude` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `Task`
+--
+
+DROP TABLE IF EXISTS `Task`;
+CREATE TABLE IF NOT EXISTS `Task` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `User` varchar(50) DEFAULT NULL,
+  `dueDate` varchar(50) DEFAULT NULL,
+  `notifyTimeStart` varchar(50) DEFAULT NULL,
+  `notifyTimeEnd` varchar(50) DEFAULT NULL,
+  `ReminderId` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `User`
+--
+
+DROP TABLE IF EXISTS `User`;
+CREATE TABLE IF NOT EXISTS `User` (
+  `username` varchar(50) DEFAULT NULL,
+  `password` varchar(50) DEFAULT NULL,
+  `sessionKey` varchar(50) DEFAULT NULL,
+  `active` int(1) DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
