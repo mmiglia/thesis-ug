@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Singleton class that holds all the configurations for the system.
+ * All the configuration variables and values are taken from the file system.conf 
  * 
  */
 public class Configuration{

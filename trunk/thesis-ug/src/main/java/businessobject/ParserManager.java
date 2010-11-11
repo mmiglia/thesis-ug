@@ -8,6 +8,14 @@ import businessobject.parser.Parser;
 import businessobject.parser.command.AddEvent;
 import businessobject.parser.command.AddTask;
 
+/**
+ * This class is used to call the underlying parser system.
+ * All classes that compose the parser system are in businessobject.parser package 
+ * 
+ *
+ */
+
+
 public class ParserManager {
 	private final static Logger log = LoggerFactory.getLogger(ParserManager.class);
 	private final static String LANGUAGE_FILE = "en.lang";

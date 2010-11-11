@@ -26,6 +26,15 @@ import businessobject.MapSubscriber;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+
+/**
+ * Implementation for Google Maps.
+ * This class by extending MapSubscriber have to implement all the methods
+ * defined by the MapInterface. Furthermore this class is included into the list
+ * that the MapManager query to get all the events.
+ * 
+ * 
+ */
 public class MapsClient extends MapSubscriber {
 	private HttpClient httpClient;
 	private static final String LOCAL_SEARCH_URI = "http://ajax.googleapis.com/ajax/services/search/local";
@@ -76,11 +85,20 @@ public class MapsClient extends MapSubscriber {
 		return r.getResponseData().getResults();
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param url the url where to send the request
+	 * @param params 
+	 * @return return the result of the request (in json format) and put it into
+	 * the Respons object that returns
+	 */
 	private Response sendSearchRequest(String url, Map<String, String> params) {
 		if (params.get("v") == null) {
 			params.put("v", "1.0");
 		}
 		String json = sendHttpRequest("GET", url, params);
+		log.debug("sendSearchRequest url:"+url);
 		GsonBuilder builder = new GsonBuilder();
 		Gson gson = builder.create();
 		Response r = gson.fromJson(json, Response.class);
@@ -89,6 +107,13 @@ public class MapsClient extends MapSubscriber {
 		return r;
 	}
 
+	/**
+	 * Create a query string using the typical GET format:
+	 * ?name=value&name2=value2 etc
+	 * 
+	 * @param params
+	 * @return
+	 */
 	private String buildQueryString(Map<String, String> params) {
 		StringBuffer query = new StringBuffer();
 
@@ -109,6 +134,11 @@ public class MapsClient extends MapSubscriber {
 		return query.toString();
 	}
 
+	/**
+	 * Encode parameters in UTF-8 format
+	 * @param s
+	 * @return
+	 */
 	private String encodeParameter(String s) {
 		try {
 			return URLEncoder.encode(s, "UTF-8");
@@ -117,6 +147,16 @@ public class MapsClient extends MapSubscriber {
 		}
 	}
 
+	/**
+	 * Control if the httpMethod is set to GET, otherwise it throws a RuntimeException.
+	 * If the method is GET, it creates the queryString 
+	 * using buildQueryString and send it
+	 * 
+	 * @param httpMethod
+	 * @param url
+	 * @param params
+	 * @return
+	 */
 	private String sendHttpRequest(String httpMethod, String url,
 			Map<String, String> params) {
 		HttpClient c = this.httpClient;

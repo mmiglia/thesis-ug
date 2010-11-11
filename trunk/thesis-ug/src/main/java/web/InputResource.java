@@ -17,6 +17,9 @@ import businessobject.ParserManager;
 /**
  * This is a resource for sending input to the server in the form of string. It
  * should be asynchronous.
+ * It return a QueryReply coming from the inputQuery method of ParserManager, this method
+ * pass the command to the Parser object (businessobject.parser.Parser) that parse it and return
+ * a boolean that is used to set the status of the command in the returned QueryReply
  */
 @Path("/{username}/input")
 public class InputResource {

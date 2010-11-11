@@ -4,12 +4,21 @@ import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.google.gdata.data.TextContent;
+
 /**
  * This is the basic event object that will be used for communication
- * to clients
+ * to clients, fields are:
+ * startTime,endTime,location. All of type String
 */
 @XmlRootElement
 public class SingleEvent extends Reminder {
+	
+	/**
+	 * The id of the event into the database
+	 */
+	public String eventID;
+	
 	/**
 	 * start time of event execution (xs:dateTime format) <code>2006-04-17T15:00:00-08:00</code>
 	 * */
@@ -22,6 +31,11 @@ public class SingleEvent extends Reminder {
 	 * where this event is held
 	 * */
 	public String location;
+	
+	/**
+	 * deadline for event execution
+	 */
+	public String dueDate;
 
 	private SingleEvent(){
 		super();
@@ -34,11 +48,13 @@ public class SingleEvent extends Reminder {
 	 * @param location where this event is held
 	 * @param description brief descriptions regarding the event
 	 */
-	public SingleEvent(String title, String startTime,
-			String endTime, String location, String description) {
-		super(UUID.randomUUID().toString(), title, 3, description, 1); // default priority is 3;
+	public SingleEvent(String eventID,String title, String startTime,
+			String endTime,String dueDate, String location, String description,String reminderID) {
+		super(reminderID, title, 3, description, 1); // default priority is 3;
+		this.eventID=eventID;
 		this.startTime = startTime;
 		this.endTime = endTime;
+		this.dueDate=dueDate;
 		this.location = location;
 	}
 	
@@ -51,15 +67,25 @@ public class SingleEvent extends Reminder {
 	 * @param description brief descriptions regarding the event
 	 * @param priority priority of the event
 	 */
-	public SingleEvent(String title, String startTime,
-			String endTime, String location, String description, int priority) {
-		super(UUID.randomUUID().toString(), title, priority, description, 1);
+	public SingleEvent(String eventID,String title, String startTime,
+			String endTime, String location, String description, int priority,String reminderID)  {
+		super(reminderID, title, priority, description, 1);
+		this.eventID=eventID;
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.location = location;
 		this.priority = priority;
 	}
 	
+	public SingleEvent(String plainText, String string, String string2,
+			String valueString, String plainText2) {
+		/*e.getTitle().getPlainText(),
+				e.getTimes().get(0).getStartTime().toString(),
+				e.getTimes().get(0).getEndTime().toString(),
+				e.getLocations().get(0).getValueString(),
+				((TextContent)e.getContent()).getContent().getPlainText()*/
+		// TODO Auto-generated constructor stub
+	}
 	public void setLocation(float longitude, float latitude){
 		super.setGPS(longitude, latitude);
 	}	

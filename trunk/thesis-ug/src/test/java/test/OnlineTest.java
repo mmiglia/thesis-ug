@@ -23,7 +23,7 @@ import businessobject.Configuration;
  */
 public class OnlineTest extends TestCase {
 	private static Logger log;
-	int clientnumber = 100;
+	int clientnumber = 1;
 
 	static {
 		System.setProperty("org.apache.commons.logging.Log",
@@ -43,7 +43,11 @@ public class OnlineTest extends TestCase {
 		if (CONSTANTS.containsKey("https.proxyPort"))
 			System.setProperty("https.proxyPort", CONSTANTS
 					.getProperty("HTTPS_PORT"));
+		
 	}
+	private String ServerURL="http://localhost:8080/ephemere";
+	private String username="user";
+	private String password="dummy";
 
 	@Test(timeout = 20000)
 	public void testLogin() {
@@ -53,12 +57,13 @@ public class OnlineTest extends TestCase {
 		while (i < clientnumber) {
 			clientthread[i] = new Thread() {
 				public void run() {
+					System.out.println("Test Login");
 					SimpleClient client = ProxyFactory.create(
 							SimpleClient.class,
-							"http://localhost:8080/ephemere");
-
-					LoginReply result = client.Authenticate("user", "dummy");
+							ServerURL);
+					LoginReply result = client.Authenticate(username, password);
 					log.info(Integer.toString(result.status));
+
 				};
 			};
 			clientthread[i].start();
@@ -77,9 +82,9 @@ public class OnlineTest extends TestCase {
 		Thread result = new Thread() {
 			public void run() {
 				SimpleClient client = ProxyFactory.create(SimpleClient.class,
-						"http://localhost:8080/ephemere");
+						ServerURL);
 
-				LoginReply haha = client.Authenticate("user", "dummy");
+				LoginReply haha = client.Authenticate(username, password);
 				log.info(Integer.toString(haha.status));
 			};
 		};
@@ -95,12 +100,12 @@ public class OnlineTest extends TestCase {
 				public void run() {
 					SimpleClient client = ProxyFactory.create(
 							SimpleClient.class,
-							"http://localhost:8080/ephemere");
-					SingleEvent haha = new SingleEvent("permesso",
+							ServerURL);
+					SingleEvent haha = new SingleEvent("10","permesso",
 							"2010-05-10T17:00:00-08:00",
 							"2010-04-12T17:30:00-08:00", "brignole",
-							"bring passport", 2);
-					client.createEvent("user", "cookie", haha);
+							"bring passport", 2, "");
+					client.createEvent(username, "cookie", haha);
 				};
 			};
 			clientthread[i].start();
@@ -124,10 +129,10 @@ public class OnlineTest extends TestCase {
 				public void run() {
 					SimpleClient client = ProxyFactory.create(
 							SimpleClient.class,
-							"http://localhost:8080/ephemere");
+							ServerURL);
 					SingleTask haha = new SingleTask("buy cigarette",
 							"2010-08-10T17:00:00-08:00", "in supermarket");
-					client.createTask("user", "cookie", haha);
+					client.createTask(username, "cookie", haha);
 				};
 			};
 			clientthread[i].start();
@@ -152,8 +157,8 @@ public class OnlineTest extends TestCase {
 				public void run() {
 					SimpleClient client = ProxyFactory.create(
 							SimpleClient.class,
-							"http://localhost:8080/ephemere");
-					List<SingleEvent> result = client.getAllEvents("user",
+							ServerURL);
+					List<SingleEvent> result = client.getAllEvents(username,
 							"cookie");
 					log.info("Get All Event results :");
 					for (SingleEvent o : result) {
@@ -183,8 +188,8 @@ public class OnlineTest extends TestCase {
 				public void run() {
 					SimpleClient client = ProxyFactory.create(
 							SimpleClient.class,
-							"http://localhost:8080/ephemere");
-					List<SingleTask> result = client.getAllTasks("user",
+							ServerURL);
+					List<SingleTask> result = client.getAllTasks(username,
 							"cookie");
 					log.info("Get All Task results :");
 					for (SingleTask o : result) {
@@ -218,13 +223,13 @@ public class OnlineTest extends TestCase {
 				public void run() {
 					SimpleClient client = ProxyFactory.create(
 							SimpleClient.class,
-							"http://localhost:8080/ephemere");
+							ServerURL);
 					SingleEvent newEvent = new SingleEvent("new event",
 							"2010-01-03T08:00:00-08:00",
 							"2010-05-22T09:00:00-08:00", "some place",
 							"niente");
 					newEvent.ID = "df53a6ed-d913-400e-908a-3035f3007a53";
-					client.updateEvent("user", "cookie", newEvent);
+					client.updateEvent(username, "cookie", newEvent);
 
 				};
 			};
@@ -242,6 +247,7 @@ public class OnlineTest extends TestCase {
 
 	@Test
 	public void testLocationManager() {
+		System.out.println("[INIZIO testLocationManager]");
 		int i = 0;
 		Thread[] clientthread = new Thread[clientnumber];
 		while (i < clientnumber) {
@@ -249,7 +255,7 @@ public class OnlineTest extends TestCase {
 				public void run() {
 					SimpleClient client = ProxyFactory.create(
 							SimpleClient.class,
-							"http://localhost:8080/ephemere");
+							ServerURL);
 					float latitude = 40.759011f;
 					float longitude = -73.9844722f;
 					try {
@@ -259,7 +265,7 @@ public class OnlineTest extends TestCase {
 						e.printStackTrace();
 					}
 					List<Hint> result = client.checkLocation(latitude,
-							longitude, 100, "user", "dummy");
+							longitude, 100, username, password);
 					
 				};
 			};
@@ -274,6 +280,7 @@ public class OnlineTest extends TestCase {
 				e.printStackTrace();
 			}
 		assertTrue(true);
+		System.out.println("[FINE testLocationManager]");
 	}
 
 	@Test
@@ -285,8 +292,8 @@ public class OnlineTest extends TestCase {
 				public void run() {
 					SimpleClient client = ProxyFactory.create(
 							SimpleClient.class,
-							"http://localhost:8080/ephemere");
-					client.input("user", "dummy",
+							ServerURL);
+					client.input(username, password,
 							"remind me to buy milk before friday");
 				};
 			};

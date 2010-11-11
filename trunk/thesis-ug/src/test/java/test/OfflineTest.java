@@ -48,23 +48,32 @@ public class OfflineTest extends TestCase{
 					.getProperty("HTTPS_PORT"));
 	}
 
+	private String user="user";
+	private String pass="dummy";
+	
 	@Test
 	public void testaddUser() {
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
-		log.info("Adding dummy account username = 'user', password ='dummy'");
-		RegisteredUsers.instance.addUsers("user", "dummy");
+		log.info("TESTADDUSER");
+		log.info("Adding dummy account username = "+user+", password ="+pass);
+		RegisteredUsers.instance.addUsers(user, pass);
+		String id=RegisteredUsers.instance.checkMatch(user, pass);
+		log.info("ID per " +user + " " + pass+ id);
 		assertTrue(true);
 	}
 	
 	@Test
 	public void testLogin() {
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
-		log.info("Trying to login with username = 'user', password ='dummy'");
-		LoginReply result = LoginManager.login("user", "dummy");
+		log.info("Trying to login with username = "+user+", password ="+pass+"");
+		LoginReply result = LoginManager.login(user, pass);
+		
 		log.info("Login status is " + result.status + ", session id = "
 				+ result.session);
 		assertNotNull(result);
 	}
+	
+
 
 	@Test
 	public void testaddEvent() {
@@ -72,10 +81,10 @@ public class OfflineTest extends TestCase{
 		log.info("Trying to add event to the database");
 		EventManager manager = EventManager.getInstance();
 		manager.Authenticate("user", "dummy"); // need to call this
-		SingleEvent toAdd = new SingleEvent("Liz Birthday",
-				"2010-05-18T08:00:00-08:00", "2010-05-18T09:00:00-08:00",
-				"her apartment", "prepare some presents");
-		boolean result = manager.createEvent("user", toAdd);
+
+		boolean result = manager.createEvent(user,"2010-05-18T08:00:00-08:00",
+				"2010-05-18T08:00:00-08:00", "2010-05-18T09:00:00-10:00",
+				"her apartment","Liz Birthday", "prepare some presents");
 		assertEquals(true, result);
 	}
 
@@ -103,14 +112,19 @@ public class OfflineTest extends TestCase{
 		assertNotNull(result);
 	}
 	
+	
+	
 	@Test
 	public void testaddTasks(){
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
 		log.info("Trying to add task to the database");
+
+		String userId=RegisteredUsers.instance.checkMatch(user, pass);
+		
 		TaskManager manager = TaskManager.getInstance();
-		boolean result = manager.createTask("user", "buy ticket",
+		boolean result = manager.createTask(userId, "Comprare il biglietto",
 				"09:30:10-06:00", "14:30:10-06:00",
-				"2010-05-18T17:30:00-08:00", "Stazione Principe", 2);
+				"2010-05-18T17:30:00-08:00", "Stazione Brignole", 2);
 		assertTrue(true);
 	}
 
@@ -118,8 +132,10 @@ public class OfflineTest extends TestCase{
 	public void testgetFirstTasks() {
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
 		log.info("Getting most important tasks");
+		String userId=RegisteredUsers.instance.checkMatch(user, pass);
 		TaskManager manager = TaskManager.getInstance();
-		List<SingleTask> result = manager.getFirstTasks("user");
+		List<SingleTask> result = manager.getFirstTasks(userId);
+		log.info("Found "+ result.size() + " task for the user " + user);
 		for (SingleTask o : result) log.info (o.title);
 		assertNotNull (result);
 	}
@@ -131,7 +147,7 @@ public class OfflineTest extends TestCase{
 		float lat = 45.521694f;
 		float lon = -122.691806f;
 		log.info("lat = " + lat + " long = " + lon);
-		List<Hint> results = coba.searchLocalBusiness(lat, lon, "coffee");
+		//List<Hint> results = coba.searchLocalBusiness(lat, lon, "coffee");
 		assertNotNull(lon);
 	}
 

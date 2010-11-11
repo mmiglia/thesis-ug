@@ -9,8 +9,8 @@ import valueobject.Hint;
 import businessobject.google.MapsClient;
 
 /**
- * This SINGLETON class is the only manager/publisher for map/geolocation services. All implemented
- * methods are just doing the operation in local database, and then calling all
+ * This SINGLETON class is the only manager/publisher for map/geolocation services. 
+ * All implemented methods are just doing the operation in local database, and then calling all
  * subsequent methods in the subscriber (3rd party database)
  * 
  */

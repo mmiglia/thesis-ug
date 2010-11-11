@@ -28,7 +28,7 @@ public class AddTask implements Verb{
 	}
 	
 	@Override
-	public boolean execute(String userid, List<Arguments> args) {
+	public boolean execute(String userID, List<Arguments> args) {
 		String title="";
 		String whenString="";
 		for (Arguments a:args){
@@ -37,13 +37,26 @@ public class AddTask implements Verb{
 			case TIME: whenString = a.content; break;
 			}
 		}
-		log.info("executing add task for user "+userid+" with title "+title);
+		log.info("executing add task for user "+userID+" with title "+title);
 		try{
 			StringToTime start = new StringToTime(whenString);
 			Calendar startTime = Calendar.getInstance();
 			startTime.setTimeInMillis(start.getTime());
 			SingleTask toAdd = new SingleTask(title, Converter.CalendarDatetoString(startTime), "");
-			TaskManager.getInstance().createTask(userid, toAdd);
+			
+			Calendar now = Calendar.getInstance();
+			now.set(Calendar.HOUR_OF_DAY, 6);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			String notifyTimeStart = Converter.CalendarTimetoString(now);
+			now.set(Calendar.HOUR_OF_DAY, 21);
+			now.set(Calendar.MINUTE, 0);
+			now.set(Calendar.SECOND, 0);
+			String notifyTimeEnd = Converter.CalendarTimetoString(now);
+			String dueDate=Converter.CalendarDatetoString(startTime);
+			String description="";
+			int priority=2;
+			TaskManager.getInstance().createTask(userID, title, notifyTimeStart, notifyTimeEnd, dueDate, description, priority);
 			return true;
 		}
 		catch (StringToTimeException e){

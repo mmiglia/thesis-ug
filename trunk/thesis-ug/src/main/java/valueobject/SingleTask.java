@@ -12,10 +12,18 @@ import com.db4o.activation.Activator;
 import com.db4o.ta.Activatable;
 
 /**
- * This is the basic task object that will be used for communications to client
+ * This is the basic task object that will be used for communications to client.
+ * Fiels are:
+ * dueDate,notifyTimeStart,notifyTimeEnd 
+ * 
  */
 @XmlRootElement
 public class SingleTask extends Reminder implements Comparable<SingleTask>{
+	
+	/**
+	 * The id of the task into the database
+	 */
+	public String taskID;
 	/**
 	 * deadline for the execution of the task (xs:dateTime format) <code>2006-04-17T15:00:00-08:00</code>
 	 */
@@ -51,36 +59,16 @@ public class SingleTask extends Reminder implements Comparable<SingleTask>{
 	 * @param priority
 	 *            task priority
 	 */
-	public SingleTask(String title, String notifyTimeStart,
+	public SingleTask(String taskId,String title, String notifyTimeStart,
 			String notifyTimeEnd, String dueDate, String description,
-			int priority) {
-		super(UUID.randomUUID().toString(), title, priority, description, 2);
+			int priority,String reminderId) {
+		super(reminderId, title, priority, description, 2);
+		this.taskID=taskId;
 		this.dueDate = dueDate;
 		this.notifyTimeStart = notifyTimeStart;
 		this.notifyTimeEnd = notifyTimeEnd;
 	}
 
-	/**
-	 * Constructor without specifying priority
-	 * 
-	 * @param title
-	 *            title of the task
-	 * @param notifyTimeStart
-	 *            time to start notifying user
-	 * @param notifyTimeEnd
-	 *            time to end notifying user
-	 * @param dueDate
-	 *            the deadline for task completion
-	 * @param description
-	 *            brief description of the task
-	 */
-	public SingleTask(String title, String notifyTimeStart,
-			String notifyTimeEnd, String dueDate, String description) {
-		super(UUID.randomUUID().toString(), title, 3, description, 2);
-		this.dueDate = dueDate;
-		this.notifyTimeStart = notifyTimeStart;
-		this.notifyTimeEnd = notifyTimeEnd;
-	}
 
 	/**
 	 * Simple constructor with default value for priority and notify-time.
@@ -104,8 +92,8 @@ public class SingleTask extends Reminder implements Comparable<SingleTask>{
 		now.set(Calendar.MINUTE, 0);
 		now.set(Calendar.SECOND, 0);
 		this.notifyTimeEnd = Converter.CalendarTimetoString(now);
-	}
-
+	}	
+	
 	/**
 	 * This method overwrite Comparable interface compareTo method to enable sorting.
 	 * It will first sort based on task duedate, earlier first.

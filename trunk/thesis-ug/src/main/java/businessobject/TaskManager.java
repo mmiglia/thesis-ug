@@ -14,7 +14,10 @@ import dao.TaskDatabase;
 /**
  * This SINGLETON class is the only manager/publisher for event. All implemented
  * methods are just doing the operation in local database, and then calling all
- * subsequent methods in the subscriber (3rd party database)
+ * subsequent methods in the subscriber (3rd party database).
+ * Here all tasks that are created are stored in each of the TaskSubscriber (like GoogleCalendar)
+ * but in the future may be that we have to choose only one of them or at least let the user
+ * choose on wich TaskSubscriber save the tasks
  */
 public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterface{
 	private final static Logger log = LoggerFactory
@@ -33,7 +36,7 @@ public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterf
 	}
 
 	/**
-	 * Authenticate to the backend service
+	 * Authenticate to the backend service that manage tasks
 	 * 
 	 * @param username
 	 *            username to the service provider
@@ -70,6 +73,7 @@ public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterf
 	 */
 	public List<SingleTask> getFirstTasks(String userID) {
 		List<SingleTask> result = TaskDatabase.instance.getAllTask(userID);
+		log.debug("Found "+result.size() + " tasks for user" );
 		Calendar now = Calendar.getInstance();
 		Calendar compare;
 		Iterator<SingleTask> iterator = result.iterator();
@@ -79,6 +83,7 @@ public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterf
 			// delete if task's deadline is already passed
 			if(now.after(compare)) iterator.remove();			
 		}
+		log.debug("Found "+result.size() + " tasks for user that have a dueDate<deadline" );
 		Collections.sort(result); // sort based on compareTo method
 		return (result.size()<=5)? result : result.subList(0, 4); // trim the result
 	}	
@@ -104,10 +109,12 @@ public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterf
 	public boolean createTask(String userID, String title,
 			String notifyTimeStart, String notifyTimeEnd, String dueDate,
 			String description, int priority) {
-		SingleTask toAdd = new SingleTask(title, notifyTimeStart,
-				notifyTimeEnd, dueDate, description, priority);
-		for (TaskSubscriber o : subscriberlist) o.createTask(userID, toAdd);
-		TaskDatabase.instance.addTask(userID, toAdd);
+		SingleTask toAdd = TaskDatabase.instance.addTask(userID, title,notifyTimeStart, notifyTimeEnd, dueDate,
+				description, priority);
+		
+		for (TaskSubscriber o : subscriberlist) o.createTask(userID, toAdd);		
+		
+		
 		return true;
 	}
 	
@@ -116,12 +123,18 @@ public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterf
 	 * @param userID unique UUID of the user
 	 * @param toAdd SingleTask instance
 	 * @return true if task is successfully added to database, false otherwise
+	 * @deprecated
 	 */
-	public boolean createTask(String userID, SingleTask toAdd){
+	public boolean createTask(String userID, SingleTask taskObj){
+		
+		SingleTask toAdd = TaskDatabase.instance.addTask(userID,taskObj.title,taskObj.notifyTimeStart, taskObj.notifyTimeEnd, taskObj.dueDate,
+				taskObj.description, taskObj.priority);
+		
 		for (TaskSubscriber o : subscriberlist) o.createTask(userID, toAdd);
-		TaskDatabase.instance.addTask(userID, toAdd);
+		//TaskDatabase.instance.addTask(userID, toAdd);
 		return true;
 	}
+	
 
 	/**
 	 * Update the task by a given UUID to a new one
@@ -145,13 +158,14 @@ public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterf
 	 * @param userid unique UUID of the user
 	 * @param taskID taskID to be removed
 	 * @return false if unsuccessful, 1 if successful
+	 * 
 	 */
 	public boolean removeTask(String userid, String taskID) {		
 		for (TaskSubscriber o : subscriberlist) {
 			if (o.removeTask(userid, taskID)) continue;
 			else return false;
 		}
-		TaskDatabase.instance.deleteTask(userid, taskID);
+		TaskDatabase.instance.deleteTask(taskID);
 		return true;
 	}
 
