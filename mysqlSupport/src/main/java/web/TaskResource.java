@@ -36,6 +36,7 @@ public class TaskResource {
 	public void createTask(@PathParam("username") String userid,
 			@CookieParam("sessionid") String sessionid, SingleTask toAdd) {
 		log.info("Request to create task from user " + userid + ", session "+ sessionid);
+		log.info("GroupID for task:" + toAdd.groupId);
 		TaskManager.getInstance().createTask(userid, toAdd);
 	}
 	
