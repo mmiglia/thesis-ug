@@ -124,7 +124,7 @@ public class OfflineTest extends TestCase{
 		TaskManager manager = TaskManager.getInstance();
 		boolean result = manager.createTask(userId, "Comprare il biglietto",
 				"09:30:10-06:00", "14:30:10-06:00",
-				"2010-05-18T17:30:00-08:00", "Stazione Brignole", 2);
+				"2010-05-18T17:30:00-08:00", "Stazione Brignole", 2,"1");
 		assertTrue(true);
 	}
 
