@@ -42,7 +42,8 @@ public class AddTask implements Verb{
 			StringToTime start = new StringToTime(whenString);
 			Calendar startTime = Calendar.getInstance();
 			startTime.setTimeInMillis(start.getTime());
-			SingleTask toAdd = new SingleTask(title, Converter.CalendarDatetoString(startTime), "");
+			//This task is not a group task so the last parameter is set to "0"
+			SingleTask toAdd = new SingleTask(title, Converter.CalendarDatetoString(startTime), "","0");
 			
 			Calendar now = Calendar.getInstance();
 			now.set(Calendar.HOUR_OF_DAY, 6);
@@ -56,7 +57,8 @@ public class AddTask implements Verb{
 			String dueDate=Converter.CalendarDatetoString(startTime);
 			String description="";
 			int priority=2;
-			TaskManager.getInstance().createTask(userID, title, notifyTimeStart, notifyTimeEnd, dueDate, description, priority);
+			String groupId="0";
+			TaskManager.getInstance().createTask(userID, title, notifyTimeStart, notifyTimeEnd, dueDate, description, priority,groupId);
 			return true;
 		}
 		catch (StringToTimeException e){
