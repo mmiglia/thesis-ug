@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="@string/user_preferences">
+		<ListPreference
+			android:title="@string/q_period"
+			android:summary="@string/interval"
+			android:key="queryperiod"
+			android:defaultValue="300"
+			android:entries="@array/period"
+			android:entryValues="@array/periodValue" />
+		<ListPreference
+			android:title="@string/max_distance"
+			android:summary="@string/max_distance_desc"
+			android:key="maxdistance"
+			android:defaultValue="50000"
+			android:entries="@array/distance"
+			android:entryValues="@array/distanceValue" />
+	</PreferenceCategory>
+</PreferenceScreen>
