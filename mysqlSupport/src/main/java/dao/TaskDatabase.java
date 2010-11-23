@@ -31,7 +31,7 @@ public enum TaskDatabase {
 	 */
 	public static SingleTask addTask(String userID, String title,
 			String notifyTimeStart, String notifyTimeEnd, String dueDate,
-			String description, int priority) {
+			String description, int priority,String userGroup) {
 		
 		
 		SingleTask taskToReturn=null;
@@ -63,7 +63,7 @@ public enum TaskDatabase {
 		}
 		log.info("Reminder added!");	
 		//Task Creation with the reminder ID. The Task has always type=2
-		insertQuery="Insert into Task (User,dueDate,notifyTimeStart,notifyTimeEnd,ReminderId) values ('"+userID+"','"+dueDate+"','"+notifyTimeStart+"','"+notifyTimeEnd+"',LAST_INSERT_ID())";
+		insertQuery="Insert into Task (User,dueDate,notifyTimeStart,notifyTimeEnd,ReminderId,UserGroup) values ('"+userID+"','"+dueDate+"','"+notifyTimeStart+"','"+notifyTimeEnd+"',LAST_INSERT_ID(),'"+userGroup+"')";
 		log.info(insertQuery);
 		qs=dbManager.customQuery(conn, insertQuery);
 		
@@ -94,7 +94,8 @@ public enum TaskDatabase {
 					rs.getString("dueDate") ,
 					rs.getString("description") ,
 					rs.getInt("priority"),
-					rs.getString("Reminder.id")
+					rs.getString("Reminder.id"),
+					rs.getString("Task.UserGroup")
 				);
 			}else{
 				dbManager.dbDisconnect(conn);
@@ -112,10 +113,7 @@ public enum TaskDatabase {
 			}while(dbManager.commitTransaction(conn).execError && count < 100);	
 			
 			log.info("Task and related Reminder added correctly to the database");
-		}
-		
-
-		
+		}		
 		
 		dbManager.dbDisconnect(conn);
 	
@@ -131,8 +129,10 @@ public enum TaskDatabase {
 		
 		Connection conn= (Connection) dbManager.dbConnect();
 		
-		String selectQuery="Select * from Task join Reminder on Task.ReminderId=Reminder.id where Task.User="+userID;
-		
+		//Task Utente
+		String selectQuery="Select * from Task join Reminder on Task.ReminderId=Reminder.id where Task.User='"+userID+"' ";
+		//Task dei gruppi a cui l'utente è iscritto
+		selectQuery+=" OR UserGroup In (select UserGroup from GroupMember where User='"+userID+"')";
 		
 		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
 		
@@ -151,13 +151,10 @@ public enum TaskDatabase {
 								rs.getString("dueDate") ,
 								rs.getString("description") ,
 								rs.getInt("priority"),
-								rs.getString("Reminder.id")
+								rs.getString("Reminder.id"),
+								rs.getString("Task.UserGroup")
 							)					
 					);
-			
-			
-			
-			
 			}
 		}catch(SQLException sqlE){
 			//TODO
