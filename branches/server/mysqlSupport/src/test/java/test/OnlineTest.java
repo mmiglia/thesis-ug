@@ -45,7 +45,7 @@ public class OnlineTest extends TestCase {
 					.getProperty("HTTPS_PORT"));
 		
 	}
-	private String ServerURL="http://localhost:8080/ephemere";
+	private String ServerURL="http://localhost:8080/ephemere-0.0.1";
 	private String username="user";
 	private String password="dummy";
 
@@ -130,8 +130,9 @@ public class OnlineTest extends TestCase {
 					SimpleClient client = ProxyFactory.create(
 							SimpleClient.class,
 							ServerURL);
+					//This task is not a group task
 					SingleTask haha = new SingleTask("buy cigarette",
-							"2010-08-10T17:00:00-08:00", "in supermarket");
+							"2010-08-10T17:00:00-08:00", "in supermarket","5");
 					client.createTask(username, "cookie", haha);
 				};
 			};
