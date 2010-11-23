@@ -16,6 +16,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -229,6 +230,7 @@ public class Todo extends ListActivity {
 		else if (data.isEmpty()) tasks.add(createItem (new SingleTask(getText(R.string.no_task_today).toString(), "", "", "", ""), false));
 		else {
 			for (SingleTask o : data){
+				Log.i(TAG, "Task id2:"+o.groupId);
 				tasks.add(createItem(o, usersettings.getBoolean(o.title, true)));
 			}
 		}
@@ -285,10 +287,13 @@ public class Todo extends ListActivity {
 
 		// create our list and custom adapter
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);		
+		
 		SimpleAdapter taskAdapter = new SimpleAdapter(this, tasks, R.layout.todo_task,
 		new String[] { ITEM_DATA, REMIND_ME }, new int[] { R.id.list_complex_title, R.id.complex_checkbox });
-		taskAdapter.setViewBinder(new TaskBinder());
+		
+		taskAdapter.setViewBinder(new TaskBinder());			
 		adapter.addSection(getText(R.string.task_list_header).toString(), taskAdapter);
+		
 		SimpleAdapter eventAdapter = new SimpleAdapter(this, event, R.layout.todo_event,
 				new String[] { ITEM_DATA, ITEM_DATA, REMIND_ME }, new int[] { R.id.list_complex_title, R.id.list_complex_caption, R.id.complex_checkbox });
 		adapter.addSection(getText(R.string.event_list_header).toString(), eventAdapter);
@@ -331,6 +336,13 @@ public class Todo extends ListActivity {
 				TextView temp = (TextView) view;
 				Log.i(TAG, "TaskBinder "+temp.getId());
 				temp.setText(task.title);
+				Log.i(TAG,"Task id:"+task.groupId);
+				if(!task.groupId.equals("0")){
+					//Group task-> different background color
+					temp.setBackgroundColor(Color.rgb( 136, 242, 137));
+					temp.setTextColor(Color.BLACK);
+				}
+				
 				return true;
 			}
 			return false;

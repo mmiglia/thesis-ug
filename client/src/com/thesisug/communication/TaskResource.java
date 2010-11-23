@@ -105,6 +105,7 @@ public class TaskResource {
 		final Runnable runnable = new Runnable() {
 			public void run() {
 				String body = SingleTaskHandler.format(toAdd);
+				Log.i(TAG,body);
 				final boolean result = runHttpPost(CREATE_TASK, null, body, context);
 				if (handler == null || context == null) {
 					return;
@@ -174,6 +175,9 @@ public class TaskResource {
 		final Runnable runnable = new Runnable() {
 			public void run() {
 				List<SingleTask> result = runHttpGet(ALL_TASKS, null, context);
+				for (SingleTask o : result){
+					Log.i(TAG, "Task id retreived:"+o.groupId);
+				}
 				sendResult(result, handler, context);
 			}
 		};
@@ -185,6 +189,9 @@ public class TaskResource {
 		final Runnable runnable = new Runnable() {
 			public void run() {				
 				List<SingleTask> result = runHttpGet(FIRST_TASKS, null, context);
+				for (SingleTask o : result){
+					Log.i(TAG, "Task id retreived:"+o.groupId);
+				}
 				sendResult(result, handler, context);
 			}
 		};

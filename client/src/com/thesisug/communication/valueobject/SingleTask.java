@@ -7,6 +7,12 @@ import java.util.UUID;
  * This is the basic task object that will be used for communications to client
  */
 public class SingleTask extends Reminder {
+	
+	/**
+	 * The id of the task into the database
+	 */
+	public String taskID;
+	
 	/**
 	 * deadline for the execution of the task (xs:dateTime format) <code>2006-04-17T15:00:00-08:00</code>
 	 */
@@ -21,6 +27,11 @@ public class SingleTask extends Reminder {
 	 * "09:30:10-06:00"). Default value is "23:59:59"
 	 */
 	public String notifyTimeEnd;
+	
+	/**
+	 * The id of the group to add the task. If the task is not a group task then this value is set to ZERO
+	 */
+	public String groupId="0";
 
 	public SingleTask(){
 		super();
@@ -41,14 +52,18 @@ public class SingleTask extends Reminder {
 	 *            brief description of the task
 	 * @param priority
 	 *            task priority
+	 *@param groupId
+	 *			  if is 0 the task has no group
 	 */
-	public SingleTask(String title, String notifyTimeStart,
+	public SingleTask(String taskId,String title, String notifyTimeStart,
 			String notifyTimeEnd, String dueDate, String description,
-			int priority) {
-		super(UUID.randomUUID().toString(), title, priority, description, 2);
+			int priority,String reminderId,String groupId) {
+		super(reminderId, title, priority, description, 2);
+		this.taskID=taskId;
 		this.dueDate = dueDate;
 		this.notifyTimeStart = notifyTimeStart;
 		this.notifyTimeEnd = notifyTimeEnd;
+		this.groupId=groupId;
 	}
 
 	/**
@@ -104,6 +119,8 @@ public class SingleTask extends Reminder {
 		newcopy.notifyTimeEnd = notifyTimeEnd;
 		newcopy.gpscoordinate.latitude = gpscoordinate.latitude;
 		newcopy.gpscoordinate.longitude = gpscoordinate.longitude;
+		newcopy.taskID=taskID;
+		newcopy.groupId=groupId;
 		return newcopy;
 	}
 }

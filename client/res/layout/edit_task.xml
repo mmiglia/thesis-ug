@@ -165,6 +165,25 @@
         	android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
     </LinearLayout>
+     <LinearLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+    	<TextView    
+        	android:id="@+id/groupId_text"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+        	android:text="@string/groupId"/>
+       	<EditText
+        	android:id="@+id/task_groupId"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+    </LinearLayout>
+
     </TableLayout>
 </ScrollView>
 	<LinearLayout 
