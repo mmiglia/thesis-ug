@@ -42,6 +42,10 @@ public class EditTask extends Activity {
     // button
     private Button deadlineDate, deadlineTime, timeFrom, timeTo, save, back;
     private EditText title, description;
+
+	//TODO Eliminare e rimpiazzare con una lista dei gruppi disponibili
+    private EditText groupId;
+    
     private RatingBar priority;
     private float latitude, longitude;
 	private int currentDialog;
@@ -55,6 +59,8 @@ public class EditTask extends Activity {
 		title = (EditText) findViewById(R.id.task_title);
 		deadlineDate = (Button) findViewById(R.id.date_deadline);
 		deadlineTime = (Button) findViewById(R.id.time_deadline);
+		//TODO Eliminare e rimpiazzare con una lista dei gruppi disponibili
+		groupId=(EditText) findViewById(R.id.task_groupId);
 		
 		// set default notification time for a task
 		notifyStart.set(Calendar.HOUR_OF_DAY, 6);
@@ -109,17 +115,27 @@ public class EditTask extends Activity {
 					task.description = description.getText().toString();
 					task.gpscoordinate.longitude = longitude;
 					task.gpscoordinate.latitude = latitude;
+					
+					//TODO Eliminare e rimpiazzare con una lista dei gruppi disponibili
+					task.groupId=groupId.getText().toString();
+					
 					Thread savingThread = TaskResource.updateTask(task,
 							handler, EditTask.this);
 					break;
 				case CREATE_TASK:
 					showDialog(CREATE_DATA_ID);
-					task = new SingleTask(title.getText().toString(), 
+					//TODO Verificare la gestione dell'id del reminder e del gruppo (per ora metto -1 ad entrambi visto che è poi il sistema ad assegnare questi valori)
+					task = new SingleTask("-1",title.getText().toString(), 
 							new XsDateTimeFormat(false,true).format(notifyStart),
 							new XsDateTimeFormat(false,true).format(notifyEnd), 
 							new XsDateTimeFormat().format(deadline), 
 							description.getText().toString(),
-							Math.round(priority.getRating()));
+							Math.round(priority.getRating()),
+							"-1", 
+							groupId.getText().toString());
+					//TODO Eliminare elemento sopra e rimpiazzare con una lista dei gruppi disponibili
+					
+					
 					task.gpscoordinate.longitude = longitude;
 					task.gpscoordinate.latitude = latitude;
 					Thread creationThread = TaskResource.createTask(task,

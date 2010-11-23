@@ -71,7 +71,12 @@ private static final String TAG = "Single Task Handler";
                 current.notifyTimeEnd= body;
             }
         });
-        Log.i(TAG, "parsing Single Task XML message");
+		SingleTask.getChild("groupId").setEndTextElementListener(new EndTextElementListener(){
+            public void end(String body) {
+                current.groupId= body;
+            }
+        });
+		Log.i(TAG, "parsing Single Task XML message");
         Xml.parse(toParse, Xml.Encoding.UTF_8, root.getContentHandler());
         return combine;
     }
@@ -84,8 +89,9 @@ private static final String TAG = "Single Task Handler";
             serializer.startDocument("UTF-8", true);
             serializer.startTag("", "singleTask");
             
+            //The id of the task is taskID field, the id of the reminder is ID field 
             serializer.startTag("", "ID");
-            serializer.text(task.ID);
+            serializer.text(task.taskID);
             serializer.endTag("", "ID");
             
             serializer.startTag("", "priority");
@@ -129,7 +135,16 @@ private static final String TAG = "Single Task Handler";
             serializer.startTag("", "notifyTimeEnd");
             serializer.text(task.notifyTimeEnd);
             serializer.endTag("", "notifyTimeEnd");
+            
+            Log.i(TAG,"Group: "+task.groupId);
+            serializer.startTag("", "groupId");
+            serializer.text(task.groupId);
+            serializer.endTag("", "groupId");
 
+            serializer.startTag("", "reminderId");
+            serializer.text(task.ID);
+            serializer.endTag("", "reminderId");            
+            
             serializer.endTag("", "singleTask");
             serializer.endDocument();
             return writer.toString();

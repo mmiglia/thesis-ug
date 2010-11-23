@@ -19,7 +19,10 @@ import android.util.Log;
 public class NetworkUtilities {
 	private static final String TAG = new String("NetworkUtilities");
 	private static final int REGISTRATION_TIMEOUT = 10000;
-	public static final String SERVER_URI = "http://10.0.2.2:8080/ephemere";
+	//public static String SERVER_URI = "http://10.0.2.2:8080/ephemere";
+	public static String SERVER_URI = "http://10.0.2.2:8080/ephemere-0.0.4";
+	public static String actUser="";
+	public static String actPass="";
 	//public static final String SERVER_URI = "http://130.251.12.27:8080/ephemere-0.0.1-SNAPSHOT";
 	
 	public static DefaultHttpClient createClient() {
@@ -31,10 +34,15 @@ public class NetworkUtilities {
 		return client;
 	}
 	
+	public static void saveActualCredentials(String user, String pass){		
+		actUser=user;
+		actPass=pass;		
+	}
+	
 	public static HttpResponse sendRequest (HttpClient client, HttpUriRequest request){
 		HttpResponse response = null;
 		try {
-			Log.i(TAG, "Before send request");
+			Log.i(TAG, "Before send request"+request.getMethod()+"!");
 			response = client.execute(request);			
 			Log.i(TAG, "Successfully send request");
 			return response;
