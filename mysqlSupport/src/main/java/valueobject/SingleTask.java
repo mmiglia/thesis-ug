@@ -39,6 +39,12 @@ public class SingleTask extends Reminder implements Comparable<SingleTask>{
 	 */
 	public String notifyTimeEnd;
 	
+	
+	/**
+	 * The id of the group to add the task. If the task is not a group task then this value is set to ZERO
+	 */
+	public String groupId="0";
+	
 	private SingleTask(){
 		super();
 	}
@@ -61,12 +67,13 @@ public class SingleTask extends Reminder implements Comparable<SingleTask>{
 	 */
 	public SingleTask(String taskId,String title, String notifyTimeStart,
 			String notifyTimeEnd, String dueDate, String description,
-			int priority,String reminderId) {
+			int priority,String reminderId,String groupId) {
 		super(reminderId, title, priority, description, 2);
 		this.taskID=taskId;
 		this.dueDate = dueDate;
 		this.notifyTimeStart = notifyTimeStart;
 		this.notifyTimeEnd = notifyTimeEnd;
+		this.groupId=groupId;
 	}
 
 
@@ -80,7 +87,7 @@ public class SingleTask extends Reminder implements Comparable<SingleTask>{
 	 * @param description
 	 *            brief description of the task
 	 */
-	public SingleTask(String title, String dueDate, String description) {
+	public SingleTask(String title, String dueDate, String description,String groupId) {
 		super(UUID.randomUUID().toString(), title, 3, description, 2);
 		this.dueDate = dueDate;
 		Calendar now = Calendar.getInstance();
@@ -92,6 +99,8 @@ public class SingleTask extends Reminder implements Comparable<SingleTask>{
 		now.set(Calendar.MINUTE, 0);
 		now.set(Calendar.SECOND, 0);
 		this.notifyTimeEnd = Converter.CalendarTimetoString(now);
+		this.groupId=groupId;
+		
 	}	
 	
 	/**
