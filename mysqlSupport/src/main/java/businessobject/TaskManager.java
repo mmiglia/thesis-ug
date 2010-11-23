@@ -108,9 +108,9 @@ public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterf
 	 */
 	public boolean createTask(String userID, String title,
 			String notifyTimeStart, String notifyTimeEnd, String dueDate,
-			String description, int priority) {
+			String description, int priority,String groupId) {
 		SingleTask toAdd = TaskDatabase.instance.addTask(userID, title,notifyTimeStart, notifyTimeEnd, dueDate,
-				description, priority);
+				description, priority,groupId);
 		
 		for (TaskSubscriber o : subscriberlist) o.createTask(userID, toAdd);		
 		
@@ -123,12 +123,12 @@ public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterf
 	 * @param userID unique UUID of the user
 	 * @param toAdd SingleTask instance
 	 * @return true if task is successfully added to database, false otherwise
-	 * @deprecated
+	 * 
 	 */
 	public boolean createTask(String userID, SingleTask taskObj){
 		
 		SingleTask toAdd = TaskDatabase.instance.addTask(userID,taskObj.title,taskObj.notifyTimeStart, taskObj.notifyTimeEnd, taskObj.dueDate,
-				taskObj.description, taskObj.priority);
+				taskObj.description, taskObj.priority,taskObj.groupId);
 		
 		for (TaskSubscriber o : subscriberlist) o.createTask(userID, toAdd);
 		//TaskDatabase.instance.addTask(userID, toAdd);
