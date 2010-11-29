@@ -22,6 +22,7 @@ import com.thesisug.communication.xmlparser.HintHandler;
 import com.thesisug.notification.TaskNotification;
 import com.thesisug.ui.Map;
 
+
 public class ContextResource{
 	private static final String TAG = new String("ContextResource");
 	private static final String LOCATION_ALL = "/location/all";
