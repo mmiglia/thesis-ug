@@ -19,7 +19,9 @@ import dao.management.QueryStatus;
 
 public class MySQLDBManager implements IFDatabaseManagement {
 	private static final Logger log = LoggerFactory.getLogger(MySQLDBManager.class);
+
 	private static String dbConnectionString="jdbc:mysql://localhost:3306/mysql";
+	//private static String dbConnectionString="jdbc:mysql://zelda.openlab-dist.org:3306/mysql";
 	private static String user=Configuration.getInstance().constants.getProperty("Database_user");
 	private static String password=Configuration.getInstance().constants.getProperty("Database_password");
 	private static String databaseName= Configuration.getInstance().constants.getProperty("Database_name");
