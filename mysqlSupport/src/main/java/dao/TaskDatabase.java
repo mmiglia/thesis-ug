@@ -167,7 +167,7 @@ public enum TaskDatabase {
 	}
 	
 	/**
-	 * Delete the specific task from database
+	 * Delete the specific task from database and the releted Reminder
 	 * @param userID unique UUID of the user
 	 * @param taskID unique UUID of the task
 	 * @return false if deletion fails 
@@ -176,9 +176,40 @@ public enum TaskDatabase {
 		
 		Connection conn= (Connection) dbManager.dbConnect();
 		
-		String deleteQuery="delete from Task where id="+taskID;
-		QueryStatus qs=dbManager.customQuery(conn, deleteQuery);
+		//Get id of reminder 
+		String selectQuery="Select ReminderId from Task where id="+taskID;
 		
+		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
+		
+		ResultSet rs=(ResultSet)qs.customQueryOutput;
+		SingleTask task=null;
+		
+		String reminderID="";
+		try{
+			while(rs.next()){
+				reminderID=rs.getString("ReminderId");
+			}
+			
+		}catch(SQLException sqlE){
+			//TODO
+			return false;
+		}
+		
+		String deleteQuery="delete from Task where id="+taskID+";";
+		
+		
+		
+		//TODO verify if there are uncaugth exception here 
+		qs=dbManager.customQuery(conn, deleteQuery);
+		
+		log.info(deleteQuery);
+		
+		//TODO verify if there are uncaugth exception here		
+		deleteQuery=" delete from Reminder where id="+reminderID;
+		//TODO verify if there are uncaugth exception here
+		qs=dbManager.customQuery(conn, deleteQuery);
+		
+		log.info(deleteQuery);
     	try {
 			conn.close();
 		} catch (SQLException e) {
