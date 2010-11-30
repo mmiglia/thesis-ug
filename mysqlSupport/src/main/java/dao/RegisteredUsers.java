@@ -48,7 +48,7 @@ public enum RegisteredUsers {
 		
 	}
 	
-	private static boolean usernameExist(final String username){
+	public static boolean usernameExist(final String username){
 		
 		Connection conn= (Connection) dbManager.dbConnect();
 		
@@ -102,7 +102,7 @@ public enum RegisteredUsers {
 			try{
 				if(rs.next()){
 					dbManager.dbDisconnect(conn);
-					return Integer.toString(rs.getInt("id"));
+					return Integer.toString(rs.getInt("username"));
 				}
 			}catch(SQLException sqlE){
 				//TODO che fare qui?	
@@ -124,13 +124,15 @@ public enum RegisteredUsers {
 	 * Delete the user from database
 	 * @param ID UUID of the user
 	 */	
-	public static void deleteUsers(final String ID) {
+	public static boolean deleteUsers(final String ID) {
 		
 		Connection conn= (Connection) dbManager.dbConnect();
 		
 		String deleteQuery="Delete from User where username='"+ID+"'";
 		QueryStatus qs=dbManager.customQuery(conn, deleteQuery);
 		dbManager.dbDisconnect(conn);
+		
+		return true;
 		
 	}
 	
