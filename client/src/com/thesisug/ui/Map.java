@@ -11,6 +11,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
@@ -54,6 +56,7 @@ public class Map extends MapActivity implements LocationListener{
         Location gpslocation = lm.getLastKnownLocation(provider);
         GeoPoint currentLocation=null;
         if (gpslocation != null){
+        Log.d(TAG, "ContextResource.checkLocationAll: "+gpslocation.getLatitude()+"##"+gpslocation.getLongitude());
         downloadThread = ContextResource.checkLocationAll(
         		new Float(gpslocation.getLatitude()),
 				new Float(gpslocation.getLongitude()),
@@ -68,7 +71,7 @@ public class Map extends MapActivity implements LocationListener{
         // set up zoom and center of the map
         mapView.setBuiltInZoomControls(true);
         if (currentLocation != null) mc.animateTo(currentLocation);
-        mc.setZoom(17);
+        mc.setZoom(20);
     }
     
     @Override
@@ -79,8 +82,9 @@ public class Map extends MapActivity implements LocationListener{
     @Override
 	public void onLocationChanged(Location location) {
     	if (marker.size() > 0) marker.removeOverlay(0);
-    	GeoPoint current = new GeoPoint((int)Math.floor (location.getLatitude()*1e6), (int) Math.floor(location.getLongitude()*1e6)); 
-    	mc.animateTo(current);
+    	GeoPoint current = new GeoPoint((int)Math.floor (location.getLatitude()*1e6), (int) Math.floor(location.getLongitude()*1e6));
+    	Log.d(TAG,"Location changed to: " + location.getLatitude()+"#"+location.getLongitude());
+
     	marker.addOverlay(new OverlayItem(current, "", ""));
     	mapOverlays.add(marker);
     	ContextResource.checkLocationAll(new Float(location.getLatitude()),
