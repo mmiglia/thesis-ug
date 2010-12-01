@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.thesisug.R;
 import com.thesisug.communication.LoginResource;
+import com.thesisug.communication.NetworkUtilities;
 import com.thesisug.communication.valueobject.LoginReply;
 
 /**
@@ -45,22 +46,27 @@ public class Login extends AccountAuthenticatorActivity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
+    	Log.i(TAG,"Start onCreate");
         super.onCreate(savedInstanceState);
+        Log.i(TAG,"1");
         setContentView(R.layout.login);
+        Log.i(TAG,"2");
         accountManager = AccountManager.get(this);
         Log.i(TAG, "loading data from intent");
         final Intent intent = getIntent();
+        Log.i(TAG,"3");
         username = intent.getStringExtra(PARAM_USERNAME);
         authtokenType = intent.getStringExtra(PARAM_AUTHTOKEN_TYPE);
         usernameIsEmpty = username == null; // request new account if user name = null
         confirmCredentials = intent.getBooleanExtra(PARAM_CONFIRMCREDENTIALS, false);
-        
+        Log.i(TAG,"4");
         message = (TextView) findViewById(R.id.message);
         usernameBox = (EditText) findViewById(R.id.username);
         passwordBox = (EditText) findViewById(R.id.password);
-
+        Log.i(TAG,"5");
         usernameBox.setText(username);
         message.setText(getMessage());
+        Log.i(TAG,"6");
     }
     
     /**
@@ -86,15 +92,17 @@ public class Login extends AccountAuthenticatorActivity {
         if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
             message.setText(getMessage());
         } else {
-            showDialog(0); //will call onCreateDialog method            
+            showDialog(0); //will call onCreateDialog method     
+            Log.i(TAG,"Starting authenticationThread");
             authenticationThread = LoginResource.signIn(username, password, handler, Login.this);
+            Log.i(TAG,"authenticationThread returned");
         }
     }
     
     @Override
     protected Dialog onCreateDialog(int id) {
         final ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setMessage(getText(R.string.authenticating));
+        dialog.setMessage(getText(R.string.authenticating)+ NetworkUtilities.SERVER_URI);
         dialog.setIndeterminate(true);
         dialog.setCancelable(true);
         dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -114,6 +122,11 @@ public class Login extends AccountAuthenticatorActivity {
      */
     public void showResult(LoginReply result) {
         dismissDialog(0); //disable the progress dialog
+        if(result.status==404){
+        	 message.setText(getText(R.string.tryConnectionFail));
+        	 return;
+        }
+        
         if (result.status == 1) {
             if (!confirmCredentials) {
             	finishLogin(result);
@@ -181,5 +194,5 @@ public class Login extends AccountAuthenticatorActivity {
         setAccountAuthenticatorResult(intent.getExtras());
         setResult(RESULT_OK, intent);
         finish();
-    }
+    } 
 }

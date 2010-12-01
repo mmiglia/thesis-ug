@@ -24,7 +24,7 @@ import com.google.android.maps.OverlayItem;
 import com.thesisug.R;
 import com.thesisug.communication.ContextResource;
 import com.thesisug.notification.TaskNotification;
-
+ 
 public class EditGPS extends MapActivity implements LocationListener{
 	private static final String TAG = "EditGPS Activity";
 	private static final String LATITUDE = "latitude";
