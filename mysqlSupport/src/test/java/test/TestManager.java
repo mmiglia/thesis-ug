@@ -197,7 +197,9 @@ public class TestManager extends TestCase {
 			log.info("Event #"+count+": "+o.title);
 			count++;
 		}
-		assertNotNull(result);
+		if(result!=null){
+			assertTrue(result.size()>0);		
+		}
 	}
 	
 	@Test
@@ -213,7 +215,9 @@ public class TestManager extends TestCase {
 			log.info("Event #"+count+": "+o.title);
 			count++;
 		}
-		assertNotNull(result);
+		if(result!=null){
+			assertTrue(result.size()>0);
+		}
 	}
 	
 	@Test
