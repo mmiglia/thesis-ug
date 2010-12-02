@@ -68,8 +68,8 @@ public class TestManager extends TestCase {
 	
 	private Logger log = LoggerFactory.getLogger(TestManager.class);
 	
-	private String user="test-user";
-	private String passwd="test-passwd";
+	private String user="user";
+	private String passwd="dummy";
 	private String testName = "";
 	
 	private static final MySQLDBManager dbManager=new MySQLDBManager();
@@ -197,9 +197,7 @@ public class TestManager extends TestCase {
 			log.info("Event #"+count+": "+o.title);
 			count++;
 		}
-		if(result!=null){
-			assertTrue(result.size()>0);		
-		}
+		assertNotNull(result);
 	}
 	
 	@Test
@@ -209,15 +207,13 @@ public class TestManager extends TestCase {
 		EventManager manager = EventManager.getInstance();
 		manager.Authenticate(user, passwd);
 		List<SingleEvent> result = manager.retrieveEventToday(user);
-		log.info("Found "+ result.size() + " event for the user " + user);
+		log.info("Found "+ result.size() +" event for the user " + user);
 		int count = 1;
 		for (SingleEvent o : result) {
 			log.info("Event #"+count+": "+o.title);
 			count++;
 		}
-		if(result!=null){
-			assertTrue(result.size()>0);
-		}
+		assertNotNull(result);
 	}
 	
 	@Test
@@ -270,9 +266,7 @@ public class TestManager extends TestCase {
 			log.info("Task #"+count+": "+o.title);
 			count++;
 		}
-		if(result!=null){
-			assertTrue(result.size()>0);
-		}
+		assertNotNull(result);
 		
 	}
 	
@@ -288,10 +282,7 @@ public class TestManager extends TestCase {
 			log.info("Task #"+count+": "+o.title);
 			count++;
 		}
-		if(result!=null){
-			assertTrue(result.size()>0);
-		}
-		
+		assertNotNull(result);
 	}	
 
 }
