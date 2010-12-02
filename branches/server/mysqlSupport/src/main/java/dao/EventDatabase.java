@@ -313,9 +313,9 @@ public enum EventDatabase {
 		
 		Connection conn= (Connection) dbManager.dbConnect();
 		
-		String selectQuery="Select * from Event join Reminder on Event.ReminderId=Reminder.id where Event.User="+userID;
+		String selectQuery="Select * from Event join Reminder on Event.ReminderId=Reminder.id where Event.User='"+userID+"'";
 		
-		
+		log.debug(selectQuery);
 		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
 		
 		ResultSet rs=(ResultSet)qs.customQueryOutput;
@@ -366,7 +366,7 @@ public enum EventDatabase {
 
 		Connection conn= (Connection) dbManager.dbConnect();
 		
-		String selectQuery="Select * from Event join Reminder on Event.ReminderId=Reminder.id where Event.User="+userID+ " and startTime>'"+startPeriod+"' and endTime<'"+endPeriod+"';";
+		String selectQuery="Select * from Event join Reminder on Event.ReminderId=Reminder.id where Event.User='"+userID+ "' and startTime>'"+startPeriod+"' and endTime<'"+endPeriod+"';";
 		
 		
 		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
