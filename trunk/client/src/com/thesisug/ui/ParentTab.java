@@ -10,6 +10,7 @@ import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.TabHost;
 import android.widget.Toast;
 
@@ -17,6 +18,7 @@ import com.thesisug.R;
 import com.thesisug.notification.TaskNotification;
 
 public class ParentTab extends TabActivity {
+	public final static String TAG = "ParentTab";
 	AccountManager accountManager;
 	String username, session;
 	Account[] accounts;
@@ -52,4 +54,5 @@ public class ParentTab extends TabActivity {
 
         tabHost.setCurrentTab(0);
     }
+
 }
