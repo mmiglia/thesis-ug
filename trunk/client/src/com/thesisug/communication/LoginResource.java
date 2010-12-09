@@ -36,16 +36,26 @@ public class LoginResource{
        
         	LoginReply result = new LoginReply();
         	DefaultHttpClient newClient = NetworkUtilities.createClient();
+
         	// provide username and password in correct param
-            HttpGet request = new HttpGet(NetworkUtilities.SERVER_URI+"/"+username+BASE_LOGIN);
+        	String url=NetworkUtilities.SERVER_URI+"/"+username+BASE_LOGIN;
+        	Log.d(TAG,url);
+            HttpGet request = new HttpGet(url);
             request.addHeader("Cookie", "p="+password);
             // send the request to network
+            Log.d(TAG,"Start autenticate request");
             HttpResponse response = NetworkUtilities.sendRequest(newClient, request);
+            Log.d(TAG,"Autenticate request returned "+response);
             if (response == null) {
             	return result;
             }     
-
-
+            
+            //Try if server is on-line
+            if(response.getStatusLine().getStatusCode()==404){
+            	//Server unavailable, display it
+            	result.status=404;
+            	return result;
+            }
             
             try { // parsing XML message
 				result = LoginReplyHandler.parse(response.getEntity().getContent());
@@ -64,6 +74,9 @@ public class LoginResource{
 				return result;
 			}
 	}
+	
+	
+	
 	
 	/**
 	 * This method is used to logout the user.
