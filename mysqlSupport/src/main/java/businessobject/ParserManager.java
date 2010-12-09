@@ -28,7 +28,7 @@ public class ParserManager {
 	}
 	
 	private void initialize(){
-		log.info("initializing");
+		log.info("initializing ParserManager");
 		if (initialized) return;
 		mainparser = new Parser();
 		log.info(LANGUAGE_FILE);
