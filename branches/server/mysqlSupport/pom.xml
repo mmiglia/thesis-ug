@@ -3,8 +3,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ephemere</groupId>
 	<artifactId>ephemere</artifactId>
-	<version>0.0.1</version>
 	<packaging>war</packaging>
+	<version>0.0.12</version>
 	<repositories>
 		<repository>
 			<id>jboss</id>
@@ -126,4 +126,14 @@
 			</plugin>
 		</plugins>
 	</build>
+	
+	<distributionManagement>
+    <repository>
+      <id>eclipse_localhost</id>
+      <name>Eclipse su localhost</name>
+      <url>scp://localhosthome/jaxer/Scrivania/</url>
+    </repository>
+  </distributionManagement>
+	
+	
 </project>
