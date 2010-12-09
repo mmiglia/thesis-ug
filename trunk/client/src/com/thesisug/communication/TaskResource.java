@@ -175,8 +175,10 @@ public class TaskResource {
 		final Runnable runnable = new Runnable() {
 			public void run() {
 				List<SingleTask> result = runHttpGet(ALL_TASKS, null, context);
-				for (SingleTask o : result){
-					Log.i(TAG, "Task id retreived:"+o.groupId);
+				if(result!=null){
+					for (SingleTask o : result){
+						Log.i(TAG, "Task id retreived:"+o.groupId);
+					}
 				}
 				sendResult(result, handler, context);
 			}
@@ -189,8 +191,10 @@ public class TaskResource {
 		final Runnable runnable = new Runnable() {
 			public void run() {				
 				List<SingleTask> result = runHttpGet(FIRST_TASKS, null, context);
-				for (SingleTask o : result){
-					Log.i(TAG, "Task id retreived:"+o.groupId);
+				if(result!=null){
+					for (SingleTask o : result){
+						Log.i(TAG, "Task id retreived:"+o.groupId);
+					}
 				}
 				sendResult(result, handler, context);
 			}
