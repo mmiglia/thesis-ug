@@ -29,6 +29,7 @@ public class OntologyReasoner {
 	private final static Logger log = LoggerFactory
 			.getLogger(OntologyReasoner.class);
 	private final static String ONTOLOGY_FILE = Configuration.getInstance().constants.getProperty("DATABASE_FOLDER")+"/HintsOntology.owl";
+	//private final static String ONTOLOGY_FILE = Configuration.getInstance().constants.getProperty("DATABASE_FOLDER")+"/HintsOntologyIta.owl";
 	private final static OntologyReasoner instance = new OntologyReasoner();
 	private static OWLOntology ontology;
 	private static OWLOntologyManager manager;
@@ -57,10 +58,13 @@ public class OntologyReasoner {
 	* @return list of location that can satisfy the need
 	*/
 	public static List<String> getSearchQuery(String need) {		
+			log.info("getSearchQuery with need:"+need);
 			String base = ontology.getOntologyID().getOntologyIRI().toString();
 			OWLDataFactory dataFactory = manager.getOWLDataFactory();
+			log.info(IRI.create(base + "#" + need).toString());
 			OWLNamedIndividual item = dataFactory.getOWLNamedIndividual(IRI
 					.create(base + "#" + need));
+			log.info(IRI.create(base + "#canBeFoundIn").toString());
 			OWLObjectProperty location = dataFactory.getOWLObjectProperty(IRI
 					.create(base + "#canBeFoundIn"));
 
