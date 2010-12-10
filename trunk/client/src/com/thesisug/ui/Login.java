@@ -13,8 +13,12 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.thesisug.R;
 import com.thesisug.communication.LoginResource;
@@ -46,27 +50,59 @@ public class Login extends AccountAuthenticatorActivity {
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
-    	Log.i(TAG,"Start onCreate");
+    	
         super.onCreate(savedInstanceState);
-        Log.i(TAG,"1");
+        
         setContentView(R.layout.login);
-        Log.i(TAG,"2");
+        
         accountManager = AccountManager.get(this);
         Log.i(TAG, "loading data from intent");
         final Intent intent = getIntent();
-        Log.i(TAG,"3");
+        
         username = intent.getStringExtra(PARAM_USERNAME);
         authtokenType = intent.getStringExtra(PARAM_AUTHTOKEN_TYPE);
         usernameIsEmpty = username == null; // request new account if user name = null
         confirmCredentials = intent.getBooleanExtra(PARAM_CONFIRMCREDENTIALS, false);
-        Log.i(TAG,"4");
+        
         message = (TextView) findViewById(R.id.message);
         usernameBox = (EditText) findViewById(R.id.username);
         passwordBox = (EditText) findViewById(R.id.password);
-        Log.i(TAG,"5");
+        
         usernameBox.setText(username);
         message.setText(getMessage());
-        Log.i(TAG,"6");
+        
+        
+        Spinner spnServer = (Spinner) findViewById(R.id.SpinnerServerList);
+        
+        ArrayAdapter<CharSequence> mAdapter = ArrayAdapter.createFromResource(this, R.array.serverListValue,
+                android.R.layout.simple_dropdown_item_1line);
+
+
+        spnServer.setAdapter(mAdapter);
+        
+        spnServer.setOnItemSelectedListener(new myOnItemSelectedListener());
+        
+        spnServer.setSelection(0);
+        
+    }
+    
+    
+    
+    public class myOnItemSelectedListener implements OnItemSelectedListener {
+
+		@Override
+		public void onItemSelected(AdapterView<?> parent, View v, int pos,
+				long row) {
+			NetworkUtilities.changeServerURI(parent.getItemAtPosition(pos).toString());
+			
+		}
+
+		@Override
+		public void onNothingSelected(AdapterView<?> arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+    	
     }
     
     /**
