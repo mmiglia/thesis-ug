@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,12 +45,14 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private static final String TAG = "PreferenceActivity";
 	private Thread tryConnectionThread;
 	private final Handler handler = new Handler();
+	private String insertedURI="";
+	
+	private Button updateServerListBtn=null;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.layout.preference);
-		
 	}
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences arg0, String key) {
@@ -58,7 +61,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 			Log.i(TAG,"ServerURI change request!");
 			String oldURI=NetworkUtilities.SERVER_URI;
 			Log.i(TAG,"oldURI:"+oldURI);
-			String insertedURI=PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("serverURI","300");
+			insertedURI=PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("serverURI","300");
 			Log.i(TAG,"insertedURI:"+insertedURI);
 			
 			showDialog(0); //will call onCreateDialog method 
@@ -70,9 +73,10 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 
     protected Dialog onCreateDialog(int id) {
         final ProgressDialog dialog = new ProgressDialog(this);
-        String serverURI=PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("serverURI","300");
         
-	        dialog.setMessage("Try to connect to the server..."+serverURI);
+        Log.e(TAG,"insertedURI2:"+insertedURI);
+        
+	        dialog.setMessage("Try to connect to the server...");
 	        dialog.setIndeterminate(true);
 	        dialog.setCancelable(true);
 	        dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
@@ -99,10 +103,14 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		dismissDialog(0); //disable the progress dialog
 
 		
-		Log.i(TAG,"Received serverURI:"+result.serverURI+"!");
+		Log.i(TAG,"Received serverURI:"+result.serverURI);
 		if(result.status==1){
 			
-			NetworkUtilities.SERVER_URI="https://"+result.serverURI+":8443/"+Constants.PROGRAM_NAME;
+			//Use this for using https (change protocol and port)
+			//NetworkUtilities.SERVER_URI="http://"+result.serverURI+":"+Constants.DEFAULT_HTTPS_PORT+"/"+Constants.PROGRAM_NAME;
+
+			//Use this for using normal http (change protocol and port)
+			NetworkUtilities.SERVER_URI="http://"+result.serverURI+":"+Constants.DEFAULT_HTTP_PORT+"/"+Constants.PROGRAM_NAME;
 			
 			Log.i(TAG,"NetworkUtilities.SERVER_URI changed to: "+NetworkUtilities.SERVER_URI);
 			
