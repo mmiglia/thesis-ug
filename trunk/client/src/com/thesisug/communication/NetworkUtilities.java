@@ -91,4 +91,20 @@ public class NetworkUtilities {
         t.start();
         return t;
     }
+    
+    
+    public static boolean changeServerURI(String serverURI){
+    	
+    	//Use this for using https (change protocol and port)
+		//NetworkUtilities.SERVER_URI="http://"+result.serverURI+":"+Constants.DEFAULT_HTTPS_PORT+"/"+Constants.PROGRAM_NAME;
+
+		//Use this for using normal http (change protocol and port)
+		NetworkUtilities.SERVER_URI="http://"+serverURI+":"+Constants.DEFAULT_HTTP_PORT+"/"+Constants.PROGRAM_NAME;
+		
+		Log.i(TAG,"NetworkUtilities.SERVER_URI changed to: "+NetworkUtilities.SERVER_URI);
+		
+		return true;
+    	
+    }
+    
 }
