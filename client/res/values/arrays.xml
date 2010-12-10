@@ -28,4 +28,14 @@
 		<item>3600</item>
 		<item>0</item>
 	</string-array>
+	<string-array name="serverList">
+		<item>Padova</item>
+		<item>Unige</item>
+		<item>Localhost</item>
+	</string-array>
+	<string-array name="serverListValue">
+		<item>serverpd.dyndns.org</item>
+		<item>serverge.dyndns.org</item>
+		<item>10.0.2.2</item>
+	</string-array>
 </resources>
