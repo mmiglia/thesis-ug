@@ -91,4 +91,5 @@
 	<string name="tryConnectionFail">Cannot contact the specified server</string>
 	<string name="server_list_title">Change server</string>
 	<string name="changeServerSummary">Select a server from the list</string>
+	<string name="currentServer">Server</string>
 </resources>
