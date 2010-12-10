@@ -7,7 +7,9 @@
     	android:layout_width="wrap_content" 
     	android:layout_height="wrap_content"
     	android:layout_centerHorizontal="true"
-    	android:src="@drawable/fedoralogo"/>
+		android:layout_marginTop="5dip"
+        android:paddingBottom="25dip"
+    	android:src="@drawable/androidmarker"/>
 
 	<TextView    
         android:id="@+id/message"
@@ -17,14 +19,24 @@
         android:layout_centerHorizontal="true"
         android:paddingLeft="15dip"
         android:paddingRight="15dip"
-        android:paddingBottom="15dip"
+        android:paddingBottom="25dip"
         android:text="@string/username"/>
-        
+
+    <Spinner 
+        android:id="@+id/SpinnerServerList"
+        android:layout_width="fill_parent"
+        android:layout_height="55dip"
+        android:layout_marginLeft="15dip"
+        android:layout_below="@id/message"
+        android:prompt = "@string/currentServer">
+    </Spinner>
+
     <TextView    
         android:id="@+id/usernametext"
         android:layout_width="80dip"
         android:layout_height="wrap_content"
-        android:layout_below="@id/message"
+        android:layout_below="@+id/SpinnerServerList"
+        android:layout_marginTop="5dip"
         android:layout_marginLeft="15dip"
         android:text="@string/username"/>
     <EditText
@@ -67,3 +79,4 @@
         android:text="@string/sign_in_button" 
         android:onClick="signIn" />
 </RelativeLayout>
+    
