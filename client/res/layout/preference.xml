@@ -15,12 +15,18 @@
 			android:defaultValue="50000"
 			android:entries="@array/distance"
 			android:entryValues="@array/distanceValue" />
-		<EditTextPreference
+		<!-- <EditTextPreference
 			android:name="serverURI"
             android:summary="Change the server location"
 			android:defaultValue="DefaultLocation"
 			android:title="Edit server location"
 			android:key="serverURI" />
-
+		 -->
+		<ListPreference
+			android:title="@string/server_list_title"
+			android:summary="@string/changeServerSummary"
+			android:key="serverURI"
+			android:entries="@array/serverList"
+			android:entryValues="@array/serverListValue" />
 	</PreferenceCategory>
 </PreferenceScreen>
