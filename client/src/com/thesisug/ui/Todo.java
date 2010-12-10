@@ -63,26 +63,35 @@ public class Todo extends ListActivity {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		Log.d(TAG,"Todo_1");
 		super.onCreate(savedInstanceState);
+		Log.d(TAG,"Todo_2");
         accountManager = AccountManager.get(getApplicationContext());
+        Log.d(TAG,"Todo_3");
         accounts = accountManager.getAccountsByType(com.thesisug.Constants.ACCOUNT_TYPE);
+        Log.d(TAG,"Todo_4");
         am = (AlarmManager)getSystemService(ALARM_SERVICE);
         eventNotificationIntent = new Intent(Todo.this, EventNotification.class);
         alarmIntent = PendingIntent.getBroadcast(Todo.this,
                 0, eventNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         usersettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        Log.d(TAG,"Todo_5");
         if (accounts.length == 0) {
-        	Log.i(TAG, "accounts.length");
+        	Log.d(TAG,"Todo_6");
+        	Log.d(TAG, "accounts.length");
         	Intent login = new Intent(getApplicationContext(),Login.class);
         	startActivityForResult(login, 0);
+        	Log.d(TAG,"Todo_7");
         } else {
-        	Log.i(TAG, "jumlah ="+accounts.length);
+        	Log.d(TAG,"Todo_8");
+        	Log.d(TAG, "jumlah ="+accounts.length);
         	SeparatedListAdapter adapter = new SeparatedListAdapter(this);
         	setListAdapter(adapter);
         	showDialog(0);
         	username = accounts[0].name;
     		downloadEventThread = EventResource.getAllEvent(handler, this);
     		downloadTaskThread = TaskResource.getFirstTask(handler, this);
+    		Log.d(TAG,"Todo_9");
         }
 	}
 	
@@ -224,8 +233,11 @@ public class Todo extends ListActivity {
 		Log.i(TAG, "onActivityResult create new thread to download");
 	}
 	
+	
+	
 	public void afterTaskLoaded(List<SingleTask> data){
 		tasks = new LinkedList<LinkedHashMap<String,?>>();
+		Log.d(TAG,"afterTaskLoaded");
 		if (data == null)  tasks.add(createItem (new SingleTask(getText(R.string.error_connect_task).toString(), "", "", "", ""), false));
 		else if (data.isEmpty()) tasks.add(createItem (new SingleTask(getText(R.string.no_task_today).toString(), "", "", "", ""), false));
 		else {
