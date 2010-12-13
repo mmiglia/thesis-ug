@@ -35,6 +35,7 @@ public class Login extends AccountAuthenticatorActivity {
     public static final String PARAM_PASSWORD = "password";
     public static final String PARAM_USERNAME = "username";
     public static final String PARAM_AUTHTOKEN_TYPE = "authtokenType";
+    private static final int DEFAULT_SERVER_POS_IN_LIST=0;
 	private AccountManager accountManager;
 	private String username;
 	private String password;
@@ -82,7 +83,9 @@ public class Login extends AccountAuthenticatorActivity {
         
         spnServer.setOnItemSelectedListener(new myOnItemSelectedListener());
         
-        spnServer.setSelection(0);
+        spnServer.setSelection(DEFAULT_SERVER_POS_IN_LIST);
+        
+        NetworkUtilities.changeServerURI(spnServer.getItemAtPosition(DEFAULT_SERVER_POS_IN_LIST).toString());
         
     }
     
