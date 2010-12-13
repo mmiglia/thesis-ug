@@ -66,6 +66,7 @@ public class Todo extends ListActivity {
 		Log.d(TAG,"Todo_1");
 		super.onCreate(savedInstanceState);
 		Log.d(TAG,"Todo_2");
+		
         accountManager = AccountManager.get(getApplicationContext());
         Log.d(TAG,"Todo_3");
         accounts = accountManager.getAccountsByType(com.thesisug.Constants.ACCOUNT_TYPE);
@@ -150,6 +151,7 @@ public class Todo extends ListActivity {
 			intent = new Intent(Todo.this, Input.class);
 			startActivityForResult(intent, 0);
 			break;
+
 		default:
 			finish();
 			break;
