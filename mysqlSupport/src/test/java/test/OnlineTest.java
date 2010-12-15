@@ -132,7 +132,7 @@ public class OnlineTest extends TestCase {
 							ServerURL);
 					//This task is not a group task
 					SingleTask haha = new SingleTask("buy cigarette",
-							"2010-08-10T17:00:00-08:00", "in supermarket","5");
+							"2010-08-10T17:00:00-08:00", "in supermarket","5","");
 					client.createTask(username, "cookie", haha);
 				};
 			};
@@ -164,7 +164,7 @@ public class OnlineTest extends TestCase {
 					log.info("Get All Event results :");
 					for (SingleEvent o : result) {
 						log.info(o.title + " " + o.description + " "
-								+ o.startTime+" "+o.ID);
+								+ o.startTime+" "+o.eventID);
 					}
 				};
 			};
@@ -195,7 +195,7 @@ public class OnlineTest extends TestCase {
 					log.info("Get All Task results :");
 					for (SingleTask o : result) {
 						log.info(o.title + " " + o.description + " "
-								+ o.dueDate+" "+o.ID);
+								+ o.dueDate+" "+o.taskID);
 					}
 				};
 			};
@@ -229,7 +229,7 @@ public class OnlineTest extends TestCase {
 							"2010-01-03T08:00:00-08:00",
 							"2010-05-22T09:00:00-08:00", "some place",
 							"niente");
-					newEvent.ID = "df53a6ed-d913-400e-908a-3035f3007a53";
+					newEvent.eventID = "df53a6ed-d913-400e-908a-3035f3007a53";
 					client.updateEvent(username, "cookie", newEvent);
 
 				};
