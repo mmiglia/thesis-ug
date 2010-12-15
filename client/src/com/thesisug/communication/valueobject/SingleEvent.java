@@ -7,6 +7,12 @@ import java.util.UUID;
  * to clients
 */
 public class SingleEvent extends Reminder {
+	
+	/**
+	 * The id of the task into the database
+	 */
+	public String eventID;
+	
 	/**
 	 * start time of event execution (xs:dateTime format) <code>2006-04-17T15:00:00-08:00</code>
 	 * */
@@ -31,13 +37,52 @@ public class SingleEvent extends Reminder {
 	 * @param location where this event is held
 	 * @param description brief descriptions regarding the event
 	 */
-	public SingleEvent(String title, String startTime,
-			String endTime, String location, String description) {
-		super(UUID.randomUUID().toString(), title, 3, description, 1); // default priority is 3;
+	public SingleEvent(String eventID,String title, String startTime,
+			String endTime, String location, String description, String reminderId) {
+		super(reminderId, title, 3, description, 1); // default priority is 3;
+		this.eventID=eventID;
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.location = location;
 	}
+
+	/**
+	 * Constructor for this class by also specifying priority
+	 * @param title the main title for the event
+	 * @param startTime start time of event execution
+	 * @param endTime end time of event execution
+	 * @param location where this event is held
+	 * @param description brief descriptions regarding the event
+	 * @param priority priority of the event
+	 */
+	public SingleEvent(String eventID,String title, String startTime,
+			String endTime, String location, String description,String reminderId, int priority) {
+		super(reminderId, title, priority, description, 1);
+		this.eventID=eventID;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.location = location;
+		this.priority = priority;
+	}	
+	
+	/**
+	 * Constructor for this class 
+	 * @param title the main title for the event
+	 * @param startTime start time of event execution
+	 * @param endTime end time of event execution
+	 * @param location where this event is held
+	 * @param description brief descriptions regarding the event
+	 * @param priority priority of the event
+	 */
+	public SingleEvent(String title, String startTime,
+			String endTime, String location, String description,String reminderId) {
+		super(reminderId, title, 3, description, 1);
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.location = location;
+		
+	}	
+	
 	
 	/**
 	 * Constructor for this class by also specifying priority
@@ -49,8 +94,8 @@ public class SingleEvent extends Reminder {
 	 * @param priority priority of the event
 	 */
 	public SingleEvent(String title, String startTime,
-			String endTime, String location, String description, int priority) {
-		super(UUID.randomUUID().toString(), title, priority, description, 1);
+			String endTime, String location, String description,String reminderId, int priority) {
+		super(reminderId, title, priority, description, 1);
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.location = location;
@@ -63,7 +108,8 @@ public class SingleEvent extends Reminder {
 	
 	public SingleEvent copy(){
 		SingleEvent newcopy = new SingleEvent();
-		newcopy.ID = ID;
+		newcopy.eventID=eventID;
+		newcopy.reminderID = reminderID;
 		newcopy.priority = priority;
 		newcopy.description = description;
 		newcopy.title = title;

@@ -81,8 +81,8 @@ public class SingleTask extends Reminder {
 	 *            brief description of the task
 	 */
 	public SingleTask(String title, String notifyTimeStart,
-			String notifyTimeEnd, String dueDate, String description) {
-		super(UUID.randomUUID().toString(), title, 3, description, 2);
+			String notifyTimeEnd, String dueDate, String description,String reminderId) {
+		super(reminderId, title, 3, description, 2);
 		this.dueDate = dueDate;
 		this.notifyTimeStart = notifyTimeStart;
 		this.notifyTimeEnd = notifyTimeEnd;
@@ -98,8 +98,8 @@ public class SingleTask extends Reminder {
 	 * @param description
 	 *            brief description of the task
 	 */
-	public SingleTask(String title, String dueDate, String description) {
-		super(UUID.randomUUID().toString(), title, 3, description, 2);
+	public SingleTask(String title, String dueDate, String description,String reminderId) {
+		super(reminderId, title, 3, description, 2);
 		Date now = new Date();
 		SimpleDateFormat timezone = new SimpleDateFormat("Z");
 		this.dueDate = dueDate;
@@ -109,7 +109,7 @@ public class SingleTask extends Reminder {
 	
 	public SingleTask copy(){
 		SingleTask newcopy = new SingleTask();
-		newcopy.ID = ID;
+		newcopy.reminderID = reminderID;
 		newcopy.priority = priority;
 		newcopy.description = description;
 		newcopy.title = title;
