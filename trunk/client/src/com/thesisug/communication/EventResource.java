@@ -57,8 +57,12 @@ public class EventResource {
 			return null; // return null if there's a problem with connection
 		}
 		try { // parsing XML message
-			result = SingleEventHandler
-					.parse(response.getEntity().getContent());
+			Log.d(TAG,"Starting parse");
+			
+			result = SingleEventHandler.parse(response.getEntity().getContent());
+			
+			Log.d(TAG,"Parse finish, " + result.size() +" event parsed");
+			
 			return result;
 		} catch (IllegalStateException e) {
 			Log.i(TAG, "Illegal State");
@@ -124,7 +128,9 @@ public class EventResource {
 			final Context context) {
 		final Runnable runnable = new Runnable() {
 			public void run() {
+				Log.i(TAG,"Request to update event with id="+newEvent.eventID);
 				String body = SingleEventHandler.format(newEvent);
+				Log.i(TAG,"End formatting");
 				final boolean result = runHttpPost(UPDATE_EVENT, null, body, context);
 				if (handler == null || context == null) {
 					return;
@@ -175,6 +181,11 @@ public class EventResource {
 		final Runnable runnable = new Runnable() {
 			public void run() {
 				List<SingleEvent> result = runHttpGet(ALL_EVENTS, null, context);
+				
+				for(SingleEvent e : result){
+					Log.d(TAG,"2_Event id:"+e.eventID);				
+				}
+				
 				sendResult(result, handler, context);
 			}
 		};
@@ -187,6 +198,9 @@ public class EventResource {
 			public void run() {
 				List<SingleEvent> result = runHttpGet(TODAY_EVENTS, null, context);
 				sendResult(result, handler, context);
+				for(SingleEvent e : result){
+					Log.d(TAG,"3_Event id:"+e.eventID);				
+				}
 			}
 		};
 		// start authenticating
@@ -201,6 +215,9 @@ public class EventResource {
 				params.add(new BasicNameValuePair("s", DateFrom));
 				params.add(new BasicNameValuePair("e", DateTo));
 				List<SingleEvent> result = runHttpGet(BETWEEN_EVENTS, params, context);
+				for(SingleEvent e : result){
+					Log.d(TAG,"4_Event id:"+e.eventID);				
+				}
 				sendResult(result, handler, context);
 			}
 		};
