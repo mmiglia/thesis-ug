@@ -102,7 +102,9 @@ public class EditEvent extends Activity {
 				case EDIT_EVENT:
 					showDialog(SAVE_DATA_ID);
 					ev = new SingleEvent();
-					ev.ID = packet.getString("id");
+					ev.eventID = packet.getString("eventID");
+					Log.d(TAG,"packet.getString(reminderID)"+packet.getString("reminderID"));
+					ev.reminderID=packet.getString("reminderID");
 					ev.title = title.getText().toString();
 					ev.location = location.getText().toString();
 					ev.startTime = new XsDateTimeFormat().format(from);
@@ -116,12 +118,15 @@ public class EditEvent extends Activity {
 					break;
 				case CREATE_EVENT:
 					showDialog(CREATE_DATA_ID);
-					ev = new SingleEvent(title.getText().toString(),
+					ev = new SingleEvent("-1",
+							title.getText().toString(),
 							new XsDateTimeFormat().format(from),
-							new XsDateTimeFormat().format(to), location
-									.getText().toString(), description
-									.getText().toString(), Math.round(priority
-									.getRating()));
+							new XsDateTimeFormat().format(to), 
+							location.getText().toString(),
+							description.getText().toString(),
+							"0", 
+							Math.round(priority.getRating())
+							);
 					ev.gpscoordinate.longitude = longitude;
 					ev.gpscoordinate.latitude = latitude;
 					Thread creationThread = EventResource.createEvent(ev,

@@ -95,7 +95,8 @@ public class ShowTask extends Activity{
 			Intent intent = new Intent(ShowTask.this, EditTask.class);
 			intent.putExtra("username", packet.getString("username"));
 			intent.putExtra("session", packet.getString("session"));
-			intent.putExtra("id", packet.getString("id"));
+			intent.putExtra("taskID", packet.getString("taskID"));
+			intent.putExtra("reminderID", packet.getString("reminderID"));
 			intent.putExtra("title", title.getText().toString());
 			intent.putExtra("deadline", new XsDateTimeFormat().format(deadlinecal));
 			intent.putExtra("notifystart", new XsDateTimeFormat(false,true).format(nstart));
@@ -150,7 +151,7 @@ public class ShowTask extends Activity{
             .setTitle(R.string.ask_for_deletion_task)
             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                	Thread deleteThread = TaskResource.removeTask(packet.getString("id"), handler, ShowTask.this);
+                	Thread deleteThread = TaskResource.removeTask(packet.getString("taskId"), handler, ShowTask.this);
                 	showDialog(WAIT_DELETION);
                 }
             })

@@ -29,9 +29,11 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.SimpleAdapter.ViewBinder;
+import android.widget.Toast;
 
 import com.thesisug.R;
 import com.thesisug.communication.EventResource;
+import com.thesisug.communication.LoginResource;
 import com.thesisug.communication.TaskResource;
 import com.thesisug.communication.valueobject.Reminder;
 import com.thesisug.communication.valueobject.SingleEvent;
@@ -47,6 +49,7 @@ public class Todo extends ListActivity {
 	public final static int CREATE_TASK = 2;
 	public final static int VOICE_INPUT = 3;
 	public final static int BACK = 4;
+	public final static int UPDATE_TASK_EVENT = 5;
 	
 	private Thread downloadEventThread, downloadTaskThread;
 	private static int counter = 0; // counter for task and event thread completion
@@ -63,20 +66,18 @@ public class Todo extends ListActivity {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		Log.d(TAG,"Todo_1");
 		super.onCreate(savedInstanceState);
-		Log.d(TAG,"Todo_2");
 		
         accountManager = AccountManager.get(getApplicationContext());
         Log.d(TAG,"Todo_3");
         accounts = accountManager.getAccountsByType(com.thesisug.Constants.ACCOUNT_TYPE);
-        Log.d(TAG,"Todo_4");
+
         am = (AlarmManager)getSystemService(ALARM_SERVICE);
         eventNotificationIntent = new Intent(Todo.this, EventNotification.class);
         alarmIntent = PendingIntent.getBroadcast(Todo.this,
                 0, eventNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         usersettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        Log.d(TAG,"Todo_5");
+
         if (accounts.length == 0) {
         	Log.d(TAG,"Todo_6");
         	Log.d(TAG, "accounts.length");
@@ -125,6 +126,7 @@ public class Todo extends ListActivity {
 		menu.add(0,CREATE_EVENT,0,"Create Event").setIcon(R.drawable.event);
 		menu.add(0,CREATE_TASK,0,"Create Task").setIcon(R.drawable.task);
 		menu.add(0,VOICE_INPUT,0,"Voice Input").setIcon(R.drawable.voice);
+		menu.add(0,UPDATE_TASK_EVENT,0,"Synchronize").setIcon(R.drawable.person);
 		menu.add(0,BACK,0,"EXIT").setIcon(R.drawable.exit);
 		return true;
 	}
@@ -151,7 +153,13 @@ public class Todo extends ListActivity {
 			intent = new Intent(Todo.this, Input.class);
 			startActivityForResult(intent, 0);
 			break;
-
+			
+		case UPDATE_TASK_EVENT:
+        	showDialog(0);
+    		downloadEventThread = EventResource.getAllEvent(handler, this);
+    		downloadTaskThread = TaskResource.getFirstTask(handler, this);
+			break;			
+			
 		default:
 			finish();
 			break;
@@ -168,6 +176,8 @@ public class Todo extends ListActivity {
 			// return if there are no event today
 			if (ev.title == getText(R.string.no_event_today).toString()) return;
 			intent = new Intent(Todo.this, ShowEvent.class);
+			intent.putExtra("eventID", ev.eventID);
+			intent.putExtra("reminderID", ev.reminderID);
 			intent.putExtra("username", username);
 			intent.putExtra("session", session);
 			intent.putExtra("title", ev.title);
@@ -176,7 +186,7 @@ public class Todo extends ListActivity {
 			intent.putExtra("endTime", ev.endTime);
 			intent.putExtra("priority", ev.priority);
 			intent.putExtra("description", ev.description);
-			intent.putExtra("id", ev.ID);
+			intent.putExtra("eventID", ev.eventID);
 			intent.putExtra("longitude", ev.gpscoordinate.longitude);
 			intent.putExtra("latitude", ev.gpscoordinate.latitude);
 		}
@@ -184,6 +194,8 @@ public class Todo extends ListActivity {
 			SingleTask task = (SingleTask) item.get(ITEM_DATA);
 			if (task.title == getText(R.string.no_task_today).toString()) return;
 			intent = new Intent(Todo.this, ShowTask.class);
+			intent.putExtra("taskID", task.taskID);
+			intent.putExtra("reminderID", task.reminderID);
 			intent.putExtra("username", username);
 			intent.putExtra("session", session);
 			intent.putExtra("title", task.title);
@@ -192,9 +204,10 @@ public class Todo extends ListActivity {
 			intent.putExtra("notifystart", task.notifyTimeStart);
 			intent.putExtra("notifyend", task.notifyTimeEnd);
 			intent.putExtra("description", task.description);
-			intent.putExtra("id", task.ID);
+			intent.putExtra("eventID", task.taskID);
 			intent.putExtra("longitude", task.gpscoordinate.longitude);
 			intent.putExtra("latitude", task.gpscoordinate.latitude);
+			intent.putExtra("groupID",task.groupId);
 		}
         startActivityForResult(intent, 0);
 	}
@@ -240,8 +253,8 @@ public class Todo extends ListActivity {
 	public void afterTaskLoaded(List<SingleTask> data){
 		tasks = new LinkedList<LinkedHashMap<String,?>>();
 		Log.d(TAG,"afterTaskLoaded");
-		if (data == null)  tasks.add(createItem (new SingleTask(getText(R.string.error_connect_task).toString(), "", "", "", ""), false));
-		else if (data.isEmpty()) tasks.add(createItem (new SingleTask(getText(R.string.no_task_today).toString(), "", "", "", ""), false));
+		if (data == null)  tasks.add(createItem (new SingleTask(getText(R.string.error_connect_task).toString(), "", "", "", "", ""), false));
+		else if (data.isEmpty()) tasks.add(createItem (new SingleTask(getText(R.string.no_task_today).toString(), "", "", "", "", ""), false));
 		else {
 			for (SingleTask o : data){
 				Log.i(TAG, "Task id2:"+o.groupId);
@@ -252,13 +265,16 @@ public class Todo extends ListActivity {
 	}
 	
 	public void afterEventLoaded(List<SingleEvent> data){
+		Log.d(TAG,"afterEventLoaded");
 		event = new LinkedList<LinkedHashMap<String,?>>();
-		if (data == null)  event.add(createItem (new SingleEvent(getText(R.string.error_connect_event).toString(), "", "", "", ""), false));
-		else if (data.isEmpty()) event.add(createItem (new SingleEvent(getText(R.string.no_event_today).toString(), "", "", "", ""), false));
+		if (data == null)  event.add(createItem (new SingleEvent("-1",getText(R.string.error_connect_event).toString(), "", "", "", "", ""), false));
+		else if (data.isEmpty()) event.add(createItem (new SingleEvent("-1",getText(R.string.no_event_today).toString(), "", "", "", "", ""), false));
 		else {
+			Log.d(TAG,"We got "+data.size()+" event!");
 			Calendar cal;
 			int counter = 0;
             for (SingleEvent o : data){
+            	Log.d(TAG,"Event id in afterEventLoaded: "+o.eventID);
 				// add to the listview
 				event.add(createItem(o, usersettings.getBoolean(o.title, true)));
 				try {
@@ -271,7 +287,9 @@ public class Todo extends ListActivity {
 					eventNotificationIntent.putExtra("endTime", o.endTime);
 					eventNotificationIntent.putExtra("priority", o.priority);
 					eventNotificationIntent.putExtra("description", o.description);
-					eventNotificationIntent.putExtra("id", o.ID);
+					Log.d(TAG,"eventNotificationIntent.putExtra(eventID="+o.eventID);
+					eventNotificationIntent.putExtra("eventID", o.eventID);
+					eventNotificationIntent.putExtra("reminderID", o.reminderID);
 					eventNotificationIntent.putExtra("longitude", o.gpscoordinate.longitude);
 					eventNotificationIntent.putExtra("latitude", o.gpscoordinate.latitude);
 					alarmIntent = PendingIntent.getBroadcast(Todo.this,
@@ -350,7 +368,7 @@ public class Todo extends ListActivity {
 				TextView temp = (TextView) view;
 				Log.i(TAG, "TaskBinder "+temp.getId());
 				temp.setText(task.title);
-				Log.i(TAG,"Task id:"+task.groupId);
+				Log.i(TAG,"Task groupId:"+task.groupId);
 				if(!task.groupId.equals("0")){
 					//Group task-> different background color
 					temp.setBackgroundColor(Color.rgb( 136, 242, 137));
