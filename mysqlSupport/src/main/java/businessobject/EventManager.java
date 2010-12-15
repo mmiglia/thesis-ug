@@ -157,7 +157,7 @@ public class EventManager extends Publisher<EventSubscriber> implements EventInt
 	 */
 	public boolean updateEvent(String userid, SingleEvent newEvent) {		
 		for (EventSubscriber o : subscriberlist) o.updateEvent(userid, newEvent);
-		EventDatabase.instance.updateEvent(newEvent.ID, newEvent);
+		EventDatabase.instance.updateEvent(newEvent.eventID, newEvent);
 		return true;
 	}
 	

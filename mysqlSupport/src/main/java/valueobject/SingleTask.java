@@ -87,8 +87,8 @@ public class SingleTask extends Reminder implements Comparable<SingleTask>{
 	 * @param description
 	 *            brief description of the task
 	 */
-	public SingleTask(String title, String dueDate, String description,String groupId) {
-		super(UUID.randomUUID().toString(), title, 3, description, 2);
+	public SingleTask(String title, String dueDate, String description,String groupId,String reminderId) {
+		super(reminderId, title, 3, description, 2);
 		this.dueDate = dueDate;
 		Calendar now = Calendar.getInstance();
 		now.set(Calendar.HOUR_OF_DAY, 6);
