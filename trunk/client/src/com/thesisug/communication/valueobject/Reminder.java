@@ -8,7 +8,7 @@ public abstract class Reminder {
 	 * unique ID of the task. It is implemented as an automatically generated
 	 * UUID, which will be converted to a string.
 	 */
-	public String ID;
+	public String reminderID;
 	/**
 	 * task priority. Priority is between 1 to 5 , with 3 being the default priority.
 	 */
@@ -44,7 +44,7 @@ public abstract class Reminder {
 	public Reminder(String ID, String title, int priority, String description,
 			int type) {
 		gpscoordinate = new GPSLocation();
-		this.ID = ID;
+		this.reminderID = ID;
 		this.title = title;
 		this.priority = priority;
 		this.description = description;
@@ -80,11 +80,11 @@ public abstract class Reminder {
 	
 	@Override
 	public boolean equals(Object other) {
-		return (this.ID == ((Reminder) other).ID);
+		return (this.reminderID == ((Reminder) other).reminderID);
 	}
 
 	@Override
 	public int hashCode() {
-		return ID.hashCode();
+		return reminderID.hashCode();
 	}
 }
