@@ -28,7 +28,9 @@ import org.slf4j.LoggerFactory;
 public class OntologyReasoner {
 	private final static Logger log = LoggerFactory
 			.getLogger(OntologyReasoner.class);
+	
 	private final static String ONTOLOGY_FILE = Configuration.getInstance().constants.getProperty("DATABASE_FOLDER")+"HintsOntology.owl";
+	
 	//private final static String ONTOLOGY_FILE = Configuration.getInstance().constants.getProperty("DATABASE_FOLDER")+"/HintsOntologyIta.owl";
 	private final static OntologyReasoner instance = new OntologyReasoner();
 	private static OWLOntology ontology;
@@ -38,8 +40,10 @@ public class OntologyReasoner {
 		manager = OWLManager.createOWLOntologyManager();
 		// load the ontology file
 		try {
-			ontology = manager.loadOntologyFromOntologyDocument(new File(
-					ONTOLOGY_FILE));
+			log.debug("File name:"+ONTOLOGY_FILE);
+			File ontologyFile=new File(ONTOLOGY_FILE);
+			log.debug("File: "+ontologyFile.getPath()+" exist:"+ontologyFile.exists());
+			ontology = manager.loadOntologyFromOntologyDocument(ontologyFile);
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
