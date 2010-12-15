@@ -131,6 +131,7 @@ private static final String TAG = "Hint Handler";
         });
         Log.i(TAG, "parsing Hints XML message");
         Xml.parse(toParse, Xml.Encoding.UTF_8, root.getContentHandler());
+        Log.i(TAG, "parsing Hints XML message COMPLETE, " +combine.size()+" element found");
         return combine;
     }
 }

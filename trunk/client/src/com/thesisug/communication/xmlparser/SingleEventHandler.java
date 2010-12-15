@@ -31,9 +31,15 @@ private static final String TAG = "Single Event Handler";
                 combine.add(current.copy());
             }
         });
-		singleEvent.getChild("ID").setEndTextElementListener(new EndTextElementListener(){
+		singleEvent.getChild("eventID").setEndTextElementListener(new EndTextElementListener(){
             public void end(String body) {
-            	current.ID = body;
+            	Log.d(TAG,"Event id is"+body);
+            	current.eventID = body;
+            }
+        });
+		singleEvent.getChild("reminderID").setEndTextElementListener(new EndTextElementListener(){
+            public void end(String body) {
+            	current.reminderID = body;
             }
         });
 		singleEvent.getChild("priority").setEndTextElementListener(new EndTextElementListener(){
@@ -83,6 +89,9 @@ private static final String TAG = "Single Event Handler";
         });
         Log.i(TAG, "parsing Single Event XML message");
         Xml.parse(toParse, Xml.Encoding.UTF_8, root.getContentHandler());
+        
+        
+        Log.i(TAG, "Before Return");
         return combine;
     }
     
@@ -93,43 +102,47 @@ private static final String TAG = "Single Event Handler";
             serializer.setOutput(writer);
             serializer.startDocument("UTF-8", true);
             serializer.startTag("", "singleEvent");
-            
-            serializer.startTag("", "ID");
-            serializer.text(ev.ID);
-            serializer.endTag("", "ID");
-            
+            Log.d(TAG,"1");
+            serializer.startTag("", "eventID");
+            serializer.text(ev.eventID);
+            serializer.endTag("", "eventID");
+            Log.d(TAG,"2");
+            serializer.startTag("", "reminderID");
+            serializer.text(ev.reminderID);
+            serializer.endTag("", "reminderID");  
+            Log.d(TAG,"3");
             serializer.startTag("", "location");
             serializer.text(ev.location);
             serializer.endTag("", "location");
-            
+            Log.d(TAG,"4");
             serializer.startTag("", "priority");
             serializer.text(Integer.toString(ev.priority));
             serializer.endTag("", "priority");
-            
+            Log.d(TAG,"5");
             serializer.startTag("", "description");
             serializer.text(ev.description);
             serializer.endTag("", "description");
-            
+            Log.d(TAG,"6");
             serializer.startTag("", "title");
             serializer.text(ev.title);
             serializer.endTag("", "title");
-            
+            Log.d(TAG,"7");
             serializer.startTag("", "type");
             serializer.text(Integer.toString(ev.type));
             serializer.endTag("", "type");
-            
+            Log.d(TAG,"8");
             serializer.startTag("", "startTime");
             serializer.text(ev.startTime);
             serializer.endTag("", "startTime");
-            
+            Log.d(TAG,"9");
             serializer.startTag("", "endTime");
             serializer.text(ev.endTime);
             serializer.endTag("", "endTime");
-            
+            Log.d(TAG,"10");
             serializer.startTag("", "description");
             serializer.text(ev.description);
             serializer.endTag("", "description");
-            
+            Log.d(TAG,"11");
             serializer.startTag("", "gpscoordinate");
             serializer.startTag("", "latitude");
             serializer.text(Float.toString(ev.gpscoordinate.latitude));
@@ -138,9 +151,10 @@ private static final String TAG = "Single Event Handler";
             serializer.text(Float.toString(ev.gpscoordinate.longitude));
             serializer.endTag("", "longitude");
             serializer.endTag("", "gpscoordinate");
-            
+            Log.d(TAG,"12");
             serializer.endTag("", "singleEvent");
             serializer.endDocument();
+            Log.d(TAG,"13");
             return writer.toString();
         } catch (Exception e) {
             throw new RuntimeException(e);

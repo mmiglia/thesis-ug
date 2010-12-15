@@ -92,7 +92,8 @@ public class ShowEvent extends Activity{
 			Intent intent = new Intent(ShowEvent.this, EditEvent.class);
 			intent.putExtra("username", packet.getString("username"));
 			intent.putExtra("session", packet.getString("session"));
-			intent.putExtra("id", packet.getString("id"));
+			intent.putExtra("eventID", packet.getString("eventID"));
+			intent.putExtra("reminderID", packet.getString("reminderID"));
 			intent.putExtra("title", title.getText().toString());
 			intent.putExtra("location", location.getText().toString());
 			intent.putExtra("startTime", new XsDateTimeFormat().format(from));
@@ -146,7 +147,7 @@ public class ShowEvent extends Activity{
             .setTitle(R.string.ask_for_deletion_event)
             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                	Thread deleteThread = EventResource.removeEvent(packet.getString("id"), handler, ShowEvent.this);
+                	Thread deleteThread = EventResource.removeEvent(packet.getString("eventID"), handler, ShowEvent.this);
                 	showDialog(WAIT_DELETION);
                 }
             })

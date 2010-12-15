@@ -26,7 +26,7 @@ public class EventNotification extends BroadcastReceiver
     	Intent notificationIntent = new Intent(context, ShowEvent.class);
     	notificationIntent.putExtras(intent.getExtras());
     	notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
-    	PendingIntent contentIntent = PendingIntent.getActivity(context, notificationIntent.getStringExtra("id").hashCode(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    	PendingIntent contentIntent = PendingIntent.getActivity(context, notificationIntent.getStringExtra("eventID").hashCode(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
     	RemoteViews contentView = new RemoteViews(context.getPackageName(), R.layout.notification);
     	contentView.setTextViewText(R.id.notification_title, message);
     	contentView.setTextViewText(R.id.notification_content, context.getText(R.string.click_details));

@@ -106,7 +106,8 @@ public class EditTask extends Activity {
 				case EDIT_TASK:
 					showDialog(SAVE_DATA_ID);
 					task = new SingleTask();
-					task.ID = packet.getString("id");
+					task.taskID = packet.getString("taskID");
+					task.reminderID=packet.getString("reminderID");
 					task.title = title.getText().toString();
 					task.dueDate = new XsDateTimeFormat().format(deadline);
 					task.notifyTimeStart = new XsDateTimeFormat(false,true).format(notifyStart);
@@ -187,6 +188,7 @@ public class EditTask extends Activity {
     
 	private void updateText(Bundle packet) {
 		title.setText((packet.getString("title")==null)?"":packet.getString("title"));
+		groupId.setText((packet.getString("groupId")==null)?"":packet.getString("groupId"));
 		description.setText((packet.getString("description")==null)?"":packet.getString("description"));
 		priority.setRating((packet.getInt("priority")==0)?3:packet.getInt("priority"));
 		if (packet.getString("deadline")!=null) extractDate(packet.getString("deadline"), DEADLINE_DATE_ID);
