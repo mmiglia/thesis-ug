@@ -43,7 +43,7 @@ public class AddTask implements Verb{
 			Calendar startTime = Calendar.getInstance();
 			startTime.setTimeInMillis(start.getTime());
 			//This task is not a group task so the last parameter is set to "0"
-			SingleTask toAdd = new SingleTask(title, Converter.CalendarDatetoString(startTime), "","0");
+			SingleTask toAdd = new SingleTask(title, Converter.CalendarDatetoString(startTime), "","0","");
 			
 			Calendar now = Calendar.getInstance();
 			now.set(Calendar.HOUR_OF_DAY, 6);

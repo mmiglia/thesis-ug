@@ -195,7 +195,7 @@ public enum TaskDatabase {
 			return false;
 		}
 		
-		String deleteQuery="delete from Task where id="+taskID+";";
+		String deleteQuery="delete from Task where id='"+taskID+"';";
 		
 		
 		
@@ -205,7 +205,7 @@ public enum TaskDatabase {
 		log.info(deleteQuery);
 		
 		//TODO verify if there are uncaugth exception here		
-		deleteQuery=" delete from Reminder where id="+reminderID;
+		deleteQuery=" delete from Reminder where id='"+reminderID+"';";
 		//TODO verify if there are uncaugth exception here
 		qs=dbManager.customQuery(conn, deleteQuery);
 		

@@ -149,7 +149,7 @@ public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterf
 	 */
 	public boolean updateTask(String userid, SingleTask newTask) {		
 		for (TaskSubscriber o : subscriberlist) o.updateTask(userid, newTask);
-		TaskDatabase.instance.updateTask(newTask.ID, newTask);
+		TaskDatabase.instance.updateTask(newTask.taskID, newTask);
 		return true;
 	}	
 

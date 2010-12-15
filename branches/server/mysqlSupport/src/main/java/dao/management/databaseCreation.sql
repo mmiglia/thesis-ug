@@ -1,8 +1,10 @@
+
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 --
 -- Database: `thesisug`
 --
+DROP DATABASE IF EXISTS `thesisug`;
 CREATE DATABASE `thesisug` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 USE `thesisug`;
 
@@ -11,6 +13,7 @@ USE `thesisug`;
 --
 -- Struttura della tabella `Event`
 --
+select "Starting creation of table Event" as " ";
 
 DROP TABLE IF EXISTS `Event`;
 CREATE TABLE IF NOT EXISTS `Event` (
@@ -24,13 +27,13 @@ CREATE TABLE IF NOT EXISTS `Event` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
-
+select "End creation of table Event" as " ";
 -- --------------------------------------------------------
 
 --
 -- Struttura della tabella `ExternalService`
 --
-
+select "Starting creation of table ExternalService" as " ";
 DROP TABLE IF EXISTS `ExternalService`;
 CREATE TABLE IF NOT EXISTS `ExternalService` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -39,14 +42,14 @@ CREATE TABLE IF NOT EXISTS `ExternalService` (
   `ServiceType` enum('EventService','TaskService') DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
+select "End creation of table ExternalService" as " ";
 
 -- --------------------------------------------------------
 
 --
 -- Struttura della tabella `ExternalServiceCredentials`
 --
-
+select "Starting creation of table ExternalServiceCredentials" as " ";
 DROP TABLE IF EXISTS `ExternalServiceCredentials`;
 CREATE TABLE IF NOT EXISTS `ExternalServiceCredentials` (
   `User` varchar(50) DEFAULT NULL,
@@ -54,14 +57,14 @@ CREATE TABLE IF NOT EXISTS `ExternalServiceCredentials` (
   `username` varchar(50) DEFAULT NULL,
   `password` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
+select "End creation of table ExternalServiceCredentials" as " ";
 
 -- --------------------------------------------------------
 
 --
 -- Struttura della tabella `Reminder`
 --
-
+select "Starting creation of table Reminder" as " ";
 DROP TABLE IF EXISTS `Reminder`;
 CREATE TABLE IF NOT EXISTS `Reminder` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -73,14 +76,14 @@ CREATE TABLE IF NOT EXISTS `Reminder` (
   `longitude` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
+select "End creation of table Reminder" as " ";
 
 -- --------------------------------------------------------
 
 --
 -- Struttura della tabella `Task`
 --
-
+select "Starting creation of table Task" as " ";
 DROP TABLE IF EXISTS `Task`;
 CREATE TABLE IF NOT EXISTS `Task` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -89,16 +92,17 @@ CREATE TABLE IF NOT EXISTS `Task` (
   `notifyTimeStart` varchar(50) DEFAULT NULL,
   `notifyTimeEnd` varchar(50) DEFAULT NULL,
   `ReminderId` int(11) DEFAULT NULL,
+  `UserGroup` int(11) DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
+select "End creation of table Task" as " ";
 
 -- --------------------------------------------------------
 
 --
 -- Struttura della tabella `User`
 --
-
+select "Starting creation of table User" as " ";
 DROP TABLE IF EXISTS `User`;
 CREATE TABLE IF NOT EXISTS `User` (
   `username` varchar(50) DEFAULT NULL,
@@ -106,3 +110,33 @@ CREATE TABLE IF NOT EXISTS `User` (
   `sessionKey` varchar(50) DEFAULT NULL,
   `active` int(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+select "End creation of table User" as " ";
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `Group`
+--
+select "Starting creation of table Group" as " ";
+DROP TABLE IF EXISTS `UserGroup`;
+CREATE TABLE IF NOT EXISTS `UserGroup` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `group_name` varchar(50) NOT NULL,
+  `owner` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+select "End creation of table Group" as " ";
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `Group_Member`
+--
+select "Starting creation of table Group_Member" as " ";
+DROP TABLE IF EXISTS `GroupMember`;
+CREATE TABLE IF NOT EXISTS `GroupMember` (
+  `UserGroup` int(11) NOT NULL,
+  `User` varchar(50)  NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+select "End creation of table Group_Member" as " ";

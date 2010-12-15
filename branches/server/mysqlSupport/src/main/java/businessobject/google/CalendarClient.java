@@ -101,7 +101,7 @@ public class CalendarClient extends EventSubscriber {
 			CalendarEventEntry insertedEntry = myCalendar.insert(postUrl,
 					myEntry);
 			// Save the object in local database
-			CalendarEventEntryDatabase.instance.addEntry(userid, event.ID,
+			CalendarEventEntryDatabase.instance.addEntry(userid, event.eventID,
 					insertedEntry.getEditLink().getHref());
 			log.info("editlink " + insertedEntry.getEditLink().getHref());
 			log.info("id " + insertedEntry.getId());
@@ -205,7 +205,7 @@ public class CalendarClient extends EventSubscriber {
 	public boolean updateEvent(String userid, SingleEvent newEvent) {
 		try {
 			String URItoUpdate = CalendarEventEntryDatabase.instance
-					.getCalendarEntry(userid, newEvent.ID);
+					.getCalendarEntry(userid, newEvent.eventID);
 			if (URItoUpdate == null)
 				return false;
 			CalendarEventEntry toUpdate = myCalendar.getEntry(new URL(
@@ -221,8 +221,8 @@ public class CalendarClient extends EventSubscriber {
 
 			// Delete-add the object in local database
 			CalendarEventEntryDatabase.instance
-					.deleteEntry(userid, newEvent.ID);
-			CalendarEventEntryDatabase.instance.addEntry(userid, newEvent.ID,
+					.deleteEntry(userid, newEvent.eventID);
+			CalendarEventEntryDatabase.instance.addEntry(userid, newEvent.eventID,
 					updatedEntry.getEditLink().getHref());
 
 			return true;

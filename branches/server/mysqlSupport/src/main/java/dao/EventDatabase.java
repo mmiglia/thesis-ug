@@ -414,7 +414,7 @@ public enum EventDatabase {
 		try {
 			Query query = db.query();
 			query.constrain(EventTuple.class);
-			query.descend("eventID").constrain(event.ID);
+			query.descend("eventID").constrain(event.eventID);
 			ObjectSet<EventTuple> result = query.execute();
 			return !result.isEmpty();
 		}finally{
@@ -474,7 +474,7 @@ public enum EventDatabase {
 	
 		public EventTuple (String userID, SingleEvent event){
 			this.userID = userID;
-			this.eventID = event.ID;
+			this.eventID = event.eventID;
 			this.event = event;
 		}
 		public void activateWrite(){

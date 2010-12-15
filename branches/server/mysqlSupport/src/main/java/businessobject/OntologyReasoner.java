@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 public class OntologyReasoner {
 	private final static Logger log = LoggerFactory
 			.getLogger(OntologyReasoner.class);
-	private final static String ONTOLOGY_FILE = Configuration.getInstance().constants.getProperty("DATABASE_FOLDER")+"/HintsOntology.owl";
+	private final static String ONTOLOGY_FILE = Configuration.getInstance().constants.getProperty("DATABASE_FOLDER")+"HintsOntology.owl";
 	//private final static String ONTOLOGY_FILE = Configuration.getInstance().constants.getProperty("DATABASE_FOLDER")+"/HintsOntologyIta.owl";
 	private final static OntologyReasoner instance = new OntologyReasoner();
 	private static OWLOntology ontology;
