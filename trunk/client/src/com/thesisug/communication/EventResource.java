@@ -181,11 +181,6 @@ public class EventResource {
 		final Runnable runnable = new Runnable() {
 			public void run() {
 				List<SingleEvent> result = runHttpGet(ALL_EVENTS, null, context);
-				
-				for(SingleEvent e : result){
-					Log.d(TAG,"2_Event id:"+e.eventID);				
-				}
-				
 				sendResult(result, handler, context);
 			}
 		};
@@ -198,9 +193,6 @@ public class EventResource {
 			public void run() {
 				List<SingleEvent> result = runHttpGet(TODAY_EVENTS, null, context);
 				sendResult(result, handler, context);
-				for(SingleEvent e : result){
-					Log.d(TAG,"3_Event id:"+e.eventID);				
-				}
 			}
 		};
 		// start authenticating
@@ -215,9 +207,6 @@ public class EventResource {
 				params.add(new BasicNameValuePair("s", DateFrom));
 				params.add(new BasicNameValuePair("e", DateTo));
 				List<SingleEvent> result = runHttpGet(BETWEEN_EVENTS, params, context);
-				for(SingleEvent e : result){
-					Log.d(TAG,"4_Event id:"+e.eventID);				
-				}
 				sendResult(result, handler, context);
 			}
 		};
