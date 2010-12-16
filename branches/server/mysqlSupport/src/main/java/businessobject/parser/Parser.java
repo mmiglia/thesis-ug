@@ -38,88 +38,167 @@ public class Parser {
 		text = text.toLowerCase();
 		LinkedList<String> words, regex; 
 		LinkedList<VerbArgs> step2result = new LinkedList<VerbArgs>();
+		log.debug("There are "+command.size()+" commands");
+		//System.out.println("There are "+command.size()+" commands");
+		
 		for (Verb o : command){ // for all commands registered to this parser
+			log.debug("Analyse command:"+o.getName()+" "+o.toString());
+			//System.out.println("Analyse command:"+o.getName()+" "+o.toString());
 			double maxVerbScore =0.0;
 			for (String s : o.getVerbs()){ // for every synonyms of the command
+				//get the list of substring of the verb, from 'add task' we have ['add task','add tas','add ta'..etc]
 				regex = getRegex(s);
+				
 				double score = regex.size();
+				//System.out.println("Start score:"+score);
 				for (String r : regex){ // for every possible regex
+					log.debug("if "+text + " contains " + r);
+					//System.out.println("if "+text + " contains " + r);
 					if (text.contains(r)){
 						score /= regex.size();
+						//System.out.println("Score after if:"+score);
 						LinkedList<String> args = new LinkedList<String>(Arrays.asList(text.split(r)));
+						//System.out.println("Start args list");
+						//for(String arg : args){
+							//System.out.println(arg);
+						//}
+						//System.out.println("End args list");
 						Iterator<String> argsIterator = args.iterator();
 						//remove empty string
 						while (argsIterator.hasNext()) if(argsIterator.next().isEmpty()) argsIterator.remove();
 						step2result.add(new VerbArgs(o, args, score));
+						//System.out.println("Added "+o.getName()+" with args:");
+						//for(String arg : args){
+							//System.out.println(arg);
+						//}
 						maxVerbScore = (score>maxVerbScore)? score : maxVerbScore;
+						//System.out.println("Maxscore:"+maxVerbScore);
 						break; //break loop, get the next synonym
 					}
 					score-=1;
 				}
 			}
+			//System.out.println("--Final filtering on step2result so that each verb only has one candidate with the best score--");
 			// final filtering on step2result so that each verb only has one candidate
 			// with the best score
 			Iterator<VerbArgs> va = step2result.iterator();
 			while (va.hasNext()) {
+				
 				VerbArgs current = va.next();
-				if (current.verb.equals(o) && current.score<maxVerbScore) va.remove(); 
+				//System.out.println("Analize:"+current.verb.getName());
+				if (current.verb.equals(o) && current.score<maxVerbScore){
+					//System.out.println( current.verb.getName()+": "+current.verb.getName()+" equals["+o.getName()+"] removed ("+current.score+"<"+maxVerbScore+")");
+					va.remove(); 
+				}
 			}
+			//System.out.println("--Filtering DONE--");
 		}
+		
+		//Now, in step2result, for each Verb (command) we got the verb that better match in the input sentence
+		
 		 //step 3: pick possible clitics (DONE)
 		 //step 4: group into arguments
 		LinkedList<PossibleParses> step4result = new LinkedList<PossibleParses>();
 		 //Get the delimiters
+		//System.out.println("Step 4 - Start");
+
 		 for (VerbArgs va : step2result){ // for every verb-argument pairs 
 			 int findcount = 0;
 			 LinkedList<Arguments> findarg = new LinkedList<Arguments>();
-			 for (Arguments arg : va.verb.getArguments()){ // for every arguments needed by this verb
+			 //System.out.println("Verb:"+va.verb.getName());
+			 
+			 for (Arguments arg : va.verb.getArguments()){ 
+				 // for every arguments needed by this verb
+				 
+				 //System.out.println("Argument: noun="+arg.noun.toString()+" role="+arg.role);
+				 
 				 ListIterator<String> vaIterator = va.args.listIterator();
+				 
 				 while (vaIterator.hasNext()){ // for every possible argument string in this pair
 					 String vargs = vaIterator.next();
+					 //System.out.println("vargs="+vargs);
+					 
+					 
 					 possibleArgument:
 					 for (SemanticRoles sr : roles){ // find the delimiter
+						 //System.out.println("If "+arg.role+"=="+sr.role);
 						 if (arg.role == sr.role){
+							 //System.out.println("if!hasDelimiter("+vargs+","+sr.delimiter+")->continue");
 							 if (!hasDelimiter(vargs,sr.delimiter)) continue;
 							 else {
-								 ExtractArgumentReturn extractResult = extractArgument(vargs, sr.delimiter); 
+								 //System.out.println("Else:extractArgument("+vargs+","+ sr.delimiter+")");
+								 ExtractArgumentReturn extractResult = extractArgument(vargs, sr.delimiter);
+								 //Remove current element (the one actually in vargs)
 								 vaIterator.remove();
+								 //System.out.println(vargs+" removed");
 								 if (!extractResult.remainder.isEmpty()) {
+									 
 									 vaIterator.add(extractResult.remainder);
+									 //System.out.println("Added:"+extractResult.remainder);
+									 //System.out.println("extractResult.realargument="+extractResult.realargument);
 								 }
 								 Arguments toSave = new Arguments(arg.role, arg.noun);
+								 //System.out.println("Arguments toSave: arg.role="+arg.role.name()+" arg.noun="+arg.noun.toString());
 								 toSave.setContent(extractResult.realargument);
+								 //System.out.println("Arguments toSave: content="+extractResult.realargument);
 								 findarg.add(toSave); // link to reference
 								 findcount++;
+								 
+								 //Is this Like a go-to?
 								 break possibleArgument; // next arguments
 							 }
 						 }
 					 }
 				 }
 			 }
+			 //System.out.println("--INIZIO Process degli elementi che non ho ancora catalogato, li classifico come oggetti con ruolo OBJECT (quindi elementi generici, che non mi servono a capire)--");
 			 if (va.args.size()>0){
 				 for (String s:va.args){
+					 //System.out.println("Stringa in va.args:"+s);
+					 
 					 Arguments toSave = new Arguments(SemanticRoles.RoleType.OBJECT, new ArbitraryObject());
+					 
 					 toSave.setContent(s);
 					 findarg.add(toSave);
+					 //System.out.println("Added to findarg: object with RoleType:OBJECT and content="+s);
 					 findcount++;
 				 }
 			 }
+			 //System.out.println("--FINE Process degli elementi che non ho ancora catalogato--");
 			 double score = va.score;
+			 //System.out.println("va.score:"+va.score);
+			 
+			 //System.out.println("va.verb.getArguments():");
+			 //for(Arguments arg: va.verb.getArguments()){
+				 //System.out.println("arg.role"+arg.role+" arg.noun"+arg.noun);				 
+			 //}
+			 //System.out.println("filled if findcount >="+va.verb.getArguments().size());
 			 boolean filled = findcount >= va.verb.getArguments().size(); // this verb is complete with arguments
+			 //System.out.println("filled:"+filled);
+			 //If filled we give one more point to score
 			 score += (filled)? 1:0;
-			 step4result.add(new PossibleParses(va.verb, findarg, findcount >= va.verb.getArguments().size(), score));
+			 step4result.add(new PossibleParses(va.verb, findarg, filled, score));
 		 }
-		 
+		 //System.out.println("In step4result ci sono "+ step4result.size()+" elementi");
 		 double maxscore = 1.5;// this is the threshold
 		 PossibleParses bestresult = null;
+		 //System.out.println("We get the PossibleParses that is complete with the max score, if there is not a complete one, we return null");
 		 for (PossibleParses p : step4result){
 			 if (!p.complete) continue;
-			 else if (p.score > maxscore) {bestresult = p; maxscore=p.score;}
+			 //System.out.println(p.verb+" complete:"+p.complete+" score:"+p.score);
+			 if (p.score > maxscore) {bestresult = p; maxscore=p.score;}
 		 }
 		 if (bestresult == null){
 			 log.info("Parser could not understand user input");
-		 } else log.info("Parser successfully parsed user input");
-		 return bestresult.verb.execute(userid, bestresult.args);
+			 //System.out.println("Parser could not understand user input");
+			 return false;
+		 } 
+		 else {
+			 log.info("Parser successfully parsed user input");
+			 //System.out.println("Parser successfully parsed user input");
+			 return bestresult.verb.execute(userid, bestresult.args);
+		 }
+		
 		 //step 5: anaphora substitution (DONE)
 		 //step 6: suggest normalized arguments (DONE)
 		 //step 7: suggest verbs for parses without one (DONE)
@@ -249,4 +328,6 @@ public class Parser {
 			realargument="";
 		}
 	}
+	
+
 }

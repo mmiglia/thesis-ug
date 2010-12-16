@@ -37,4 +37,16 @@ public class ParserManager {
 		mainparser.createCommand(new AddEvent());
 		initialized = true;
 	}
+	
+	/*
+		public static void main(String[] args){
+		 
+		
+			ParserManager parser = new ParserManager();
+			
+			String inputString="now add task buy milk before 22:50";		
+			
+			System.out.println("END:"+parser.inputQuery("guido",inputString));
+		}
+	*/
 }
