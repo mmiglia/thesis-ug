@@ -128,9 +128,10 @@ public class TaskNotification extends Service{
 				else {
 					// the next query will be beyond the mindist distance
 					delayquery = mindist/velocity;
+					delayquery = Math.ceil(delayquery);
 					lastdelayquery = delayquery;
 					//this means that the terminal is moving, so set the delayzerovelocity to the start value
-					delayzerovelocity = 5;
+					delayzerovelocity = 2.5;
 					Log.i(TAG, "gpsthread - Terminal is moving. Velocity: "+velocity+" Delay: "+delayquery);
 				}
 				
