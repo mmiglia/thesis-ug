@@ -5,7 +5,7 @@
 			android:title="@string/q_period"
 			android:summary="@string/interval"
 			android:key="queryperiod"
-			android:defaultValue="500"
+			android:defaultValue="100"
 			android:entries="@array/period"
 			android:entryValues="@array/periodValue" />
 		<ListPreference
