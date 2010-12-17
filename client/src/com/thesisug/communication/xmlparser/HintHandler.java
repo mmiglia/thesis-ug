@@ -18,7 +18,7 @@ import com.thesisug.communication.valueobject.Hint;
 import com.thesisug.communication.valueobject.Hint.PhoneNumber;
 
 public class HintHandler {
-private static final String TAG = "Hint Handler";
+private static final String TAG = "thesisug - Hint Handler";
 	
     public static List<Hint> parse(InputStream toParse) throws IOException, SAXException {
 		final List<Hint> combine = new LinkedList<Hint>();

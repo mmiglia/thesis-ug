@@ -23,7 +23,7 @@ import com.thesisug.R;
 import com.thesisug.communication.InputResource;
 
 public class Input extends Activity implements OnClickListener{
-	private static final String TAG = new String("Input Activity");
+	private static final String TAG = new String("thesisug - Input Activity");
     private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
     private EditText commandbox;
     /**

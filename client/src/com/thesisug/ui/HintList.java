@@ -17,7 +17,7 @@ import com.thesisug.communication.valueobject.Hint;
 import com.thesisug.communication.valueobject.Hint.PhoneNumber;
 
 public class HintList extends ListActivity {
-	public final static String TAG = "HintListActivity";
+	public final static String TAG = "thesisug - HintListActivity";
 	public final static String HINT_TITLE = "data";
 	public final static String HINT_ADDRESS = "address";
 	public final static String HINT_PHONE = "phone";

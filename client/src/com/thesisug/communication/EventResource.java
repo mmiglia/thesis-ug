@@ -30,7 +30,7 @@ import com.thesisug.ui.ShowEvent;
 import com.thesisug.ui.Todo;
 
 public class EventResource {
-	private static final String TAG = new String("EventResource");
+	private static final String TAG = new String("thesisug - EventResource");
 	private static final String ALL_EVENTS = "/event/all";
 	private static final String TODAY_EVENTS = "/event/today";
 	private static final String BETWEEN_EVENTS = "/event/between";

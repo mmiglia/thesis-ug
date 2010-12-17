@@ -19,7 +19,7 @@ import android.util.Xml;
 import com.thesisug.communication.valueobject.SingleTask;
 
 public class SingleTaskHandler {
-private static final String TAG = "Single Task Handler";
+private static final String TAG = "thesisug - Single Task Handler";
 	
     public static List<SingleTask> parse(InputStream toParse) throws IOException, SAXException {
 		final List<SingleTask> combine = new LinkedList<SingleTask>();

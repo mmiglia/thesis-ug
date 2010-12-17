@@ -24,7 +24,7 @@ import com.thesisug.communication.EventResource;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 
 public class ShowEvent extends Activity{
-	private static final String TAG ="ShowEvent";
+	private static final String TAG ="thesisug - ShowEvent";
 	private static final int ASK_CONFIRMATION = 1;
 	private static final int WAIT_DELETION = 2;
 	private static final int EDIT = 1;

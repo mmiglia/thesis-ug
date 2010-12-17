@@ -39,7 +39,7 @@ import android.util.Log;
  * platform ContactOperations provider.
  */
 public class SyncAdapter extends AbstractThreadedSyncAdapter {
-    private static final String TAG = "SyncAdapter";
+    private static final String TAG = "thesisug - SyncAdapter";
 
     private final AccountManager mAccountManager;
     private final Context mContext;

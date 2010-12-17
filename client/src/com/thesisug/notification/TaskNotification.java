@@ -33,7 +33,7 @@ import com.thesisug.communication.valueobject.SingleTask;
 import com.thesisug.ui.HintList;
 
 public class TaskNotification extends Service{
-	private static final String TAG = "TaskNotificationService";
+	private static final String TAG = "thesisug - TaskNotificationService";
 	
 	 // variable which controls the notification thread 
     private ConditionVariable condvar, condvargps, condvargps1, downloadlock;

@@ -15,7 +15,7 @@ import com.thesisug.communication.valueobject.LoginReply;
 import com.thesisug.communication.valueobject.TestConnectionReply;
 
 public class TryConnectionReplyHandler {
-	private static final String TAG = "TryConnection Reply Handler";
+	private static final String TAG = "thesisug - TryConnection Reply Handler";
 	
     public static TestConnectionReply parse(InputStream toParse) throws IOException, SAXException {
 		RootElement root = new RootElement("testConnectionReply");

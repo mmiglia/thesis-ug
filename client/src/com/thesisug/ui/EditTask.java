@@ -29,7 +29,7 @@ import com.thesisug.communication.valueobject.SingleTask;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 
 public class EditTask extends Activity {
-	private static final String TAG = "EditTask";
+	private static final String TAG = "thesisug - EditTask";
 	// constants for dialog box choosing
 	private static final int TIMEFROM_DIALOG_ID = 0, DEADLINE_DATE_ID = 1, TIMETO_DIALOG_ID = 2, DEADLINE_TIME_ID = 3, SAVE_DATA_ID = 4, CREATE_DATA_ID = 5, DATE_ERROR_ID=6;
     // constants for origin activity chooser

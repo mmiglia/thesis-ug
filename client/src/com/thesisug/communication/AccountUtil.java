@@ -10,7 +10,7 @@ import android.content.Context;
 import android.util.Log;
 
 public class AccountUtil {
-	private static final String TAG = "AccountUtil";
+	private static final String TAG = "thesisug - AccountUtil";
 	private AccountManager accountManager;
 	private Account[] accounts;
 	

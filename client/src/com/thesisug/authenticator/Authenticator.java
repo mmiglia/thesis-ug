@@ -19,7 +19,7 @@ import com.thesisug.ui.Login;
  */
 public class Authenticator extends AbstractAccountAuthenticator {
 	private final Context context;
-	private static final String TAG = "Authenticator";
+	private static final String TAG = "thesisug - Authenticator";
 
 	public Authenticator(Context context) {
 		super(context);
