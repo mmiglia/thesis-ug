@@ -14,7 +14,7 @@ import com.thesisug.ui.ShowEvent;
 
 public class EventNotification extends BroadcastReceiver
 {
-	private static final String TAG = "EventNotification";
+	private static final String TAG = "thesisug - EventNotification";
     @Override
     public void onReceive(Context context, Intent intent)
     {

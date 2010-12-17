@@ -19,7 +19,7 @@ import android.util.Xml;
 import com.thesisug.communication.valueobject.SingleEvent;
 
 public class SingleEventHandler {
-private static final String TAG = "Single Event Handler";
+private static final String TAG = "thesisug - Single Event Handler";
 	
     public static List<SingleEvent> parse(InputStream toParse) throws IOException, SAXException {
 		final List<SingleEvent> combine = new LinkedList<SingleEvent>();

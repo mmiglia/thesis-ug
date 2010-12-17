@@ -18,7 +18,7 @@ import com.thesisug.R;
 import com.thesisug.notification.TaskNotification;
 
 public class ParentTab extends TabActivity {
-	public final static String TAG = "ParentTab";
+	public final static String TAG = "thesisug - ParentTab";
 	AccountManager accountManager;
 	String username, session;
 	Account[] accounts;

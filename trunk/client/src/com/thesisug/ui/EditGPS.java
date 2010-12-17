@@ -26,7 +26,7 @@ import com.thesisug.communication.ContextResource;
 import com.thesisug.notification.TaskNotification;
  
 public class EditGPS extends MapActivity implements LocationListener{
-	private static final String TAG = "EditGPS Activity";
+	private static final String TAG = "thesisug - EditGPS Activity";
 	private static final String LATITUDE = "latitude";
 	private static final String LONGITUDE = "longitude";
 	private MyLocationOverlay center;

@@ -19,7 +19,7 @@ import com.thesisug.Constants;
 import android.util.Log;
 
 public class NetworkUtilities {
-	private static final String TAG = new String("NetworkUtilities");
+	private static final String TAG = new String("thesisug - NetworkUtilities");
 	private static final int REGISTRATION_TIMEOUT = 10000;
 	
 	//Dati del file com.thesisug.Constants.java

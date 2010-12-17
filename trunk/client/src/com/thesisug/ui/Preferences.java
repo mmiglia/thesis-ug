@@ -42,7 +42,7 @@ import com.thesisug.communication.valueobject.TestConnectionReply;
 
 
 public class Preferences extends PreferenceActivity implements OnSharedPreferenceChangeListener{
-	private static final String TAG = "PreferenceActivity";
+	private static final String TAG = "thesisug - PreferenceActivity";
 	private Thread tryConnectionThread;
 	private final Handler handler = new Handler();
 	private String insertedURI="";

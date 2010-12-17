@@ -42,7 +42,7 @@ import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 import com.thesisug.notification.EventNotification;
 
 public class Todo extends ListActivity {
-	public final static String TAG = "TodoActivity";
+	public final static String TAG = "thesisug - TodoActivity";
 	public final static String ITEM_DATA = "data";
 	public final static String REMIND_ME = "remindme";
 	public final static int CREATE_EVENT = 1;

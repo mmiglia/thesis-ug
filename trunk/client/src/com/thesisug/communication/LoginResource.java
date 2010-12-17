@@ -27,7 +27,7 @@ import com.thesisug.ui.Preferences;
   
 
 public class LoginResource{
-	private static final String TAG = new String("LoginResource");
+	private static final String TAG = new String("thesisug - LoginResource");
 	public static final String BASE_LOGIN = "/login";
 	public static final String BASE_LOGOUT = "/logout";
 	public static final String BASE_TRY_CONNECTION="/tryConn/";

@@ -27,7 +27,7 @@ import com.thesisug.communication.ContextResource;
 import com.thesisug.communication.valueobject.Hint;
 
 public class Map extends MapActivity implements LocationListener{
-	private static final String TAG = "Map Activity";
+	private static final String TAG = "thesisug - Map Activity";
 	private LocationManager lm;
 	private Thread downloadThread;
 	private Handler handler = new Handler();

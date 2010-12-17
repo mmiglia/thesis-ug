@@ -24,7 +24,7 @@ import com.thesisug.ui.Map;
 
 
 public class ContextResource{
-	private static final String TAG = new String("ContextResource");
+	private static final String TAG = new String("thesisug - ContextResource");
 	private static final String LOCATION_ALL = "/location/all";
 	private static final String LOCATION_SINGLE = "/location/single";
 	

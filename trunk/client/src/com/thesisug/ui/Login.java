@@ -30,7 +30,7 @@ import com.thesisug.communication.valueobject.LoginReply;
  * an android device
  */
 public class Login extends AccountAuthenticatorActivity {
-	private static final String TAG = "ui.LoginActivity";
+	private static final String TAG = "thesisug - ui.LoginActivity";
 	public static final String PARAM_CONFIRMCREDENTIALS = "confirmCredentials";
     public static final String PARAM_PASSWORD = "password";
     public static final String PARAM_USERNAME = "username";

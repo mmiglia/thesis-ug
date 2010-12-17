@@ -20,7 +20,7 @@ import com.thesisug.communication.xmlparser.QueryReplyHandler;
 import com.thesisug.ui.Input;
 
 public class InputResource {
-	private static final String TAG = new String("InputResource");
+	private static final String TAG = new String("thesisug - InputResource");
 	private static final String INPUT = "/input";
 	
 	private static boolean runHttpGet(final String method,

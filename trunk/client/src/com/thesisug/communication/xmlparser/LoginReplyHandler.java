@@ -13,7 +13,7 @@ import android.util.Xml;
 import com.thesisug.communication.valueobject.LoginReply;
 
 public class LoginReplyHandler {
-	private static final String TAG = "Login Reply Handler";
+	private static final String TAG = "thesisug - Login Reply Handler";
 	
     public static LoginReply parse(InputStream toParse) throws IOException, SAXException {
 		RootElement root = new RootElement("loginReply");

@@ -13,7 +13,7 @@ import android.util.Xml;
 import com.thesisug.communication.valueobject.QueryReply;
 
 public class QueryReplyHandler {
-	private static final String TAG = "Query Reply Handler";
+	private static final String TAG = "thesisug - Query Reply Handler";
 	
     public static QueryReply parse(InputStream toParse) throws IOException, SAXException {
 		RootElement root = new RootElement("queryReply");

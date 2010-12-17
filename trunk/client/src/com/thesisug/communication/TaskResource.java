@@ -30,7 +30,7 @@ import com.thesisug.ui.ShowTask;
 import com.thesisug.ui.Todo;
 
 public class TaskResource {
-	private static final String TAG = new String("TaskResource");
+	private static final String TAG = new String("thesisug - TaskResource");
 	private static final String ALL_TASKS = "/task/all";
 	private static final String FIRST_TASKS = "/task/first";
 	private static final String UPDATE_TASK = "/task/update";

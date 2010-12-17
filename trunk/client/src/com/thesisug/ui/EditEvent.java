@@ -29,7 +29,7 @@ import com.thesisug.communication.valueobject.SingleEvent;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 
 public class EditEvent extends Activity {
-	private static final String TAG = "EditEvent";
+	private static final String TAG = "thesisug - EditEvent";
 	// constants for dialog box choosing
 	private static final int TIMEFROM_DIALOG_ID = 0, DATEFROM_DIALOG_ID = 1, TIMETO_DIALOG_ID = 2, DATETO_DIALOG_ID = 3, SAVE_DATA_ID = 4, CREATE_DATA_ID = 5, DATE_ERROR_ID=6;
     // constants for origin activity chooser
