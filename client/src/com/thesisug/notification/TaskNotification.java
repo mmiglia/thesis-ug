@@ -99,6 +99,7 @@ public class TaskNotification extends Service{
     			Criteria crit = new Criteria();
 				crit.setAccuracy(Criteria.ACCURACY_FINE);
 				String pr = lm1.getBestProvider(crit, true);
+				Log.i(TAG, "gpsthread - provider: "+pr);
 				position = lm1.getLastKnownLocation(pr);
 				if (position==null) {
 					Log.i(TAG, "gpsthread - Waiting for the location signal");
@@ -183,6 +184,7 @@ public class TaskNotification extends Service{
 				Criteria criteria = new Criteria();
 				criteria.setAccuracy(Criteria.ACCURACY_FINE);
 				String provider = lm.getBestProvider(criteria, true);
+				Log.i(TAG, "mainthread - Provider: "+provider);
 				gpslocation = lm.getLastKnownLocation(provider);				
         		if (gpslocation == null) continue;
         		//asynchronous operation to download thread
