@@ -146,7 +146,9 @@ public class TaskResource {
 	public static Thread removeTask(final String taskID, final Handler handler,
 			final Context context) {
 		final Runnable runnable = new Runnable() {
-			public void run() {				
+			
+			public void run() {
+				Log.d(TAG, "Request to remove task" +taskID);
 				final boolean result = runHttpPost(REMOVE_TASK, null, taskID, context);
 				if (handler == null || context == null) {
 					return;
