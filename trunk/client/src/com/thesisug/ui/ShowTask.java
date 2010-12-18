@@ -151,7 +151,7 @@ public class ShowTask extends Activity{
             .setTitle(R.string.ask_for_deletion_task)
             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                	Thread deleteThread = TaskResource.removeTask(packet.getString("taskId"), handler, ShowTask.this);
+                	Thread deleteThread = TaskResource.removeTask(packet.getString("taskID"), handler, ShowTask.this);
                 	showDialog(WAIT_DELETION);
                 }
             })
