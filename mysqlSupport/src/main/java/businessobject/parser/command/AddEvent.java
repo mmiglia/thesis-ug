@@ -41,12 +41,15 @@ public class AddEvent implements Verb{
 			StringToTime start = new StringToTime(whenString);
 			Calendar startTime = Calendar.getInstance();
 			Calendar endTime = Calendar.getInstance();
+			 
 			startTime.setTimeInMillis(start.getTime());
+			endTime.add(Calendar.DAY_OF_MONTH, 0);
 			endTime.setTimeInMillis(start.getTime());
 			endTime.add(Calendar.DAY_OF_MONTH, 1); // add end time by one day
-			SingleEvent toAdd = new SingleEvent(title, Converter.CalendarDatetoString(startTime), Converter.CalendarDatetoString(endTime), "", "");
-			EventManager.getInstance().createEvent(userid, toAdd);
+			
+			EventManager.getInstance().createEvent(userid, "", Converter.CalendarTimetoString(startTime), Converter.CalendarDatetoString(endTime), "", title, "");
 			return true;
+			
 		}
 		catch (StringToTimeException e){
 			log.info("Cannot understand user supplied date");
