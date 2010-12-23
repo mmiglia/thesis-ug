@@ -128,6 +128,7 @@ public class EditTask extends Activity {
 					break;
 				case CREATE_TASK:
 					showDialog(CREATE_DATA_ID);
+					
 					//TODO Verificare la gestione dell'id del reminder e del gruppo (per ora metto -1 ad entrambi visto che è poi il sistema ad assegnare questi valori)
 					task = new SingleTask("-1",title.getText().toString(), 
 							new XsDateTimeFormat(false,true).format(notifyStart),
