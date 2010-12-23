@@ -62,6 +62,9 @@ public class EditTask extends Activity {
 		//TODO Eliminare e rimpiazzare con una lista dei gruppi disponibili
 		groupId=(EditText) findViewById(R.id.task_groupId);
 		
+		//Set deadline to tomorrow
+		deadline.add(Calendar.DAY_OF_MONTH, 1);
+		
 		// set default notification time for a task
 		notifyStart.set(Calendar.HOUR_OF_DAY, 6);
 		notifyStart.set(Calendar.MINUTE, 0);
@@ -236,6 +239,7 @@ public class EditTask extends Activity {
 			return new TimePickerDialog(this, DeadlineTimeSetListener, deadline.get(Calendar.HOUR_OF_DAY),
 					deadline.get(Calendar.MINUTE), true);
 		case DEADLINE_DATE_ID:
+			
 			return new DatePickerDialog(this, DeadlineDateSetListener, deadline.get(Calendar.YEAR),
 					deadline.get(Calendar.MONTH), deadline.get(Calendar.DAY_OF_MONTH));
 		case TIMETO_DIALOG_ID:

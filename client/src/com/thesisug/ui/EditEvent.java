@@ -52,6 +52,10 @@ public class EditEvent extends Activity {
 		final Bundle packet = getIntent().getExtras();
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.edit_event);
+		
+		//Set deadline to tomorrow
+		to.add(Calendar.DAY_OF_MONTH, 1);
+		
 		dateFrom = (Button) findViewById(R.id.date_from);
 		timeFrom = (Button) findViewById(R.id.time_from);
 		dateTo = (Button) findViewById(R.id.date_to);
