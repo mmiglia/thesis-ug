@@ -82,11 +82,15 @@ public class Map extends MapActivity implements LocationListener{
     @Override
 	public void onLocationChanged(Location location) {
     	if (marker.size() > 0) marker.removeOverlay(0);
-    	GeoPoint current = new GeoPoint((int)Math.floor (location.getLatitude()*1e6), (int) Math.floor(location.getLongitude()*1e6));
+    	GeoPoint currentLocation = new GeoPoint((int)Math.floor (location.getLatitude()*1e6), (int) Math.floor(location.getLongitude()*1e6));
     	Log.d(TAG,"Location changed to: " + location.getLatitude()+"#"+location.getLongitude());
 
-    	marker.addOverlay(new OverlayItem(current, "", ""));
+    	marker.addOverlay(new OverlayItem(currentLocation, "", ""));
     	mapOverlays.add(marker);
+    	
+        if (currentLocation != null) mc.animateTo(currentLocation);
+        mc.setZoom(20);
+        
     	ContextResource.checkLocationAll(new Float(location.getLatitude()),
 				new Float(location.getLongitude()),
 				0, handler, Map.this);
