@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="@string/user_preferences">
+		<ListPreference
+			android:title="@string/q_period"
+			android:summary="@string/interval"
+			android:key="queryperiod"
+			android:defaultValue="100"
+			android:entries="@array/period"
+			android:entryValues="@array/periodValue" />
+		<ListPreference
+			android:title="@string/max_distance"
+			android:summary="@string/max_distance_desc"
+			android:key="maxdistance"
+			android:defaultValue="50000"
+			android:entries="@array/distance"
+			android:entryValues="@array/distanceValue" />
+		<!-- <EditTextPreference
+			android:name="serverURI"
+            android:summary="Change the server location"
+			android:defaultValue="DefaultLocation"
+			android:title="Edit server location"
+			android:key="serverURI" />
+		 -->
+		<ListPreference
+			android:title="@string/server_list_title"
+			android:summary="@string/changeServerSummary"
+			android:key="serverURI"
+			android:entries="@array/serverList"
+			android:entryValues="@array/serverListValue" />
+	</PreferenceCategory>
+</PreferenceScreen>
