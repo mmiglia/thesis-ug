@@ -79,13 +79,10 @@ public class Todo extends ListActivity {
         usersettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         if (accounts.length == 0) {
-        	Log.d(TAG,"Todo_6");
         	Log.d(TAG, "accounts.length");
         	Intent login = new Intent(getApplicationContext(),Login.class);
         	startActivityForResult(login, 0);
-        	Log.d(TAG,"Todo_7");
         } else {
-        	Log.d(TAG,"Todo_8");
         	Log.d(TAG, "jumlah ="+accounts.length);
         	SeparatedListAdapter adapter = new SeparatedListAdapter(this);
         	setListAdapter(adapter);
@@ -93,7 +90,6 @@ public class Todo extends ListActivity {
         	username = accounts[0].name;
     		downloadEventThread = EventResource.getAllEvent(handler, this);
     		downloadTaskThread = TaskResource.getFirstTask(handler, this);
-    		Log.d(TAG,"Todo_9");
         }
 	}
 	
@@ -253,15 +249,22 @@ public class Todo extends ListActivity {
 	public void afterTaskLoaded(List<SingleTask> data){
 		tasks = new LinkedList<LinkedHashMap<String,?>>();
 		Log.d(TAG,"afterTaskLoaded");
-		if (data == null)  tasks.add(createItem (new SingleTask(getText(R.string.error_connect_task).toString(), "", "", "", "", ""), false));
-		else if (data.isEmpty()) tasks.add(createItem (new SingleTask(getText(R.string.no_task_today).toString(), "", "", "", "", ""), false));
-		else {
-			for (SingleTask o : data){
-				Log.i(TAG, "Task id2:"+o.groupId);
-				tasks.add(createItem(o, usersettings.getBoolean(o.title, true)));
+		if (data == null){
+			tasks.add(createItem (new SingleTask(getText(R.string.error_connect_task).toString(), "", "", "", "", ""), false));
+		}else {	
+			if (data.isEmpty()){
+				tasks.add(createItem (new SingleTask(getText(R.string.no_task_today).toString(), "", "", "", "", ""), false));	
+			}else {
+				for (SingleTask o : data){
+					Log.i(TAG, "Task id2:"+o.groupId);
+					tasks.add(createItem(o, usersettings.getBoolean(o.title, true)));
+				}
 			}
 		}
-		if (dataComplete()) combineResult(); //if events is already loaded too
+		
+		if (dataComplete()){
+			combineResult(); //if events is already loaded too
+		}
 	}
 	
 	public void afterEventLoaded(List<SingleEvent> data){
@@ -320,12 +323,15 @@ public class Todo extends ListActivity {
 		// create our list and custom adapter
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);		
 		
+
+		//Tasks
 		SimpleAdapter taskAdapter = new SimpleAdapter(this, tasks, R.layout.todo_task,
 		new String[] { ITEM_DATA, REMIND_ME }, new int[] { R.id.list_complex_title, R.id.complex_checkbox });
 		
 		taskAdapter.setViewBinder(new TaskBinder());			
 		adapter.addSection(getText(R.string.task_list_header).toString(), taskAdapter);
 		
+		//Event
 		SimpleAdapter eventAdapter = new SimpleAdapter(this, event, R.layout.todo_event,
 				new String[] { ITEM_DATA, ITEM_DATA, REMIND_ME }, new int[] { R.id.list_complex_title, R.id.list_complex_caption, R.id.complex_checkbox });
 		adapter.addSection(getText(R.string.event_list_header).toString(), eventAdapter);

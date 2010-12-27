@@ -43,7 +43,7 @@ public class ContextResource{
 				.sendRequest(newClient, request);
 		// if we cannot connect to the server
 		if (response.getStatusLine().getStatusCode() != 200) {
-			Log.i(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
+			Log.e(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
 			return result;
 		}
 		try { // parsing XML message
@@ -72,6 +72,7 @@ public class ContextResource{
 				params.add(new BasicNameValuePair("lon", ""+lon));
 				params.add(new BasicNameValuePair("dist", ""+distance));
 				List<Hint> result = runHttpGet(LOCATION_ALL, params, context);
+				Log.d(TAG,"Sending "+ result.size() + " hints");
 				sendResult(result, "do some tasks", handler, context);
 			}
 		};
@@ -102,8 +103,14 @@ public class ContextResource{
 		}
 		handler.post(new Runnable() {
 			public void run() {
-				if (context instanceof TaskNotification) ((TaskNotification) context).afterHintsAcquired(sentence, result);
-				else ((Map) context).afterHintsAcquired(result);
+				if (context instanceof TaskNotification){
+					Log.d(TAG,"Executing  TaskNotification.afterHintsAcquired");
+					((TaskNotification) context).afterHintsAcquired(sentence, result);
+				}
+				else {
+					Log.d(TAG,"Executing  Map.afterHintsAcquired");
+					((Map) context).afterHintsAcquired(result);
+				}
 			}
 		});
 	}
