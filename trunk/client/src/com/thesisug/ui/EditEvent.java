@@ -100,6 +100,16 @@ public class EditEvent extends Activity {
 		save.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (!dateIsValid(from, to)) {showDialog(DATE_ERROR_ID); return;}
+				// controlla che il titolo non sia vuoto o contenga solo caratteri white-space
+				if (!titleIsValid(title.getText().toString())) {
+					// comunica che i titoli vuoti non sono gestiti
+						Toast.makeText(getApplicationContext(), R.string.bad_event_name, Toast.LENGTH_SHORT).show();
+					// sembra che in Android non sia possibile imporre il focus su un
+					// elemento dell'interfaccia utente, allora si "richiede" il focus
+					title.requestFocus();
+					// esce (senza inviare nulla)
+					return;
+				}
 				SingleEvent ev;
 				currentDialog = packet.getInt("originator");
 				switch (currentDialog) {
@@ -288,6 +298,12 @@ public class EditEvent extends Activity {
 		return (starting.before(ending));
 	}
 	
+	private boolean titleIsValid(String taskTitle) {
+		// c'è un'occorrenza di .*\\S.* in una stringa se c'è almeno
+		// un carattere non white-space. Per Java i caratteri white-space sono
+		//  \t,\n,\x0B,\f e \r.
+		return taskTitle.matches(".*\\S.*");
+	}
 	private CharSequence getDateString(Calendar cal) {
 		int year = cal.get(Calendar.YEAR);
 		int month = cal.get(Calendar.MONTH);
