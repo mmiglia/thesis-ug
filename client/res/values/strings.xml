@@ -40,6 +40,7 @@
     <string name="task_notification_stopped">Task Notification Service is stopped</string>
     <string name="between">between</string>
     <string name="and">and</string>
+    <string name="bad_task_name">Sorry, cannot handle an empty-title task, please change it.</string>
     <string name="date_wrong">The event is finished before it\u0027s even started</string>
     <string name="notification_time_wrong">Notification is finished before it\u0027s even started</string>
     <string name="description">Description</string>
