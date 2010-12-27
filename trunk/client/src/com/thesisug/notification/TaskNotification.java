@@ -214,7 +214,10 @@ public class TaskNotification extends Service{
     	if (result.isEmpty()) {
     		Log.i(TAG, "No hints for task : "+sentence);
     		return; // immediately return if there is no result
-    	} else Log.i(TAG, "Received "+result.size()+ " hints for task : "+sentence);
+    	} else {
+    		Log.i(TAG, "Received "+result.size()+ " hints for task : "+sentence);
+    	}
+    	
     	String message = getText(R.string.capable)+" "+sentence+" "+getText(R.string.around_location);
     	Notification newnotification = new Notification(R.drawable.icon, message, System.currentTimeMillis());
     	Intent notificationIntent = new Intent(getApplicationContext(), HintList.class);
