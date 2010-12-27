@@ -95,21 +95,21 @@ public class TaskNotification extends Service{
     		while (true) {
     			//Looper.prepare();
     			int mindist = Integer.parseInt(usersettings.getString("queryperiod", "100"));
-    			Log.i(TAG, "gpsthread - Min Distance Query is "+mindist);
+    			//Log.i(TAG, "gpsthread - Min Distance Query is "+mindist);
     			Criteria crit = new Criteria();
 				crit.setAccuracy(Criteria.ACCURACY_FINE);
 				String pr = lm1.getBestProvider(crit, true);
-				Log.i(TAG, "gpsthread - provider: "+pr);
+				//Log.i(TAG, "gpsthread - provider: "+pr);
 				position = lm1.getLastKnownLocation(pr);
 				if (position==null) {
-					Log.i(TAG, "gpsthread - Waiting for the location signal");
+					//Log.i(TAG, "gpsthread - Waiting for the location signal");
 					condvargps1.block(10000);
 					continue;
 				}
 				double dist = calculateDistance(position, lastposition);
-				if (lastposition!=null)
-					Log.i(TAG, "gpsthread - lastposition: LAT "+lastposition.getLatitude()+" LONG "+lastposition.getLongitude());
-				Log.i(TAG, "gpsthread - Position: LAT "+position.getLatitude()+" LONG "+position.getLongitude()+" distance since lastposition: "+dist);
+				//if (lastposition!=null)
+				//	Log.i(TAG, "gpsthread - lastposition: LAT "+lastposition.getLatitude()+" LONG "+lastposition.getLongitude());
+				//Log.i(TAG, "gpsthread - Position: LAT "+position.getLatitude()+" LONG "+position.getLongitude()+" distance since lastposition: "+dist);
 				// terminal moved of dist in time lastdelayquery
 				double velocity;
 				if (lastdelayquery==999999999)
@@ -124,7 +124,7 @@ public class TaskNotification extends Service{
 					delayzerovelocity = delayquery;
 					lastdelayquery = delayquery;
 					// dealayzerovelocity grows 2x faster (5-10-20-40-80sec) up to a max value of 1'30"
-					Log.i(TAG, "gpsthread - Terminal has stopped. Delay: "+delayquery);
+					//Log.i(TAG, "gpsthread - Terminal has stopped. Delay: "+delayquery);
 				}
 				else {
 					// the next query will be beyond the mindist distance
@@ -133,7 +133,7 @@ public class TaskNotification extends Service{
 					lastdelayquery = delayquery;
 					//this means that the terminal is moving, so set the delayzerovelocity to the start value
 					delayzerovelocity = 2.5;
-					Log.i(TAG, "gpsthread - Terminal is moving. Velocity: "+velocity+" Delay: "+delayquery);
+					//Log.i(TAG, "gpsthread - Terminal is moving. Velocity: "+velocity+" Delay: "+delayquery);
 				}
 				
 				lastposition = position;
@@ -174,7 +174,7 @@ public class TaskNotification extends Service{
         			condvar.block(60000); 
         			continue;
         		}
-        		Log.i(TAG, "mainthread - distance query is "+delay+" mt");
+        		//Log.i(TAG, "mainthread - distance query is "+delay+" mt");
         		condvargps.block();
         		//if (condvargps.block(delay)) break;
         		// get preference on distance, return default 0 (dont filter distance) if not set
@@ -184,7 +184,7 @@ public class TaskNotification extends Service{
 				Criteria criteria = new Criteria();
 				criteria.setAccuracy(Criteria.ACCURACY_FINE);
 				String provider = lm.getBestProvider(criteria, true);
-				Log.i(TAG, "mainthread - Provider: "+provider);
+				//Log.i(TAG, "mainthread - Provider: "+provider);
 				gpslocation = lm.getLastKnownLocation(provider);				
         		if (gpslocation == null) continue;
         		//asynchronous operation to download thread
