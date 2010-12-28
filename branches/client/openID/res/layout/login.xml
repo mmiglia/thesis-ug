@@ -8,7 +8,7 @@
     	android:layout_height="wrap_content"
     	android:layout_centerHorizontal="true"
 		android:layout_marginTop="5dip"
-        android:paddingBottom="25dip"
+        android:paddingBottom="15dip"
     	android:src="@drawable/androidmarker"/>
 
 	<TextView    
@@ -19,7 +19,7 @@
         android:layout_centerHorizontal="true"
         android:paddingLeft="15dip"
         android:paddingRight="15dip"
-        android:paddingBottom="25dip"
+        android:paddingBottom="15dip"
         android:text="@string/username"/>
 
     <Spinner 
@@ -54,7 +54,7 @@
         android:id="@+id/passwordtext"
         android:layout_width="80dip"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dip"
+        android:layout_marginTop="55dip"
         android:layout_marginLeft="15dip"
         android:text="@string/password"
         android:layout_below="@id/usernametext"/>
@@ -69,14 +69,28 @@
         android:background="@android:drawable/editbox_background"
         android:layout_toRightOf="@id/passwordtext"
         android:layout_alignBaseline="@id/passwordtext"/>       
+
+    <Button
+        android:id="@+id/use_personal_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/password"
+        android:layout_marginTop="5dip"
+        android:text="@string/use_personal_account"
+        android:onClick="useOtherAccount"/>
+
     <Button
         android:id="@+id/sign"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/passwordtext"
-        android:layout_marginTop="15dip"
+        android:layout_marginTop="5dip"
         android:text="@string/sign_in_button" 
         android:onClick="signIn" />
+        
+
+
 </RelativeLayout>
     

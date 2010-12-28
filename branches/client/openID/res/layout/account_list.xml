@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ffffff">
+	<TextView    
+        android:id="@+id/messageChooseAccount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:paddingLeft="15dip"
+        android:paddingRight="15dip"
+        android:paddingBottom="25dip"
+        android:text="@string/username"/>
+
+    <Spinner 
+        android:id="@+id/SpinnerAccountList"
+        android:layout_width="fill_parent"
+        android:layout_height="55dip"
+        android:layout_marginLeft="15dip"
+        android:layout_below="@+id/messageChooseAccount"
+        android:prompt = "@string/currentServer">
+    </Spinner>
+    
+    <Button
+        android:id="@+id/back_to_login"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/SpinnerAccountList"
+        android:layout_marginTop="5dip"
+        android:text="Back" 
+        android:onClick="back_to_login" />
+    
+	<Button
+        android:id="@+id/use_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_toRightOf="@+id/back_to_login"
+        android:layout_alignBaseline="@+id/back_to_login"
+        android:text="@string/sign_in_button" 
+        android:onClick="useAccount" />
+    
+</RelativeLayout>
