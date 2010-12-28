@@ -92,4 +92,7 @@
 	<string name="server_list_title">Change server</string>
 	<string name="changeServerSummary">Select a server from the list</string>
 	<string name="currentServer">Server</string>
+<string name="use_personal_account">Choose use personal account</string>
+<string name="want_to_use_personal_account">Do you really want to use a personal account?</string>
+<string name="choose_account">Choose an account from the list</string>
 </resources>

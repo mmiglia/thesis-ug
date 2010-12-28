@@ -4,6 +4,8 @@ import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -13,12 +15,14 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.thesisug.R;
 import com.thesisug.communication.LoginResource;
@@ -47,6 +51,11 @@ public class Login extends AccountAuthenticatorActivity {
 	private EditText passwordBox;
 	private Thread authenticationThread;
 	private final Handler handler = new Handler();
+	
+	private Button otherAccount;
+	private EditText m_addItemText;
+	private ArrayAdapter<String> accountArray;
+    private Dialog dialogChooseAccount;
     
     /** Called when the activity is first created. */
     @Override
@@ -86,8 +95,66 @@ public class Login extends AccountAuthenticatorActivity {
         spnServer.setSelection(DEFAULT_SERVER_POS_IN_LIST);
         
         NetworkUtilities.changeServerURI(spnServer.getItemAtPosition(DEFAULT_SERVER_POS_IN_LIST).toString());
-        
     }
+    
+    public void back_to_login(View view){
+    	dialogChooseAccount.dismiss();    	
+    }
+    
+    public void useAccount(){
+    	
+    	dialogChooseAccount.dismiss(); 
+    }
+    
+    
+    public void useOtherAccount(View view){
+    	
+				dialogChooseAccount = new Dialog(this);
+				
+				dialogChooseAccount.setContentView(R.layout.account_list);
+
+				dialogChooseAccount.setTitle(R.string.choose_account);
+
+                //Fill the list with the accounts
+                Account[] availableAccounts= accountManager.getAccounts();
+                
+                Spinner spinAccountList=(Spinner)dialogChooseAccount.findViewById(R.id.SpinnerAccountList);
+                
+                accountArray = new ArrayAdapter(this, android.R.layout.simple_spinner_item);
+                accountArray.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinAccountList.setAdapter(accountArray);
+                accountArray.add("Create new Account");
+                
+                for(Account acc:availableAccounts){
+                	accountArray.add(acc.name);
+                }
+                
+                spinAccountList.setOnItemSelectedListener(new OnItemSelectedListener(){
+
+					@Override
+					public void onItemSelected(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void onNothingSelected(AdapterView<?> arg0) {
+						// TODO Auto-generated method stub
+						
+					}
+                	
+                });
+                
+                
+                dialogChooseAccount.show();
+ 
+            	//Button buttonOK = (Button) dialog.findViewById(R.id.buttonOK);
+
+               // buttonOK.setOnClickListener(new OnClickListener(){
+                
+    }
+    
     
     
     
