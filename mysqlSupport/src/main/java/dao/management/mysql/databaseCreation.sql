@@ -136,7 +136,26 @@ select "Starting creation of table Group_Member" as " ";
 DROP TABLE IF EXISTS `GroupMember`;
 CREATE TABLE IF NOT EXISTS `GroupMember` (
   `UserGroup` int(11) NOT NULL,
-  `User` varchar(50)  NOT NULL
+  `User` varchar(50)  NOT NULL,
+  `TimeStamp` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 select "End creation of table Group_Member" as " ";
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `Group_Request`
+--
+select "Starting creation of table GroupRequest" as " ";
+DROP TABLE IF EXISTS `GroupRequest`;
+CREATE TABLE IF NOT EXISTS `GroupRequest` (
+  `id` int(15) NOT NULL AUTO_INCREMENT,
+  `Sender` varchar(50)  NOT NULL,
+  `UserGroup` int(11) NOT NULL,
+  `User` varchar(50)  NOT NULL,
+  `Message` varchar(150)  NOT NULL,
+  `TimeStamp` TIMESTAMP NOT NULL default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+select "End creation of table Group_Request" as " ";
