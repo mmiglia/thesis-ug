@@ -85,6 +85,9 @@ public class TestMySQL extends TestCase {
     	 System.out.println("End "+testName);
      }	
 	
+    String first="testFirstName";
+    String last="testLastName";
+    String mail="test@test.com";
     String userId="testUser";
     String username="testUser";
     String password="testPassword";
@@ -204,7 +207,7 @@ public class TestMySQL extends TestCase {
 
 	public void testAddUser(){
 		testName="testAddUser";
-		RegisteredUsers.instance.addUsers(username, password);
+		RegisteredUsers.instance.addUsers(first, last, mail, username, password);
 		assertTrue(RegisteredUsers.instance.usernameExist(username));
 		
 	}	

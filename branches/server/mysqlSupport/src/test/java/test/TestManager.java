@@ -68,6 +68,9 @@ public class TestManager extends TestCase {
 	
 	private Logger log = LoggerFactory.getLogger(TestManager.class);
 	
+	private String first="FirstName";
+	private String last="LastName";
+	private String mail="user@dummy.com";
 	private String user="user";
 	private String passwd="dummy";
 	private String testName = "";
@@ -122,8 +125,8 @@ public class TestManager extends TestCase {
 	@Test
 	public void testAddUser() {
 		testName = "Test Add User";		
-		log.info("Adding dummy account username = "+user+", password ="+passwd);
-		RegisteredUsers.instance.addUsers(user, passwd);
+		log.info("Adding dummy account: first name="+first+" last name="+last+" email="+mail+" username="+user+", password="+passwd);
+		RegisteredUsers.instance.addUsers(first, last, mail, user, passwd);
 		String id=RegisteredUsers.instance.checkMatch(user, passwd);
 		log.info("Find ID for: "+user+", identified by: "+passwd+", with ID: "+id);		
 		if (id.equals(null))

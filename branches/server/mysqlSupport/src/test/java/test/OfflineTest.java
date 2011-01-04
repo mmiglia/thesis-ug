@@ -48,6 +48,9 @@ public class OfflineTest extends TestCase{
 					.getProperty("HTTPS_PORT"));
 	}
 
+	private String first="FirstName";
+	private String last="LastName";
+	private String mail="user@dummy.com";
 	private String user="user";
 	private String pass="dummy";
 	
@@ -55,8 +58,8 @@ public class OfflineTest extends TestCase{
 	public void testaddUser() {
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
 		log.info("TESTADDUSER");
-		log.info("Adding dummy account username = "+user+", password ="+pass);
-		RegisteredUsers.instance.addUsers(user, pass);
+		log.info("Adding dummy account: first name="+first+" last name="+last+" email="+mail+" username="+user+", password="+pass);
+		RegisteredUsers.instance.addUsers(first, last, mail, user, pass);
 		String id=RegisteredUsers.instance.checkMatch(user, pass);
 		log.info("ID per " +user + " " + pass+ id);
 		assertTrue(true);
