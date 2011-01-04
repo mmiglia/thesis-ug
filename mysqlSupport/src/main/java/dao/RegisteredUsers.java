@@ -33,7 +33,7 @@ public enum RegisteredUsers {
 	 * @param username username to the system
 	 * @param password password to the system
 	 */
-	public static void addUsers (String username, String password){
+	public static void addUsers (String firstname, String lastname, String email, String username, String password){
 		if (usernameExist(username)) {
 			log.warn("Username already exist, choose different username");
 			return;
@@ -41,7 +41,8 @@ public enum RegisteredUsers {
 		
 		Connection conn= (Connection) dbManager.dbConnect();
 		
-		String insertQuery="Insert into User (username,password) values ('"+username+"','"+password+"')";
+		String insertQuery="Insert into User (firstname, lastname, email, username, password) " +
+				"values ('"+firstname+"','"+lastname+"','"+email+"','"+username+"','"+password+"')";
 		QueryStatus qs=dbManager.customQuery(conn, insertQuery);
 		
 		dbManager.dbDisconnect(conn);
@@ -82,6 +83,43 @@ public enum RegisteredUsers {
 		}
 		
 		return userExist;
+		
+	}
+	
+public static boolean useremailExist(final String email){
+		
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		String emailExistQuery="Select * from User where email='"+email+"'";
+		
+		QueryStatus qs=dbManager.customSelect(conn, emailExistQuery);
+		boolean emailExist=true;
+		
+		if(!qs.execError){
+			ResultSet rs=(ResultSet)qs.customQueryOutput;
+			try {
+				if(rs.next()){
+					
+					emailExist=true;
+				}else{
+					
+					emailExist=false;
+				}
+				dbManager.dbDisconnect(conn);
+			}
+			catch(SQLException sqlE){
+				//TODO che fare con la sqlE?
+				return emailExist;
+			}
+			finally{
+					dbManager.dbDisconnect(conn);
+			}
+		}else{
+			qs.occourtedErrorException.printStackTrace();
+			qs.explainError();
+		}
+		
+		return emailExist;
 		
 	}
 	
