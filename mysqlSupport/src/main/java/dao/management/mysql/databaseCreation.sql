@@ -98,19 +98,19 @@ CREATE TABLE IF NOT EXISTS `Task` (
 select "End creation of table Task" as " ";
 
 -- --------------------------------------------------------
-
 --
 -- Struttura della tabella `User`
 --
-select "Starting creation of table User" as " ";
-DROP TABLE IF EXISTS `User`;
+
 CREATE TABLE IF NOT EXISTS `User` (
   `username` varchar(50) DEFAULT NULL,
   `password` varchar(50) DEFAULT NULL,
+  `firstname` varchar(50) NOT NULL,
+  `lastname` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
   `sessionKey` varchar(50) DEFAULT NULL,
   `active` int(1) DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-select "End creation of table User" as " ";
 
 -- --------------------------------------------------------
 
