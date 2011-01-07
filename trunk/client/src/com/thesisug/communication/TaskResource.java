@@ -124,7 +124,7 @@ public class TaskResource {
 			final Context context) {
 		final Runnable runnable = new Runnable() {
 			public void run() {
-				Log.i(TAG, "Updating task with taskID="+newTask.taskID);
+				Log.i(TAG, "Updating task with taskID="+newTask.taskID+" and groupID="+newTask.groupId);
 				String body = SingleTaskHandler.format(newTask);
 				Log.d(TAG, "Task formatted, start runHttpPost");
 				final boolean result = runHttpPost(UPDATE_TASK, null, body, context);

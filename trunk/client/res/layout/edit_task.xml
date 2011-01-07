@@ -177,11 +177,19 @@
         	android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
         	android:text="@string/groupId"/>
-       	<EditText
-        	android:id="@+id/task_groupId"
-        	android:layout_width="fill_parent"
-        	android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+        <Spinner 
+		    android:id="@+id/spinnerGroupTask"
+		    android:layout_width="fill_parent"
+		    android:layout_height="60dip"
+		    android:prompt = "@string/chooseAGroup">
+		</Spinner>
+		<Button
+		  	android:id="@+id/btn_updateGroupList"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="@string/btn_updateGroupList"
+		  	android:textAppearance="?android:attr/textAppearanceSmall"
+		  	android:layout_below="@+id/spinnerGroupTask"/>
     </LinearLayout>
 
     </TableLayout>

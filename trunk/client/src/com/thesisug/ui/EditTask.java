@@ -2,6 +2,7 @@ package com.thesisug.ui;
 
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -15,16 +16,21 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.RatingBar;
+import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.thesisug.R;
+import com.thesisug.communication.GroupResource;
 import com.thesisug.communication.TaskResource;
+import com.thesisug.communication.valueobject.GroupData;
 import com.thesisug.communication.valueobject.SingleTask;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 
@@ -34,22 +40,31 @@ public class EditTask extends Activity {
 	private static final int TIMEFROM_DIALOG_ID = 0, DEADLINE_DATE_ID = 1, TIMETO_DIALOG_ID = 2, DEADLINE_TIME_ID = 3, SAVE_DATA_ID = 4, CREATE_DATA_ID = 5, DATE_ERROR_ID=6;
     // constants for origin activity chooser
 	private static final int CREATE_TASK = 1, EDIT_TASK = 2; 
-    
+	private static final int GET_USER_GROUP_DIALOG = 7;
+	
+	private ProgressDialog createDialog;
+	private Thread downloadGroupListThread;
+	private ArrayAdapter<String> arrGroupsAdapter;
+	
 	// date and time
     private Calendar deadline=Calendar.getInstance(), notifyStart = Calendar.getInstance(), notifyEnd = Calendar.getInstance();
     
     private final Handler handler = new Handler();
     // button
-    private Button deadlineDate, deadlineTime, timeFrom, timeTo, save, back;
+    private Button deadlineDate, deadlineTime, timeFrom, timeTo, save, back,btn_updateGroupList;
     private EditText title, description;
 
 	//TODO Eliminare e rimpiazzare con una lista dei gruppi disponibili
-    private EditText groupId;
+    //private EditText groupId;
+    private Spinner spinnerGroupList;
     
     private RatingBar priority;
     private float latitude, longitude;
 	private int currentDialog;
     
+	private String packetGroupID="0";
+	private boolean setSpinnerSelectedElementAsBundle=true;
+	
     @Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -60,7 +75,8 @@ public class EditTask extends Activity {
 		deadlineDate = (Button) findViewById(R.id.date_deadline);
 		deadlineTime = (Button) findViewById(R.id.time_deadline);
 		//TODO Eliminare e rimpiazzare con una lista dei gruppi disponibili
-		groupId=(EditText) findViewById(R.id.task_groupId);
+		//groupId=(EditText) findViewById(R.id.task_groupId);
+		spinnerGroupList=(Spinner)findViewById(R.id.spinnerGroupTask);
 		
 		//Set deadline to tomorrow
 		deadline.add(Calendar.DAY_OF_MONTH, 1);
@@ -115,9 +131,11 @@ public class EditTask extends Activity {
 				}
 				SingleTask task;
 				currentDialog = packet.getInt("originator");
+				String groupID="0";
 				switch (currentDialog) {
 				case EDIT_TASK:
 					showDialog(SAVE_DATA_ID);
+					groupID=spinnerGroupList.getSelectedItem().toString().split("-")[0];
 					task = new SingleTask();
 					task.taskID = packet.getString("taskID");
 					task.reminderID=packet.getString("reminderID");
@@ -131,13 +149,15 @@ public class EditTask extends Activity {
 					task.gpscoordinate.latitude = latitude;
 					
 					//TODO Eliminare e rimpiazzare con una lista dei gruppi disponibili
-					task.groupId=groupId.getText().toString();
+					task.groupId=groupID;
+					Log.i(TAG, "Sending groupID for update:"+task.groupId);
 					
 					Thread savingThread = TaskResource.updateTask(task,
 							handler, EditTask.this);
 					break;
 				case CREATE_TASK:
 					showDialog(CREATE_DATA_ID);
+					groupID=spinnerGroupList.getSelectedItem().toString().split("-")[0];
 					
 					//TODO Verificare la gestione dell'id del reminder e del gruppo (per ora metto -1 ad entrambi visto che Ã¨ poi il sistema ad assegnare questi valori)
 					task = new SingleTask("-1",title.getText().toString(), 
@@ -147,7 +167,7 @@ public class EditTask extends Activity {
 							description.getText().toString(),
 							Math.round(priority.getRating()),
 							"-1", 
-							groupId.getText().toString());
+							groupID);
 					//TODO Eliminare elemento sopra e rimpiazzare con una lista dei gruppi disponibili
 					
 					
@@ -167,6 +187,24 @@ public class EditTask extends Activity {
 				finish();
 			}
 		});
+    	btn_updateGroupList=(Button)findViewById(R.id.btn_updateGroupList);
+    	btn_updateGroupList.setOnClickListener(new OnClickListener(){
+    		public void onClick(View v){
+    			updateUserGroupList(false);
+    		}
+    	});
+	}
+    
+    /**
+     * 
+     * @param setAsDefault: if true set the spinner selected element to the one arrived with the bundle of the intent
+     */
+	private void updateUserGroupList(boolean setAsDefault){
+		//Get group list 
+		setSpinnerSelectedElementAsBundle=setAsDefault;
+		currentDialog=GET_USER_GROUP_DIALOG;
+		showDialog(currentDialog);
+		downloadGroupListThread = GroupResource.getUserGroup(handler, EditTask.this);
 	}
     
     public void finishSave (boolean result) {
@@ -202,7 +240,13 @@ public class EditTask extends Activity {
     
 	private void updateText(Bundle packet) {
 		title.setText((packet.getString("title")==null)?"":packet.getString("title"));
-		groupId.setText((packet.getString("groupId")==null)?"":packet.getString("groupId"));
+		
+		//Retrive the correct group, getting group list		
+		this.packetGroupID=packet.getString("groupID");
+		
+		updateUserGroupList(true);
+
+		
 		description.setText((packet.getString("description")==null)?"":packet.getString("description"));
 		priority.setRating((packet.getInt("priority")==0)?3:packet.getInt("priority"));
 		if (packet.getString("deadline")!=null) extractDate(packet.getString("deadline"), DEADLINE_DATE_ID);
@@ -214,6 +258,7 @@ public class EditTask extends Activity {
 		timeTo.setText(getTimeString(notifyEnd));
 		latitude = packet.getFloat("latitude");
 		longitude = packet.getFloat("longitude");
+		
 	}
 
 	private void extractDate(String xsDateTime, int code) {
@@ -277,6 +322,11 @@ public class EditTask extends Activity {
                 public void onClick(DialogInterface dialog, int whichButton) {}
             })
             .create();
+		case GET_USER_GROUP_DIALOG:
+			createDialog = new ProgressDialog(this);
+			createDialog.setCancelable(true);
+			createDialog.setMessage(getText(R.string.getting_user_group_list));
+			return createDialog;
 		}
 		return null;
 	}
@@ -318,7 +368,7 @@ public class EditTask extends Activity {
 	}
 	
 	private boolean titleIsValid(String taskTitle) {
-		// c'è un'occorrenza di .*\\S.* in una stringa se c'è almeno
+		// c'ï¿½ un'occorrenza di .*\\S.* in una stringa se c'ï¿½ almeno
 		// un carattere non white-space. Per Java i caratteri white-space sono
 		//  \t,\n,\x0B,\f e \r.
 		return taskTitle.matches(".*\\S.*");
@@ -351,6 +401,44 @@ public class EditTask extends Activity {
 		int hour = cal.get(Calendar.HOUR_OF_DAY);
 		int minute = cal.get(Calendar.MINUTE);
 		return String.valueOf((hour==0)?12:cal.get(Calendar.HOUR))+":"+((minute<10)?"0":"")+String.valueOf(minute)+ ((hour>=12)?" PM":" AM");
+	}
+
+	public void afterGroupListLoaded(List<GroupData> groupList){
+    	//Dismiss dialog
+    	dismissDialog(GET_USER_GROUP_DIALOG);   
+		
+		//Update groupSpinnerList
+	
+    	arrGroupsAdapter=new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item);
+    	arrGroupsAdapter.add("0-"+R.string.personal_task);
+    	for(GroupData g:groupList){
+    		arrGroupsAdapter.add(g.groupID+"-"+g.groupName);
+    	}
+    	
+    	spinnerGroupList.setAdapter(arrGroupsAdapter);
+
+		if(groupList==null || groupList.isEmpty()){
+			Toast.makeText(getApplicationContext(), R.string.noGroupForUser, Toast.LENGTH_LONG).show();
+		}
+		
+		//Select default element
+		if(setSpinnerSelectedElementAsBundle){
+			Log.i(TAG,"GOT:"+packetGroupID);
+			if(arrGroupsAdapter!=null){
+				for(int i=0;i<arrGroupsAdapter.getCount();i++){
+					Log.i(TAG,arrGroupsAdapter.getItem(i).split("-")[0]+" vs "+this.packetGroupID+" =..");
+					if(arrGroupsAdapter.getItem(i).split("-")[0].equals(this.packetGroupID)){
+						Log.i(TAG,"FOUND!");
+						spinnerGroupList.setSelection(i);
+						Log.i(TAG,"Done!");
+						break;
+					}
+				}			
+			}else{
+				spinnerGroupList.setSelection(0);
+			}
+		}
+		
 	}
     
 }

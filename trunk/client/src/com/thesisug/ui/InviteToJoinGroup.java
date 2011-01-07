@@ -133,9 +133,7 @@ public class InviteToJoinGroup extends Activity {
     	
     	spinnerGroupList.setAdapter(arrGroupsAdapter);
 
-		if(groupList!=null){
-			Toast.makeText(getApplicationContext(), R.string.thereAreGroupForUser, Toast.LENGTH_LONG).show();
-		}else{
+		if(groupList==null || groupList.isEmpty()){
 			Toast.makeText(getApplicationContext(), R.string.noGroupForUser, Toast.LENGTH_LONG).show();
 		}
 		
