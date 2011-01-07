@@ -41,7 +41,9 @@ public class GroupData{
 		this.owner = owner;
 
 	}
-
+	public GroupData(String groupName,String owner) {
+		this("-1",groupName,owner);		
+	}
 
 	
 }

@@ -3,6 +3,7 @@ package businessobject;
 import java.util.List;
 
 import valueobject.GroupData;
+import valueobject.GroupInviteData;
 
 
 /**
@@ -14,12 +15,12 @@ public interface GroupInterface {
 	/*
 	 * Add the group to the database and set the owner, finally add the owner as group member
 	 */
-	public int createGroup(String groupName, String owner);
+	public GroupData createGroup(GroupData group);
 	
 	/*
 	 * Add the invite to group request to the database
 	 */
-	public boolean  inviteToGroup(String sender,String username,String groupID, String message);
+	public boolean  inviteToGroup(String sender,GroupInviteData invite);
 	
 	
 	/*
@@ -30,6 +31,6 @@ public interface GroupInterface {
 	/*
 	 * Accept the user group join request
 	 */
-	public boolean acceptGroupInviteRequest(String requestId);
+	public boolean acceptGroupInviteRequest(GroupInviteData invite);
 	
 }

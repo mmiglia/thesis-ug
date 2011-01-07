@@ -14,9 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.GroupData;
-import valueobject.SingleTask;
+import valueobject.GroupInviteData;
 import businessobject.GroupManager;
-import businessobject.TaskManager;
 
 /**
  * Task GroupResource is responsible for manage the group into the server.
@@ -34,10 +33,11 @@ public class GroupResource {
 	@POST
 	@Path("/create")	
 	@Consumes("application/xml")
-	public int createGroup(@PathParam("username") String userID,
-			@CookieParam("sessionid") String sessionid, String groupName) {
-		log.info("Request to create group from user " + userID + ", session "+ sessionid+ " groupName "+groupName);
-		return GroupManager.getInstance().createGroup(groupName, userID);
+	public void createGroup(@PathParam("username") String userID,
+			@CookieParam("sessionid") String sessionid, GroupData group) {
+		log.info("Request to create group from user " + userID + ", session "+ sessionid+ " groupName "+group.groupName);
+		group.owner=userID;
+		GroupManager.getInstance().createGroup(group);
 	}
 
 	/**
@@ -51,10 +51,10 @@ public class GroupResource {
 	@POST
 	@Path("/invite")	
 	@Consumes("application/xml")
-	public boolean inviteToGroup(@PathParam("username") String senderUserID, String userToInvite,
-			@CookieParam("sessionid") String sessionid, String groupID,String message) {
-		log.info("Request from "+senderUserID+" to add the user "+userToInvite+" to the group with id "+ groupID);
-		return GroupManager.getInstance().inviteToGroup(senderUserID,userToInvite, groupID, message);
+	public boolean inviteToGroup(@PathParam("username") String senderUserID, GroupInviteData invite,
+			@CookieParam("sessionid") String sessionid) {
+		log.info("Request from "+senderUserID+" to add the user "+invite.userToInvite+" to the group with id "+ invite.groupID);
+		return GroupManager.getInstance().inviteToGroup(senderUserID,invite);
 	}	
 	
 	/**
@@ -72,15 +72,40 @@ public class GroupResource {
 				+ sessionid);
 		return GroupManager.getInstance().getUserGroups(userID);
 	}
+
+	/**
+	 * Get all group invite request
+	 */
+	@GET
+	@Path("/getJoinGroupRequest")
+	@Produces("application/xml")
+	public List<GroupInviteData> getJoinGroupRequest(@PathParam("username") String userID,
+			@CookieParam("sessionid") String sessionid){
+		log.info("Retrieving all join to group request for the user "+ userID);
+		return GroupManager.getInstance().getGroupInviteRequest(userID);
+	}	
 	
 	/**
 	 * Accept a group invite request
 	 */
+	@POST
 	@Path("/accept")
 	@Consumes("application/xml")
 	public boolean acceptGroupRequest(@PathParam("username") String userID,
-			@CookieParam("sessionid") String sessionid, String requestID){
-		log.info("Accepting group request with id"+requestID+" from user "+ userID);
-		return GroupManager.getInstance().acceptGroupInviteRequest(requestID);
+			@CookieParam("sessionid") String sessionid, GroupInviteData invite){
+		log.info("Accepting group request to join the group "+invite.groupID+" received by "+userID+" from user "+ invite.sender);
+		return GroupManager.getInstance().acceptGroupInviteRequest(invite);
+	}
+	
+	/**
+	 * Refuse a group invite request
+	 */
+	@POST
+	@Path("/refuse")
+	@Consumes("application/xml")
+	public boolean refuseGroupRequest(@PathParam("username") String userID,
+			@CookieParam("sessionid") String sessionid, GroupInviteData invite){
+		log.info("Refusing group request to join the group "+invite.groupID+" received by "+userID+" from user "+ invite.sender);
+		return GroupManager.getInstance().refuseGroupInviteRequest(invite);
 	}
 }

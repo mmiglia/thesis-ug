@@ -5,10 +5,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import dao.GroupDatabase;
-
-
 import valueobject.GroupData;
+import valueobject.GroupInviteData;
+import dao.GroupDatabase;
 
 public class GroupManager implements GroupInterface{
 	private final static Logger log = LoggerFactory
@@ -23,14 +22,14 @@ public class GroupManager implements GroupInterface{
 	}
 	
 	@Override
-	public int createGroup(String groupName, String owner) {
-		return GroupDatabase.instance.createGroup(groupName, owner);
+	public GroupData createGroup(GroupData group) {
+		return GroupDatabase.instance.createGroup(group);
 		
 	}
 
 	@Override
-	public boolean inviteToGroup(String sender,String receiver, String groupID, String message) {
-		return GroupDatabase.instance.inviteToGroup(sender,receiver, groupID, message);
+	public boolean inviteToGroup(String sender,GroupInviteData invite) {
+		return GroupDatabase.instance.inviteToGroup(sender,invite.userToInvite, invite.groupID, invite.message);
 		
 	}
 
@@ -39,12 +38,22 @@ public class GroupManager implements GroupInterface{
 		return GroupDatabase.instance.getUserGroups(username);
 		
 	}
+	
+	public List<GroupInviteData> getGroupInviteRequest(String userID) {
+		return GroupDatabase.instance.getGroupInviteRequest(userID);
+		
+	}
 
 	@Override
-	public boolean acceptGroupInviteRequest(String requestId) {
+	public boolean acceptGroupInviteRequest(GroupInviteData invite) {
 		
-		return GroupDatabase.instance.acceptGroupInviteRequest(requestId);
+		return GroupDatabase.instance.acceptGroupInviteRequest(invite);
 	}	
+	
+	public boolean refuseGroupInviteRequest(GroupInviteData invite) {
+		return GroupDatabase.instance.refuseGroupInviteRequest(invite);
+	}
+
 	
 	public static void main(String[] args){
 		GroupManager manager=new GroupManager();
@@ -86,7 +95,20 @@ public class GroupManager implements GroupInterface{
 		
 		manager.acceptGroupInviteRequest("1");
 		 */
+		
+		/*
+		 * Get join to group request list
+		
+		
+		
+		for(GroupInviteData invite:list){
+			System.out.println(invite.sender+":"+invite.message+" - "+invite.groupName);
+		}
+		*/
 	}
+
+
+
 
 
 	
