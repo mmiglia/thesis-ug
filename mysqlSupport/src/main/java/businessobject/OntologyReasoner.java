@@ -1,6 +1,8 @@
 package businessobject;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -29,7 +31,7 @@ public class OntologyReasoner {
 	private final static Logger log = LoggerFactory
 			.getLogger(OntologyReasoner.class);
 	
-	private final static String ONTOLOGY_FILE = Configuration.getInstance().constants.getProperty("DATABASE_FOLDER")+"HintsOntology.owl";
+	private final static String ONTOLOGY_FILE = "http://gronksoft.altervista.org/HintsOntology.owl";
 	
 	//private final static String ONTOLOGY_FILE = Configuration.getInstance().constants.getProperty("DATABASE_FOLDER")+"/HintsOntologyIta.owl";
 	private final static OntologyReasoner instance = new OntologyReasoner();
@@ -38,12 +40,11 @@ public class OntologyReasoner {
 	
 	private OntologyReasoner() {
 		manager = OWLManager.createOWLOntologyManager();
-		// load the ontology file
+
+		
 		try {
-			log.debug("File name:"+ONTOLOGY_FILE);
-			File ontologyFile=new File(ONTOLOGY_FILE);
-			log.debug("File: "+ontologyFile.getPath()+" exist:"+ontologyFile.exists());
-			ontology = manager.loadOntologyFromOntologyDocument(ontologyFile);
+			// load the ontology file from IRI created from the ONTOLOGY_FILE string that points to a file on internet
+			ontology = manager.loadOntologyFromOntologyDocument(org.semanticweb.owlapi.model.IRI.create(ONTOLOGY_FILE));
 		} catch (OWLOntologyCreationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -61,7 +62,9 @@ public class OntologyReasoner {
 	* @param need String from a parsed user query / task that needs to be done
 	* @return list of location that can satisfy the need
 	*/
-	public static List<String> getSearchQuery(String need) {		
+	public static List<String> getSearchQuery(String need) {	
+		log.info("2File name:"+ONTOLOGY_FILE);
+		
 			log.info("getSearchQuery with need:"+need);
 			String base = ontology.getOntologyID().getOntologyIRI().toString();
 			OWLDataFactory dataFactory = manager.getOWLDataFactory();

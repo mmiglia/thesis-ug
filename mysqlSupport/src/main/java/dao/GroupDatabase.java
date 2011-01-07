@@ -4,32 +4,14 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.GroupData;
-import valueobject.SingleEvent;
-import valueobject.SingleTask;
+import valueobject.GroupInviteData;
 import businessobject.Configuration;
-import businessobject.Converter;
-
-import com.db4o.ObjectContainer;
-import com.db4o.ObjectServer;
-import com.db4o.ObjectSet;
-import com.db4o.activation.ActivationPurpose;
-import com.db4o.activation.Activator;
-import com.db4o.cs.Db4oClientServer;
-import com.db4o.cs.config.ServerConfiguration;
-import com.db4o.query.Constraint;
-import com.db4o.query.Predicate;
-import com.db4o.query.Query;
-import com.db4o.ta.Activatable;
-import com.db4o.ta.TransparentActivationSupport;
-
 import dao.management.QueryStatus;
 import dao.management.mysql.MySQLDBManager;
 
@@ -50,6 +32,11 @@ public enum GroupDatabase {
 	 * Add the request to the GroupRequest table
 	 */
 	public  static boolean  inviteToGroup(String sender, String receiver,String groupID, String message){
+		
+		if(isUserAlreadyInGroup(receiver,groupID)){
+			return false;
+		}
+		
 		Connection conn= (Connection) dbManager.dbConnect();
 		
 		String insertQuery="Insert into GroupRequest (Sender,UserGroup,User,Message) values ('"+sender+"','"+groupID+"','"+receiver+"','"+message+"')";
@@ -68,11 +55,39 @@ public enum GroupDatabase {
 		return true;
 	}
 	
+	private static boolean isUserAlreadyInGroup(String username,String groupID){
+		
+		
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		//Groups in wich the user is member
+		String selectQuery="Select count(*) as member from GroupMember where UserGroup='"+groupID+"' and User='"+username+"'";
+
+		
+		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
+		
+		ResultSet rs=(ResultSet)qs.customQueryOutput;
+		
+		boolean isMember=false;
+		try{
+			while(rs.next()){
+				isMember=(rs.getInt("member")==0)?false:true;
+			}
+		}catch(SQLException sqlE){
+			//TODO
+			
+		}finally{	
+			dbManager.dbDisconnect(conn);
+		}
+		
+		return isMember;
+	}
+	
 	/*
 	 * Add the group to the database and set the owner, finally add the owner as group member
 	 */
-	public static int createGroup(String groupName, String owner){
-		int groupID=-1;
+	public static GroupData createGroup(GroupData group){
+		
 		Connection conn= (Connection) dbManager.dbConnect();
 		
 		//Starting transaction
@@ -84,10 +99,10 @@ public enum GroupDatabase {
 			qs.occourtedErrorException.printStackTrace();
 			log.error("Error during transaction starting... group not created");
 			dbManager.dbDisconnect(conn);
-			return -1;
+			return null;
 		}
 		
-		String insertQuery="Insert into UserGroup (group_name,owner) values ('"+groupName+"','"+owner+"');";
+		String insertQuery="Insert into UserGroup (group_name,owner) values ('"+group.groupName+"','"+group.owner+"');";
 		System.out.println(insertQuery);
 		qs=dbManager.customQuery(conn, insertQuery);
 		if(qs.execError){
@@ -97,9 +112,9 @@ public enum GroupDatabase {
 			//Rolling back
 			dbManager.rollbackTransaction(conn);
 			
-			log.error("Error during group creation ('"+groupName+"','"+owner+"').. not created");
+			log.error("Error during group creation ('"+group.groupName+"','"+group.owner+"').. not created");
 			dbManager.dbDisconnect(conn);
-			return -1;
+			return null;
 		}
 		
 		//Retrive groupID
@@ -110,13 +125,13 @@ public enum GroupDatabase {
 		try{
 			//Get groupID from database
 			if(rs.next()){
-				groupID=Integer.parseInt(rs.getString("groupID"));
+				group.groupID=rs.getString("groupID");
 				
 			}else{
 				//Rolling back
 				dbManager.rollbackTransaction(conn);
 				dbManager.dbDisconnect(conn);
-				return -1;
+				return null;
 			}
 		}catch(SQLException sqlE){
 			//TODO manage exception
@@ -126,11 +141,11 @@ public enum GroupDatabase {
 			dbManager.dbDisconnect(conn);
 		}
 			
-		log.info("Group ('"+groupName+"','"+owner+"') created! GroupID="+groupID);
+		log.info("Group ('"+group.groupName+"','"+group.owner+"') created! GroupID="+group.groupID);
 		
 		//Add the owner to the GroupMember table
 
-		insertQuery="Insert into GroupMember (UserGroup,User) values ('"+groupID+"','"+owner+"');";
+		insertQuery="Insert into GroupMember (UserGroup,User) values ('"+group.groupID+"','"+group.owner+"');";
 		System.out.println(insertQuery);
 		qs=dbManager.customQuery(conn, insertQuery);
 		if(qs.execError){
@@ -142,12 +157,12 @@ public enum GroupDatabase {
 			
 			log.error("Error during add of the owner to the GroupMember Table");
 			dbManager.dbDisconnect(conn);
-			return -1;
+			return null;
 		}
 		
 		dbManager.commitTransaction(conn);
 		dbManager.dbDisconnect(conn);
-		return groupID;
+		return group;
 	}
 	
 	
@@ -195,7 +210,11 @@ public enum GroupDatabase {
 	 * Accept the invite to join the group
 	 */
 	
-	public static boolean acceptGroupInviteRequest(String requestId){
+	public static boolean acceptGroupInviteRequest(GroupInviteData invite){
+		
+		if(isUserAlreadyInGroup(invite.userToInvite,invite.groupID)){
+			return false;
+		}
 		
 		//Starting transaction
 		Connection conn= (Connection) dbManager.dbConnect();
@@ -211,33 +230,10 @@ public enum GroupDatabase {
 			dbManager.dbDisconnect(conn);
 			return false;
 		}	
-		//Get the request data
-		String selectQuery="Select * from GroupRequest where id ="+requestId;
-
 		
-		qs=dbManager.customSelect(conn, selectQuery);
-		
-		ResultSet rs=(ResultSet)qs.customQueryOutput;
-		GroupData group=null;
-		
-		String groupID="";
-		String userToAdd="";
-		
-		try{
-			while(rs.next()){
-				groupID=rs.getString("UserGroup");
-				userToAdd=rs.getString("User");
-			}
-		}catch(SQLException sqlE){
-			//Rolling back
-			dbManager.rollbackTransaction(conn);
-			log.error("Error during the retreive of data for the request "+ requestId+" rolling back");
-			dbManager.dbDisconnect(conn);
-			
-		}
 		
 		//Add user to the group
-		String insertQuery="Insert into GroupMember (UserGroup,User) values ('"+groupID+"','"+userToAdd+"');";
+		String insertQuery="Insert into GroupMember (UserGroup,User) values ('"+invite.groupID+"','"+invite.userToInvite+"');";
 		System.out.println(insertQuery);
 		qs=dbManager.customQuery(conn, insertQuery);
 		if(qs.execError){
@@ -247,14 +243,13 @@ public enum GroupDatabase {
 			//Rolling back
 			dbManager.rollbackTransaction(conn);
 			
-			log.error("Error during add of the user "+userToAdd+" to the GroupMember Table, rolling back");
+			log.error("Error during add of the user "+invite.userToInvite+" to the GroupMember Table, rolling back");
 			dbManager.dbDisconnect(conn);
 			return false;
 		}
 		
-		//Delete the request
-		//Add user to the group
-		String deleteQuery="Delete from GroupRequest where id='"+requestId+"'";
+		//Delete the invite
+		String deleteQuery="Delete from GroupRequest where id='"+invite.requestID+"'";
 		System.out.println(deleteQuery);
 		qs=dbManager.customQuery(conn, deleteQuery);
 		if(qs.execError){
@@ -264,7 +259,7 @@ public enum GroupDatabase {
 			//Rolling back
 			dbManager.rollbackTransaction(conn);
 			
-			log.error("Error during deleting of the join group request with id="+requestId+" rolling back");
+			log.error("Error during deleting of the join group request with id="+invite.requestID+" rolling back");
 			dbManager.dbDisconnect(conn);
 			return false;
 		}
@@ -275,6 +270,88 @@ public enum GroupDatabase {
 		return true;
 		
 	}
+	
+	public boolean refuseGroupInviteRequest(GroupInviteData invite) {
+
+		//Starting transaction
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		//Starting transaction
+		QueryStatus qs=dbManager.startTransaction(conn);
+		
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			log.error("Error during transaction starting... Invite not refused");
+			dbManager.dbDisconnect(conn);
+			return false;
+		}	
+		
+		
+		//Delete the invite 
+		String deleteQuery="Delete from GroupRequest where id='"+invite.requestID+"'";
+		System.out.println(deleteQuery);
+		qs=dbManager.customQuery(conn, deleteQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			log.error("Error during deleting of the join group request with id="+invite.requestID+" rolling back");
+			dbManager.dbDisconnect(conn);
+			return false;
+		}
+		
+		dbManager.commitTransaction(conn);
+		dbManager.dbDisconnect(conn);
+		
+		return true;
+		
+	}
+
+	public List<GroupInviteData> getGroupInviteRequest(String username) {
+		List<GroupInviteData> groupInviteList=new ArrayList<GroupInviteData>();
+		
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		//Join to group invite
+		String selectQuery="Select * from GroupRequest join UserGroup on GroupRequest.UserGroup=UserGroup.id where GroupRequest.User='"+username+"'";
+
+		
+		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
+		
+		ResultSet rs=(ResultSet)qs.customQueryOutput;
+		
+		
+		
+		try{
+			while(rs.next()){
+				groupInviteList.add(
+						new GroupInviteData(
+								rs.getString("id"),
+								rs.getString("UserGroup"),
+								rs.getString("group_name"),
+								rs.getString("User"),
+								rs.getString("message"),
+								rs.getString("Sender")
+							)					
+					);
+			}
+		}catch(SQLException sqlE){
+			//TODO
+			
+		}finally{	
+			dbManager.dbDisconnect(conn);
+		}
+		
+		
+		return groupInviteList;
+	}
+
+
 	
 
 }
