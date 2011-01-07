@@ -50,6 +50,7 @@ public class Todo extends ListActivity {
 	public final static int VOICE_INPUT = 3;
 	public final static int BACK = 4;
 	public final static int UPDATE_TASK_EVENT = 5;
+	public final static int MANAGE_GROUPS=6;
 	
 	private Thread downloadEventThread, downloadTaskThread;
 	private static int counter = 0; // counter for task and event thread completion
@@ -122,7 +123,8 @@ public class Todo extends ListActivity {
 		menu.add(0,CREATE_EVENT,0,"Create Event").setIcon(R.drawable.event);
 		menu.add(0,CREATE_TASK,0,"Create Task").setIcon(R.drawable.task);
 		menu.add(0,VOICE_INPUT,0,"Voice Input").setIcon(R.drawable.voice);
-		menu.add(0,UPDATE_TASK_EVENT,0,"Synchronize").setIcon(R.drawable.person);
+		menu.add(0,UPDATE_TASK_EVENT,0,"Synchronize").setIcon(R.drawable.sync);
+		menu.add(0,MANAGE_GROUPS,0,"Groups").setIcon(R.drawable.group);
 		menu.add(0,BACK,0,"EXIT").setIcon(R.drawable.exit);
 		return true;
 	}
@@ -145,8 +147,14 @@ public class Todo extends ListActivity {
 			intent.putExtra("originator", 1);// CREATE_EVENT code in EditEvent
 			startActivityForResult(intent, 0);
 			break;
+			
 		case VOICE_INPUT:
 			intent = new Intent(Todo.this, Input.class);
+			startActivityForResult(intent, 0);
+			break;
+		
+		case MANAGE_GROUPS:
+			intent=new Intent(Todo.this,ManageGroupMenu.class);
 			startActivityForResult(intent, 0);
 			break;
 			
@@ -256,7 +264,6 @@ public class Todo extends ListActivity {
 				tasks.add(createItem (new SingleTask(getText(R.string.no_task_today).toString(), "", "", "", "", ""), false));	
 			}else {
 				for (SingleTask o : data){
-					Log.i(TAG, "Task id2:"+o.groupId);
 					tasks.add(createItem(o, usersettings.getBoolean(o.title, true)));
 				}
 			}
