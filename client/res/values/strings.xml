@@ -127,4 +127,5 @@
 	<string name="inviteToGroup">Invite user to group</string>
 	<string name="insert_group_name">Insert the name of the group</string>
 	<string name="join_to_group_list">Join to group request list</string>
+	<string name="personal_task">Personal task</string>
 </resources>

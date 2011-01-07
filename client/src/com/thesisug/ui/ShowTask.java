@@ -106,6 +106,8 @@ public class ShowTask extends Activity{
 			intent.putExtra("longitude", longitude);
 			intent.putExtra("latitude", latitude);
 			intent.putExtra("originator", 2); //EDIT_TASK code in EditTask
+			Log.i(TAG,"GroupID to EditTask:"+packet.getString("groupID"));
+			intent.putExtra("groupID",packet.getString("groupID"));
 			startActivityForResult(intent, 0);
 			break;			
 		case DELETE:

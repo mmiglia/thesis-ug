@@ -211,6 +211,7 @@ public class Todo extends ListActivity {
 			intent.putExtra("eventID", task.taskID);
 			intent.putExtra("longitude", task.gpscoordinate.longitude);
 			intent.putExtra("latitude", task.gpscoordinate.latitude);
+			Log.i(TAG,"GroupID to showTask:"+task.groupId);
 			intent.putExtra("groupID",task.groupId);
 		}
         startActivityForResult(intent, 0);

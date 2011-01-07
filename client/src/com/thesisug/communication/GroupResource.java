@@ -22,6 +22,7 @@ import android.util.Log;
 import com.thesisug.communication.valueobject.GroupData;
 import com.thesisug.communication.valueobject.GroupInviteData;
 import com.thesisug.communication.xmlparser.GroupHandler;
+import com.thesisug.ui.EditTask;
 import com.thesisug.ui.InviteToJoinGroup;
 import com.thesisug.ui.ManageGroupMenu;
 
@@ -285,7 +286,12 @@ public class GroupResource {
 		Log.i(TAG, "Sending message");
 		handler.post(new Runnable() {
 			public void run() {
-				((InviteToJoinGroup)context).afterGroupListLoaded(result);
+				if(context instanceof EditTask){
+					((EditTask)context).afterGroupListLoaded(result);
+				}
+				if(context instanceof InviteToJoinGroup){
+					((InviteToJoinGroup)context).afterGroupListLoaded(result);
+				}
 			}
 		});
 	}
