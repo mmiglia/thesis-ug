@@ -37,7 +37,7 @@
 	</string-array>
 	<string-array name="serverListValue">
 		<item>serverpd.dyndns.org</item>
-		<item>serverge.dyndns.org</item>
+		<item>zelda.openlab-dist.org</item>
 		<item>10.0.2.2</item>
 	</string-array>
 </resources>

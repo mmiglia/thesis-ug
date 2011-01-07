@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<LinearLayout  
+     xmlns:android="http://schemas.android.com/apk/res/android"  
+     android:layout_width="fill_parent"  
+     android:layout_height="fill_parent"  
+     android:orientation="vertical">  
+     
+     <!-- Invite to Group -->
+    	 <TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:id="@+id/invite_to_group_title"
+            android:text="@string/invite_to_group_title"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingBottom="3dip" />
+		<Spinner 
+		    android:id="@+id/SpinnerGroupToInvite"
+		    android:layout_width="fill_parent"
+		    android:layout_height="55dip"
+		    android:prompt = "@string/chooseAGroup">
+		</Spinner>
+		<Button
+		  	android:id="@+id/btn_updateGroupList"
+		  	android:layout_width="fill_parent"
+		  	android:layout_height="wrap_content"
+		  	android:text="@string/btn_updateGroupList"
+		  	android:textAppearance="?android:attr/textAppearanceSmall"
+		  	android:layout_below="@+id/SpinnerGroupToInvite"/>
+    	 <TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:id="@+id/user_to_invite_text"
+            android:text="@string/user_to_invite"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingBottom="3dip" />
+	    <EditText
+        	android:id="@+id/txt_userToInvite"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+        	android:textAppearance="?android:attr/textAppearanceLarge"
+        	android:maxLines="1"
+        	android:singleLine="true"
+        	android:background="@android:drawable/edit_text"/>
+    	 <TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:id="@+id/user_to_invite_text"
+            android:text="@string/message_for_user_to_invite"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingBottom="3dip" />
+	    <EditText
+        	android:id="@+id/txt_message_for_userToInvite"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+        	android:textAppearance="?android:attr/textAppearanceLarge"
+        	android:maxLines="1"
+        	android:singleLine="true"
+        	android:background="@android:drawable/edit_text"/>
+
+		<Button
+		  	android:id="@+id/btn_inviteToGroup"
+		  	android:layout_width="wrap_content"
+		  	android:layout_height="wrap_content"
+		  	android:text="@string/btn_inviteToGroup"
+		  	android:textAppearance="?android:attr/textAppearanceSmall"
+		  	android:layout_below="@+id/txt_message_for_userToInvite"/>
+    
+</LinearLayout>
