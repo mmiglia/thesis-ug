@@ -61,7 +61,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 			Log.i(TAG,"ServerURI change request!");
 			String oldURI=NetworkUtilities.SERVER_URI;
 			Log.i(TAG,"oldURI:"+oldURI);
-			insertedURI=PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("serverURI","300");
+			insertedURI=PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("serverURI",NetworkUtilities.SERVER_URI);
 			Log.i(TAG,"insertedURI:"+insertedURI);
 			
 			showDialog(0); //will call onCreateDialog method 

@@ -128,4 +128,13 @@
 	<string name="insert_group_name">Insert the name of the group</string>
 	<string name="join_to_group_list">Join to group request list</string>
 	<string name="personal_task">Personal task</string>
+	<string name="bad_group_name">Please insert a group name</string>
+	<string name="bad_username_to_invite">Please insert a username</string>
+	<string name="message">Message</string>
+	<string name="group_invite_sender_title">From</string>
+	<string name="group_invite_message_title">Message</string>
+	<string name="group_invite_group_name_title">Group Name</string>
+	    	
+    	
+    	
 </resources>

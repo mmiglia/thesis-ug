@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -13,6 +14,7 @@ import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,20 +22,22 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 import android.widget.SimpleAdapter.ViewBinder;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.thesisug.R;
 import com.thesisug.communication.EventResource;
-import com.thesisug.communication.LoginResource;
+import com.thesisug.communication.NetworkUtilities;
 import com.thesisug.communication.TaskResource;
 import com.thesisug.communication.valueobject.Reminder;
 import com.thesisug.communication.valueobject.SingleEvent;
@@ -41,7 +45,7 @@ import com.thesisug.communication.valueobject.SingleTask;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 import com.thesisug.notification.EventNotification;
 
-public class Todo extends ListActivity {
+public class Todo extends ListActivity implements OnInitListener{
 	public final static String TAG = "thesisug - TodoActivity";
 	public final static String ITEM_DATA = "data";
 	public final static String REMIND_ME = "remindme";
@@ -64,7 +68,9 @@ public class Todo extends ListActivity {
 	private static PendingIntent alarmIntent;
 	private static List<LinkedHashMap<String,?>> event = new LinkedList<LinkedHashMap<String,?>>();
 	private static List<LinkedHashMap<String,?>> tasks = new LinkedList<LinkedHashMap<String,?>>();
+	private static String serverURI="";
 	
+		
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -89,10 +95,16 @@ public class Todo extends ListActivity {
         	setListAdapter(adapter);
         	showDialog(0);
         	username = accounts[0].name;
+        	serverURI=PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("serverURI",NetworkUtilities.SERVER_URI);
+        	if(!serverURI.equals(NetworkUtilities.SERVER_URI)){
+        		NetworkUtilities.changeServerURI(serverURI);
+        	}
     		downloadEventThread = EventResource.getAllEvent(handler, this);
     		downloadTaskThread = TaskResource.getFirstTask(handler, this);
         }
+
 	}
+	
 	
 	@Override
 	public void onPause() {
@@ -349,6 +361,7 @@ public class Todo extends ListActivity {
 	}
 	
 
+
 	class EventBinder implements ViewBinder{
 		@Override
 		public boolean setViewValue(View view, Object data,
@@ -393,5 +406,12 @@ public class Todo extends ListActivity {
 			}
 			return false;
 		}
+	}
+
+
+	@Override
+	public void onInit(int arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }

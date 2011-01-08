@@ -98,6 +98,13 @@ public class ManageGroupMenu extends Activity {
 		    alertGroupName.setPositiveButton("Ok", new DialogInterface.OnClickListener() {  
 			   public void onClick(DialogInterface dialog, int whichButton) {  
 				   String groupName = input.getText().toString(); 
+					
+					if (!groupNameIsValid(groupName)) {
+						// comunica che i titoli vuoti non sono gestiti
+							Toast.makeText(getApplicationContext(), R.string.bad_group_name, Toast.LENGTH_SHORT).show();
+						// esce (senza inviare nulla)
+						return;
+					}
 					Log.d(TAG, "Creating the group with name"+groupName);
 					currentDialog=CREATE_GROUP_DIALOG;
 					showDialog(currentDialog);
@@ -126,6 +133,13 @@ public class ManageGroupMenu extends Activity {
 			break;
 		}
 		return true;
+	}
+	
+	private boolean groupNameIsValid(String groupName) {
+		// c'� un'occorrenza di .*\\S.* in una stringa se c'� almeno
+		// un carattere non white-space. Per Java i caratteri white-space sono
+		//  \t,\n,\x0B,\f e \r.
+		return groupName.matches(".*\\S.*");
 	}
 	
 	@Override

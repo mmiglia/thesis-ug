@@ -67,6 +67,16 @@ public class InviteToJoinGroup extends Activity {
 				//Get the username
 				String userToInvite=txtUserToInvite.getText().toString();
 				
+				if (!userIsValid(userToInvite)) {
+					// comunica che i titoli vuoti non sono gestiti
+						Toast.makeText(getApplicationContext(), R.string.bad_username_to_invite, Toast.LENGTH_SHORT).show();
+					// sembra che in Android non sia possibile imporre il focus su un
+					// elemento dell'interfaccia utente, allora si "richiede" il focus
+						txtUserToInvite.requestFocus();
+					// esce (senza inviare nulla)
+					return;
+				}
+				
 				String groupId=spinnerGroupList.getSelectedItem().toString().split("-")[0];
 				String message=txtMessageForUserToInvite.getText().toString();
 				//Send invite to the server
@@ -80,6 +90,15 @@ public class InviteToJoinGroup extends Activity {
 		});
 		updateUserGroupList();
 	}
+	
+	private boolean userIsValid(String username) {
+		// c'� un'occorrenza di .*\\S.* in una stringa se c'� almeno
+		// un carattere non white-space. Per Java i caratteri white-space sono
+		//  \t,\n,\x0B,\f e \r.
+		return username.matches(".*\\S.*");
+	}
+	
+
 	
 	private void updateUserGroupList(){
 		//Get group list 
