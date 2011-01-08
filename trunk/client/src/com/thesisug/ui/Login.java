@@ -8,8 +8,10 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -47,7 +49,9 @@ public class Login extends AccountAuthenticatorActivity {
 	private EditText passwordBox;
 	private Thread authenticationThread;
 	private final Handler handler = new Handler();
-    
+    private static SharedPreferences usersettings;
+	private String serverURI="";
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,33 +85,40 @@ public class Login extends AccountAuthenticatorActivity {
 
         spnServer.setAdapter(mAdapter);
         
-        spnServer.setOnItemSelectedListener(new myOnItemSelectedListener());
+        spnServer.setOnItemSelectedListener(new OnItemSelectedListener(){
+
+    		@Override
+    		public void onItemSelected(AdapterView<?> parent, View v, int pos,
+    				long row) {
+    	       
+    			
+    			String serverURI=parent.getItemAtPosition(pos).toString();
+    			usersettings.edit().putString("ServerURI", serverURI);
+    			NetworkUtilities.changeServerURI(parent.getItemAtPosition(pos).toString());
+    		}
+
+    		@Override
+    		public void onNothingSelected(AdapterView<?> arg0) {
+    			// TODO Auto-generated method stub
+    			
+    		}
+        	
+        });
         
         spnServer.setSelection(DEFAULT_SERVER_POS_IN_LIST);
+
+        serverURI=spnServer.getItemAtPosition(DEFAULT_SERVER_POS_IN_LIST).toString();
         
-        NetworkUtilities.changeServerURI(spnServer.getItemAtPosition(DEFAULT_SERVER_POS_IN_LIST).toString());
+        usersettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        usersettings.edit().putString("ServerURI", serverURI);
         
+        NetworkUtilities.changeServerURI(serverURI);
+
     }
     
     
     
-    public class myOnItemSelectedListener implements OnItemSelectedListener {
 
-		@Override
-		public void onItemSelected(AdapterView<?> parent, View v, int pos,
-				long row) {
-			NetworkUtilities.changeServerURI(parent.getItemAtPosition(pos).toString());
-			
-		}
-
-		@Override
-		public void onNothingSelected(AdapterView<?> arg0) {
-			// TODO Auto-generated method stub
-			
-		}
-    	
-    }
-    
     /**
      * get the message to be displayed at login box
      * @return <CharSequence containing the message to be displayed
