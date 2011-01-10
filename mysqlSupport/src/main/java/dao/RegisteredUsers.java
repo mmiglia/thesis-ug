@@ -86,7 +86,7 @@ public enum RegisteredUsers {
 		
 	}
 	
-public static boolean useremailExist(final String email){
+	public static boolean useremailExist(final String email){
 		
 		Connection conn= (Connection) dbManager.dbConnect();
 		

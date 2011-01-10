@@ -109,7 +109,8 @@ CREATE TABLE IF NOT EXISTS `User` (
   `lastname` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
   `sessionKey` varchar(50) DEFAULT NULL,
-  `active` int(1) DEFAULT '0'
+  `active` int(1) DEFAULT '0',
+  `verified` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
