@@ -33,7 +33,8 @@ public enum RegisteredUsers {
 	 * @param username username to the system
 	 * @param password password to the system
 	 */
-	public static void addUsers (String firstname, String lastname, String email, String username, String password){
+	public static void addUsers (String firstname, String lastname, String email, String username, 
+			String password, String ver_code){
 		if (usernameExist(username)) {
 			log.warn("Username already exist, choose different username");
 			return;
@@ -41,12 +42,57 @@ public enum RegisteredUsers {
 		
 		Connection conn= (Connection) dbManager.dbConnect();
 		
-		String insertQuery="Insert into User (firstname, lastname, email, username, password) " +
-				"values ('"+firstname+"','"+lastname+"','"+email+"','"+username+"','"+password+"')";
+		String insertQuery="Insert into User (firstname, lastname, email, username, password, verification_code) " +
+				"values ('"+firstname+"','"+lastname+"','"+email+"','"+username+"','"+password+"','"+ver_code+"')";
 		QueryStatus qs=dbManager.customQuery(conn, insertQuery);
 		
 		dbManager.dbDisconnect(conn);
 		
+	}
+	
+	public static boolean verificationExist(final String code, final String email) {
+		Connection conn = (Connection) dbManager.dbConnect();
+		String verificationExistQuery = "select username from User where verification_code='"+code+"' and email='"+email+"'";
+		QueryStatus qs=dbManager.customSelect(conn, verificationExistQuery);
+		boolean codeExist = false;
+		if(!qs.execError){
+			ResultSet rs=(ResultSet)qs.customQueryOutput;
+			try {
+				if(rs.next()){
+					// the verification code exist -> set verified attibute to 1
+					codeExist=true;
+					setVerified(true, rs.getString("username"));
+				}
+				else{					
+					codeExist=false;
+				}
+				dbManager.dbDisconnect(conn);
+			}
+			catch(SQLException sqlE){
+				//TODO che fare con la sqlE?
+				return codeExist;
+			}
+			finally{
+					dbManager.dbDisconnect(conn);
+			}
+		}else{
+			qs.occourtedErrorException.printStackTrace();
+			qs.explainError();
+		}
+		
+		return codeExist;
+	}
+	
+	public static void setVerified(final boolean value, final String username) {
+		Connection conn = (Connection) dbManager.dbConnect();
+		int v = 0;
+		if (value)
+			v=1;
+		else
+			v=0;
+		String query = "UPDATE User SET verified="+v+" WHERE username='"+username+"'";
+		dbManager.customQuery(conn, query);
+		dbManager.dbDisconnect(conn);
 	}
 	
 	public static boolean usernameExist(final String username){

@@ -20,6 +20,11 @@
 				<enabled>true</enabled>
 			</releases>
 		</repository>
+		<repository>
+			<id>Java.Net</id>
+			<url>http://download.java.net/maven/2/</url>
+		</repository>
+
 	</repositories>
 	<dependencies>
 		<dependency>
@@ -112,6 +117,17 @@
 			<artifactId>mysql-connector-java-5.1.13-bin</artifactId>
 			<version>5.1.13</version>
 		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4.3</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+			<version>1.1</version>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>
@@ -134,6 +150,5 @@
       <url>scp://localhosthome/jaxer/Scrivania/</url>
     </repository>
   </distributionManagement>
-	
 	
 </project>
