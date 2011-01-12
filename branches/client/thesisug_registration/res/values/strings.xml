@@ -23,6 +23,7 @@
 	<string	name="cancel_button">Cancel</string>
 	<string name="submit_message">Insert fields above and press Submit</string>
 	<string name="pwd_no_match">Password fields doesn\'t match!</string>
+	<string name="no_fields">Fields with * required</string>
 		
 	<string name="retrieving_event">Downloading activities \u2026</string>
 	<string name="task_list_header">Gotta do these dude !</string>
