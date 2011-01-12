@@ -119,7 +119,7 @@ public class Register extends Activity {
         	   }
         	   else {
         		   //si può far partire il thread di registrazione
-        		   message.setText("thread registrazione starting");
+        		   message.setText("email: "+emailbox.getText().toString());
         		   Log.i(TAG,"Starting registrationThread");
                    registrationThread = RegistrationResource.register(firstnbox.getText().toString(), 
                 		   lastnbox.getText().toString(), 

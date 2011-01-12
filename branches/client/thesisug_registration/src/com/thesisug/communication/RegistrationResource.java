@@ -1,10 +1,14 @@
 package com.thesisug.communication;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.xml.sax.SAXException;
 
 import android.content.Context;
@@ -32,40 +36,29 @@ public class RegistrationResource {
 			final String username, final String password) {
 		final Runnable runnable = new Runnable() {
 			public void run() {
-				RegistrationReply result = Registration(firstname, lastname, email, username, password);
+				ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+				params.add(new BasicNameValuePair("fn", ""+firstname));
+				params.add(new BasicNameValuePair("ln", ""+lastname));
+				params.add(new BasicNameValuePair("e", ""+email));
+				params.add(new BasicNameValuePair("u", ""+username));
+				RegistrationReply result = Registration(params, password);
 				Log.v(TAG, (result.status==2)? "Successful registered": "Unsuccessful registered");
 			}
 		};
 		// start registration
 		return NetworkUtilities.startBackgroundThread(runnable);
 	}
-//	public static Thread signIn(final String username, final String password,
-//	final Handler handler, final Context context) {
-//final Runnable runnable = new Runnable() {
-//	public void run() {
-//		LoginReply result = Authenticate(username, password);
-//		Log.v(TAG, (result.status == 1)? "Successful authentication": "Unsuccessful authentication");
-//		sendResult(result, handler, context);
-//	}
-//};
-//// start authenticating
-//return NetworkUtilities.startBackgroundThread(runnable);
-//}
 	
-	public static RegistrationReply Registration(String fn, String ln, String e, String u, String p) {
+	public static RegistrationReply Registration(final ArrayList<NameValuePair> params, String password) {
 	       
     	RegistrationReply result = new RegistrationReply();
     	DefaultHttpClient newClient = NetworkUtilities.createClient();
-
-    	// provide all variables in correct param
-    	String url=NetworkUtilities.SERVER_URI+BASE_REGISTER;
+    	
+    	String query = (params == null) ? "" : URLEncodedUtils.format(params, "UTF-8");
+    	String url=NetworkUtilities.SERVER_URI+BASE_REGISTER+"?"+query;
     	Log.d(TAG,url);
         HttpGet request = new HttpGet(url);
-        request.addHeader("Cookie", "fn="+fn);
-        request.addHeader("Cookie", "ln="+ln);
-        request.addHeader("Cookie", "e="+e);
-        request.addHeader("Cookie", "u="+u);
-        request.addHeader("Cookie", "p="+p);
+        request.addHeader("Cookie", "p="+password);
         // send the request to network
         Log.d(TAG,"Start registration request");
         HttpResponse response = NetworkUtilities.sendRequest(newClient, request);
