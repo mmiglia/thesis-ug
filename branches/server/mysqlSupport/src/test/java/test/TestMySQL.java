@@ -91,6 +91,7 @@ public class TestMySQL extends TestCase {
     String userId="testUser";
     String username="testUser";
     String password="testPassword";
+    String ver_code="verified_test";
 	
 	public void testPersonalTaskCreation() {
 		testName="testPersonalTaskCreation";
@@ -207,7 +208,7 @@ public class TestMySQL extends TestCase {
 
 	public void testAddUser(){
 		testName="testAddUser";
-		RegisteredUsers.instance.addUsers(first, last, mail, username, password);
+		RegisteredUsers.instance.addUsers(first, last, mail, username, password, ver_code);
 		assertTrue(RegisteredUsers.instance.usernameExist(username));
 		
 	}	

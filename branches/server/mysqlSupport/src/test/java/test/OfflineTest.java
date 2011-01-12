@@ -53,13 +53,14 @@ public class OfflineTest extends TestCase{
 	private String mail="user@dummy.com";
 	private String user="user";
 	private String pass="dummy";
+	private String ver_code="verified_test";
 	
 	@Test
 	public void testaddUser() {
 		Logger log = LoggerFactory.getLogger(OfflineTest.class);
 		log.info("TESTADDUSER");
 		log.info("Adding dummy account: first name="+first+" last name="+last+" email="+mail+" username="+user+", password="+pass);
-		RegisteredUsers.instance.addUsers(first, last, mail, user, pass);
+		RegisteredUsers.instance.addUsers(first, last, mail, user, pass, ver_code);
 		String id=RegisteredUsers.instance.checkMatch(user, pass);
 		log.info("ID per " +user + " " + pass+ id);
 		assertTrue(true);

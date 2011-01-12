@@ -74,6 +74,7 @@ public class TestManager extends TestCase {
 	private String user="user";
 	private String passwd="dummy";
 	private String testName = "";
+	private String ver_code = "verified_test";
 	
 	private static final MySQLDBManager dbManager=new MySQLDBManager();
 	
@@ -126,7 +127,7 @@ public class TestManager extends TestCase {
 	public void testAddUser() {
 		testName = "Test Add User";		
 		log.info("Adding dummy account: first name="+first+" last name="+last+" email="+mail+" username="+user+", password="+passwd);
-		RegisteredUsers.instance.addUsers(first, last, mail, user, passwd);
+		RegisteredUsers.instance.addUsers(first, last, mail, user, passwd, ver_code);
 		String id=RegisteredUsers.instance.checkMatch(user, passwd);
 		log.info("Find ID for: "+user+", identified by: "+passwd+", with ID: "+id);		
 		if (id.equals(null))
