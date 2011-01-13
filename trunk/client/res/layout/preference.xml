@@ -15,18 +15,25 @@
 			android:defaultValue="50000"
 			android:entries="@array/distance"
 			android:entryValues="@array/distanceValue" />
-		<!-- <EditTextPreference
-			android:name="serverURI"
-            android:summary="Change the server location"
-			android:defaultValue="DefaultLocation"
-			android:title="Edit server location"
-			android:key="serverURI" />
-		 -->
-		<ListPreference
+
+	</PreferenceCategory>
+	<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+		android:title="@string/advanced_preferences">
+
+		<PreferenceCategory android:title="@string/server_preferences">
+			<ListPreference
 			android:title="@string/server_list_title"
 			android:summary="@string/changeServerSummary"
 			android:key="serverURI"
 			android:entries="@array/serverList"
 			android:entryValues="@array/serverListValue" />
-	</PreferenceCategory>
+			
+			<EditTextPreference
+            android:summary="Manually change the server location"
+			android:defaultValue="DefaultLocation"
+			android:title="Edit server location"
+			android:key="serverURI_from_text" />
+		 
+		</PreferenceCategory>
+	</PreferenceScreen>
 </PreferenceScreen>
