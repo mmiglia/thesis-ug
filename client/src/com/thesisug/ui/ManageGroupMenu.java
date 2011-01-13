@@ -32,7 +32,11 @@ import com.thesisug.communication.GroupResource;
 import com.thesisug.communication.valueobject.GroupData;
 import com.thesisug.communication.valueobject.GroupInviteData;
 
-
+/*
+ * This activity is used to manage group and join_to_group request.
+ * It also give the possibility, with the menu that appears after the user press the menu-button, to
+ * create groups and invite user to join them (see the InviteToJoinGroup activity)
+ */
 public class ManageGroupMenu extends Activity {
 	private static final String TAG = "thesisug - ManageGroupMenu";
 	private static final int CREATE_GROUP_MENU=0;

@@ -406,31 +406,35 @@ public class EditTask extends Activity {
 	public void afterGroupListLoaded(List<GroupData> groupList){
     	//Dismiss dialog
     	dismissDialog(GET_USER_GROUP_DIALOG);   
-		
+
 		//Update groupSpinnerList
 	
     	arrGroupsAdapter=new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item);
-    	arrGroupsAdapter.add("0-"+R.string.personal_task);
+    	arrGroupsAdapter.add("0-"+this.getString(R.string.personal_task));
+
+		if(groupList==null){
+			Toast.makeText(this.getApplicationContext(), R.string.fail_to_update_group_list, Toast.LENGTH_LONG).show();;
+			spinnerGroupList.setAdapter(arrGroupsAdapter);
+			spinnerGroupList.setSelection(0);
+			return;
+		}
+
+    	
     	for(GroupData g:groupList){
     		arrGroupsAdapter.add(g.groupID+"-"+g.groupName);
     	}
     	
     	spinnerGroupList.setAdapter(arrGroupsAdapter);
 
-		if(groupList==null || groupList.isEmpty()){
-			Toast.makeText(getApplicationContext(), R.string.noGroupForUser, Toast.LENGTH_LONG).show();
-		}
+
 		
 		//Select default element
 		if(setSpinnerSelectedElementAsBundle){
-			Log.i(TAG,"GOT:"+packetGroupID);
 			if(arrGroupsAdapter!=null){
 				for(int i=0;i<arrGroupsAdapter.getCount();i++){
 					Log.i(TAG,arrGroupsAdapter.getItem(i).split("-")[0]+" vs "+this.packetGroupID+" =..");
 					if(arrGroupsAdapter.getItem(i).split("-")[0].equals(this.packetGroupID)){
-						Log.i(TAG,"FOUND!");
 						spinnerGroupList.setSelection(i);
-						Log.i(TAG,"Done!");
 						break;
 					}
 				}			

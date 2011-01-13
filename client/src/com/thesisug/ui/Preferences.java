@@ -38,6 +38,7 @@ import com.thesisug.R;
 import com.thesisug.communication.LoginResource;
 import com.thesisug.communication.NetworkUtilities;
 import com.thesisug.communication.valueobject.TestConnectionReply;
+import com.thesisug.notification.TaskNotification;
 
 
 
@@ -46,6 +47,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private Thread tryConnectionThread;
 	private final Handler handler = new Handler();
 	private String insertedURI="";
+	
+	private String regExCorrectURL="^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}$";
 	
 	private Button updateServerListBtn=null;
 	
@@ -57,17 +60,37 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences arg0, String key) {
 
+		/*
+		 * Manually inserted  server URI
+		 */
+		Log.d(TAG, "KEY:"+key);
+		if(key.equals("serverURI_from_text")){
+			insertedURI=PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("serverURI_from_text",NetworkUtilities.SERVER_URI);
+			if(insertedURI.matches(regExCorrectURL)){
+				showDialog(0); //will call onCreateDialog method 
+				//Test to verify that the inserted URI is a valid URI. The response of the validation will be sent to changeServerURI method of this class
+				tryConnectionThread=LoginResource.tryConnection(insertedURI, handler, Preferences.this);
+			}else{
+				Toast.makeText(getApplicationContext(), R.string.invalid_server_url, Toast.LENGTH_LONG).show();
+			}
+		}		
+		
+		/**
+		 * Server URI selected from list
+		 */
 		if(key.equals("serverURI")){
-			Log.i(TAG,"ServerURI change request!");
+			Log.d(TAG,"ServerURI change request!");
 			String oldURI=NetworkUtilities.SERVER_URI;
-			Log.i(TAG,"oldURI:"+oldURI);
+			Log.d(TAG,"oldURI:"+oldURI);
 			insertedURI=PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("serverURI",NetworkUtilities.SERVER_URI);
-			Log.i(TAG,"insertedURI:"+insertedURI);
+			Log.d(TAG,"insertedURI:"+insertedURI);
 			
 			showDialog(0); //will call onCreateDialog method 
 			//Test to verify that the inserted URI is a valid URI. The response of the validation will be sent to changeServerURI method of this class
 			tryConnectionThread=LoginResource.tryConnection(insertedURI, handler, Preferences.this);
 		}
+
+
 		
 	}
 
@@ -94,22 +117,17 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	
 	
 	public void changeServerURI(TestConnectionReply result){
-        try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 		dismissDialog(0); //disable the progress dialog
 
 		
 		Log.i(TAG,"Received serverURI:"+result.serverURI);
-		if(result.status==1){
-			
+		if(result.status==1){			
 			NetworkUtilities.changeServerURI(result.serverURI);
 			
 			Toast.makeText(getApplicationContext(), R.string.tryConnectionSuccess,
 	                Toast.LENGTH_LONG).show();
+				
 			//TODO login to the new server and ask tasks and events
 			
 		}else{

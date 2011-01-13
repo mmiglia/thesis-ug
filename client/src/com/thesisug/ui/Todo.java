@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -22,30 +21,37 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 import android.widget.SimpleAdapter.ViewBinder;
 import android.widget.TextView;
 
 import com.thesisug.R;
 import com.thesisug.communication.EventResource;
+import com.thesisug.communication.GroupResource;
 import com.thesisug.communication.NetworkUtilities;
 import com.thesisug.communication.TaskResource;
+import com.thesisug.communication.valueobject.GroupInviteData;
 import com.thesisug.communication.valueobject.Reminder;
 import com.thesisug.communication.valueobject.SingleEvent;
 import com.thesisug.communication.valueobject.SingleTask;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 import com.thesisug.notification.EventNotification;
 
-public class Todo extends ListActivity implements OnInitListener{
+
+public class Todo extends ListActivity{
 	public final static String TAG = "thesisug - TodoActivity";
 	public final static String ITEM_DATA = "data";
 	public final static String REMIND_ME = "remindme";
@@ -55,8 +61,9 @@ public class Todo extends ListActivity implements OnInitListener{
 	public final static int BACK = 4;
 	public final static int UPDATE_TASK_EVENT = 5;
 	public final static int MANAGE_GROUPS=6;
+	public final static int SYSTEM_STATUS=7;
 	
-	private Thread downloadEventThread, downloadTaskThread;
+	private static Thread downloadEventThread, downloadTaskThread;
 	private static int counter = 0; // counter for task and event thread completion
 	private static String username, session;
 	private AccountManager accountManager;
@@ -136,7 +143,8 @@ public class Todo extends ListActivity implements OnInitListener{
 		menu.add(0,CREATE_TASK,0,"Create Task").setIcon(R.drawable.task);
 		menu.add(0,VOICE_INPUT,0,"Voice Input").setIcon(R.drawable.voice);
 		menu.add(0,UPDATE_TASK_EVENT,0,"Synchronize").setIcon(R.drawable.sync);
-		menu.add(0,MANAGE_GROUPS,0,"Groups").setIcon(R.drawable.group);
+		menu.add(0,MANAGE_GROUPS,0,"Groups").setIcon(R.drawable.user_group);
+		menu.add(0,SYSTEM_STATUS,0,"System status").setIcon(R.drawable.traffic_lights);
 		menu.add(0,BACK,0,"EXIT").setIcon(R.drawable.exit);
 		return true;
 	}
@@ -167,6 +175,10 @@ public class Todo extends ListActivity implements OnInitListener{
 		
 		case MANAGE_GROUPS:
 			intent=new Intent(Todo.this,ManageGroupMenu.class);
+			startActivityForResult(intent, 0);
+			break;
+		case SYSTEM_STATUS:
+			intent=new Intent(Todo.this,SystemStatus.class);
 			startActivityForResult(intent, 0);
 			break;
 			
@@ -336,12 +348,13 @@ public class Todo extends ListActivity implements OnInitListener{
 	}
 	
 	public void combineResult(){
-		Log.i(TAG, "after data is loaded, dismissed dialog 0");
+		Log.d(TAG, "after data is loaded, dismissed dialog 0");
 		dismissDialog(0); //disable the progress dialog
 		counter = 0; // reset the counter
 
 		// create our list and custom adapter
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);		
+		
 		
 
 		//Tasks
@@ -357,10 +370,13 @@ public class Todo extends ListActivity implements OnInitListener{
 		adapter.addSection(getText(R.string.event_list_header).toString(), eventAdapter);
 		eventAdapter.setViewBinder(new EventBinder());
 		
+
+		
 		setListAdapter(adapter);
 	}
 	
-
+		
+	
 
 	class EventBinder implements ViewBinder{
 		@Override
@@ -407,11 +423,5 @@ public class Todo extends ListActivity implements OnInitListener{
 			return false;
 		}
 	}
-
-
-	@Override
-	public void onInit(int arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+	
 }

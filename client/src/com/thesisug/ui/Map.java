@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.location.Criteria;
 import android.location.Location;
@@ -12,7 +13,9 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
@@ -34,46 +37,87 @@ public class Map extends MapActivity implements LocationListener{
 	private MarkerOverlay place, marker;
 	private List<Overlay> mapOverlays;
     private MapController mc;
+    private Criteria criteria;
+    
+    private String locationProvider;
+    private Location userLocation;
+    private MyLocationOverlay center;
+    private MapView mapView;
+    private float minUpdateDistance=0;
+    private static SharedPreferences usersettings;
+    
 	@Override
     public void onCreate(Bundle savedInstanceState) {
     	// get the drawables and setup of overlays
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map);  
         
-        MapView mapView = (MapView) findViewById(R.id.mapView1);    
+        mapView = (MapView) findViewById(R.id.mapView1);    
         mc = mapView.getController();
-        MyLocationOverlay center = new MyLocationOverlay(this, mapView);
+        center = new MyLocationOverlay(this, mapView);
         mapOverlays = mapView.getOverlays();
         marker = new MarkerOverlay(this.getResources().getDrawable(R.drawable.androidmarker));
         place = new MarkerOverlay(this.getResources().getDrawable(R.drawable.place));
         
+    	usersettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         // get the GPS coordinate
         lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) 0, 0.0f, this);
-        Criteria criteria = new Criteria();
+        requestLocationUpdate();
+        
+        criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        String provider = lm.getBestProvider(criteria, true);
-        Location gpslocation = lm.getLastKnownLocation(provider);
+        
+        locationProvider = lm.getBestProvider(criteria, true);
+        
+        if(locationProvider==null){
+        	showNoProviderMessage();
+        	return;
+        }
+        userLocation = lm.getLastKnownLocation(locationProvider);
+        setUserLocatiOnOnMap(userLocation);
+    }
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		if(lm.getBestProvider(criteria,true)==null){
+			showNoProviderMessage();
+		}
+	}
+	
+    /**
+     * This method call the requestLocationUpdates of the LocationManager for the GPS_PROVIDER and the NETWORK_PROVIDER
+     * every time it get the minDistance value from the user settings so it has to be called whenever these settings change
+     */
+    public void requestLocationUpdate(){
+    	minUpdateDistance = Float.parseFloat(usersettings.getString("queryperiod", "100"));    	
+    	lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) 0, minUpdateDistance, this);    	
+    	lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, (long) 0, minUpdateDistance, this);
+    }
+	
+	private void setUserLocatiOnOnMap(Location location){
+		userLocation=location;
+		if (marker.size() > 0) marker.removeOverlay(0);
         GeoPoint currentLocation=null;
-        if (gpslocation != null){
-        Log.d(TAG, "ContextResource.checkLocationAll: "+gpslocation.getLatitude()+"##"+gpslocation.getLongitude());
-        downloadThread = ContextResource.checkLocationAll(
-        		new Float(gpslocation.getLatitude()),
-				new Float(gpslocation.getLongitude()),
-				0, handler, Map.this);
-		
-        // add the overlays
-        currentLocation = new GeoPoint((int)Math.floor (gpslocation.getLatitude()*1e6), (int) Math.floor(gpslocation.getLongitude()*1e6));
-        marker.addOverlay(new OverlayItem(currentLocation, "", ""));
-        mapOverlays.add(marker);
+
+        if (userLocation != null){
+	        Log.d(TAG, "ContextResource.checkLocationAll: "+userLocation.getLatitude()+"##"+userLocation.getLongitude());
+	        downloadThread = ContextResource.checkLocationAll(
+	        		new Float(userLocation.getLatitude()),
+					new Float(userLocation.getLongitude()),
+					0, handler, Map.this);
+	        // add the overlays
+	        currentLocation = new GeoPoint((int)Math.floor (userLocation.getLatitude()*1e6), (int) Math.floor(userLocation.getLongitude()*1e6));
+	        marker.addOverlay(new OverlayItem(currentLocation, "", ""));
+	        mapOverlays.add(marker);
         }
         mapOverlays.add(center);
         // set up zoom and center of the map
         mapView.setBuiltInZoomControls(true);
         if (currentLocation != null) mc.animateTo(currentLocation);
         mc.setZoom(20);
-    }
-    
+	}
+	
     @Override
     protected boolean isRouteDisplayed() {
         return false;
@@ -81,26 +125,34 @@ public class Map extends MapActivity implements LocationListener{
     
     @Override
 	public void onLocationChanged(Location location) {
-    	if (marker.size() > 0) marker.removeOverlay(0);
-    	GeoPoint currentLocation = new GeoPoint((int)Math.floor (location.getLatitude()*1e6), (int) Math.floor(location.getLongitude()*1e6));
-    	Log.d(TAG,"Location changed to: " + location.getLatitude()+"#"+location.getLongitude());
-
-    	marker.addOverlay(new OverlayItem(currentLocation, "", ""));
-    	mapOverlays.add(marker);
-    	
-        if (currentLocation != null) mc.animateTo(currentLocation);
-        mc.setZoom(20);
-        
-    	ContextResource.checkLocationAll(new Float(location.getLatitude()),
-				new Float(location.getLongitude()),
-				0, handler, Map.this);
+    	userLocation=location;
+    	setUserLocatiOnOnMap(userLocation);
     }
 
+    private void showNoProviderMessage(){
+    	Toast.makeText(getBaseContext(), R.string.no_location_provider_found, Toast.LENGTH_SHORT).show();
+    }
+    
+    private void updateProviderAndPosition(){
+		//Change provider if there's one active
+		locationProvider=lm.getBestProvider(criteria,true);
+		if(locationProvider==null){
+			showNoProviderMessage();
+			return;
+		}
+		userLocation = lm.getLastKnownLocation(locationProvider);
+		setUserLocatiOnOnMap(userLocation);
+    }
+    
 	@Override
-	public void onProviderDisabled(String provider) {}
+	public void onProviderDisabled(String provider) {
+		updateProviderAndPosition();		
+	}
 
 	@Override
-	public void onProviderEnabled(String provider) {}
+	public void onProviderEnabled(String provider) {
+		updateProviderAndPosition();
+	}
 
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {}

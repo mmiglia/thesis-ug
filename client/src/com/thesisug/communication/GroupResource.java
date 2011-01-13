@@ -172,7 +172,7 @@ public class GroupResource {
 			public void run() {
 				Log.i(TAG, "Sending groupList request for the user");
 				List<GroupData> result = runHttpGetUserGroups(GET_GROUP_LIST, null, context);
-				Log.i(TAG, "GroupList request returned "+result.size() + " groups");
+				
 				sendResult(result, handler, context);
 			}
 		};
