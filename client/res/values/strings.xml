@@ -85,14 +85,15 @@
     <string name="parsing_success">Yay! the system successfully understand and execute your command</string>
     <string name="parsing_error">Humm .. so sorry, we couldn\u0027t understand or execute your command</string>
     <string name="user_preferences">User Preferences</string>
+    
     <string name="q_period">Query Period</string>
     <string name="interval">Interval to ask server for hints</string>
     <string name="max_distance">Maximum distance</string>
     <string name="max_distance_desc">Allow notification if location distance from me is below the value</string>
 	<string name="tryConnectionSuccess">The server has been changed</string>
 	<string name="tryConnectionFail">Cannot contact the specified server</string>
-	<string name="server_list_title">Change server</string>
-	<string name="changeServerSummary">Select a server from the list</string>
+	<string name="server_list_title">Select a server from the list</string>
+	<string name="changeServerSummary">Select a default server from the list</string>
 	<string name="currentServer">Server</string>
 	<string name="btn_create_group">Create group</string>
 	<string name="btn_inviteToGroup">Invite user to join the group</string>
@@ -134,7 +135,16 @@
 	<string name="group_invite_sender_title">From</string>
 	<string name="group_invite_message_title">Message</string>
 	<string name="group_invite_group_name_title">Group Name</string>
-	    	
-    	
-    	
+	<string name="fail_to_update_group_list">Group list update failed, may be the server is unreachable or the internet connection is down</string>
+    <string name="invalid_server_url">The specified address is not a valid server address</string>
+    <string name="server_preferences">Server Preferences</string>
+    <string name="advanced_preferences">Advanced preferences</string>	
+    <string name="no_location_provider_found">No location provider found, activate at least one between gps and network in the settings menu of your android system</string>
+    <string name="notify_no_location_provider_found">No location provider found</string>
+    <string name="server_status">Server status</string>
+    <string name="location_service_status">Location service status</string>
+    <string name="location_provider_status_ko">No location provider</string>
+    <string name="current_position_status">Last known user position</string>
+    <string name="server_connection_ok">Connection available</string>
+    <string name="server_connection_ko">Connection NOT available</string>
 </resources>
