@@ -78,6 +78,7 @@
         android:layout_marginTop="15dip"
         android:text="@string/sign_in_button" 
         android:onClick="signIn" android:layout_alignParentLeft="true"/>
+        
 	<Button
         android:id="@+id/register"
         android:layout_width="wrap_content"
