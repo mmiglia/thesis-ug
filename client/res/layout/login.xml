@@ -77,6 +77,17 @@
         android:layout_below="@id/passwordtext"
         android:layout_marginTop="15dip"
         android:text="@string/sign_in_button" 
-        android:onClick="signIn" />
+        android:onClick="signIn" 
+        android:layout_alignParentLeft="true"/>
+        
+    <Button
+        android:id="@+id/register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/passwordtext"
+        android:layout_marginTop="15dip"
+        android:text="@string/register_button"
+        android:layout_alignParentRight="true"/>
 </RelativeLayout>
     

@@ -114,6 +114,7 @@ public class Login extends AccountAuthenticatorActivity {
         usersettings.edit().putString("ServerURI", serverURI);
         
         NetworkUtilities.changeServerURI(serverURI);
+        
         Button reg = (Button) findViewById(R.id.register);
         reg.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View arg0) {
