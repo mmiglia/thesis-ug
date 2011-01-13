@@ -88,6 +88,7 @@ public class Login extends AccountAuthenticatorActivity {
         
         NetworkUtilities.changeServerURI(spnServer.getItemAtPosition(DEFAULT_SERVER_POS_IN_LIST).toString());
         
+        
         Button reg = (Button) findViewById(R.id.register);
         reg.setOnClickListener(new View.OnClickListener() {
         	public void onClick(View arg0) {
