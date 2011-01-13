@@ -16,11 +16,12 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.thesisug.R;
 import com.thesisug.communication.LoginResource;
@@ -113,6 +114,13 @@ public class Login extends AccountAuthenticatorActivity {
         usersettings.edit().putString("ServerURI", serverURI);
         
         NetworkUtilities.changeServerURI(serverURI);
+        Button reg = (Button) findViewById(R.id.register);
+        reg.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View arg0) {
+                        Intent i = new Intent(Login.this, Register.class);
+                        startActivity(i);
+                }
+        });
 
     }
     
