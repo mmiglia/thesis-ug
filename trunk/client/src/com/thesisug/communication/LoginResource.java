@@ -1,15 +1,10 @@
 package com.thesisug.communication;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.http.message.BasicNameValuePair;
 import org.xml.sax.SAXException;
 
 import android.content.Context;
@@ -17,13 +12,13 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.thesisug.Constants;
-import com.thesisug.authenticator.Authenticator;
 import com.thesisug.communication.valueobject.LoginReply;
 import com.thesisug.communication.valueobject.TestConnectionReply;
 import com.thesisug.communication.xmlparser.LoginReplyHandler;
 import com.thesisug.communication.xmlparser.TryConnectionReplyHandler;
 import com.thesisug.ui.Login;
 import com.thesisug.ui.Preferences;
+import com.thesisug.ui.SystemStatus;
   
 
 public class LoginResource{
@@ -242,7 +237,12 @@ public class LoginResource{
         }
         handler.post(new Runnable() {
             public void run() {
+            	if(context instanceof Preferences){
                 ((Preferences) context).changeServerURI(result);
+            	}
+            	if(context instanceof SystemStatus){
+                    ((SystemStatus) context).tryConnection(result);
+                }
             }
         });
     }

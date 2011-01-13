@@ -20,6 +20,11 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+/*
+ * This activity is used to invite user to join to the group in witch we are involved.
+ * The username is required and if empty the system give a Toast message to the user and blocks the 
+ * invite sending
+ */
 public class InviteToJoinGroup extends Activity {
 	private static final String TAG = "thesisug - InviteToJoinGroup";
 	
@@ -142,6 +147,11 @@ public class InviteToJoinGroup extends Activity {
     	//Dismiss dialog
     	dismissDialog(GET_USER_GROUP);   
 		
+		if(groupList==null){
+			Toast.makeText(getApplicationContext(), R.string.fail_to_update_group_list, Toast.LENGTH_LONG).show();;
+			finish();
+		}
+    	
 		//Update groupSpinnerList
 	
     	ArrayAdapter<String> arrGroupsAdapter=new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item);

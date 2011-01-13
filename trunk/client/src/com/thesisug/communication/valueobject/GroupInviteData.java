@@ -1,31 +1,29 @@
 package com.thesisug.communication.valueobject;
 
-
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 
 
 
 /**
- * This is the basic task object that will be used for communications to client.
- * Fiels are:
- * dueDate,notifyTimeStart,notifyTimeEnd 
+ * This is the basic object that is used to manage (send, receive, accept, refuse) join_to_gropu request
  * 
  */
 @XmlRootElement
 public class GroupInviteData{
 	
+	//Is set to -1 if the invite is sent from the client to the server
 	public String requestID;
 	public String groupID;
 	public String groupName;
+	//username of the user that has to be invited
 	public String userToInvite;
+	//An optional message that is sent within the invite
 	public String message;
+	//username of the user that send the invite
 	public String sender;
 	
+	//Default value used as constant to know if an element has been set
 	private static final String ELEMENT_NOT_SET="#element_not_set#";
 	
 	//public List<String> groupMember;
