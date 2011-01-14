@@ -46,6 +46,8 @@ public class ManageGroupMenu extends Activity {
 	private static final int ACCEPT_JOIN_USER_GROUP_REQUEST=4;
 	private static final int UPDATE_JOIN_TO_GROUP_REQUEST=5;
 	private static final int BACK=6;
+	private static final int VIEW_GROUP_MEMBER=7;
+	
 	private static final int CREATE_GROUP_DIALOG=0;
 	
 	private static int currentDialog;	
@@ -75,6 +77,7 @@ public class ManageGroupMenu extends Activity {
 		menu.add(0,UPDATE_JOIN_TO_GROUP_REQUEST,0,R.string.updateJoinRequest).setIcon(R.drawable.sync);
 		menu.add(0,CREATE_GROUP_MENU,0,R.string.createGroup).setIcon(R.drawable.user_group);
 		menu.add(0,INVITE_JOIN_GROUP,0,R.string.inviteToGroup).setIcon(R.drawable.user_group_add);
+		menu.add(0,VIEW_GROUP_MEMBER,0,R.string.view_group_member).setIcon(R.drawable.user_group);
 			
 		menu.add(0,BACK,0,R.string.back).setIcon(R.drawable.go_previous_black);
 		return true;
@@ -131,6 +134,11 @@ public class ManageGroupMenu extends Activity {
 			intent=new Intent(ManageGroupMenu.this,InviteToJoinGroup.class);
 			startActivityForResult(intent, 0);
 			break;			
+			
+		case VIEW_GROUP_MEMBER:
+			intent=new Intent(ManageGroupMenu.this,ViewGroupMembers.class);
+			startActivityForResult(intent, 0);
+			break;
 			
 		case BACK:
 			finish();
