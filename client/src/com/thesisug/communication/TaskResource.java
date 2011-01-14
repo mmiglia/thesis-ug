@@ -197,9 +197,7 @@ public class TaskResource {
 			public void run() {				
 				List<SingleTask> result = runHttpGet(FIRST_TASKS, null, context);
 				if(result!=null){
-					for (SingleTask o : result){
-						Log.i(TAG, "Task id retreived:"+o.groupId);
-					}
+
 				}
 				sendResult(result, handler, context);
 			}

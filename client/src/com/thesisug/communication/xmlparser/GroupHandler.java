@@ -18,6 +18,7 @@ import android.util.Xml;
 
 import com.thesisug.communication.valueobject.GroupData;
 import com.thesisug.communication.valueobject.GroupInviteData;
+import com.thesisug.communication.valueobject.GroupMember;
 import com.thesisug.communication.valueobject.SingleTask;
 
 public class GroupHandler {
@@ -102,6 +103,35 @@ private static final String TAG = "thesisug - GroupHandler";
         Log.i(TAG, "... parsing done, return "+combine.size()+" result");
         return combine;
     }
+    
+	public static List<GroupMember> parseGroupMemberList(InputStream toParse)  throws IOException, SAXException {
+		final List<GroupMember> combine = new LinkedList<GroupMember>();
+    	final GroupMember current = new GroupMember();
+		RootElement root = new RootElement("collection");
+		Element singleGroupData = root.getChild("groupMember");
+		singleGroupData.setEndElementListener(new EndElementListener(){
+            public void end() {
+            	
+                combine.add(current.copy());
+            }
+        });
+		
+		singleGroupData.getChild("username").setEndTextElementListener(new EndTextElementListener(){
+            public void end(String body) {
+            	current.username = body;
+            }
+        });
+		
+		singleGroupData.getChild("joinDate").setEndTextElementListener(new EndTextElementListener(){
+            public void end(String body) {
+            	current.joinDate = body;
+            }
+        });
+		Log.i(TAG, "parsing Single GroupData XML message");
+        Xml.parse(toParse, Xml.Encoding.UTF_8, root.getContentHandler());
+        Log.i(TAG, "... parsing done, return "+combine.size()+" result");
+        return combine;
+	}
     
     public static String formatUserGroupRequest (GroupData group){
     	XmlSerializer serializer = Xml.newSerializer();
@@ -259,4 +289,6 @@ private static final String TAG = "thesisug - GroupHandler";
             throw new RuntimeException(e);
         } 
 	}
+
+
 }

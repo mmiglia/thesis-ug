@@ -72,7 +72,6 @@ public class ContextResource{
 				params.add(new BasicNameValuePair("lon", ""+lon));
 				params.add(new BasicNameValuePair("dist", ""+distance));
 				List<Hint> result = runHttpGet(LOCATION_ALL, params, context);
-				Log.d(TAG,"Sending "+ result.size() + " hints");
 				sendResult(result, "do some tasks", handler, context);
 			}
 		};

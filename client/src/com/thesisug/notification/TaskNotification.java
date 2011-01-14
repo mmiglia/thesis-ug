@@ -56,7 +56,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     private static LocationManager lm;
     private NotificationManager notificationManager;
     private static SharedPreferences usersettings;
-    Location userLocation, position, lastposition;
+    private static Location userLocation, position, lastposition;
     private RemoteViews contentView;
     private double lastdelayquery, delayzerovelocity;
     private float minUpdateDistance=0;
@@ -279,24 +279,38 @@ public class TaskNotification extends Service implements LocationListener,OnShar
         		//if (condvargps.block(delay)) break;
         		// get preference on distance, return default 0 (dont filter distance) if not set
         		int distance = Integer.parseInt(usersettings.getString("maxdistance", "0"));
+        		Log.d(TAG, "distance="+distance);
         		List<Thread> threads = new LinkedList<Thread>();
 
-        		if (userLocation == null) continue;
+        		if (userLocation == null){
+        			Log.d(TAG, "userLocation == null -> continue");	
+        			continue;
+        		}
         		//asynchronous operation to download thread
+        		Log.d(TAG,"Retreiving first tasks..");
         		downloadTaskThread = TaskResource.getFirstTask(handler, TaskNotification.this);
+        		
+        		
         		//block execution to make it synchronous
         		downloadlock.block();
+        		Log.d(TAG,"Going to do checkLocationSingle for each task START");
+        		if(tasks==null){
+        			Log.d(TAG,"No task retreived");
+        			continue;
+        		}else{
+        			Log.d(TAG,"Retreived "+tasks.size()+" task, checking location");
+        		}
         		for (SingleTask o : tasks){
         			// if user has chose not to be reminded for this task
         			if (!usersettings.getBoolean(o.title, true)) continue; 
         			// dispatch thread to get hints
+        			Log.d(TAG,"Check location for "+o.title);
 					threads.add(ContextResource.checkLocationSingle(o.title,
 							new Float(userLocation.getLatitude()),
 							new Float(userLocation.getLongitude()),
-							distance, handler, TaskNotification.this));
-					
+							distance, handler, TaskNotification.this));					
 				}
-
+        		Log.d(TAG,"Going to do checkLocationSingle for each task DONE");
         		condvargps.close();
         		
         	}
@@ -340,6 +354,16 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	contentView.setTextViewText(R.id.notification_content, getText(R.string.click_hint));
     	newnotification.contentView = contentView;
     	newnotification.contentIntent = contentIntent;
+
+    	//Adding sound
+    	newnotification.defaults |= Notification.DEFAULT_SOUND;
+
+    	//Adding vibration
+    	newnotification.defaults |= Notification.DEFAULT_VIBRATE;
+    	//Pattern: The first value is how long to wait (off) before beginning, the second value is the length of the first vibratio
+    	//long[] vibratePattern = {100,150,200,300};
+    	//newnotification.vibrate = vibratePattern;
+    	
     	notificationManager.notify(sentence.hashCode(), newnotification);
     }
     
@@ -380,8 +404,9 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	
 	@Override
 	public void onLocationChanged(Location location) {
-		Log.d(TAG, "Location changed!");
+		Log.d(TAG, "Location changed to "+location.getLatitude()+" -- "+location.getLongitude());
 		//condvargps.open();
+		userLocation=location;
 		synchronized(stopThreadObject){
 			stopThreadObject.notify();
 		}
