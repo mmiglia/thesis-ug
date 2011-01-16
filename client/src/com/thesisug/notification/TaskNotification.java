@@ -109,6 +109,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 			return;
 		}
 		userLocation = lm.getLastKnownLocation(locationProvider);
+		//Log.i(TAG, "Current user location: "+userLocation.getLatitude()+" - "+ userLocation.getLongitude());
 
     }
     
@@ -406,13 +407,19 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	public void onLocationChanged(Location location) {
 		Log.d(TAG, "Location changed to "+location.getLatitude()+" -- "+location.getLongitude());
 		//condvargps.open();
+
 		userLocation=location;
-		synchronized(stopThreadObject){
-			stopThreadObject.notify();
-		}
+			startHintSearch();
 		Log.d(TAG, "gpsthread - mainthread waked up");
 	}
 
+	public void startHintSearch(){
+		updateProviderAndPosition("startHintSearch");
+
+		synchronized(stopThreadObject){
+			stopThreadObject.notify();
+		}
+	}
 
     
 	@Override

@@ -29,6 +29,8 @@
         android:name="android.permission.READ_SYNC_SETTINGS" />
     <uses-permission
         android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission
+    	android:name="android.permission.VIBRATE" />
         
     <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
         <service
@@ -58,6 +60,10 @@
         </service>
         <service
             android:name=".notification.TaskNotification"
+            android:exported="true">
+        </service>
+        <service
+            android:name=".notification.ErrorNotification"
             android:exported="true">
         </service>
         <receiver android:name=".notification.EventNotification" android:process=":remote" />
@@ -116,7 +122,10 @@
         <activity android:name=".ui.InviteToJoinGroup"
                   android:label="@string/app_name" android:theme="@android:style/Theme">                  
         </activity>
-                <activity android:name=".ui.SystemStatus"
+        <activity android:name=".ui.ViewGroupMembers"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        <activity android:name=".ui.SystemStatus"
                   android:label="@string/app_name" android:theme="@android:style/Theme">                  
         </activity>
         

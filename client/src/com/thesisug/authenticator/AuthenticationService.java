@@ -9,7 +9,7 @@ import android.util.Log;
  * Handles account authentication. Initiates the Authenticator.
  */
 public class AuthenticationService extends Service {
-	private static final String TAG = "thesisug - AuthenticationService";
+	private static final String TAG = "thesisug - AuthService";
 	private Authenticator authenticator;
 
 	@Override

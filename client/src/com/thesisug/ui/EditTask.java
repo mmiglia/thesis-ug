@@ -33,6 +33,7 @@ import com.thesisug.communication.TaskResource;
 import com.thesisug.communication.valueobject.GroupData;
 import com.thesisug.communication.valueobject.SingleTask;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
+import com.thesisug.notification.TaskNotification;
 
 public class EditTask extends Activity {
 	private static final String TAG = "thesisug - EditTask";
@@ -179,6 +180,8 @@ public class EditTask extends Activity {
 				default:
 					break;
 				}
+				//Check Hints for Tasks (maybe after insert or change we can have some hints here around)
+				TaskNotification.getInstance().startHintSearch();
 			}
 		});
     	back.setOnClickListener(new View.OnClickListener() {

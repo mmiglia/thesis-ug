@@ -65,12 +65,18 @@ public class NetworkUtilities {
 	 * @param context activity that calls for authentication
 	 * @return thread running authentication
 	 */
-	public static Thread tryConnection(final String serverURI,
+	public static Thread tryConnection(final String serverURI,final boolean uriComplete,
 			final Handler handler, final Context context) {
 		final Runnable runnable = new Runnable() {
 			public void run() {
-				
-				TestConnectionReply result = tryConnectionThreadBody(serverURI);
+				String URI_to_check="";
+				if(!uriComplete){
+					URI_to_check="http://"+serverURI+":8080/"+Constants.PROGRAM_NAME;
+				}else{
+					URI_to_check=serverURI;
+				}
+				TestConnectionReply result = tryConnectionThreadBody(URI_to_check);
+				result.serverURI=URI_to_check;
 				Log.v(TAG, (result.status == 1)? "Connection available:YES": "Connection available:NO");
 				sendTryConnResult(result, handler, context);
 			}
@@ -96,7 +102,7 @@ public class NetworkUtilities {
         handler.post(new Runnable() {
             public void run() {
             	if(context instanceof Preferences){
-                ((Preferences) context).changeServerURI(result);
+            		((Preferences) context).changeServerURI(result);
             	}
             	if(context instanceof SystemStatus){
                     ((SystemStatus) context).tryConnection(result);
@@ -116,8 +122,8 @@ public class NetworkUtilities {
 		Log.i(TAG,"Starting try connection");
     	DefaultHttpClient newClient = NetworkUtilities.createClient();
     	// provide username and password in correct param
-    	Log.i(TAG,"Client created, creating request");
-    	String url=_serverURI+Constants.DEFAULT_HTTP_PORT+"/"+Constants.PROGRAM_NAME+BASE_TRY_CONNECTION;
+    	Log.i(TAG,"Client created, creating request to check "+_serverURI);
+    	String url=_serverURI+BASE_TRY_CONNECTION;
     	
         HttpGet request = new HttpGet(url);
         request.addHeader("Cookie", "uri="+_serverURI);
@@ -126,9 +132,11 @@ public class NetworkUtilities {
         HttpResponse response = NetworkUtilities.sendRequest(newClient, request);
         Log.i(TAG,"TryConn request sent");		
         Log.i(TAG,"Status: "+response.getStatusLine());
+
+        //Set the requested URI
+    	result.serverURI=_serverURI;
         
         if (response == null || response.getStatusLine().getStatusCode()==404) {
-        	result.serverURI=_serverURI;
         	result.status=0;
         	return result;
         }     

@@ -24,6 +24,9 @@ public class SystemStatus extends Activity {
 	private static final String TAG = "thesisug - SystemStatus";
 	public final static int UPDATE_STATUS = 0;
 	public final static int BACK = 1;
+	public final static int FIX_LOCATION_PROBLEM=2;
+	public final static int CHANGE_SERVER=3;
+	
 	private String locationProvider;
     private LocationManager locManager;
     private Criteria criteria;
@@ -40,7 +43,7 @@ public class SystemStatus extends Activity {
     private TextView txt_server_name_value;
     private TextView txt_server_connection_status_value;
     
-    private TextView txt_server_status;
+    
     
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -51,13 +54,18 @@ public class SystemStatus extends Activity {
     	locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
     	
     	
+    	txt_server_name_value=(TextView)findViewById(R.id.server_name_value);
+    	txt_server_connection_status_value=(TextView)findViewById(R.id.server_connection_status_value);
+    	
     	txt_location_provider=(TextView)findViewById(R.id.location_provider_status_value);
     	txt_last_location_latitude=(TextView)findViewById(R.id.current_position_status_latitude);
         txt_last_location_longitude=(TextView)findViewById(R.id.current_position_status_longitude);
         
-        txt_server_name_value=(TextView)findViewById(R.id.server_name_value);
-        txt_server_connection_status_value=(TextView)findViewById(R.id.server_connection_status_value);
         
+        
+        
+        
+        txt_server_connection_status_value.setText(getText(R.string.checking_server_connection));
         updateSystemStatus();
         
     	
@@ -67,6 +75,8 @@ public class SystemStatus extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu){
 		menu.add(0,UPDATE_STATUS,0,"Update").setIcon(R.drawable.sync);
+		menu.add(0,FIX_LOCATION_PROBLEM,0,"Select location provider").setIcon(R.drawable.sync);
+		menu.add(0,CHANGE_SERVER,0,"Change server").setIcon(R.drawable.sync);
 		menu.add(0,BACK,0,"BACK").setIcon(R.drawable.exit);
 		return true;
 	}
@@ -75,8 +85,8 @@ public class SystemStatus extends Activity {
 		//Server status
 		txt_server_name_value.setText(NetworkUtilities.SERVER_URI);
 		//Server connection
-		showDialog(0); //will call onCreateDialog method 
-		tryConnectionThread=LoginResource.tryConnection(NetworkUtilities.SERVER_URI, handler, SystemStatus.this);
+		//showDialog(0); //will call onCreateDialog method 
+		tryConnectionThread=NetworkUtilities.tryConnection(NetworkUtilities.SERVER_URI,true, handler, SystemStatus.this);
 		
 		
 		//Location service
@@ -86,12 +96,13 @@ public class SystemStatus extends Activity {
 		if(locationProvider==null ){
 			txt_location_provider.setText(R.string.location_provider_status_ko);
 		}else{
-			txt_location_provider.setText(locationProvider);
+			txt_location_provider.setText(locationProvider.toUpperCase());
 		}
 		//Current location
 		if(locationProvider!=null ){
 			userLocation = locManager.getLastKnownLocation(locationProvider);
 			if(userLocation==null ){
+				txt_last_location_latitude.setText(R.string.user_position_unknown);
 				
 			}else{
 				txt_last_location_latitude.setText("Lat: "+userLocation.getLatitude());
@@ -108,7 +119,13 @@ public class SystemStatus extends Activity {
 		switch (item.getItemId()) {
 		case UPDATE_STATUS:
 			updateSystemStatus();
-			break;						
+			break;				
+		case FIX_LOCATION_PROBLEM:
+			startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
+			break;
+		case CHANGE_SERVER:
+			startActivityForResult(new Intent(SystemStatus.this,Preferences.class), 0);
+			break;
 		default:
 			finish();
 			break;
@@ -118,7 +135,7 @@ public class SystemStatus extends Activity {
 
 
     protected Dialog onCreateDialog(int id) {
-        final ProgressDialog dialog = new ProgressDialog(this);
+        /*final ProgressDialog dialog = new ProgressDialog(this);
         
 	        dialog.setMessage("Try to connect to the server...");
 	        dialog.setIndeterminate(true);
@@ -134,15 +151,17 @@ public class SystemStatus extends Activity {
 	        });
 
         return dialog;
+        */
+    	return null;
     }	
 	
 	public void tryConnection(TestConnectionReply result) {
-		dismissDialog(0); //disable the progress dialog
+		//dismissDialog(0); //disable the progress dialog
 		Log.d(TAG, "Status:"+result.status);
 		if(result.status==1){
-			txt_server_connection_status_value.setText(R.string.server_connection_ok);
+			txt_server_connection_status_value.setText(getText(R.string.server_connection_ok));
 		}else{
-			txt_server_connection_status_value.setText(R.string.server_connection_ko);
+			txt_server_connection_status_value.setText(getText(R.string.server_connection_ko));
 		}
 		
 	}

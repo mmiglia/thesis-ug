@@ -66,10 +66,17 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		Log.d(TAG, "KEY:"+key);
 		if(key.equals("serverURI_from_text")){
 			insertedURI=PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("serverURI_from_text",NetworkUtilities.SERVER_URI);
+			Log.d(TAG,"insertedURI:"+insertedURI);
+			if(insertedURI.equals(NetworkUtilities.SERVER_URI)){
+				//Got default value 
+				Toast.makeText(getApplicationContext(), R.string.error_during_retreiving_server_address, Toast.LENGTH_LONG).show();
+				return;
+			}
 			if(insertedURI.matches(regExCorrectURL)){
 				showDialog(0); //will call onCreateDialog method 
 				//Test to verify that the inserted URI is a valid URI. The response of the validation will be sent to changeServerURI method of this class
-				tryConnectionThread=LoginResource.tryConnection(insertedURI, handler, Preferences.this);
+				//tryConnectionThread=LoginResource.tryConnection(insertedURI, handler, Preferences.this);
+				tryConnectionThread=NetworkUtilities.tryConnection(insertedURI,false, handler, Preferences.this);
 			}else{
 				Toast.makeText(getApplicationContext(), R.string.invalid_server_url, Toast.LENGTH_LONG).show();
 			}
@@ -87,7 +94,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 			
 			showDialog(0); //will call onCreateDialog method 
 			//Test to verify that the inserted URI is a valid URI. The response of the validation will be sent to changeServerURI method of this class
-			tryConnectionThread=LoginResource.tryConnection(insertedURI, handler, Preferences.this);
+			//tryConnectionThread=LoginResource.tryConnection(insertedURI, handler, Preferences.this);
+			tryConnectionThread=NetworkUtilities.tryConnection(insertedURI,false, handler, Preferences.this);
 		}
 
 
@@ -97,7 +105,6 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
     protected Dialog onCreateDialog(int id) {
         final ProgressDialog dialog = new ProgressDialog(this);
         
-        Log.e(TAG,"insertedURI2:"+insertedURI);
         
 	        dialog.setMessage("Try to connect to the server...");
 	        dialog.setIndeterminate(true);
@@ -121,7 +128,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		dismissDialog(0); //disable the progress dialog
 
 		
-		Log.i(TAG,"Received serverURI:"+result.serverURI);
+		Log.i(TAG,"Tested serverURI:"+result.serverURI);
 		if(result.status==1){			
 			NetworkUtilities.changeServerURI(result.serverURI);
 			

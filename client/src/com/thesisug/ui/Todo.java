@@ -9,11 +9,11 @@ import java.util.List;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,34 +21,27 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.View.OnClickListener;
-import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.Toast;
 import android.widget.SimpleAdapter.ViewBinder;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.thesisug.R;
 import com.thesisug.communication.EventResource;
-import com.thesisug.communication.GroupResource;
 import com.thesisug.communication.NetworkUtilities;
 import com.thesisug.communication.TaskResource;
-import com.thesisug.communication.valueobject.GroupInviteData;
 import com.thesisug.communication.valueobject.Reminder;
 import com.thesisug.communication.valueobject.SingleEvent;
 import com.thesisug.communication.valueobject.SingleTask;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 import com.thesisug.notification.EventNotification;
+import com.thesisug.notification.TaskNotification;
 
 
 public class Todo extends ListActivity{
@@ -60,8 +53,10 @@ public class Todo extends ListActivity{
 	public final static int VOICE_INPUT = 3;
 	public final static int BACK = 4;
 	public final static int UPDATE_TASK_EVENT = 5;
-	public final static int MANAGE_GROUPS=6;
-	public final static int SYSTEM_STATUS=7;
+	public final static int FORCE_HINT_SEARCH=6;
+	public final static int MANAGE_GROUPS=7;
+	public final static int SYSTEM_STATUS=8;
+	
 	
 	private static Thread downloadEventThread, downloadTaskThread;
 	private static int counter = 0; // counter for task and event thread completion
@@ -143,8 +138,9 @@ public class Todo extends ListActivity{
 		menu.add(0,CREATE_TASK,0,"Create Task").setIcon(R.drawable.task);
 		menu.add(0,VOICE_INPUT,0,"Voice Input").setIcon(R.drawable.voice);
 		menu.add(0,UPDATE_TASK_EVENT,0,"Synchronize").setIcon(R.drawable.sync);
+		menu.add(0,FORCE_HINT_SEARCH,0,"Search for hints").setIcon(R.drawable.radar);
 		menu.add(0,MANAGE_GROUPS,0,"Groups").setIcon(R.drawable.user_group);
-		menu.add(0,SYSTEM_STATUS,0,"System status").setIcon(R.drawable.traffic_lights);
+		menu.add(0,SYSTEM_STATUS,0,"System status").setIcon(R.drawable.traffic_lights);		
 		menu.add(0,BACK,0,"EXIT").setIcon(R.drawable.exit);
 		return true;
 	}
@@ -172,7 +168,18 @@ public class Todo extends ListActivity{
 			intent = new Intent(Todo.this, Input.class);
 			startActivityForResult(intent, 0);
 			break;
-		
+			
+		case FORCE_HINT_SEARCH:
+			TaskNotification.getInstance().startHintSearch();
+			Toast.makeText(getApplicationContext(), R.string.hint_search_started, Toast.LENGTH_SHORT).show();
+			break;
+			
+		case UPDATE_TASK_EVENT:
+        	showDialog(0);
+    		downloadEventThread = EventResource.getAllEvent(handler, this);
+    		downloadTaskThread = TaskResource.getFirstTask(handler, this);
+			break;
+			
 		case MANAGE_GROUPS:
 			intent=new Intent(Todo.this,ManageGroupMenu.class);
 			startActivityForResult(intent, 0);
@@ -181,13 +188,7 @@ public class Todo extends ListActivity{
 			intent=new Intent(Todo.this,SystemStatus.class);
 			startActivityForResult(intent, 0);
 			break;
-			
-		case UPDATE_TASK_EVENT:
-        	showDialog(0);
-    		downloadEventThread = EventResource.getAllEvent(handler, this);
-    		downloadTaskThread = TaskResource.getFirstTask(handler, this);
-			break;			
-			
+					
 		default:
 			finish();
 			break;
@@ -270,11 +271,42 @@ public class Todo extends ListActivity{
 		showDialog(0);
 		accountManager = AccountManager.get(getApplicationContext());
         accounts = accountManager.getAccountsByType(com.thesisug.Constants.ACCOUNT_TYPE);
-        username = accounts[0].name;
-		// refresh content from server
-		downloadEventThread = EventResource.getAllEvent(handler, this);
-		downloadTaskThread = TaskResource.getFirstTask(handler, this);
-		Log.i(TAG, "onActivityResult create new thread to download");
+        Log.i(TAG, "Retreived "+accounts.length+ " accounts");
+        //If the user doesn't set any account for the application (e.g. press the back button of the phone)
+        if (accounts.length == 0) {
+        	AlertDialog.Builder registrationDialog=	new AlertDialog.Builder(this);
+        	registrationDialog.setIcon(android.R.drawable.ic_dialog_alert);
+        	registrationDialog.setTitle(R.string.application_quit);
+        	registrationDialog.setMessage(R.string.no_account_set_ask_if_want_to_register);
+        	registrationDialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                	//Start login activity
+                	Intent login = new Intent(getApplicationContext(),Login.class);
+                	startActivityForResult(login, 0);
+                       
+                }
+
+            });
+        	registrationDialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                    //Stop the activity
+                    Todo.this.finish();    
+                }
+
+            });
+        	registrationDialog.show();
+        }else{
+	        username = accounts[0].name;
+			// refresh content from server
+			downloadEventThread = EventResource.getAllEvent(handler, this);
+			downloadTaskThread = TaskResource.getFirstTask(handler, this);
+			Log.i(TAG, "onActivityResult create new thread to download");
+        }
 	}
 	
 	
@@ -373,6 +405,9 @@ public class Todo extends ListActivity{
 
 		
 		setListAdapter(adapter);
+		
+		//Check Hints for Tasks
+		TaskNotification.getInstance().startHintSearch();
 	}
 	
 		
