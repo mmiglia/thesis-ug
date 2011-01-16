@@ -3,18 +3,13 @@ package com.thesisug.ui;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.TabActivity;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.util.Log;
 import android.widget.TabHost;
-import android.widget.Toast;
 
 import com.thesisug.R;
+import com.thesisug.notification.ErrorNotification;
 import com.thesisug.notification.TaskNotification;
 
 public class ParentTab extends TabActivity {
@@ -29,6 +24,7 @@ public class ParentTab extends TabActivity {
         setContentView(R.layout.parenttab);
         // start Task Notification service
         startService(new Intent(ParentTab.this, TaskNotification.class));
+        startService(new Intent(ParentTab.this, ErrorNotification.class));
         Resources res = getResources(); // Resource object to get Drawables
         TabHost tabHost = getTabHost();  // The activity TabHost
         TabHost.TabSpec spec;  // Reusable TabSpec for each tab

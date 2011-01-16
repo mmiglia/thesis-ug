@@ -32,6 +32,17 @@ public class EventNotification extends BroadcastReceiver
     	contentView.setTextViewText(R.id.notification_content, context.getText(R.string.click_details));
     	eventnotification.contentView = contentView;
     	eventnotification.contentIntent = contentIntent;
+    	
+    	//Adding sound
+    	eventnotification.defaults |= Notification.DEFAULT_SOUND;
+
+    	//Adding vibration
+    	eventnotification.defaults |= Notification.DEFAULT_VIBRATE;
+    	//Pattern: The first value is how long to wait (off) before beginning, the second value is the length of the first vibratio
+    	//long[] vibratePattern = {100,150,200,300};
+    	//newnotification.vibrate = vibratePattern;
+    	
+    	
     	manager.notify(sentence.hashCode(), eventnotification);
     }
 }
