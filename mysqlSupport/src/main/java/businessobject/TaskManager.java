@@ -127,6 +127,7 @@ public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterf
 	 */
 	public boolean createTask(String userID, SingleTask taskObj){
 		taskObj=setDefaultIfEmpty(taskObj);
+		log.debug("GROUPID:"+taskObj.groupId);
 		SingleTask toAdd = TaskDatabase.instance.addTask(userID,taskObj.title,taskObj.notifyTimeStart, taskObj.notifyTimeEnd, taskObj.dueDate,
 				taskObj.description, taskObj.priority,taskObj.groupId);
 		
@@ -180,9 +181,10 @@ public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterf
 	
 	private SingleTask setDefaultIfEmpty(SingleTask task){
 	
-		task.groupId.equals("");
-		//Default = personal task
-		task.groupId="0";
+		if(task.groupId.equals("")){
+			//Default = personal task
+			task.groupId="0";
+		}
 		
 		return task;
 		

@@ -15,10 +15,11 @@ import org.slf4j.LoggerFactory;
 
 import valueobject.GroupData;
 import valueobject.GroupInviteData;
+import valueobject.GroupMember;
 import businessobject.GroupManager;
 
 /**
- * Task GroupResource is responsible for manage the group into the server.
+ * GroupResource is responsible for manage the group into the server.
  * This class uses mainly method of GroupManager class
  */
 @Path("/{username}/group")
@@ -26,9 +27,12 @@ public class GroupResource {
 	private static Logger log = LoggerFactory.getLogger(TaskResource.class);
 
 	/**
-	 * Create new group into the database
-	 * @param userid unique UUID of the user (will became owner of the group)
-	 * @return the id of the group, -1 if the creation fails
+	 * Create new group into the database, the id of the new group is set to -1 because will be the DBMS that will
+	 * assign it when the group will be stored into the database
+	 * 
+	 * @param userid the username of the user (will became owner of the group) and will be put into the GroupMember table
+	 * @param group is the description of the group that is going to be created (see GroupData class) 
+	 * 
 	 */
 	@POST
 	@Path("/create")	
@@ -42,9 +46,9 @@ public class GroupResource {
 
 	/**
 	 * Invite a user to join the group
-	 * @param userID unique UUID of the user to be invited
-	 * @param groupID the id of the group to join
-	 * @param message the message to send to the user (optional)
+	 * @param senderUserID the username of the user that send the invite
+	 * @param invite the description of the join_to_group message, see GroupInviteData for more details
+	 * 
 	 * 
 	 * @return a boolean that reflect the invite status
 	 */
@@ -58,7 +62,7 @@ public class GroupResource {
 	}	
 	
 	/**
-	 * Get all group where this user is involved to
+	 * Get all group where this user is involved to by selecting all the groupID from the GroupMember table
 	 * @param userid user id of the user
 	 * @param sessionid session token acquired by login
 	 * @return list of tasks from this user
@@ -74,7 +78,8 @@ public class GroupResource {
 	}
 
 	/**
-	 * Get all group invite request
+	 * Get all group invite request for the user
+	 * @param userID the username that has to be controlled
 	 */
 	@GET
 	@Path("/getJoinGroupRequest")
@@ -86,7 +91,33 @@ public class GroupResource {
 	}	
 	
 	/**
-	 * Accept a group invite request
+	 * Get all group member
+	 * @param groupID the group of witch get the members
+	 */
+	@GET
+	@Path("/{groupID}/getGroupMember")
+	@Produces("application/xml")
+	public List<GroupMember> getGroupMember(@PathParam("username") String userID,
+			@PathParam("groupID") String groupID,@CookieParam("sessionid") String sessionid){
+		log.info("User "+ userID+" ask to retrieve all group members for the group "+ groupID);
+		return GroupManager.getInstance().getGroupMembers(groupID);
+	}	
+
+	/**
+	 * Delete from group
+	 * @param groupID the group of witch get the members
+	 */
+	@GET
+	@Path("/{groupID}/deleteFromGroup")
+	@Produces("application/xml")
+	public boolean deleteFromGroup(@PathParam("username") String userID,
+			@PathParam("groupID") String groupID,@CookieParam("sessionid") String sessionid){
+		log.info("User "+ userID+" ask to be deleted from the group "+ groupID);
+		return GroupManager.getInstance().deleteFromGroup(userID,groupID);
+	}		
+	
+	/**
+	 * Accept a group invite request and put the user into the GroupMember table, than cancel the join_to_group request
 	 */
 	@POST
 	@Path("/accept")
@@ -98,7 +129,7 @@ public class GroupResource {
 	}
 	
 	/**
-	 * Refuse a group invite request
+	 * Refuse a group invite request by cancelling the join_to_group request
 	 */
 	@POST
 	@Path("/refuse")
@@ -108,4 +139,5 @@ public class GroupResource {
 		log.info("Refusing group request to join the group "+invite.groupID+" received by "+userID+" from user "+ invite.sender);
 		return GroupManager.getInstance().refuseGroupInviteRequest(invite);
 	}
+	
 }
