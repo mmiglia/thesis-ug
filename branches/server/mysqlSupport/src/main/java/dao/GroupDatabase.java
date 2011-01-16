@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import valueobject.GroupData;
 import valueobject.GroupInviteData;
+import valueobject.GroupMember;
 import businessobject.Configuration;
 import dao.management.QueryStatus;
 import dao.management.mysql.MySQLDBManager;
@@ -18,7 +19,7 @@ import dao.management.mysql.MySQLDBManager;
 
 /**
  * Singleton class that acts as a database that will save all the groups into the database
- * and manage them
+ * and manage them. It also provide methods to invite user to join groups, accepting and refusing those invite.
  */
 public enum GroupDatabase {
 	instance; // singleton instance
@@ -28,7 +29,7 @@ public enum GroupDatabase {
 	//MySQL database manager
 	private static final MySQLDBManager dbManager=new MySQLDBManager();
 	
-	/*
+	/**
 	 * Add the request to the GroupRequest table
 	 */
 	public  static boolean  inviteToGroup(String sender, String receiver,String groupID, String message){
@@ -55,6 +56,12 @@ public enum GroupDatabase {
 		return true;
 	}
 	
+	
+	/**
+	 * Verify whether the user is a GroupMember of the group specified by the groupID parameter
+	 * @param username the username that has to be controlled
+	 * @param groupID the id of the group that has to be controlled whether the user is member or not 
+	 */
 	private static boolean isUserAlreadyInGroup(String username,String groupID){
 		
 		
@@ -83,7 +90,7 @@ public enum GroupDatabase {
 		return isMember;
 	}
 	
-	/*
+	/**
 	 * Add the group to the database and set the owner, finally add the owner as group member
 	 */
 	public static GroupData createGroup(GroupData group){
@@ -166,8 +173,9 @@ public enum GroupDatabase {
 	}
 	
 	
-	/*
+	/**
 	 * Get from the database the list of all the group in wich the user is involved
+	 * by searching into the GroupMember table
 	 */
 	public static List<GroupData> getUserGroups(String username){
 		List<GroupData> userGroupList=new ArrayList<GroupData>();
@@ -206,8 +214,8 @@ public enum GroupDatabase {
 		
 	}
 	
-	/*
-	 * Accept the invite to join the group
+	/**
+	 * Accept the invite to join the group and cancel the join_to_group request from the GroupRequest table
 	 */
 	
 	public static boolean acceptGroupInviteRequest(GroupInviteData invite){
@@ -271,6 +279,9 @@ public enum GroupDatabase {
 		
 	}
 	
+	/**
+	 * Refuse the join_to_group request by cancelling it from the GroupRequest table
+	 */
 	public boolean refuseGroupInviteRequest(GroupInviteData invite) {
 
 		//Starting transaction
@@ -312,6 +323,9 @@ public enum GroupDatabase {
 		
 	}
 
+	/**
+	 * Return the list of the pending join_to_group_request
+	 */
 	public List<GroupInviteData> getGroupInviteRequest(String username) {
 		List<GroupInviteData> groupInviteList=new ArrayList<GroupInviteData>();
 		
@@ -349,6 +363,144 @@ public enum GroupDatabase {
 		
 		
 		return groupInviteList;
+	}
+
+
+	/**
+	 * Retreive the list of group members
+	 * @param groupID
+	 * @return
+	 */
+	public List<GroupMember> getGroupMembers(String groupID) {
+		List<GroupMember> groupMemberList=new ArrayList<GroupMember>();
+		
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		
+		String selectQuery="Select * from GroupMember where GroupMember.UserGroup='"+groupID+"'";
+
+		
+		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
+		
+		ResultSet rs=(ResultSet)qs.customQueryOutput;
+		
+		
+		
+		try{
+			while(rs.next()){
+				groupMemberList.add(
+						new GroupMember(
+								rs.getString("User"),
+								rs.getString("TimeStamp")
+							)					
+					);
+			}
+		}catch(SQLException sqlE){
+			//TODO
+			
+		}finally{	
+			dbManager.dbDisconnect(conn);
+		}
+		
+		
+		return groupMemberList;
+	}
+
+
+	public boolean deleteFromGroup(String userID, String groupID) {
+		//Starting transaction
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		//Starting transaction
+		QueryStatus qs=dbManager.startTransaction(conn);
+		
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			log.error("Error during transaction starting... user not deleted from group");
+			dbManager.dbDisconnect(conn);
+			return false;
+		}	
+		
+		
+		//Delete the user from the GroupMember table 
+		String deleteQuery="Delete from GroupMember where UserGroup='"+groupID+"' and User='"+userID+"'";
+		System.out.println(deleteQuery);
+		qs=dbManager.customQuery(conn, deleteQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			log.error("Error during GroupMember deleting for the user "+userID+" from the group "+groupID+" rolling back");
+			dbManager.dbDisconnect(conn);
+			return false;
+		}
+		
+		//Is the group empty?
+		log.info("Check if the group became empty after the user has deleted from the group");
+		String selectQuery="Select count(*) as tot_members from GroupMember where GroupMember.UserGroup='"+groupID+"'";
+
+		
+		qs=dbManager.customSelect(conn, selectQuery);
+		
+		ResultSet rs=(ResultSet)qs.customQueryOutput;
+		
+		
+		int totMembers=0;
+		try{
+			while(rs.next()){
+				totMembers=Integer.parseInt(rs.getString("tot_members"));
+			}
+		}catch(SQLException sqlE){
+			//TODO
+			
+		}
+		
+		if(totMembers==0){
+			log.info("YES The group became empty after the user has deleted from the group, deleting also the group");
+			//Delete pendig group request for this group
+			String deleteGroupRequestQuery="Delete from GroupRequest where UserGroup='"+groupID+"'";
+			System.out.println(deleteQuery);
+			qs=dbManager.customQuery(conn, deleteGroupRequestQuery);
+			if(qs.execError){
+				log.error(qs.explainError());
+				qs.occourtedErrorException.printStackTrace();
+				
+				//Rolling back
+				dbManager.rollbackTransaction(conn);
+				
+				log.error("Error during Group deleting because group "+groupID+" remain empty after that user "+userID+" leaves the group "+groupID+" rolling back");
+				dbManager.dbDisconnect(conn);
+				return false;
+			}
+			log.info("Pending join_to_group request for the group "+groupID+" deleted successfully");
+			//Delete group 
+			String deleteGroupQuery="Delete from UserGroup where id='"+groupID+"'";
+			System.out.println(deleteQuery);
+			qs=dbManager.customQuery(conn, deleteGroupQuery);
+			if(qs.execError){
+				log.error(qs.explainError());
+				qs.occourtedErrorException.printStackTrace();
+				
+				//Rolling back
+				dbManager.rollbackTransaction(conn);
+				
+				log.error("Error during Group deleting because group remain empty after that user "+userID+" leaves the group "+groupID+" rolling back");
+				dbManager.dbDisconnect(conn);
+				return false;
+			}
+			log.info("Group "+groupID+" deleted successfully");
+		}
+
+		log.info("User "+userID+" successfully deleted from group "+groupID);
+		dbManager.commitTransaction(conn);
+		dbManager.dbDisconnect(conn);
+		
+		return true;
 	}
 
 

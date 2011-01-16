@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import valueobject.GroupData;
 import valueobject.GroupInviteData;
+import valueobject.GroupMember;
 import dao.GroupDatabase;
 
 public class GroupManager implements GroupInterface{
@@ -50,10 +51,20 @@ public class GroupManager implements GroupInterface{
 		return GroupDatabase.instance.acceptGroupInviteRequest(invite);
 	}	
 	
+	@Override
 	public boolean refuseGroupInviteRequest(GroupInviteData invite) {
 		return GroupDatabase.instance.refuseGroupInviteRequest(invite);
 	}
-
+	
+	@Override
+	public List<GroupMember> getGroupMembers(String groupID) {
+		return GroupDatabase.instance.getGroupMembers(groupID);
+	}
+	
+	@Override
+	public boolean deleteFromGroup(String userID, String groupID) {
+		return GroupDatabase.instance.deleteFromGroup(userID, groupID);
+	}
 	
 	public static void main(String[] args){
 		GroupManager manager=new GroupManager();
@@ -106,6 +117,10 @@ public class GroupManager implements GroupInterface{
 		}
 		*/
 	}
+
+
+
+
 
 
 

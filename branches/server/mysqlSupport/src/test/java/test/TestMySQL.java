@@ -3,6 +3,7 @@ package test;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
@@ -10,6 +11,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import valueobject.GroupData;
 import valueobject.LoginReply;
 import valueobject.SingleEvent;
 import valueobject.SingleTask;
@@ -18,6 +20,7 @@ import businessobject.Configuration;
 import businessobject.Converter;
 import businessobject.LoginManager;
 import dao.EventDatabase;
+import dao.GroupDatabase;
 import dao.RegisteredUsers;
 import dao.TaskDatabase;
 
@@ -316,6 +319,31 @@ public class TestMySQL extends TestCase {
 		
 	}
 	
+	//Test on group
+	String groupName="_#gr0up_N4me#_";
+	String groupOwner="_#gr0up_own3r#_";
+	String userToInvite="_#us3rToInv1te#_";
+	GroupData group=new GroupData(groupName,groupOwner);
 	
+	int groupID=-1;
+	
+	public void testGroupCreation() {
+		group=GroupDatabase.instance.createGroup(group);
+		assertTrue(groupID!=-1);
+	}
+	
+	public void testInviteToGroup(){
+		System.out.println("User "+userToInvite+ " invited to the group "+ groupID);
+		assertTrue(GroupDatabase.instance.inviteToGroup(groupOwner, userToInvite, String.valueOf(groupID), "Ask to join group"));
+	}
 
+	public void testGetGroupList(){
+		/*
+		 * Get group list
+		 */
+		List<GroupData> gruppi=GroupDatabase.instance.getUserGroups(groupOwner);
+		System.out.println(gruppi.size()+" gruppi per l'utente "+groupOwner);
+		assertTrue(true);
+	}
+	
 }

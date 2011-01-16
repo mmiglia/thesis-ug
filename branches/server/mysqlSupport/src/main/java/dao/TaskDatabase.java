@@ -258,6 +258,7 @@ public enum TaskDatabase {
 
 		updateQuery+="dueDate='"+task.dueDate+"',";
 		updateQuery+="notifyTimeEnd='"+task.notifyTimeEnd+"',";
+		updateQuery+="UserGroup='"+task.groupId+"',";
 		updateQuery+="notifyTimeStart='"+task.notifyTimeStart+"'";
 		
 		updateQuery+=" where id="+taskID+"";
