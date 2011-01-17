@@ -184,4 +184,11 @@
     <string name="connection_status">Connection</string>
     <string name="user_position_unknown">User position currently unknown, if the problem persist, try to change the location provider</string>
     <string name="error_during_retreiving_server_address">Error during the retreive of server address, try again</string>
+    
+    <string name="notification_preferences">Notification</string>
+    
+    <!-- TEXT TO SPEECH -->
+    <string name="no_hints_found_for">No hints found for</string>
+    <string name="new_hints_found_for">Found new hints for</string>
+    <string name="searching_around_here">Searching..</string>
 </resources>

@@ -17,6 +17,27 @@
 			android:entryValues="@array/distanceValue" />
 
 	</PreferenceCategory>
+	<!-- NOTIFICATION -->
+	<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+		android:title="@string/notification_preferences">
+		<CheckBoxPreference
+                        android:title="Sound"
+                        android:defaultValue="false"
+                        android:summary="This preference can be true or false"
+                        android:key="notification_hint_sound" />
+		<CheckBoxPreference
+                        android:title="Vibrate"
+                        android:defaultValue="false"
+                        android:summary="This preference can be true or false"
+                        android:key="notification_hint_vibrate" />
+		<CheckBoxPreference
+                        android:title="Speak"
+                        android:defaultValue="false"
+                        android:summary="This preference can be true or false"
+                        android:key="notification_hint_speak" />
+	</PreferenceScreen>
+	
+	<!-- ADVANCED: server -->
 	<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
 		android:title="@string/advanced_preferences">
 

@@ -69,14 +69,8 @@ public class NetworkUtilities {
 			final Handler handler, final Context context) {
 		final Runnable runnable = new Runnable() {
 			public void run() {
-				String URI_to_check="";
-				if(!uriComplete){
-					URI_to_check="http://"+serverURI+":8080/"+Constants.PROGRAM_NAME;
-				}else{
-					URI_to_check=serverURI;
-				}
-				TestConnectionReply result = tryConnectionThreadBody(URI_to_check);
-				result.serverURI=URI_to_check;
+				TestConnectionReply result = tryConnectionThreadBody(serverURI);
+				result.serverURI=serverURI;
 				Log.v(TAG, (result.status == 1)? "Connection available:YES": "Connection available:NO");
 				sendTryConnResult(result, handler, context);
 			}
@@ -115,18 +109,19 @@ public class NetworkUtilities {
 	 * This method try if the connection is available to the server
 	 * @return
 	 */
-	public static TestConnectionReply tryConnectionThreadBody(String _serverURI){
+	public static TestConnectionReply tryConnectionThreadBody(String serverURI){
 		
+		Log.d(TAG, "tryConnectionThreadBody("+serverURI+")");
 		TestConnectionReply result=new TestConnectionReply();
 		
 		Log.i(TAG,"Starting try connection");
     	DefaultHttpClient newClient = NetworkUtilities.createClient();
     	// provide username and password in correct param
-    	Log.i(TAG,"Client created, creating request to check "+_serverURI);
-    	String url=_serverURI+BASE_TRY_CONNECTION;
+    	Log.i(TAG,"Client created, creating request to check --> "+serverURI+" <--");
+    	String url="http://"+serverURI+":"+Constants.DEFAULT_HTTP_PORT+"/"+Constants.PROGRAM_NAME+BASE_TRY_CONNECTION;
     	
         HttpGet request = new HttpGet(url);
-        request.addHeader("Cookie", "uri="+_serverURI);
+        request.addHeader("Cookie", "uri="+serverURI);
         Log.i(TAG,"Sending tryConn request to " + url);
         // send the request to network
         HttpResponse response = NetworkUtilities.sendRequest(newClient, request);
@@ -134,7 +129,7 @@ public class NetworkUtilities {
         Log.i(TAG,"Status: "+response.getStatusLine());
 
         //Set the requested URI
-    	result.serverURI=_serverURI;
+    	result.serverURI=serverURI;
         
         if (response == null || response.getStatusLine().getStatusCode()==404) {
         	result.status=0;
