@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -21,6 +22,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.TextToSpeech.OnInitListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,7 +47,7 @@ import com.thesisug.notification.EventNotification;
 import com.thesisug.notification.TaskNotification;
 
 
-public class Todo extends ListActivity{
+public class Todo extends ListActivity implements OnInitListener{
 	public final static String TAG = "thesisug - TodoActivity";
 	public final static String ITEM_DATA = "data";
 	public final static String REMIND_ME = "remindme";
@@ -65,13 +68,15 @@ public class Todo extends ListActivity{
 	private AlarmManager am;
 	private Account[] accounts;
 	private final Handler handler = new Handler();
-	private static SharedPreferences usersettings;
+	private static SharedPreferences userSettings;
 	private Intent eventNotificationIntent;
 	private static PendingIntent alarmIntent;
 	private static List<LinkedHashMap<String,?>> event = new LinkedList<LinkedHashMap<String,?>>();
 	private static List<LinkedHashMap<String,?>> tasks = new LinkedList<LinkedHashMap<String,?>>();
 	private static String serverURI="";
 	
+	
+	private static TextToSpeech mTts;
 		
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -85,7 +90,7 @@ public class Todo extends ListActivity{
         eventNotificationIntent = new Intent(Todo.this, EventNotification.class);
         alarmIntent = PendingIntent.getBroadcast(Todo.this,
                 0, eventNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        usersettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        userSettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
         if (accounts.length == 0) {
         	Log.d(TAG, "accounts.length");
@@ -105,6 +110,10 @@ public class Todo extends ListActivity{
     		downloadTaskThread = TaskResource.getFirstTask(handler, this);
         }
 
+        
+        mTts = new TextToSpeech(getApplicationContext(), this);
+
+        mTts.setLanguage(Locale.ITALIAN);
 	}
 	
 	
@@ -114,7 +123,7 @@ public class Todo extends ListActivity{
 		Log.i (TAG, "Todo Activity is onPause, saving preferences");
 		// save checkbox states on pause
 		ListView currentlist = getListView();
-		SharedPreferences.Editor editor = usersettings.edit();
+		SharedPreferences.Editor editor = userSettings.edit();
 		for( int i=0;i<currentlist.getChildCount();i++ ) { 
 			View currentview = (View)currentlist.getChildAt(i);
 		    TextView title = (TextView) currentview.findViewById(R.id.list_complex_title);
@@ -170,6 +179,8 @@ public class Todo extends ListActivity{
 			break;
 			
 		case FORCE_HINT_SEARCH:
+			String sentence=(String) getText(R.string.searching_around_here);
+			Todo.speakIt(sentence);
 			TaskNotification.getInstance().startHintSearch();
 			Toast.makeText(getApplicationContext(), R.string.hint_search_started, Toast.LENGTH_SHORT).show();
 			break;
@@ -188,12 +199,19 @@ public class Todo extends ListActivity{
 			intent=new Intent(Todo.this,SystemStatus.class);
 			startActivityForResult(intent, 0);
 			break;
-					
 		default:
 			finish();
 			break;
 		}
 		return true;
+	}
+	
+	public static void speakIt(String sentence){
+	   	//Avvio la sintesi vocale
+		if(userSettings.getBoolean("notification_hint_speak",false)){
+			mTts.speak(sentence, TextToSpeech.QUEUE_ADD, null);
+		}
+	   	Log.d(TAG, "Speak of "+sentence+" DONE!");
 	}
 	
 	@Override
@@ -321,7 +339,7 @@ public class Todo extends ListActivity{
 				tasks.add(createItem (new SingleTask(getText(R.string.no_task_today).toString(), "", "", "", "", ""), false));	
 			}else {
 				for (SingleTask o : data){
-					tasks.add(createItem(o, usersettings.getBoolean(o.title, true)));
+					tasks.add(createItem(o, userSettings.getBoolean(o.title, true)));
 				}
 			}
 		}
@@ -343,7 +361,7 @@ public class Todo extends ListActivity{
             for (SingleEvent o : data){
             	Log.d(TAG,"Event id in afterEventLoaded: "+o.eventID);
 				// add to the listview
-				event.add(createItem(o, usersettings.getBoolean(o.title, true)));
+				event.add(createItem(o, userSettings.getBoolean(o.title, true)));
 				try {
 					cal = (Calendar) new XsDateTimeFormat().parseObject(o.startTime);
 					eventNotificationIntent.putExtra("username", username);
@@ -361,7 +379,7 @@ public class Todo extends ListActivity{
 					eventNotificationIntent.putExtra("latitude", o.gpscoordinate.latitude);
 					alarmIntent = PendingIntent.getBroadcast(Todo.this,
 			                counter++, eventNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-					if (usersettings.getBoolean(o.title, true))	am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), alarmIntent);
+					if (userSettings.getBoolean(o.title, true))	am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), alarmIntent);
 				} catch (ParseException e) {
 					Log.i(TAG, "Error when adding parsing event time to be added to alarm manager");
 					e.printStackTrace();
@@ -458,5 +476,17 @@ public class Todo extends ListActivity{
 			return false;
 		}
 	}
+
+
+    @Override
+    public void onInit(int status) {
+            // If the TTS init is successful set a flag to say we can be used; say hello
+            if (status == TextToSpeech.SUCCESS){                    
+                    mTts.speak("",TextToSpeech.QUEUE_FLUSH, null);
+            }
+    }
+
+
+
 	
 }

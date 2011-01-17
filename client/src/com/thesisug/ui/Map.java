@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.location.Criteria;
@@ -15,6 +16,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
@@ -27,7 +30,10 @@ import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.thesisug.R;
 import com.thesisug.communication.ContextResource;
+import com.thesisug.communication.EventResource;
+import com.thesisug.communication.TaskResource;
 import com.thesisug.communication.valueobject.Hint;
+import com.thesisug.notification.TaskNotification;
 
 public class Map extends MapActivity implements LocationListener{
 	private static final String TAG = "thesisug - Map Activity";
@@ -46,6 +52,10 @@ public class Map extends MapActivity implements LocationListener{
     private float minUpdateDistance=0;
     private static SharedPreferences usersettings;
     
+	public final static int FORCE_HINT_SEARCH=0;
+	public final static int GO_TO_TODO = 1;
+	
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
     	// get the drawables and setup of overlays
@@ -74,7 +84,7 @@ public class Map extends MapActivity implements LocationListener{
         	return;
         }
         userLocation = lm.getLastKnownLocation(locationProvider);
-        setUserLocatiOnOnMap(userLocation);
+        setUserLocatiOnOnMapAndCheckHints(userLocation);
     }
 	
 	@Override
@@ -95,7 +105,7 @@ public class Map extends MapActivity implements LocationListener{
     	lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, (long) 0, minUpdateDistance, this);
     }
 	
-	private void setUserLocatiOnOnMap(Location location){
+	private void setUserLocatiOnOnMapAndCheckHints(Location location){
 		userLocation=location;
 		if (marker.size() > 0) marker.removeOverlay(0);
         GeoPoint currentLocation=null;
@@ -126,9 +136,42 @@ public class Map extends MapActivity implements LocationListener{
     @Override
 	public void onLocationChanged(Location location) {
     	userLocation=location;
-    	setUserLocatiOnOnMap(userLocation);
+    	setUserLocatiOnOnMapAndCheckHints(userLocation);
     }
 
+    public void searchForHints(){
+    	updateProviderAndPosition();
+		Toast.makeText(getApplicationContext(), R.string.hint_search_started, Toast.LENGTH_SHORT).show();
+    }
+    
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu){
+		menu.add(0,FORCE_HINT_SEARCH,0,"Search for hints").setIcon(R.drawable.radar);
+		menu.add(0,GO_TO_TODO,0,"ToDo list").setIcon(R.drawable.todo);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Intent intent;
+		switch (item.getItemId()) {
+		case FORCE_HINT_SEARCH:
+			updateProviderAndPosition();
+			Toast.makeText(getApplicationContext(), R.string.hint_search_started, Toast.LENGTH_SHORT).show();
+			break;
+		case GO_TO_TODO:
+			intent = new Intent(Map.this, Todo.class);
+			startActivityForResult(intent, 0);
+			break;
+
+		default:
+			finish();
+			break;
+		}
+		return true;
+	}
+    
+    
     private void showNoProviderMessage(){
     	Toast.makeText(getBaseContext(), R.string.no_location_provider_found, Toast.LENGTH_SHORT).show();
     }
@@ -141,7 +184,7 @@ public class Map extends MapActivity implements LocationListener{
 			return;
 		}
 		userLocation = lm.getLastKnownLocation(locationProvider);
-		setUserLocatiOnOnMap(userLocation);
+		setUserLocatiOnOnMapAndCheckHints(userLocation);
     }
     
 	@Override

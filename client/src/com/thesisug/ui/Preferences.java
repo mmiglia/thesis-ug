@@ -67,11 +67,13 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		if(key.equals("serverURI_from_text")){
 			insertedURI=PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("serverURI_from_text",NetworkUtilities.SERVER_URI);
 			Log.d(TAG,"insertedURI:"+insertedURI);
+			//Check retreive serverURI
 			if(insertedURI.equals(NetworkUtilities.SERVER_URI)){
 				//Got default value 
 				Toast.makeText(getApplicationContext(), R.string.error_during_retreiving_server_address, Toast.LENGTH_LONG).show();
 				return;
 			}
+
 			if(insertedURI.matches(regExCorrectURL)){
 				showDialog(0); //will call onCreateDialog method 
 				//Test to verify that the inserted URI is a valid URI. The response of the validation will be sent to changeServerURI method of this class
@@ -90,7 +92,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 			String oldURI=NetworkUtilities.SERVER_URI;
 			Log.d(TAG,"oldURI:"+oldURI);
 			insertedURI=PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("serverURI",NetworkUtilities.SERVER_URI);
-			Log.d(TAG,"insertedURI:"+insertedURI);
+			Log.d(TAG,"SelectedURI:"+insertedURI);
 			
 			showDialog(0); //will call onCreateDialog method 
 			//Test to verify that the inserted URI is a valid URI. The response of the validation will be sent to changeServerURI method of this class

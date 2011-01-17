@@ -55,7 +55,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     private Handler handler=new Handler();
     private static LocationManager lm;
     private NotificationManager notificationManager;
-    private static SharedPreferences usersettings;
+    private static SharedPreferences userSettings;
     private static Location userLocation, position, lastposition;
     private RemoteViews contentView;
     private double lastdelayquery, delayzerovelocity;
@@ -80,7 +80,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
      */
     public void registerToGetLocationUpdates(){
     	Log.d(TAG, "QueryPeriod update registering..");
-    	minUpdateDistance = Float.parseFloat(usersettings.getString("queryperiod", "100")); 
+    	minUpdateDistance = Float.parseFloat(userSettings.getString("queryperiod", "100")); 
     	
     	if(lm==null && !getLocationService()){
     		Log.e(TAG,"Cannot execute registerToGetLocationUpdates because LocationManager is null");
@@ -130,9 +130,9 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	
        Log.d(TAG,"lm="+lm);
    	
-    	usersettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+    	userSettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
-    	usersettings.registerOnSharedPreferenceChangeListener(this);
+    	userSettings.registerOnSharedPreferenceChangeListener(this);
     	
     	registerToGetLocationUpdates();
     	
@@ -258,7 +258,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
         	while (true){
         		// get preference on query period, return default 5 min if not set
         		//int delay = Integer.parseInt(usersettings.getString("queryperiod", "300")) * 1000;
-        		int delay = Integer.parseInt(usersettings.getString("queryperiod", "100"));
+        		int delay = Integer.parseInt(userSettings.getString("queryperiod", "100"));
         		if (delay == 0) {
         			Log.i(TAG, "mainthread - Thread blocked for 60000 millis");
         			condvar.block(60000); 
@@ -279,7 +279,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
         		
         		//if (condvargps.block(delay)) break;
         		// get preference on distance, return default 0 (dont filter distance) if not set
-        		int distance = Integer.parseInt(usersettings.getString("maxdistance", "0"));
+        		int distance = Integer.parseInt(userSettings.getString("maxdistance", "0"));
         		Log.d(TAG, "distance="+distance);
         		List<Thread> threads = new LinkedList<Thread>();
 
@@ -303,7 +303,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
         		}
         		for (SingleTask o : tasks){
         			// if user has chose not to be reminded for this task
-        			if (!usersettings.getBoolean(o.title, true)) continue; 
+        			if (!userSettings.getBoolean(o.title, true)) continue; 
         			// dispatch thread to get hints
         			Log.d(TAG,"Check location for "+o.title);
 					threads.add(ContextResource.checkLocationSingle(o.title,
@@ -339,6 +339,10 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     public void afterHintsAcquired (String sentence, List<Hint> result){
     	if (result.isEmpty()) {
     		Log.i(TAG, "No hints for task : "+sentence);
+        	//Voice notification
+    		if(userSettings.getBoolean("notification_hint_speak",false)){
+    			Todo.speakIt((String) getText(R.string.no_hints_found_for)+sentence);
+    		}
     		return; // immediately return if there is no result
     	} else {
     		Log.i(TAG, "Received "+result.size()+ " hints for task : "+sentence);
@@ -356,16 +360,33 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	newnotification.contentView = contentView;
     	newnotification.contentIntent = contentIntent;
 
+    	
+    	
     	//Adding sound
-    	newnotification.defaults |= Notification.DEFAULT_SOUND;
-
+    	Log.d(TAG, "Sound:"+userSettings.getBoolean("notification_hint_sound",false));
+    	if(userSettings.getBoolean("notification_hint_sound",false)){
+    		newnotification.defaults |= Notification.DEFAULT_SOUND;
+    	}
+    	
     	//Adding vibration
-    	newnotification.defaults |= Notification.DEFAULT_VIBRATE;
-    	//Pattern: The first value is how long to wait (off) before beginning, the second value is the length of the first vibratio
-    	//long[] vibratePattern = {100,150,200,300};
-    	//newnotification.vibrate = vibratePattern;
+    	Log.d(TAG, "Vibration:"+userSettings.getBoolean("notification_hint_vibrate",false));
+    	if(userSettings.getBoolean("notification_hint_vibrate",false)){
+    		//newnotification.defaults |= Notification.DEFAULT_VIBRATE;
+        	//Pattern: The first value is how long to wait (off) before beginning, the second value is the length of the first vibratio
+        	long[] vibratePattern = {100,150,200,300};
+        	newnotification.vibrate = vibratePattern;
+    	}
+
+    	
+    	//Voice notification
+    	Log.d(TAG, "Speak:"+userSettings.getBoolean("notification_hint_speak",false));
+    	if(userSettings.getBoolean("notification_hint_speak",false)){
+    		Todo.speakIt((String) getText(R.string.new_hints_found_for)+sentence);
+    	}
     	
     	notificationManager.notify(sentence.hashCode(), newnotification);
+    	
+
     }
     
     @Override
@@ -381,22 +402,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
         }
     }
 	
-	//TODO Maybe deprecated
-	/*
-	private class GPSListener implements LocationListener{
-		@Override
-		public void onLocationChanged(Location location) {}
 
-		@Override
-		public void onProviderDisabled(String provider) {}
-
-		@Override
-		public void onProviderEnabled(String provider) {}
-
-		@Override
-		public void onStatusChanged(String provider, int status, Bundle extras) {}
-	}
-	*/
 
 	/*
 	 * This method get all the change of the location according to the setup made by the requestLocationUpdate method
