@@ -11,7 +11,7 @@
 	<string name="sign_in_no_password">Please type in your password</string>
 	<string name="sign_in_failed_both">The username or password isn\u8217t valid.</string>
     <string name="sign_in_failed_password">Please put a valid password</string>
-	<string name="authenticating">Authenticating\u2026</string>
+	<string name="authenticating">Authenticating\u2026 </string>
 	<string name="reg_mess">Create new account</string>
 	<string name="firstnametext">First name</string>
 	<string name="lastnametext">Last name</string>
@@ -23,7 +23,13 @@
 	<string	name="cancel_button">Cancel</string>
 	<string name="submit_message">Insert fields above and press Submit</string>
 	<string name="pwd_no_match">Password fields doesn\'t match!</string>
-	<string name="no_fields">Fields with * required</string>
+	<string name="pwd_invalid">The password fields seems to be invalid. Password cannot contain space.</string>
+	<string name="username_invalid">The username field seems to be invalid. Username cannot contain space.</string>
+	<string name="email_invalid">The email field seems to be invalid.</string>
+	<string name="no_fields">All fields required!</string>
+	<string name="user_exist">Username already exist, please try with another username.</string>
+	<string name="email_exist">Email address already exist, please check your registration.</string>
+	<string name="registration_ok">Registration successful.</string>
 		
 	<string name="retrieving_event">Downloading activities \u2026</string>
 	<string name="task_list_header">Gotta do these dude !</string>
