@@ -33,7 +33,6 @@ public class RegistrationResource extends javax.servlet.http.HttpServlet {
 			@QueryParam ("u") String username,
 			@CookieParam ("p") String password) {	
 	    log.info("Receiving registration request from client");
-	    System.out.println("email: "+email);
 	    RegistrationReply reply = RegistrationManager.register(firstname, lastname, email, username, password);
 	    if (reply != null) {
 	        return reply;
