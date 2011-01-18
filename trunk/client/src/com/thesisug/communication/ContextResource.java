@@ -64,6 +64,15 @@ public class ContextResource{
 		}
 	}
 
+	/**
+	 * Used only in MapView 
+	 * @param lat
+	 * @param lon
+	 * @param distance
+	 * @param handler
+	 * @param context
+	 * @return
+	 */
 	public static Thread checkLocationAll(final float lat, final float lon, final int distance, final Handler handler, final Context context) {
 		final Runnable runnable = new Runnable() {
 			public void run() {
@@ -79,7 +88,7 @@ public class ContextResource{
 		return NetworkUtilities.startBackgroundThread(runnable);
 	}
 	
-	public static Thread checkLocationSingle(final String sentence, final float lat, final float lon, final int distance, final Handler handler, final Context context) {
+	public static Thread checkLocationSingle(final String sentence, final int priority, final float lat, final float lon, final int distance, final Handler handler, final Context context) {
 		final Runnable runnable = new Runnable() {
 			public void run() {
 				ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -88,14 +97,27 @@ public class ContextResource{
 				params.add(new BasicNameValuePair("lon", ""+lon));
 				params.add(new BasicNameValuePair("dist", ""+distance));
 				List<Hint> result = runHttpGet(LOCATION_SINGLE, params, context);
-				sendResult(result, sentence, handler, context);
+				sendResultSingleHint(result, sentence, priority, handler, context);
 			}
 		};
 		// start authenticating
 		return NetworkUtilities.startBackgroundThread(runnable);
 	}
 
-	private static void sendResult(final List<Hint> result, final String sentence,
+	private static void sendResult(final List<Hint> result, final String sentence, 
+			final Handler handler, final Context context) {
+		if (handler == null || context == null) {
+			return;
+		}
+		handler.post(new Runnable() {
+			public void run() {
+					Log.d(TAG,"Executing  Map.afterHintsAcquired");
+					((Map) context).afterHintsAcquired(result);
+			}
+		});
+	}
+	
+	private static void sendResultSingleHint(final List<Hint> result, final String sentence, final int priority,
 			final Handler handler, final Context context) {
 		if (handler == null || context == null) {
 			return;
@@ -104,7 +126,7 @@ public class ContextResource{
 			public void run() {
 				if (context instanceof TaskNotification){
 					Log.d(TAG,"Executing  TaskNotification.afterHintsAcquired");
-					((TaskNotification) context).afterHintsAcquired(sentence, result);
+					((TaskNotification) context).afterHintsAcquired(sentence, result,priority);
 				}
 				else {
 					Log.d(TAG,"Executing  Map.afterHintsAcquired");

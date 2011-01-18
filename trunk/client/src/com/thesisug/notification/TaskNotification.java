@@ -39,6 +39,9 @@ import com.thesisug.communication.valueobject.SingleTask;
 import com.thesisug.ui.HintList;
 import com.thesisug.ui.Todo;
 
+
+import java.lang.Math.*;
+
 /**
  * This class use also OnSharedPreferenceChangeListener to catch if the queryDistance preference is changed
  * @author jaxer
@@ -306,7 +309,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
         			if (!userSettings.getBoolean(o.title, true)) continue; 
         			// dispatch thread to get hints
         			Log.d(TAG,"Check location for "+o.title);
-					threads.add(ContextResource.checkLocationSingle(o.title,
+					threads.add(ContextResource.checkLocationSingle(o.title, o.priority,
 							new Float(userLocation.getLatitude()),
 							new Float(userLocation.getLongitude()),
 							distance, handler, TaskNotification.this));					
@@ -336,7 +339,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	 */
     }
     
-    public void afterHintsAcquired (String sentence, List<Hint> result){
+    public void afterHintsAcquired (String sentence, List<Hint> result, int priority){
     	if (result.isEmpty()) {
     		Log.i(TAG, "No hints for task : "+sentence);
         	//Voice notification
@@ -373,7 +376,31 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	if(userSettings.getBoolean("notification_hint_vibrate",false)){
     		//newnotification.defaults |= Notification.DEFAULT_VIBRATE;
         	//Pattern: The first value is how long to wait (off) before beginning, the second value is the length of the first vibratio
-        	long[] vibratePattern = {100,150,200,300};
+        	
+        	long totTime=5000;
+        	long usedTime=0;
+        	Log.d(TAG, "Priority:"+priority);        	
+        	long minVibrate=150;
+        	long vibrate=minVibrate+minVibrate*(1+(1*priority));
+        	Log.d(TAG, "Vibrate:"+vibrate);
+        	long minPause=100;
+        	long pause=minPause+(long) Math.floor((double)minPause*((double)1+((double)1/(double)priority)));
+        	Log.d(TAG, "Pause:"+pause);
+        	
+        	int totElem=(int) (Math.floor((double)totTime/(double)(vibrate+pause))+1);
+        	Log.d(TAG, "Tot position:"+totElem);
+        	//The +5 is only to prevent the IndexOutOfBoundException 
+        	long[] vibratePattern = new long[(int) (totTime/Math.min(minVibrate,minPause))+5];
+        	int pos=0;
+        	while(usedTime<totTime){
+        		vibratePattern[pos]=vibrate;
+        		usedTime+=vibrate;
+        		pos++;
+        		vibratePattern[pos]=pause;
+        		usedTime+=pause;
+        		pos++;
+        	}
+        	
         	newnotification.vibrate = vibratePattern;
     	}
 
