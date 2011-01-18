@@ -21,7 +21,6 @@ public class MailUtility {
 	private static String type=Configuration.getInstance().constants.getProperty("MAIL_TYPE");
 
     public static boolean sendMail(String recipient, String subject, String body) throws Exception{
-    	log.info("sono dentro al metodo sendMail");
     	boolean sent = false;
     	try {
     		Properties prop = new Properties();
@@ -57,16 +56,15 @@ public class MailUtility {
     		multipart.addBodyPart(htmlPart);
     		msg.setContent(multipart);
      
+    		log.info("Sending verification mail to: "+recipient);
     		Transport transport = session.getTransport("smtp");
     		transport.connect(user, pwd);
     		transport.sendMessage(msg, msg.getAllRecipients());
     		transport.close();
      
     		sent = true;
-    		System.out.println("[MailTool] mail sent successfully ...");
      
     	 } catch (Exception e) {
-    		 System.err.println("[MailTool] send() : " + e.getMessage());
     		 e.printStackTrace();
     	 }
      

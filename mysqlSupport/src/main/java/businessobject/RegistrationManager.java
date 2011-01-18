@@ -60,6 +60,7 @@ public class RegistrationManager {
 		System.out.println("data:"+verification);
 		verification = MD5(verification);
 		System.out.println("md5:"+verification);
+		System.out.println("parameters: "+firstname+" - "+lastname+" - "+email+" - "+username+" - "+verification);
 		log.info("Add new user ("+firstname+", "+lastname+", "+email+", "+username+", "+verification+") in db");
 		RegisteredUsers.addUsers(firstname, lastname, email, username, password, verification);
 		
