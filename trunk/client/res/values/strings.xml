@@ -92,8 +92,11 @@
     <string name="click_details">click here to see the details</string>
 	<string name="creating">Creating new content in server \u2026</string>
 	<string name="saving_error">Oops, problem found while saving to server. You might want to try again later or check your connection.</string>
+	<string name="create_success">New content successfully created on server \u003A\u0029</string>
+	<string name="edit_success">Content successfully modified on server \u003A\u0029</string>
 	<string name="deleting">Deleting content in server \u2026</string>
 	<string name="deletion_error">Oops, problem found while deleting from server. You might want to try again later or check your connection.</string>
+	<string name="deletion_success">Content successfully deleted from server</string>
     <string name="error_connect_task">Oops, can\u0027t retrieve your tasks from server.</string>
     <string name="error_connect_event">Oops, can\u0027t retrieve your events from server.</string>
     <string name="parsing_success">Yay! the system successfully understand and execute your command</string>

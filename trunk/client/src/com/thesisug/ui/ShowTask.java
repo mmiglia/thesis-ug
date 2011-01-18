@@ -186,7 +186,12 @@ public class ShowTask extends Activity{
 		dismissDialog(WAIT_DELETION);
 		if (!success) Toast.makeText(ShowTask.this, R.string.deletion_error,
                 Toast.LENGTH_LONG).show();
-		else finish();
+		else {
+			// comunica che la cancellazione è avvenuta con successo
+			Toast.makeText(ShowTask.this, R.string.deletion_success,
+	                Toast.LENGTH_LONG).show();
+			finish();
+		}
 	}
 }
 
