@@ -203,6 +203,7 @@
 		        android:layout_below="@id/submit_message"
 		        android:layout_marginTop="15dip"
 		        android:layout_alignParentLeft="true"
+		        android:onClick="register"
 		        android:text="@string/submit_button"/>
 			
 			<Button
