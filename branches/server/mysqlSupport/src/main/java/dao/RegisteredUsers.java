@@ -253,15 +253,40 @@ public enum RegisteredUsers {
 			}finally {
 				dbManager.dbDisconnect(conn);
 			}
-		}else{
-			
+		}else{			
 			System.out.println(qs.explainError());
 			qs.occourtedErrorException.printStackTrace();
-		}
-
-		
+		}		
 		dbManager.dbDisconnect(conn);
 		return null;
+	}
+	
+	/**
+	 * This method is used to know if the user still has trial login.
+	 * it returns the trial_login field
+	 * @param id id of the user
+	 * @return int the value of trial_login
+	 */
+	public static int checkTrialLogin (String id) {
+		Connection conn= (Connection) dbManager.dbConnect();
+		QueryStatus qs=dbManager.customSelect(conn, "Select trial_login from User where id='"+id+"'");
+		if(!qs.execError){
+			ResultSet rs = (ResultSet) qs.customQueryOutput;
+			try {				
+				if(rs.next()){
+					return rs.getInt("trial_login");
+				}
+			}catch (SQLException sqlE){
+				
+			}finally {
+				dbManager.dbDisconnect(conn);
+			}
+		}else{			
+			System.out.println(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+		}		
+		dbManager.dbDisconnect(conn);
+		return 0;
 	}
 	
 	public static void logout(String username){
