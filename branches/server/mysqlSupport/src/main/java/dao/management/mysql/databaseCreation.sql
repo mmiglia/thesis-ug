@@ -102,7 +102,6 @@ select "End creation of table Task" as " ";
 -- Struttura della tabella `User`
 --
 
-DROP TABLE IF EXISTS `User`;
 CREATE TABLE IF NOT EXISTS `User` (
   `username` varchar(50) DEFAULT NULL,
   `password` varchar(50) DEFAULT NULL,
@@ -112,7 +111,8 @@ CREATE TABLE IF NOT EXISTS `User` (
   `sessionKey` varchar(50) DEFAULT NULL,
   `active` int(1) DEFAULT '0',
   `verified` tinyint(1) DEFAULT NULL,
-  `verification_code` varchar(32) NOT NULL
+  `verification_code` varchar(32) NOT NULL,
+  `trial_login` int(11) NOT NULL DEFAULT '5'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
