@@ -175,6 +175,15 @@ public class EditEvent extends Activity {
 			intent.putExtra("latitude", latitude);
 			intent.putExtra("longitude", longitude);
 			setResult(RESULT_OK, intent);
+			
+			// segnala che il contenuto Ã¨ stato correttamente salvato sul server
+			// (distingue fra creazione e modifica)
+			switch (currentDialog) {
+			case EDIT_EVENT: Toast.makeText(EditEvent.this, R.string.edit_success,
+                    Toast.LENGTH_LONG).show(); break;
+			case CREATE_EVENT: Toast.makeText(EditEvent.this, R.string.create_success,
+                    Toast.LENGTH_LONG).show(); break;
+			}
 			finish();
     	} else {
     		Toast.makeText(EditEvent.this, R.string.saving_error,
@@ -299,7 +308,7 @@ public class EditEvent extends Activity {
 	}
 	
 	private boolean titleIsValid(String taskTitle) {
-		// c'è un'occorrenza di .*\\S.* in una stringa se c'è almeno
+		// c'ï¿½ un'occorrenza di .*\\S.* in una stringa se c'ï¿½ almeno
 		// un carattere non white-space. Per Java i caratteri white-space sono
 		//  \t,\n,\x0B,\f e \r.
 		return taskTitle.matches(".*\\S.*");

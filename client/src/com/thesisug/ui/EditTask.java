@@ -226,6 +226,15 @@ public class EditTask extends Activity {
 			intent.putExtra("latitude", latitude);
 			intent.putExtra("longitude", longitude);
 			setResult(RESULT_OK, intent);
+			
+			// segnala che il contenuto è stato correttamente salvato sul server
+			// (distingue fra creazione e modifica)
+			switch (currentDialog) {
+			case EDIT_TASK: Toast.makeText(EditTask.this, R.string.edit_success,
+                    Toast.LENGTH_LONG).show(); break;
+			case CREATE_TASK: Toast.makeText(EditTask.this, R.string.create_success,
+                    Toast.LENGTH_LONG).show(); break;
+			}
 			finish();
     	} else {
     		Toast.makeText(EditTask.this, R.string.saving_error,
