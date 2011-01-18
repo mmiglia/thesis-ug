@@ -11,8 +11,9 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.xml.sax.SAXException;
 
-import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import com.thesisug.communication.valueobject.RegistrationReply;
@@ -33,7 +34,7 @@ public class RegistrationResource {
 	 * @return thread running authentication
 	 */
 	public static Thread register(final String firstname, final String lastname, final String email,
-			final String username, final String password) {
+			final String username, final String password, final Handler handler) {
 		final Runnable runnable = new Runnable() {
 			public void run() {
 				ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -42,12 +43,29 @@ public class RegistrationResource {
 				params.add(new BasicNameValuePair("e", ""+email));
 				params.add(new BasicNameValuePair("u", ""+username));
 				RegistrationReply result = Registration(params, password);
+				sendResult(result, handler);
 				Log.v(TAG, (result.status==2)? "Successful registered": "Unsuccessful registered");
 			}
 		};
 		// start registration
 		return NetworkUtilities.startBackgroundThread(runnable);
 	}
+	
+    /**
+     * Sends the registration response from server back to the caller main UI
+     * thread through its handler.
+     * 
+     * @param result The boolean holding authentication result
+     * @param handler The main UI thread's handler instance.
+     * @param context The caller Activity's context.
+     */
+    private static void sendResult(final RegistrationReply result, final Handler handler) {
+    	Message msg = handler.obtainMessage();
+        Bundle b = new Bundle();
+        b.putInt("status", result.status);
+        msg.setData(b);
+        handler.sendMessage(msg);
+    }
 	
 	public static RegistrationReply Registration(final ArrayList<NameValuePair> params, String password) {
 	       
