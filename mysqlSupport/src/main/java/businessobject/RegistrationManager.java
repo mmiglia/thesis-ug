@@ -18,6 +18,8 @@ public class RegistrationManager {
 	private final static Logger log = LoggerFactory.getLogger(RegistrationManager.class);
 	
 	private static String app_name=Configuration.getInstance().constants.getProperty("APP_NAME");
+	private final static String server_url=Configuration.getInstance().constants.getProperty("SERVER_URL");
+	private final static String app_folder=Configuration.getInstance().constants.getProperty("APP_FOLDER");	
 	
 	public static RegistrationReply register(String firstname, String lastname, String email, 
 			String username, String password){
@@ -69,7 +71,7 @@ public class RegistrationManager {
 		String body = "Congratulations, the "+app_name+" account has been created.<br />" +
 				"Your registration needs to be activated.<br />" +
 				"Please click on the link below, or copy it and paste it in your web browser.<br />" +
-				"http://serverge.dyndns.org:8080/registration/verification?code="+verification+"&email="+email+"<br />" +
+				server_url+"/"+app_folder+"/registration/verification?code="+verification+"&email="+email+"<br />" +
 				"<br />" +
 				"You have 5 trial login to try the application, after than you must validate your registration to continue using it.<br />" +
 				"<br />" +
