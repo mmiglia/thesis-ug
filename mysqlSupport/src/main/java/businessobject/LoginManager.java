@@ -8,8 +8,6 @@ import dao.SessionData;
 
 import valueobject.LoginReply;
 
-
-
 /**
  * Business Object that will handle transaction for login process.
  * 
@@ -34,23 +32,31 @@ public class LoginManager {
 		log.info("Check for match in database for username ="+username+" password = "+password);
 		String ID = RegisteredUsers.instance.checkMatch(username, password);
 		log.info("Found id ("+ID + ") for the user with username "+username);
+		if (ID == null) {
+			log.info("Username or password is wrong");
+			return new LoginReply(1002, "");
+		}
+		boolean registration_ok = RegisteredUsers.instance.checkVerified(ID);
 		int trial_login = RegisteredUsers.instance.checkTrialLogin(ID);
-		if (trial_login>0) {
-			if (ID == null) {
-				log.info("Username or password is wrong");
-				return new LoginReply(0, "");
-			} else {
-				//it would be better, instead of bluntly creating new session token, 
-				//to check for session token validity in the database first
-				//if there's no valid token, then create new token.
-				log.info("Found matching record, create new session key for user");
-				return new LoginReply(1, SessionData.instance.createSessionforUser(ID));
-			}
+		//int trial_login = RegisteredUsers.instance.checkTrialLogin(ID);
+		if (registration_ok) {
+			//it would be better, instead of bluntly creating new session token, 
+			//to check for session token validity in the database first
+			//if there's no valid token, then create new token.
+			log.info("Found matching record, create new session key for user");
+			return new LoginReply(1000, SessionData.instance.createSessionforUser(ID));
 		}
 		else {
-			return new LoginReply(0,"");
-			//TODO ritornare un valore che sia compatibile con i messaggi di stato
-			//in questo caso deve ritornare un messaggio "controlla la mail e verifica la registrazione prima di procedere"
+			if (trial_login>0) {
+				log.info("Found matching record, create new session key for user (trial login)");
+				return new LoginReply(1001, SessionData.instance.createSessionforUser(ID));
+			}
+			else {
+				log.info("No other trial login for user: "+username+".");
+				return new LoginReply(2001,"");
+				//TODO ritornare un valore che sia compatibile con i messaggi di stato
+				//in questo caso deve ritornare un messaggio "controlla la mail e verifica la registrazione prima di procedere"
+			}
 		}
 	}
 	
