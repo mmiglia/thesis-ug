@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.thesisug.R;
 import com.thesisug.communication.LoginResource;
@@ -122,12 +123,7 @@ public class Login extends AccountAuthenticatorActivity {
                         startActivity(i);
                 }
         });
-
-
-    }
-    
-    
-    
+    }    
 
     /**
      * get the message to be displayed at login box
@@ -185,15 +181,25 @@ public class Login extends AccountAuthenticatorActivity {
         if(result.status==404){
         	 message.setText(getText(R.string.tryConnectionFail));
         	 return;
-        }
-        
-        if (result.status == 1) {
+        }        
+        if (result.status == 1000) {
+        	Log.i(TAG, "Login successful");
             if (!confirmCredentials) {
             	finishLogin(result);
             } else {
                 finishConfirmCredentials(true);
             }
-        } else {
+        }
+        if (result.status == 1001) {
+        	Log.i(TAG, "Trial Login successful");
+        	Toast.makeText(getApplicationContext(), R.string.trial_login, Toast.LENGTH_SHORT).show();
+        	if (!confirmCredentials) {
+            	finishLogin(result);
+            } else {
+                finishConfirmCredentials(true);
+            }
+        }
+        if (result.status == 1002) {
             Log.e(TAG, "Authentication failed");
             if (usernameIsEmpty) {
                 message.setText(getText(R.string.sign_in_failed_both));
@@ -201,10 +207,13 @@ public class Login extends AccountAuthenticatorActivity {
                 message.setText(getText(R.string.sign_in_failed_password));
             }
         }
+        if (result.status == 2001) {
+        	Log.w(TAG, "Confirmation account required");
+        	message.setText(R.string.no_trial_login);
+        }
     }
     
-    /**
-     * 
+    /** 
      * Called when response is received from the server for authentication
      * request. See onAuthenticationResult(). Sets the
      * AccountAuthenticatorResult which is sent back to the caller. Also sets

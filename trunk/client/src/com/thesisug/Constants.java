@@ -17,9 +17,7 @@ public class Constants {
     //Server padova
     //public static final String DEFAULT_URL="http://serverpd.dyndns.org";
     
-    public static final String PROGRAM_NAME="ephemere-0.0.21";
+    public static final String PROGRAM_NAME="ephemere";
     public static final String DEFAULT_HTTP_PORT="8080";
     public static final String DEFAULT_HTTPS_PORT="8443";
-    
-
 }
