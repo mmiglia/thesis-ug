@@ -59,7 +59,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     private static LocationManager lm;
     private NotificationManager notificationManager;
     private static SharedPreferences userSettings;
-    private static Location userLocation, position, lastposition;
+    private static Location userLocation, lastPosition;
     private RemoteViews contentView;
     private double lastdelayquery, delayzerovelocity;
     private float minUpdateDistance=0;
@@ -98,7 +98,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
      * This function is used for each change of the location provider status to get the bestone between
      * all active providers 
      */
-    private void updateProviderAndPosition(String reason){
+    private void updateProviderAndPosition(String reason,Location newLocation){
 		//Change provider if there's one active
     	Log.d(TAG,"UpdatingProviderAndPosition because:"+reason);
     	
@@ -111,7 +111,13 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 			notifyNoLocationProvider();
 			return;
 		}
-		userLocation = lm.getLastKnownLocation(locationProvider);
+		//Save the last location
+		lastPosition=userLocation;
+		if(newLocation==null){
+			userLocation = lm.getLastKnownLocation(locationProvider);
+		}else{
+			userLocation=newLocation;
+		}
 		//Log.i(TAG, "Current user location: "+userLocation.getLatitude()+" - "+ userLocation.getLongitude());
 
     }
@@ -237,8 +243,8 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     		}
     	}
     };
+     */
     
-    	//TODO Maybe deprecated
     private double calculateDistance(Location location1, Location location2) {
     	if (location1==null || location2==null)
     		return 0;
@@ -255,7 +261,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	    	return distance; // mt
     	}
     }
-    */
+    
     private Runnable mainthread = new Runnable() {
         public void run() {
         	while (true){
@@ -282,14 +288,26 @@ public class TaskNotification extends Service implements LocationListener,OnShar
         		
         		//if (condvargps.block(delay)) break;
         		// get preference on distance, return default 0 (dont filter distance) if not set
-        		int distance = Integer.parseInt(userSettings.getString("maxdistance", "0"));
-        		Log.d(TAG, "distance="+distance);
+        		int minDistance = Integer.parseInt(userSettings.getString("maxdistance", "0"));
+        		Log.d(TAG, "minDistance="+minDistance);
         		List<Thread> threads = new LinkedList<Thread>();
 
         		if (userLocation == null){
-        			Log.d(TAG, "userLocation == null -> continue");	
+        			Log.d(TAG, "userLocation == null -> going to sleep again");	
         			continue;
         		}
+        		Log.d(TAG, "Checking actDistance>minDistance");
+        		double actDistance=calculateDistance(userLocation,lastPosition);
+        		if(actDistance<(double)minDistance){
+        			Log.d(TAG, "distance between current position and lastPosition ("+actDistance+") < minDistance ("+minDistance+") -> going to sleep again");	
+        			continue;	
+        		}
+        		/*
+        		 * If distance between current position and lastPosition is<minDistance =>continue
+        		 * this can happend when there's a change of the location provider or between two cells
+        		 * and the user has choose the network as location provider
+        		 */
+        		 
         		//asynchronous operation to download thread
         		Log.d(TAG,"Retreiving first tasks..");
         		downloadTaskThread = TaskResource.getFirstTask(handler, TaskNotification.this);
@@ -312,7 +330,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 					threads.add(ContextResource.checkLocationSingle(o.title, o.priority,
 							new Float(userLocation.getLatitude()),
 							new Float(userLocation.getLongitude()),
-							distance, handler, TaskNotification.this));					
+							minDistance, handler, TaskNotification.this));					
 				}
         		Log.d(TAG,"Going to do checkLocationSingle for each task DONE");
         		condvargps.close();
@@ -440,14 +458,12 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	public void onLocationChanged(Location location) {
 		Log.d(TAG, "Location changed to "+location.getLatitude()+" -- "+location.getLongitude());
 		//condvargps.open();
-
-		userLocation=location;
-			startHintSearch();
-		Log.d(TAG, "gpsthread - mainthread waked up");
+		startHintSearch(location);
+		Log.d(TAG, "Mainthread waked up");
 	}
 
-	public void startHintSearch(){
-		updateProviderAndPosition("startHintSearch");
+	public void startHintSearch(Location newLocation){
+		updateProviderAndPosition("startHintSearch",newLocation);
 
 		synchronized(stopThreadObject){
 			stopThreadObject.notify();
@@ -457,12 +473,12 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     
 	@Override
 	public void onProviderDisabled(String provider) {
-		updateProviderAndPosition("onProviderDisabled:"+provider);		
+		updateProviderAndPosition("onProviderDisabled:"+provider,null);		
 	}
 
 	@Override
 	public void onProviderEnabled(String provider) {
-		updateProviderAndPosition("onProviderEnabled:"+provider);
+		updateProviderAndPosition("onProviderEnabled:"+provider,null);
 	}
 
 	@Override
