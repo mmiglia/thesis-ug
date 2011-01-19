@@ -262,23 +262,28 @@ public enum RegisteredUsers {
 	}
 	
 	/**
-	 * This method is used to know if the user still has trial login.
-	 * it returns the trial_login field
+	 * This method is used to know if the user has verified his account.
+	 * it returns boolean
 	 * @param id id of the user
-	 * @return int the value of trial_login
+	 * @return boolean true if registration verified, false otherwise
 	 */
-	public static int checkTrialLogin (String id) {
+	public static boolean checkVerified (String username) {
 		Connection conn= (Connection) dbManager.dbConnect();
-		QueryStatus qs=dbManager.customSelect(conn, "Select trial_login from User where id='"+id+"'");
+		String query = "Select verified from User where username='"+username+"'";
+		QueryStatus qs=dbManager.customSelect(conn, query);
+		boolean verified = false;
 		if(!qs.execError){
 			ResultSet rs = (ResultSet) qs.customQueryOutput;
 			try {				
 				if(rs.next()){
-					return rs.getInt("trial_login");
+					verified = rs.getBoolean("verified");
+					return verified;
 				}
 			}catch (SQLException sqlE){
 				
 			}finally {
+				//int newTrialLogin = trialLogin-1;
+				//qs = dbManager.customQuery(conn, "update User set trial_login="+newTrialLogin+" where id='"+id+"'");
 				dbManager.dbDisconnect(conn);
 			}
 		}else{			
@@ -286,7 +291,40 @@ public enum RegisteredUsers {
 			qs.occourtedErrorException.printStackTrace();
 		}		
 		dbManager.dbDisconnect(conn);
-		return 0;
+		return verified;
+	}
+	
+	/**
+	 * This method is used to know if the user still has other trial login.
+	 * it returns int, the trial_login value
+	 * @param id id of the user
+	 * @return int trial_login value
+	 */
+	public static int checkTrialLogin (String username) {
+		Connection conn= (Connection) dbManager.dbConnect();
+		String query = "Select trial_login from User where username='"+username+"'";
+		QueryStatus qs=dbManager.customSelect(conn, query);
+		int trialLogin = 0;
+		if(!qs.execError){
+			ResultSet rs = (ResultSet) qs.customQueryOutput;
+			try {				
+				if(rs.next()){
+					trialLogin = rs.getInt("trial_login");
+					return trialLogin;
+				}
+			}catch (SQLException sqlE){
+				
+			}finally {
+				int newTrialLogin = trialLogin-1;
+				qs = dbManager.customQuery(conn, "update User set trial_login="+newTrialLogin+" where username='"+username+"'");
+				dbManager.dbDisconnect(conn);
+			}
+		}else{			
+			System.out.println(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+		}		
+		dbManager.dbDisconnect(conn);
+		return trialLogin;
 	}
 	
 	public static void logout(String username){
