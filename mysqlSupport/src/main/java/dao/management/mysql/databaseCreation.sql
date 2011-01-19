@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `User` (
   `email` varchar(100) NOT NULL,
   `sessionKey` varchar(50) DEFAULT NULL,
   `active` int(1) DEFAULT '0',
-  `verified` tinyint(1) DEFAULT NULL,
+  `verified` tinyint(1) DEFAULT '0',
   `verification_code` varchar(32) NOT NULL,
   `trial_login` int(11) NOT NULL DEFAULT '5'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
