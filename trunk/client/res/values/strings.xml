@@ -30,6 +30,8 @@
 	<string name="user_exist">Username already exist, please try with another username.</string>
 	<string name="email_exist">Email address already exist, please check your registration.</string>
 	<string name="registration_ok">Registration successful.</string>
+	<string name="trial_login">Trial Login successful. Please check your email to verify your account.</string>
+	<string name="no_trial_login">Your trial logins are finished. Please check your email and confirm your account.</string>
 		
 	<string name="retrieving_event">Downloading activities \u2026</string>
 	<string name="task_list_header">Gotta do these dude !</string>
