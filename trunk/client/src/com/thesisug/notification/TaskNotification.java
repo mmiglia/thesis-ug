@@ -65,7 +65,8 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     private float minUpdateDistance=0;
     String locationProvider;
     private static Criteria criteria;
-
+    private boolean canChangeLocation=true;
+    
     
 	private static class InstanceHolder {
 		private static final TaskNotification INSTANCE = new TaskNotification();
@@ -111,8 +112,10 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 			notifyNoLocationProvider();
 			return;
 		}
-		//Save the last location
-		lastPosition=userLocation;
+		//Save the last location if has been used to check that the distance has changed correctly
+		if(canChangeLocation){
+			lastPosition=userLocation;
+		}
 		if(newLocation==null){
 			userLocation = lm.getLastKnownLocation(locationProvider);
 		}else{
@@ -267,12 +270,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
         	while (true){
         		// get preference on query period, return default 5 min if not set
         		//int delay = Integer.parseInt(usersettings.getString("queryperiod", "300")) * 1000;
-        		int delay = Integer.parseInt(userSettings.getString("queryperiod", "100"));
-        		if (delay == 0) {
-        			Log.i(TAG, "mainthread - Thread blocked for 60000 millis");
-        			condvar.block(60000); 
-        			continue;
-        		}
+        		int minDistance = Integer.parseInt(userSettings.getString("queryperiod", "100"));
         		//Log.i(TAG, "mainthread - distance query is "+delay+" mt");
         		Log.d(TAG, "mainthread is going to block on "+stopThreadObject.hashCode());
         		//condvargps.block();
@@ -288,7 +286,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
         		
         		//if (condvargps.block(delay)) break;
         		// get preference on distance, return default 0 (dont filter distance) if not set
-        		int minDistance = Integer.parseInt(userSettings.getString("maxdistance", "0"));
+        		int maxDistance = Integer.parseInt(userSettings.getString("maxdistance", "0"));
         		Log.d(TAG, "minDistance="+minDistance);
         		List<Thread> threads = new LinkedList<Thread>();
 
@@ -299,8 +297,11 @@ public class TaskNotification extends Service implements LocationListener,OnShar
         		Log.d(TAG, "Checking actDistance>minDistance");
         		double actDistance=calculateDistance(userLocation,lastPosition);
         		if(actDistance<(double)minDistance){
-        			Log.d(TAG, "distance between current position and lastPosition ("+actDistance+") < minDistance ("+minDistance+") -> going to sleep again");	
+        			Log.d(TAG, "distance between current position and lastPosition ("+actDistance+") < minDistance ("+minDistance+") -> going to sleep again");
+        			canChangeLocation=false;
         			continue;	
+        		}else{
+        			canChangeLocation=true;
         		}
         		/*
         		 * If distance between current position and lastPosition is<minDistance =>continue
@@ -330,7 +331,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 					threads.add(ContextResource.checkLocationSingle(o.title, o.priority,
 							new Float(userLocation.getLatitude()),
 							new Float(userLocation.getLongitude()),
-							minDistance, handler, TaskNotification.this));					
+							maxDistance, handler, TaskNotification.this));					
 				}
         		Log.d(TAG,"Going to do checkLocationSingle for each task DONE");
         		condvargps.close();
