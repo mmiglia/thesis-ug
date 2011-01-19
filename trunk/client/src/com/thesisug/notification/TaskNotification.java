@@ -115,6 +115,8 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 		//Save the last location if has been used to check that the distance has changed correctly
 		if(canChangeLocation){
 			lastPosition=userLocation;
+		}else{
+			Log.d(TAG, "userLocation cannot be changed");
 		}
 		if(newLocation==null){
 			userLocation = lm.getLastKnownLocation(locationProvider);
@@ -122,7 +124,6 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 			userLocation=newLocation;
 		}
 		//Log.i(TAG, "Current user location: "+userLocation.getLatitude()+" - "+ userLocation.getLongitude());
-
     }
     
     /*
