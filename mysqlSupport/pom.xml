@@ -4,7 +4,7 @@
 	<groupId>ephemere</groupId>
 	<artifactId>ephemere</artifactId>
 	<packaging>war</packaging>
-	<version>0.0.12</version>
+	<version>0.0.21</version>
 	<repositories>
 		<repository>
 			<id>jboss</id>
