@@ -272,6 +272,14 @@ public class TaskNotification extends Service implements LocationListener,OnShar
         		// get preference on query period, return default 5 min if not set
         		//int delay = Integer.parseInt(usersettings.getString("queryperiod", "300")) * 1000;
         		int minDistance = Integer.parseInt(userSettings.getString("queryperiod", "100"));
+        		if(minDistance==0){
+        			try {
+						Thread.sleep(10000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+        		}
         		//Log.i(TAG, "mainthread - distance query is "+delay+" mt");
         		Log.d(TAG, "mainthread is going to block on "+stopThreadObject.hashCode());
         		//condvargps.block();
