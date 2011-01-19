@@ -181,7 +181,7 @@ public class Todo extends ListActivity implements OnInitListener{
 		case FORCE_HINT_SEARCH:
 			String sentence=(String) getText(R.string.searching_around_here);
 			Todo.speakIt(sentence);
-			TaskNotification.getInstance().startHintSearch();
+			TaskNotification.getInstance().startHintSearch(null);
 			Toast.makeText(getApplicationContext(), R.string.hint_search_started, Toast.LENGTH_SHORT).show();
 			break;
 			
@@ -425,7 +425,7 @@ public class Todo extends ListActivity implements OnInitListener{
 		setListAdapter(adapter);
 		
 		//Check Hints for Tasks
-		TaskNotification.getInstance().startHintSearch();
+		TaskNotification.getInstance().startHintSearch(null);
 	}
 	
 		
