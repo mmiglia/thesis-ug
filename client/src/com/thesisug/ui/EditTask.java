@@ -181,7 +181,8 @@ public class EditTask extends Activity {
 					break;
 				}
 				//Check Hints for Tasks (maybe after insert or change we can have some hints here around)
-				TaskNotification.getInstance().startHintSearch(null);
+				boolean checkMinDistanceInHintSearch=false;
+				TaskNotification.getInstance().startHintSearch(null,checkMinDistanceInHintSearch);
 			}
 		});
     	back.setOnClickListener(new View.OnClickListener() {

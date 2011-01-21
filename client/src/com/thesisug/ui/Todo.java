@@ -111,10 +111,10 @@ public class Todo extends ListActivity implements OnInitListener{
         }
 
         
-        mTts = new TextToSpeech(getApplicationContext(), this);
-
-        mTts.setLanguage(Locale.ITALIAN);
+		mTts = new TextToSpeech(getApplicationContext(), this);
+		mTts.setLanguage(Locale.ITALIAN);
 	}
+	
 	
 	
 	@Override
@@ -181,7 +181,8 @@ public class Todo extends ListActivity implements OnInitListener{
 		case FORCE_HINT_SEARCH:
 			String sentence=(String) getText(R.string.searching_around_here);
 			Todo.speakIt(sentence);
-			TaskNotification.getInstance().startHintSearch(null);
+			boolean _checkMinDistanceInHintSearch=false;
+			TaskNotification.getInstance().startHintSearch(null,_checkMinDistanceInHintSearch);
 			Toast.makeText(getApplicationContext(), R.string.hint_search_started, Toast.LENGTH_SHORT).show();
 			break;
 			
@@ -207,9 +208,12 @@ public class Todo extends ListActivity implements OnInitListener{
 	}
 	
 	public static void speakIt(String sentence){
+			
 	   	//Avvio la sintesi vocale
-		if(userSettings.getBoolean("notification_hint_speak",false)){
+		if(userSettings.getBoolean("notification_hint_speak",false) && mTts!=null){
 			mTts.speak(sentence, TextToSpeech.QUEUE_ADD, null);
+		}else{
+			Log.d(TAG,"mTts=null?"+mTts);
 		}
 	   	Log.d(TAG, "Speak of "+sentence+" DONE!");
 	}
@@ -425,7 +429,8 @@ public class Todo extends ListActivity implements OnInitListener{
 		setListAdapter(adapter);
 		
 		//Check Hints for Tasks
-		TaskNotification.getInstance().startHintSearch(null);
+		boolean _checkMinDistanceInHintSearch=false;
+		TaskNotification.getInstance().startHintSearch(null,_checkMinDistanceInHintSearch);
 	}
 	
 		
