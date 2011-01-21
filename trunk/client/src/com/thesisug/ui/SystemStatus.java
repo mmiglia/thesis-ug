@@ -44,7 +44,6 @@ public class SystemStatus extends Activity {
     private TextView txt_server_connection_status_value;
     
     
-    
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

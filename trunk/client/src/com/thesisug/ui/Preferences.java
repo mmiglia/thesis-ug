@@ -47,6 +47,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private Thread tryConnectionThread;
 	private final Handler handler = new Handler();
 	private String insertedURI="";
+	private static int currentDialog=0;
 	
 	private String regExCorrectURL="^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}$";
 	
@@ -75,7 +76,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 			}
 
 			if(insertedURI.matches(regExCorrectURL)){
-				showDialog(0); //will call onCreateDialog method 
+				currentDialog=0;
+				showDialog(currentDialog); //will call onCreateDialog method 
 				//Test to verify that the inserted URI is a valid URI. The response of the validation will be sent to changeServerURI method of this class
 				//tryConnectionThread=LoginResource.tryConnection(insertedURI, handler, Preferences.this);
 				tryConnectionThread=NetworkUtilities.tryConnection(insertedURI,false, handler, Preferences.this);
@@ -115,8 +117,10 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	            public void onCancel(DialogInterface dialog) {
 	                Log.i(TAG, "dialog cancel has been invoked");
 	                if (tryConnectionThread != null) {
+	                	currentDialog=-1;
 	                	tryConnectionThread.interrupt();
 	                    finish();
+	                    
 	                }
 	            }
 	        });
@@ -127,8 +131,13 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	
 	public void changeServerURI(TestConnectionReply result){
 
-		dismissDialog(0); //disable the progress dialog
-
+		//The request has been interrupted
+		if(currentDialog==-1){
+			return;
+		}
+		
+		dismissDialog(currentDialog); //disable the progress dialog
+		
 		
 		Log.i(TAG,"Tested serverURI:"+result.serverURI);
 		if(result.status==1){			
