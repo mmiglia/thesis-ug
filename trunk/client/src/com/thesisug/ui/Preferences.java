@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -44,8 +45,10 @@ import com.thesisug.notification.TaskNotification;
 
 public class Preferences extends PreferenceActivity implements OnSharedPreferenceChangeListener{
 	private static final String TAG = "thesisug - PreferenceActivity";
-	private Thread tryConnectionThread;
+	private Thread tryConnectionThread, checkVersionThread;
 	private final Handler handler = new Handler();
+	private final Handler handlerVer = new MyHandler();
+	private boolean VERSION_OK = false;
 	private String insertedURI="";
 	private static int currentDialog=0;
 	
@@ -128,8 +131,46 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
         return dialog;
     }	
 	
+    private class MyHandler extends Handler {
+    	@Override
+        public void handleMessage(Message msg) {
+    		//dismissDialog(1);
+    		Bundle bundle = msg.getData();
+    		if(bundle.containsKey("status")) {
+    			Log.i(TAG, "Recieved values: status="+bundle.getInt("status")+
+    					" serverVersion="+bundle.getString("serverVersion")+
+    					" versionOk="+bundle.getBoolean("versionOk")+
+    					" serverURI="+bundle.getString("serverURI"));
+    			int value = bundle.getInt("status");
+    			boolean versionOk = bundle.getBoolean("versionOk");
+				if (value==1) {
+					Toast.makeText(getApplicationContext(), R.string.client_not_compatible, Toast.LENGTH_SHORT).show();
+				}
+				if (value==2 && !versionOk) {
+					// value=2 -> client version compatible with server version
+					// VERSION_OK=false -> server version not compatible with client version
+					Toast.makeText(getApplicationContext(), R.string.server_not_compatible, Toast.LENGTH_SHORT).show();
+				}
+				if (value==2 && versionOk) {
+					// value=2 -> client version compatible with server version
+					// VERSION_OK=true -> server version not compatible with client version
+//					usersettings.edit().putString("ServerURI", bundle.getString("serverURI"));
+//    				NetworkUtilities.changeServerURI(bundle.getString("serverURI"));
+    				VERSION_OK = true;
+					//Toast.makeText(getApplicationContext(), R.string.client_server_version_ok, Toast.LENGTH_SHORT).show();
+				}
+				if (value==404) {
+					Toast.makeText(getApplicationContext(), R.string.tryConnectionFail, Toast.LENGTH_SHORT).show();
+				}
+    		}
+        }
+
+    }
 	
 	public void changeServerURI(TestConnectionReply result){
+
+		dismissDialog(0); //disable the progress dialog
+		//Toast.makeText(getApplicationContext(), "sono qua", Toast.LENGTH_SHORT);
 
 		//The request has been interrupted
 		if(currentDialog==-1){
@@ -137,20 +178,30 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		}
 		
 		dismissDialog(currentDialog); //disable the progress dialog
-		
-		
+				
 		Log.i(TAG,"Tested serverURI:"+result.serverURI);
 		if(result.status==1){			
-			NetworkUtilities.changeServerURI(result.serverURI);
+			Log.i(TAG,"Tested serverURI:"+result.serverURI+" - server reachable");
+			//Log.i(TAG, "result.status=1 -> controllo versione");
+			//Log.i(TAG, "result.serverURI="+result.serverURI+" version="+Constants.VERSION);
+			checkVersionThread = NetworkUtilities.checkVersion(result.serverURI, Constants.VERSION, handlerVer, Preferences.this);
 			
-			Toast.makeText(getApplicationContext(), R.string.tryConnectionSuccess,
-	                Toast.LENGTH_LONG).show();
-				
+			if (VERSION_OK) {
+				//Log.i(TAG, "VERSION_OK=true");
+				NetworkUtilities.changeServerURI(result.serverURI);
+				//Log.i(TAG, "VERSION_OK=true - changed serverUri");
+				Toast.makeText(getApplicationContext(), R.string.tryConnectionSuccess, Toast.LENGTH_LONG).show();
+				//Log.i(TAG, "VERSION_OK=true - visualizzato toast");
+			}
+			else {
+				//Log.i(TAG, "VERSION_OK=false");
+				Toast.makeText(getApplicationContext(), R.string.change_server_ver_not_compatible, Toast.LENGTH_LONG);
+			}
 			//TODO login to the new server and ask tasks and events
 			
 		}else{
-			Toast.makeText(getApplicationContext(), R.string.tryConnectionFail,
-	                Toast.LENGTH_LONG).show();
+			Log.i(TAG,"Tested serverURI:"+result.serverURI+" - server NOT reachable");
+			Toast.makeText(getApplicationContext(), R.string.tryConnectionFail, Toast.LENGTH_LONG).show();
 			//TODO comunicate to the user that the server hasn't returned a response as expected
 			//the server uri can be found in: result.serverURI
 		}
