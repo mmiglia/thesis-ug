@@ -2,6 +2,8 @@ package com.thesisug.communication;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
  
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -44,7 +46,7 @@ public class NetworkUtilities {
 	private static final String TAG = new String("thesisug - NetworkUtilities");
 	private static final int REGISTRATION_TIMEOUT = 10000;
 	public static final String BASE_TRY_CONNECTION="/tryConn/";
-	public static final String BASE_VERSION_CHECK="/checkVer/";
+	public static final String BASE_VERSION_CHECK="/checkVer";
 	
 	//Dati del file com.thesisug.Constants.java
 	public static String SERVER_URI = Constants.DEFAULT_URL+":"+Constants.DEFAULT_HTTP_PORT+"/"+Constants.PROGRAM_NAME;
@@ -65,7 +67,16 @@ public class NetworkUtilities {
 	
 	public static String actUser="";
 	public static String actPass="";
-
+	
+	
+	public static boolean check(String input, String regex) {
+    	Pattern pattern = Pattern.compile(regex);
+    	Matcher matcher = pattern.matcher(input);
+    	if (matcher.matches())
+    		return true;
+    	else
+    		return false;
+    }
 	 
 	public static DefaultHttpClient createClient() {
 		DefaultHttpClient client = new DefaultHttpClient();
@@ -105,15 +116,21 @@ public class NetworkUtilities {
 		
 		VersionReply result = new VersionReply();
 		
-		Log.i(TAG,"Verifying server version");
+		Log.i(TAG,"Verifying client/server version compatibility");
     	DefaultHttpClient newClient = NetworkUtilities.createClient();
     	// provide username and password in correct param
     	Log.i(TAG,"Client created, creating request to check version of --> "+serverURI+" <--");
     	String query = (params == null) ? "" : URLEncodedUtils.format(params, "UTF-8");
-    	String url="http://"+serverURI+":"+Constants.DEFAULT_HTTP_PORT+"/"+Constants.PROGRAM_NAME+BASE_VERSION_CHECK+"?"+query;
+    	String url;
+    	if (check(serverURI, "http\\://+[a-zA-Z0-9\\-\\.]+[\\.[a-zA-Z]{2,4}]*+\\S*")) {
+    		url = serverURI+BASE_VERSION_CHECK+"?"+query;
+    	}
+    	else {
+    		url="http://"+serverURI+":"+Constants.DEFAULT_HTTP_PORT+"/"+Constants.PROGRAM_NAME+BASE_VERSION_CHECK+"?"+query;
+    	}
     	Log.d(TAG,url);
     	HttpGet request = new HttpGet(url);
-    	Log.d(TAG,"Start check version request");
+    	Log.d(TAG,"Start check version request to "+url);
     	HttpResponse response = NetworkUtilities.sendRequest(newClient, request);
     	Log.d(TAG,"Version check request returned: "+response);
     	if (response == null) {

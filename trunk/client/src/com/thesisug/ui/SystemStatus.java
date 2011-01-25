@@ -10,11 +10,14 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.thesisug.Constants;
 import com.thesisug.R;
 import com.thesisug.communication.LoginResource;
 import com.thesisug.communication.NetworkUtilities;
@@ -31,8 +34,8 @@ public class SystemStatus extends Activity {
     private LocationManager locManager;
     private Criteria criteria;
     private Location userLocation;
-	private Thread tryConnectionThread;
-	private final Handler handler = new Handler();
+	private Thread tryConnectionThread, checkVerThread;
+	private final Handler handler = new MyHandler();
 	
     //Location
     private TextView txt_location_provider;
@@ -40,9 +43,25 @@ public class SystemStatus extends Activity {
     private TextView txt_last_location_longitude;
 
     //Server
+    private TextView txt_server_version;
     private TextView txt_server_name_value;
     private TextView txt_server_connection_status_value;
     
+    //Client
+    private TextView txt_client_version;
+    
+    private class MyHandler extends Handler {
+    	@Override
+        public void handleMessage(Message msg) {
+    		Bundle bundle = msg.getData();
+    		Log.i(TAG, "Valori: status="+bundle.getInt("status")+" serverVersion="+bundle.getString("serverVersion")+" versionOK="+bundle.getBoolean("versionOk")+" serverURI="+bundle.getString("serverURI"));
+    		if(bundle.containsKey("serverVersion")) {
+    			txt_server_version.setText(bundle.getString("serverVersion"));
+    			
+    		}
+        }
+
+    }
     
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -52,7 +71,9 @@ public class SystemStatus extends Activity {
     	criteria.setAccuracy(Criteria.ACCURACY_FINE);
     	locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
     	
+    	txt_client_version=(TextView)findViewById(R.id.client_ver_value);
     	
+    	txt_server_version=(TextView)findViewById(R.id.server_ver_value);
     	txt_server_name_value=(TextView)findViewById(R.id.server_name_value);
     	txt_server_connection_status_value=(TextView)findViewById(R.id.server_connection_status_value);
     	
@@ -81,7 +102,13 @@ public class SystemStatus extends Activity {
 	}
 	
 	private boolean updateSystemStatus(){
+		//Client status
+		txt_client_version.setText(Constants.VERSION);
+		
 		//Server status
+		Log.i(TAG, "ServerURI="+NetworkUtilities.SERVER_URI);
+		//String url = 
+		checkVerThread=NetworkUtilities.checkVersion(NetworkUtilities.SERVER_URI, Constants.VERSION, handler, SystemStatus.this);
 		txt_server_name_value.setText(NetworkUtilities.SERVER_URI);
 		//Server connection
 		//showDialog(0); //will call onCreateDialog method 
