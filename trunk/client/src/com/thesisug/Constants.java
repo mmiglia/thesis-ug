@@ -20,4 +20,7 @@ public class Constants {
     public static final String PROGRAM_NAME="ephemere";
     public static final String DEFAULT_HTTP_PORT="8080";
     public static final String DEFAULT_HTTPS_PORT="8443";
+    
+    public static final String VERSION="0.0.1";
+    public static final String MIN_SERVER_VER="0.0.1";
 }
