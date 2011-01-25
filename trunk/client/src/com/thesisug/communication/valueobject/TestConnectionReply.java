@@ -9,7 +9,7 @@ package com.thesisug.communication.valueobject;
 
 public class TestConnectionReply {
 	/**
-	 * 1 is successful login, 0 is unsuccessful login
+	 * 1 is successful connection, 0 is unsuccessful connection
 	 */
 	public int status;
 	
