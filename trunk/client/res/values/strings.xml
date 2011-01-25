@@ -32,6 +32,12 @@
 	<string name="registration_ok">Registration successful.</string>
 	<string name="trial_login">Trial Login successful. Please check your email to verify your account.</string>
 	<string name="no_trial_login">Your trial logins are finished. Please check your email and confirm your account.</string>
+	
+	<string name="checking_ver">Checking Client/Server version compatibility...</string>
+	<string name="change_server_ver_not_compatible">Please change server first, the client/server version aren\'t compatible.</string>
+	<string name="client_server_version_ok">Client/Server version are compatible.</string>
+	<string name="server_not_compatible">Server version not compatible with client version. Please select a different server or upgrade the server.</string>
+	<string name="client_not_compatible">Client version non compatible with server version. Please select a different server or upgrade your client.</string>
 		
 	<string name="retrieving_event">Downloading activities \u2026</string>
 	<string name="task_list_header">Gotta do these dude !</string>
@@ -166,6 +172,9 @@
     <string name="advanced_preferences">Advanced preferences</string>	
     <string name="no_location_provider_found">No location provider found, activate at least one between gps and network in the settings menu of your android system</string>
     <string name="notify_no_location_provider_found">No location provider found</string>
+    <string name="client_status">Client status</string>
+    <string name="client_ver">Current client version</string>
+    <string name="server_ver">Current server version</string>
     <string name="server_status">Server status</string>
     <string name="location_service_status">Location service status</string>
     <string name="location_provider_status_ko">No location provider</string>
