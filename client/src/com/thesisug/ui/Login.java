@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -24,6 +25,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.sun.corba.se.impl.orbutil.closure.Constant;
+import com.thesisug.Constants;
 import com.thesisug.R;
 import com.thesisug.communication.LoginResource;
 import com.thesisug.communication.NetworkUtilities;
@@ -39,6 +42,7 @@ public class Login extends AccountAuthenticatorActivity {
     public static final String PARAM_PASSWORD = "password";
     public static final String PARAM_USERNAME = "username";
     public static final String PARAM_AUTHTOKEN_TYPE = "authtokenType";
+    public static boolean VERSION_OK = false;
     private static final int DEFAULT_SERVER_POS_IN_LIST=0;
 	private AccountManager accountManager;
 	private String username;
@@ -49,8 +53,9 @@ public class Login extends AccountAuthenticatorActivity {
 	private TextView message;
 	private EditText usernameBox;
 	private EditText passwordBox;
-	private Thread authenticationThread;
+	private Thread authenticationThread, checkVersionThread;
 	private final Handler handler = new Handler();
+	private final Handler handlerVer = new MyHandler();
     private static SharedPreferences usersettings;
 	private String serverURI="";
 	
@@ -90,13 +95,17 @@ public class Login extends AccountAuthenticatorActivity {
         spnServer.setOnItemSelectedListener(new OnItemSelectedListener(){
 
     		@Override
-    		public void onItemSelected(AdapterView<?> parent, View v, int pos,
-    				long row) {
-    	       
-    			
-    			String serverURI=parent.getItemAtPosition(pos).toString();
-    			usersettings.edit().putString("ServerURI", serverURI);
-    			NetworkUtilities.changeServerURI(parent.getItemAtPosition(pos).toString());
+    		public void onItemSelected(AdapterView<?> parent, View v, int pos, long row) {
+
+    			showDialog(1);
+    			checkVersionThread = NetworkUtilities.checkVersion(parent.getItemAtPosition(pos).toString(), 
+    					Constants.VERSION, handlerVer, Login.this);
+    				//tryConnectionThread=NetworkUtilities.tryConnection(insertedURI,false, handler, Preferences.this);
+//    			if (NetworkUtilities.VERSION_OK) {
+//    				String serverURI=parent.getItemAtPosition(pos).toString();
+//    				usersettings.edit().putString("ServerURI", serverURI);
+//    				NetworkUtilities.changeServerURI(parent.getItemAtPosition(pos).toString());
+//    			}
     		}
 
     		@Override
@@ -119,11 +128,53 @@ public class Login extends AccountAuthenticatorActivity {
         Button reg = (Button) findViewById(R.id.register);
         reg.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View arg0) {
+                	if (VERSION_OK==true) { 
                         Intent i = new Intent(Login.this, Register.class);
                         startActivity(i);
+                	}
+                	else {
+                		Toast.makeText(getApplicationContext(), R.string.change_server_ver_not_compatible, Toast.LENGTH_SHORT).show();
+                	}
                 }
         });
-    }    
+    }
+    
+    private class MyHandler extends Handler {
+    	@Override
+        public void handleMessage(Message msg) {
+    		dismissDialog(1);
+    		// qua bisogna fare la verifica anche con la versione del server!!!
+    		Bundle bundle = msg.getData();
+    		if(bundle.containsKey("status")) {
+    			Log.i(TAG, "Recieved values: status="+bundle.getInt("status")+
+    					" serverVersion="+bundle.getString("serverVersion")+
+    					" versionOk="+bundle.getBoolean("versionOk")+
+    					" serverURI="+bundle.getString("serverURI"));
+    			int value = bundle.getInt("status");
+    			boolean versionOk = bundle.getBoolean("versionOk");
+				if (value==1) {
+					Toast.makeText(getApplicationContext(), R.string.client_not_compatible, Toast.LENGTH_SHORT).show();
+				}
+				if (value==2 && !versionOk) {
+					// value=2 -> client version compatible with server version
+					// VERSION_OK=false -> server version not compatible with client version
+					Toast.makeText(getApplicationContext(), R.string.server_not_compatible, Toast.LENGTH_SHORT).show();
+				}
+				if (value==2 && versionOk) {
+					// value=2 -> client version compatible with server version
+					// VERSION_OK=true -> server version not compatible with client version
+					usersettings.edit().putString("ServerURI", bundle.getString("serverURI"));
+    				NetworkUtilities.changeServerURI(bundle.getString("serverURI"));
+    				VERSION_OK = true;
+					//Toast.makeText(getApplicationContext(), R.string.client_server_version_ok, Toast.LENGTH_SHORT).show();
+				}
+				if (value==404) {
+					Toast.makeText(getApplicationContext(), R.string.tryConnectionFail, Toast.LENGTH_SHORT).show();
+				}
+    		}
+        }
+
+    }
 
     /**
      * get the message to be displayed at login box
@@ -148,17 +199,25 @@ public class Login extends AccountAuthenticatorActivity {
         if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
             message.setText(getMessage());
         } else {
-            showDialog(0); //will call onCreateDialog method     
-            Log.i(TAG,"Starting authenticationThread");
-            authenticationThread = LoginResource.signIn(username, password, handler, Login.this);
-            Log.i(TAG,"authenticationThread returned");
+        	if (VERSION_OK) {
+        		showDialog(0); //will call onCreateDialog method     
+        		Log.i(TAG,"Starting authenticationThread");
+        		authenticationThread = LoginResource.signIn(username, password, handler, Login.this);
+        		Log.i(TAG,"authenticationThread returned");
+        	}
+        	else {
+        		Toast.makeText(getApplicationContext(), R.string.change_server_ver_not_compatible, Toast.LENGTH_SHORT).show();
+        	}
         }
     }
     
     @Override
     protected Dialog onCreateDialog(int id) {
         final ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setMessage(getText(R.string.authenticating)+ NetworkUtilities.SERVER_URI);
+        if (id==0)
+        	dialog.setMessage(getText(R.string.authenticating)+ NetworkUtilities.SERVER_URI);
+        if (id==1)
+        	dialog.setMessage(getText(R.string.checking_ver));
         dialog.setIndeterminate(true);
         dialog.setCancelable(true);
         dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
