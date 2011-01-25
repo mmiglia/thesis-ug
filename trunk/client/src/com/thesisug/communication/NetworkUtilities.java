@@ -1,41 +1,58 @@
 package com.thesisug.communication;
 
 import java.io.IOException;
+import java.util.ArrayList;
  
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHttpResponse;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.message.BasicStatusLine;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.xml.sax.SAXException;
 
+import sun.util.logging.resources.logging;
+
 import com.thesisug.Constants;
 import com.thesisug.communication.valueobject.LoginReply;
+import com.thesisug.communication.valueobject.RegistrationReply;
 import com.thesisug.communication.valueobject.TestConnectionReply;
+import com.thesisug.communication.valueobject.VersionReply;
+import com.thesisug.communication.xmlparser.RegistrationReplyHandler;
 import com.thesisug.communication.xmlparser.TryConnectionReplyHandler;
+import com.thesisug.communication.xmlparser.VersionReplyHandler;
 import com.thesisug.ui.Login;
 import com.thesisug.ui.Preferences;
 import com.thesisug.ui.SystemStatus;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 public class NetworkUtilities {
 	private static final String TAG = new String("thesisug - NetworkUtilities");
 	private static final int REGISTRATION_TIMEOUT = 10000;
 	public static final String BASE_TRY_CONNECTION="/tryConn/";
+	public static final String BASE_VERSION_CHECK="/checkVer/";
 	
 	//Dati del file com.thesisug.Constants.java
 	public static String SERVER_URI = Constants.DEFAULT_URL+":"+Constants.DEFAULT_HTTP_PORT+"/"+Constants.PROGRAM_NAME;
 	
+	// this variable indicate if server and client are compatible
+	// false = client version is compatible with server version but not vice versa
+	// true = client version is compatible with server version and vice versa
+	public static boolean VERSION_OK = false;
 
 	//Padova
 	//public static String SERVER_URI = "http://serverpd.dyndns.org:8080/ephemere-0.0.11";
@@ -59,6 +76,102 @@ public class NetworkUtilities {
 		return client;
 	}
 	
+	public static Thread checkVersion(final String serverURI, final String clientVersion, 
+			final Handler handler, final Context context) {
+		final Runnable runnable = new Runnable() {			
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+				params.add(new BasicNameValuePair("ver", clientVersion));
+				VersionReply result = checkVersionThreadBody(serverURI, params);
+				sendResult(result, handler);
+				
+				Log.v(TAG, (result.status == 2)? "Client version compatible with server": "client version not compatible with server");
+
+				//sendCheckVersionResult(result,handler,context);
+			}
+		};
+		//return NetworkUtilities.startBackgroundThread(runnable);
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
+	
+
+	
+	public static VersionReply checkVersionThreadBody (final String serverURI, final ArrayList<NameValuePair> params) {
+		// eventualmente fare il test della connessione prima!
+		//TestConnectionReply result=new TestConnectionReply();
+		NetworkUtilities.VERSION_OK = false;
+		
+		VersionReply result = new VersionReply();
+		
+		Log.i(TAG,"Verifying server version");
+    	DefaultHttpClient newClient = NetworkUtilities.createClient();
+    	// provide username and password in correct param
+    	Log.i(TAG,"Client created, creating request to check version of --> "+serverURI+" <--");
+    	String query = (params == null) ? "" : URLEncodedUtils.format(params, "UTF-8");
+    	String url="http://"+serverURI+":"+Constants.DEFAULT_HTTP_PORT+"/"+Constants.PROGRAM_NAME+BASE_VERSION_CHECK+"?"+query;
+    	Log.d(TAG,url);
+    	HttpGet request = new HttpGet(url);
+    	Log.d(TAG,"Start check version request");
+    	HttpResponse response = NetworkUtilities.sendRequest(newClient, request);
+    	Log.d(TAG,"Version check request returned: "+response);
+    	if (response == null) {
+        	return result;
+        }
+    	
+    	//Try if server is on-line
+        if(response.getStatusLine().getStatusCode()==404){
+        	//Server unavailable, display it
+        	Log.i(TAG, "Resource not found.");
+        	result.status=404;
+        	return result;
+        }
+        
+        try { // parsing XML message
+        	result = VersionReplyHandler.parse(response.getEntity().getContent());        	
+        	int minServerVer = Integer.parseInt(Constants.MIN_SERVER_VER.replace(".", ""));
+        	if (Integer.parseInt(result.serverVersion.replace(".", "")) >= minServerVer ) {
+        		// versione server ok
+        		result.versionOk = true;
+        		result.serverURI = serverURI;
+        	}
+			return result;
+		} catch (IllegalStateException ex) {
+			Log.i(TAG, "Illegal State");
+			ex.printStackTrace();
+			return result;
+		} catch (IOException ex) {
+			Log.i(TAG, "IOException");
+			ex.printStackTrace();
+			return result;
+		} catch (SAXException ex) {
+			Log.i(TAG, "SAXException");
+			ex.printStackTrace();
+			return result;
+		}
+    	
+	}
+	
+	/**
+     * Sends the Version verification response from server back to the caller main UI
+     * thread through its handler.
+     * 
+     * @param result The boolean holding VersionReply result
+     * @param handler The main UI thread's handler instance.
+     * @param context The caller Activity's context.
+     */
+    private static void sendResult(final VersionReply result, final Handler handler) {
+    	Message msg = handler.obtainMessage();
+        Bundle b = new Bundle();
+        b.putInt("status", result.status);
+        b.putString("serverVersion", result.serverVersion);
+        b.putBoolean("versionOk", result.versionOk);
+        b.putString("serverURI", result.serverURI);
+        msg.setData(b);
+        handler.sendMessage(msg);
+    }
+	
 	/**
 	 * Creates and run background thread to try the connection
 	 * @param handler handler for the thread
@@ -71,14 +184,13 @@ public class NetworkUtilities {
 			public void run() {
 				TestConnectionReply result = tryConnectionThreadBody(serverURI);
 				result.serverURI=serverURI;
-				Log.v(TAG, (result.status == 1)? "Connection available:YES": "Connection available:NO");
+				Log.v(TAG, (result.status == 1)? "Connection available: YES": "Connection available: NO");
 				sendTryConnResult(result, handler, context);
 			}
 		};
 		// start authenticating
 		return NetworkUtilities.startBackgroundThread(runnable);
-	}	
-	
+	}		
 	
     /**
      * Sends the authentication response from server back to the caller main UI
@@ -134,9 +246,7 @@ public class NetworkUtilities {
         if (response == null || response.getStatusLine().getStatusCode()==404) {
         	result.status=0;
         	return result;
-        }     
-
-
+        }
         
         try { // parsing XML message
 			result = TryConnectionReplyHandler.parse(response.getEntity().getContent());
@@ -154,6 +264,15 @@ public class NetworkUtilities {
 			e.printStackTrace();
 			return result;
 		}
+		
+		// EFFETTUARE LA VERIFICA DELLA VERSIONE QUA!!!
+		// E RITORNARE UN CAMPO NEL TESTCONNECTIONREPLY CON IL RISULTATO DELLA VERIFICA VERSIONE
+		// boolean -> false (client version compatibile con server version
+		// boolean -> true (server version compatibile con client version
+//		if (result.status == 1) {
+//			//effettuare il test versione e mettere la variabile sull'oggetto TestConnectionReply
+//			NetworkUtilities.checkVersion(serverURI, Constants.VERSION, handler, NetworkUtilities.this);
+//		}
         
 	}
 	
