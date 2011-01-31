@@ -21,18 +21,25 @@ public class ParserManager {
 	private final static String LANGUAGE_FILE = "en.lang";
 	private Parser mainparser;
 	private boolean initialized = false;
+	private Language lang;
 	
-	public boolean inputQuery(String userid, String command){
-		initialize();
-		return mainparser.startParse(userid, command);
+	//public boolean inputQuery(String userid, String command){
+	public boolean inputQuery(String userid, String command, String language){
+		//initialize();
+		initialize(language);
+		return mainparser.startParse(userid, command, lang);
 	}
 	
-	private void initialize(){
+	//private void initialize(){
+	private void initialize(String language){
 		log.info("initializing ParserManager");
 		if (initialized) return;
 		mainparser = new Parser();
-		log.info(LANGUAGE_FILE);
-		mainparser.setLanguage(new Language(LANGUAGE_FILE));
+		//log.info(LANGUAGE_FILE);		
+		log.info("Language file: "+language);
+		//mainparser.setLanguage(new Language(LANGUAGE_FILE));
+		lang = new Language(language);
+		mainparser.setLanguage(lang);
 		mainparser.createCommand(new AddTask());
 		mainparser.createCommand(new AddEvent());
 		initialized = true;

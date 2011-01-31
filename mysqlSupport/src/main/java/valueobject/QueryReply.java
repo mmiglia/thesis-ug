@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class QueryReply {
 	public boolean status;
-	private QueryReply(){
+	public QueryReply(){
 		status = false;
 	}
 	public QueryReply(boolean stat){

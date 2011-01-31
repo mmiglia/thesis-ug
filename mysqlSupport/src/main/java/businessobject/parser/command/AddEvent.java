@@ -1,9 +1,11 @@
 package businessobject.parser.command;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +14,7 @@ import valueobject.SingleEvent;
 import businessobject.Converter;
 import businessobject.EventManager;
 import businessobject.parser.Arguments;
+import businessobject.parser.Language;
 import businessobject.parser.SemanticRoles;
 import businessobject.parser.nountype.ArbitraryObject;
 import businessobject.parser.nountype.NounCalendar;
@@ -21,6 +24,9 @@ import com.clutch.dates.StringToTimeException;
 
 public class AddEvent implements Verb{
 	private final static Logger log = LoggerFactory.getLogger(AddEvent.class);
+	private static final Properties constants = new Properties();
+	private String TAG = "AddEvent - ";
+	
 	@Override
 	public String getName() {
 		return "Add Event";
@@ -28,12 +34,19 @@ public class AddEvent implements Verb{
 	
 	@Override
 	public boolean execute(String userid, List<Arguments> args) {
+		System.out.println(TAG+"Funzione execute");
 		String title="";
 		String whenString="";
 		for (Arguments a:args){
 			switch (a.role){
-			case OBJECT: title = a.content; break;
-			case TIME: whenString = a.content; break;
+			case OBJECT: 
+				title = a.content; 
+				System.out.println(TAG+"oggetto OBJECT");
+				break;
+			case TIME: 
+				whenString = a.content;
+				System.out.println(TAG+"oggetto TIME");
+				break;
 			}
 		}
 		log.info("executing add event for user "+userid+" with title "+title);
@@ -66,8 +79,20 @@ public class AddEvent implements Verb{
 	}
 
 	@Override
-	public List<String> getVerbs() {
-		return Arrays.asList("add event", "i have appointment", "add appointment");
+	public List<String> getVerbs(Language l) {
+		String verbs_filename = l.filename.replace(".", "_verbs.");
+		List<String> v = new LinkedList<String>();
+		try {
+			constants.load(this.getClass().getClassLoader().getResourceAsStream(verbs_filename));
+			v = Arrays.asList(constants.getProperty("event_verbs").split(","));
+		} catch (IOException e) {
+			System.out.println("Cannot find the verbs file");
+			e.printStackTrace();
+		}
+		return v;
+		//return Arrays.asList("add event", "i have appointment", "add appointment");
+		// aggiungere i verbi in italiano
+		//return Arrays.asList("aggiungi evento", "ho un appuntamento", "aggiungi appuntamento", "ricordami appuntamento");
 	}
 
 }

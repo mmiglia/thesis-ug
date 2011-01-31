@@ -109,6 +109,7 @@ public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterf
 	public boolean createTask(String userID, String title,
 			String notifyTimeStart, String notifyTimeEnd, String dueDate,
 			String description, int priority,String groupId) {
+		System.out.println("TaskManager - addTask: '"+userID+"', '"+title+"', '"+notifyTimeStart+"', '"+notifyTimeEnd+"', '"+dueDate+"', '"+description+"', '"+priority+"', '"+groupId+"'");
 		SingleTask toAdd = TaskDatabase.instance.addTask(userID, title,notifyTimeStart, notifyTimeEnd, dueDate,
 				description, priority,groupId);
 		

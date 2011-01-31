@@ -36,8 +36,10 @@ public class InputResource {
 	@Consumes("application/xml")
 	@Produces("application/xml")
 	public QueryReply input(@PathParam("username") String userid,
-			@CookieParam("sessionid") String sessionid,@QueryParam("q") String command) {
-		log.info("Receive request from "+userid+" to parse '"+command+"'");
-		return new QueryReply(new ParserManager().inputQuery(userid, command));
+			@CookieParam("sessionid") String sessionid,
+			@QueryParam("q") String command,
+			@QueryParam("lang") String lang) {
+		log.info("Receive request from "+userid+" to parse '"+command+"' using language '"+lang+"'");
+		return new QueryReply(new ParserManager().inputQuery(userid, command, lang));
 	}
 }

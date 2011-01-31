@@ -14,7 +14,7 @@ import java.util.Properties;
  */
 public class Language {
 	public List<SemanticRoles> roles;
-	public String name;
+	public String name, filename;
 	private static final Properties constants = new Properties();
 	
 	/*
@@ -47,6 +47,7 @@ public class Language {
 		try {
 			constants.load(this.getClass().getClassLoader().getResourceAsStream(filename));
 			this.name = constants.getProperty("name");
+			this.filename = constants.getProperty("filename");
 			String[] r = constants.getProperty("roles").split(",");
 			String[] d = constants.getProperty("delimiters").split(",");
 			SemanticRoles temp;

@@ -1,9 +1,11 @@
 package businessobject.parser.command;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +14,9 @@ import valueobject.SingleTask;
 import businessobject.Converter;
 import businessobject.TaskManager;
 import businessobject.parser.Arguments;
+import businessobject.parser.Language;
 import businessobject.parser.SemanticRoles;
+import businessobject.parser.SemanticRoles.RoleType;
 import businessobject.parser.nountype.ArbitraryObject;
 import businessobject.parser.nountype.NounCalendar;
 
@@ -22,6 +26,9 @@ import com.clutch.dates.StringToTimeException;
 
 public class AddTask implements Verb{
 	private final static Logger log = LoggerFactory.getLogger(AddTask.class);
+	private static final Properties constants = new Properties();
+	private String TAG = "AddTask - ";
+	
 	@Override
 	public String getName() {
 		return "Add Task";
@@ -31,13 +38,37 @@ public class AddTask implements Verb{
 	public boolean execute(String userID, List<Arguments> args) {
 		String title="";
 		String whenString="";
+		System.out.println(TAG+"Argomenti passati:");
+		for (Arguments ciccio : args) 
+			System.out.print("Noun:"+ciccio.noun.toString()+" Content:"+ciccio.content+" Role:"+ciccio.role.toString());
+		System.out.println("");
 		for (Arguments a:args){
-			switch (a.role){
-			case OBJECT: title = a.content; break;
-			case TIME: whenString = a.content; break;
+			if (a.role == SemanticRoles.RoleType.OBJECT) {
+				title = a.content;
+				System.out.println(TAG+"oggetto OBJECT: "+a.content);
+				//break;
+				continue;
 			}
+			if (a.role == SemanticRoles.RoleType.TIME) {
+				whenString = a.content;
+				System.out.println(TAG+"oggetto TIME: "+a.content);
+				//break;
+				continue;
+			}
+//			switch (a.role){
+//			case OBJECT: 
+//				title = a.content;
+//				System.out.println(TAG+"oggetto OBJECT: "+a.content);
+//				break;
+//			case TIME: 
+//				whenString = a.content;
+//				System.out.println(TAG+"oggetto OBJECT: "+a.content);
+//				break;
+//			}
 		}
-		log.info("executing add task for user "+userID+" with title "+title);
+		System.out.println("executing add task fo user "+userID+" with title:"+title+" and time:"+whenString);
+		log.info("executing add task fo user "+userID+" with title:"+title+" and time:"+whenString);
+		//log.info("executing add task for user "+userID+" with title "+title);
 		try{
 			StringToTime start = new StringToTime(whenString);
 			Calendar startTime = Calendar.getInstance();
@@ -56,6 +87,8 @@ public class AddTask implements Verb{
 			String description="";
 			int priority=2;
 			String groupId="0";
+			System.out.println("createTask con user="+userID+" titolo="+title+" Tstart="+notifyTimeStart+" Tend="+notifyTimeEnd+" data="+dueDate+" descr="+description+" gruppo="+groupId);
+			log.info("createTask con user="+userID+" titolo="+title+" Tstart="+notifyTimeStart+" Tend="+notifyTimeEnd+" data="+dueDate+" descr="+description+" gruppo="+groupId);
 			TaskManager.getInstance().createTask(userID, title, notifyTimeStart, notifyTimeEnd, dueDate, description, priority,groupId);
 			return true;
 		}
@@ -74,7 +107,20 @@ public class AddTask implements Verb{
 	}
 
 	@Override
-	public List<String> getVerbs() {
-		return Arrays.asList("i have", "remind me", "add task");
+	public List<String> getVerbs(Language l) {
+		String verbs_filename = l.filename.replace(".", "_verbs.");
+		//System.out.println("AddTask - verbs_filename="+verbs_filename);
+		List<String> v = new LinkedList<String>();
+		try {
+			constants.load(this.getClass().getClassLoader().getResourceAsStream(verbs_filename));
+			v = Arrays.asList(constants.getProperty("task_verbs").split(","));
+		} catch (IOException e) {
+			System.out.println("Cannot find the verbs file");
+			e.printStackTrace();
+		}
+		return v;
+		//return Arrays.asList("i have", "remind me", "add task");
+		// aggiungere i verbi in italiano
+		//return Arrays.asList("devo", "ricordami", "ricorda", "aggiungi task");
 	}
 }

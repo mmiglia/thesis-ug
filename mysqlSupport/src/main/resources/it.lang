@@ -1,0 +1,4 @@
+filename=it.lang
+name=Italian
+roles=GOAL,GOAL,GOAL,GOAL,GOAL,GOAL,GOAL,OBJECT,SOURCE,SOURCE,SOURCE,SOURCE,SOURCE,SOURCE,LOCATION,LOCATION,LOCATION,LOCATION,TIME,TIME,TIME,TIME
+delimiters=al,alla,all\',agli,ai,alle,in,di,da,dal,dalla,dall\',dagli,dai,in,da,vicino,nei dintorni di,alle,prima delle,prima di,prima dell\'

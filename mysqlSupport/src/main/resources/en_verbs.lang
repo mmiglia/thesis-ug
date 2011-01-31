@@ -1,0 +1,4 @@
+filename=en_verbs.lang
+name=EnglishVerbs
+task_verbs=i have,remind me,add task
+event_verbs=add event,i have appointment,add appointment
