@@ -52,6 +52,7 @@ public enum TaskDatabase {
 		
 		//Reminder creation
 		String insertQuery="Insert into Reminder (title,description,priority,type) values ('"+title+"','"+description+"','"+priority+"',2)";
+		System.out.println("TaskDatabase query: "+insertQuery);
 		qs=dbManager.customQuery(conn, insertQuery);
 		if(qs.execError){
 			log.error(qs.explainError());
@@ -64,6 +65,7 @@ public enum TaskDatabase {
 		log.info("Reminder added!");	
 		//Task Creation with the reminder ID. The Task has always type=2
 		insertQuery="Insert into Task (User,dueDate,notifyTimeStart,notifyTimeEnd,ReminderId,UserGroup) values ('"+userID+"','"+dueDate+"','"+notifyTimeStart+"','"+notifyTimeEnd+"',LAST_INSERT_ID(),'"+userGroup+"')";
+		System.out.println("TaskDatabase query: "+insertQuery);
 		log.info(insertQuery);
 		qs=dbManager.customQuery(conn, insertQuery);
 		
