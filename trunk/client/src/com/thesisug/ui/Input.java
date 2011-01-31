@@ -5,10 +5,12 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
@@ -26,6 +28,7 @@ public class Input extends Activity implements OnClickListener{
 	private static final String TAG = new String("thesisug - Input Activity");
     private static final int VOICE_RECOGNITION_REQUEST_CODE = 1234;
     private EditText commandbox;
+    private static SharedPreferences userSettings;
     /**
      * Called with the activity is first created.
      */
@@ -38,6 +41,8 @@ public class Input extends Activity implements OnClickListener{
         // Inflate our UI from its XML layout description.
         setContentView(R.layout.input);
         
+        userSettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        
         // Get display items for later interaction
         Button speakButton = (Button) findViewById(R.id.btn_speak);
         Button sendButton = (Button) findViewById (R.id.btn_send);
@@ -45,10 +50,13 @@ public class Input extends Activity implements OnClickListener{
         sendButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				Toast.makeText(getApplicationContext(), "parser language selezionato:"+userSettings.getString("parserlang", "en.lang"), Toast.LENGTH_SHORT).show();
 				String text = commandbox.getText().toString();
 				// filter trash command
 				if (text.length()<5) return;
-				Thread sendcommand = InputResource.input(text, new Handler(), Input.this);
+				Thread sendcommand = InputResource.input(text, 
+						userSettings.getString("parserlang", "en.lang"), 
+						new Handler(), Input.this);
 				setResult(RESULT_OK);
 				finish();
 			}

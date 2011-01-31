@@ -51,6 +51,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private boolean VERSION_OK = false;
 	private String insertedURI="";
 	private static int currentDialog=0;
+	private static SharedPreferences userSettings;
 	
 	private String regExCorrectURL="^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}$";
 	
@@ -60,14 +61,23 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.layout.preference);
+		userSettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+		
 	}
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences arg0, String key) {
+		
 
 		/*
 		 * Manually inserted  server URI
 		 */
 		Log.d(TAG, "KEY:"+key);
+		
+		if(key.equals("parserlang")){
+			String pl = userSettings.getString("parserlang", "en.lang");
+			Toast.makeText(getApplicationContext(), "cambiato parser language in "+pl, Toast.LENGTH_SHORT).show();
+		}
+		
 		if(key.equals("serverURI_from_text")){
 			insertedURI=PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("serverURI_from_text",NetworkUtilities.SERVER_URI);
 			Log.d(TAG,"insertedURI:"+insertedURI);

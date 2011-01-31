@@ -15,6 +15,13 @@
 			android:defaultValue="50000"
 			android:entries="@array/distance"
 			android:entryValues="@array/distanceValue" />
+		<ListPreference
+			android:title="@string/parser_lang"
+			android:summary="@string/parser_lang_desc"
+			android:key="parserlang"
+			android:defaultValue="en.lang"
+			android:entries="@array/p_lang"
+			android:entryValues="@array/p_lang_value" />
 
 	</PreferenceCategory>
 	<!-- NOTIFICATION -->

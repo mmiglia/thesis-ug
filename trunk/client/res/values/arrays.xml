@@ -30,6 +30,16 @@
 		<item>5000</item>
 		<item>0</item>
 	</string-array>
+	
+	<string-array name="p_lang">
+		<item>EN - English</item>
+		<item>IT - Italian</item>
+	</string-array>
+	<string-array name="p_lang_value">
+		<item>en.lang</item>
+		<item>it.lang</item>
+	</string-array>
+	
 	<string-array name="serverList">
 		<item>Padova</item>
 		<item>Unige</item>
