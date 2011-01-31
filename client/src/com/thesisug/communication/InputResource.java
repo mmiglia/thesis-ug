@@ -54,11 +54,12 @@ public class InputResource {
 		return false;
 	}
 	
-	public static Thread input(final String toParse, final Handler handler, final Context context) {
+	public static Thread input(final String toParse, final String lang, final Handler handler, final Context context) {
 		final Runnable runnable = new Runnable() {
 			public void run() {
 				ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 				params.add(new BasicNameValuePair("q", ""+toParse));
+				params.add(new BasicNameValuePair("lang", lang));
 				boolean result = runHttpGet(INPUT, params, context);
 				sendResult(result, handler, context);
 			}

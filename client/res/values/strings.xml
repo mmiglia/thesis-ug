@@ -121,6 +121,8 @@
     <string name="interval">Interval to ask server for hints</string>
     <string name="max_distance">Maximum distance</string>
     <string name="max_distance_desc">Allow notification if location distance from me is below the value</string>
+    <string name="parser_lang">Parser Language</string>
+    <string name="parser_lang_desc">Select language for parser (Set delimiters and verbs)</string>
 	<string name="tryConnectionSuccess">The server has been changed</string>
 	<string name="tryConnectionFail">Cannot contact the specified server</string>
 	<string name="server_list_title">Select a server from the list</string>
