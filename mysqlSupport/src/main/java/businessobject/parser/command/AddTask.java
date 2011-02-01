@@ -87,7 +87,7 @@ public class AddTask implements Verb{
 			String description="";
 			int priority=2;
 			String groupId="0";
-			System.out.println("createTask con user="+userID+" titolo="+title+" Tstart="+notifyTimeStart+" Tend="+notifyTimeEnd+" data="+dueDate+" descr="+description+" gruppo="+groupId);
+//			System.out.println("createTask con user="+userID+" titolo="+title+" Tstart="+notifyTimeStart+" Tend="+notifyTimeEnd+" data="+dueDate+" descr="+description+" gruppo="+groupId);
 			log.info("createTask con user="+userID+" titolo="+title+" Tstart="+notifyTimeStart+" Tend="+notifyTimeEnd+" data="+dueDate+" descr="+description+" gruppo="+groupId);
 			TaskManager.getInstance().createTask(userID, title, notifyTimeStart, notifyTimeEnd, dueDate, description, priority,groupId);
 			return true;
