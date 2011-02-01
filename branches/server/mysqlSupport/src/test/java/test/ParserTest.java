@@ -12,7 +12,7 @@ import businessobject.ParserManager;
 import valueobject.QueryReply;
 
 public class ParserTest extends TestCase {
-	private String toParse = "ricordami di prendere il pane prima delle 11";
+	private String toParse = "devo prendere il pane prima delle 11";
 	private String user = "user";
 	private String lang = "it.lang";
 	
