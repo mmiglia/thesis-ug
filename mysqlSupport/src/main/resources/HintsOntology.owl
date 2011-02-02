@@ -34,10 +34,19 @@
         <ObjectProperty IRI="#contains"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="#autoricambi"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual IRI="#bakery"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="#benzina"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual IRI="#biglietto_pullman"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#biglietto_spettacolo"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#biglietto_treno"/>
@@ -47,6 +56,9 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#campus"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#carburanti"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#cereal"/>
@@ -70,7 +82,13 @@
         <NamedIndividual IRI="#coop"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="#edicola"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual IRI="#giornalaio"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#giornale"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#grocery"/>
@@ -88,6 +106,12 @@
         <NamedIndividual IRI="#milk"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="#olio"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#olio_motore"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual IRI="#ospedale"/>
     </Declaration>
     <Declaration>
@@ -95,6 +119,12 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#panetteria"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#panificio"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#poste"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#school"/>
@@ -107,6 +137,9 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#spazzolino"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#spettacolo"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#stazione"/>
@@ -136,10 +169,16 @@
         <NamedIndividual IRI="#ticket"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="#ticketone"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual IRI="#toothbrush"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#train_station"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#ufficio_postale"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#university"/>
@@ -172,11 +211,23 @@
     </EquivalentClasses>
     <ClassAssertion>
         <Class IRI="#Location"/>
+        <NamedIndividual IRI="#autoricambi"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
         <NamedIndividual IRI="#bakery"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="#Item"/>
+        <NamedIndividual IRI="#benzina"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
         <NamedIndividual IRI="#biglietto_pullman"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#biglietto_spettacolo"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="#Item"/>
@@ -189,6 +240,10 @@
     <ClassAssertion>
         <Class IRI="#Location"/>
         <NamedIndividual IRI="#campus"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#carburanti"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="#Item"/>
@@ -220,7 +275,15 @@
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="#Location"/>
+        <NamedIndividual IRI="#edicola"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
         <NamedIndividual IRI="#giornalaio"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#giornale"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="#Location"/>
@@ -243,6 +306,14 @@
         <NamedIndividual IRI="#milk"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#olio"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#olio_motore"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class IRI="#Location"/>
         <NamedIndividual IRI="#ospedale"/>
     </ClassAssertion>
@@ -253,6 +324,14 @@
     <ClassAssertion>
         <Class IRI="#Location"/>
         <NamedIndividual IRI="#panetteria"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#panificio"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#poste"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="#Location"/>
@@ -269,6 +348,10 @@
     <ClassAssertion>
         <Class IRI="#Item"/>
         <NamedIndividual IRI="#spazzolino"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#spettacolo"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="#Location"/>
@@ -307,12 +390,20 @@
         <NamedIndividual IRI="#ticket"/>
     </ClassAssertion>
     <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#ticketone"/>
+    </ClassAssertion>
+    <ClassAssertion>
         <Class IRI="#Item"/>
         <NamedIndividual IRI="#toothbrush"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="#Location"/>
         <NamedIndividual IRI="#train_station"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#ufficio_postale"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="#Location"/>
@@ -323,8 +414,23 @@
     </SameIndividual>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#benzina"/>
+        <NamedIndividual IRI="#carburanti"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
         <NamedIndividual IRI="#biglietto_pullman"/>
         <NamedIndividual IRI="#stazione_bus"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#biglietto_spettacolo"/>
+        <NamedIndividual IRI="#teatro"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#biglietto_spettacolo"/>
+        <NamedIndividual IRI="#ticketone"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="#canBeFoundIn"/>
@@ -388,6 +494,11 @@
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#giornale"/>
+        <NamedIndividual IRI="#edicola"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
         <NamedIndividual IRI="#latte"/>
         <NamedIndividual IRI="#supermercato"/>
     </ObjectPropertyAssertion>
@@ -413,8 +524,43 @@
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#olio"/>
+        <NamedIndividual IRI="#autoricambi"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#olio"/>
+        <NamedIndividual IRI="#carburanti"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#olio_motore"/>
+        <NamedIndividual IRI="#autoricambi"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#olio_motore"/>
+        <NamedIndividual IRI="#carburanti"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#pane"/>
+        <NamedIndividual IRI="#panificio"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
         <NamedIndividual IRI="#pane"/>
         <NamedIndividual IRI="#panetteria"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#pane"/>
+        <NamedIndividual IRI="#supermercato"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#poste"/>
+        <NamedIndividual IRI="#ufficio_postale"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="#canBeFoundIn"/>
@@ -425,6 +571,16 @@
         <ObjectProperty IRI="#canBeFoundIn"/>
         <NamedIndividual IRI="#spazzolino"/>
         <NamedIndividual IRI="#supermercato"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#spettacolo"/>
+        <NamedIndividual IRI="#ticketone"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#spettacolo"/>
+        <NamedIndividual IRI="#teatro"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="#contains"/>

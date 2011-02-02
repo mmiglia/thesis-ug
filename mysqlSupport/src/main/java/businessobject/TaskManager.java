@@ -8,6 +8,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import valueobject.Reminder.GPSLocation;
 import valueobject.SingleTask;
 import dao.TaskDatabase;
 
@@ -189,6 +190,11 @@ public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterf
 		
 		return task;
 		
+	}
+
+	@Override
+	public boolean markTaskAsDone(String taskID, GPSLocation userLocation) {
+		return TaskDatabase.markTaskAsDone(taskID, userLocation);
 	}
 	
 }

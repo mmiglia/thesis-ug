@@ -3,16 +3,18 @@ package dao;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import valueobject.Reminder.GPSLocation;
 import valueobject.SingleTask;
-
-import dao.management.mysql.MySQLDBManager;
 import dao.management.QueryStatus;
+import dao.management.mysql.MySQLDBManager;
 
 /**
  * Singleton class that acts as a database that will save all the tasks
@@ -52,7 +54,7 @@ public enum TaskDatabase {
 		
 		//Reminder creation
 		String insertQuery="Insert into Reminder (title,description,priority,type) values ('"+title+"','"+description+"','"+priority+"',2)";
-//		System.out.println("TaskDatabase query: "+insertQuery);
+		//System.out.println("TaskDatabase query: "+insertQuery);
 		qs=dbManager.customQuery(conn, insertQuery);
 		if(qs.execError){
 			log.error(qs.explainError());
@@ -132,7 +134,7 @@ public enum TaskDatabase {
 		Connection conn= (Connection) dbManager.dbConnect();
 		
 		//Task Utente
-		String selectQuery="Select * from Task join Reminder on Task.ReminderId=Reminder.id where Task.User='"+userID+"' ";
+		String selectQuery="Select * from Task join Reminder on Task.ReminderId=Reminder.id where Done=0 and Task.User='"+userID+"' ";
 		//Task dei gruppi a cui l'utente è iscritto
 		selectQuery+=" OR UserGroup In (select UserGroup from GroupMember where User='"+userID+"')";
 		
@@ -231,6 +233,58 @@ public enum TaskDatabase {
 
 	
 	/**
+	 * Update the task row and set it's DONE field to 1, 
+	 * it also set the userLocation as the one passed, and then
+	 * DoneTime to MySQL NOW()
+	 *  
+	 * @param taskID the task id into the database
+	 * @param userPosition the current user position is needed to know where the task has been set to DONE
+	 * @return false if update fails, true otherwise 
+	 */	
+	public static boolean markTaskAsDone(String taskID,GPSLocation userPosition) {
+		
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		log.info("markTaskAsDone taskID="+taskID+
+				"location("+userPosition.latitude+
+				"-"+userPosition.longitude+
+				" - start");
+		
+		String setTaskDoneQuery="Update Task " +
+				" set " +
+				"Done=1," +
+				"DoneLatitude="+userPosition.latitude+ "," +
+				"DoneLongitude="+userPosition.longitude+","+
+				"DoneTime=NOW()"+
+				"where id="+taskID;
+		
+		QueryStatus qs=dbManager.customQuery(conn, setTaskDoneQuery);
+		
+		log.info(setTaskDoneQuery);
+		
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			log.error("Error during setting task to DONE operation.. aborting operation");
+			dbManager.dbDisconnect(conn);
+			return false;
+		}
+		
+		dbManager.dbDisconnect(conn);
+		log.info("markTaskAsDone - OK");
+		return true;
+		
+	}
+	
+	
+	public static String now(String dateFormat) {
+	   Calendar cal = Calendar.getInstance();
+	   SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+	   return sdf.format(cal.getTime());
+	}
+
+	
+	/**
 	 * Update the specific task
 	 * @param taskID unique UUID of the task
 	 * @param task the new task
@@ -313,30 +367,78 @@ public enum TaskDatabase {
 			}while(dbManager.commitTransaction(conn).execError && counter<100);			
 		}
 
-    	try {
-			conn.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}finally{
-			dbManager.dbDisconnect(conn);
-			if(!qs.execError){
-				return true;
-			}else{
-				return false;
-			}
-		}		
-		
+		dbManager.dbDisconnect(conn);	
+		return true;
 	}
 		
 
-	public static void main(String[] args){
-		String userID="1";	
+	//Methods for testing
+	public static String addTaskQuery(String userID, String title,
+			String notifyTimeStart, String notifyTimeEnd, String dueDate,
+			String description, int priority,String userGroup) {
+		
+		String queryToReturn="Insert into Reminder (title,description,priority,type) values ('"+title+"','"+description+"','"+priority+"',2);";
+		
+		queryToReturn+="Insert into Task (User,dueDate,notifyTimeStart,notifyTimeEnd,ReminderId,UserGroup) values ('"+userID+"','"+dueDate+"','"+notifyTimeStart+"','"+notifyTimeEnd+"',LAST_INSERT_ID(),'"+userGroup+"');";
+		
+		return queryToReturn;
+	}
+	
 
+	
+	public static void main(String[] args){
+
+		String dueDate="";
+		String userGroup="";
+		String notifyTimeStart="";
+		String notifyTimeEnd="";
+		String description="";
+		
+		String[] userIDs=new String[12];
+		userIDs[0]="GE-01";
+		userIDs[1]="GE-02";
+		userIDs[2]="GE-03";
+		userIDs[3]="GE-04";
+		userIDs[4]="GE-05";
+		userIDs[5]="GE-06";
+		userIDs[6]="PD-01";
+		userIDs[7]="PD-02";
+		userIDs[8]="PD-03";
+		userIDs[9]="PD-04";
+		userIDs[10]="PD-05";
+		userIDs[11]="PD-06";
+		
+		
+		String[] taskTitles=new String[7];
+		
+		taskTitles[0]="comprare il latte";
+		taskTitles[1]="andare alle poste";
+		taskTitles[2]="comprare il pane";
+		taskTitles[3]="fare benzina";
+		taskTitles[4]="andare a tatro per prenotare i biglietti dello spettacolo Il commesso viaggiatore per domani";
+		taskTitles[5]="comprare olio motore";
+		taskTitles[6]="comprare il giornale";
+		
+		for(int j=0;j<userIDs.length;j++){
 			
+			for(int i=0;i<taskTitles.length;i++){
+				System.out.println(addTaskQuery(
+						userIDs[j],taskTitles[i],notifyTimeStart,notifyTimeEnd,dueDate,description,3,userGroup
+						));
+			}
+		
+		}
+		/*	
+			String userID="guido";	
 			List<SingleTask> taskList=TaskDatabase.instance.getAllTask(userID);
-			SingleTask t=taskList.get(1);
+			SingleTask t=taskList.get(0);
 			
+			GPSLocation location=new GPSLocation();
+			location.latitude=1.0f;
+			location.latitude=2.0f;
+			TaskDatabase.instance.markTaskAsDone(t.taskID,location);
+		*/
+			/*
 			System.out.println("da:"+t.description);
 			t.description="nuova descrizione!?!?!";
 			System.out.println("a:"+t.description);
@@ -344,5 +446,6 @@ public enum TaskDatabase {
 			if(!TaskDatabase.instance.updateTask(t.taskID,t)){
 				System.out.println("Errore");
 			}
+			*/
 	}
 }

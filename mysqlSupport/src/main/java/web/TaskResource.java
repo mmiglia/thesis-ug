@@ -9,10 +9,12 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import valueobject.Reminder.GPSLocation;
 import valueobject.SingleTask;
 import businessobject.TaskManager;
 
@@ -71,6 +73,29 @@ public class TaskResource {
 				+ ", session " + sessionid);
 		return TaskManager.getInstance().getFirstTasks(userid);
 	}
+	
+	/**
+	 * set the specified task to DONE, set the user position as the one passed
+	 * and set the DoneTime to Now
+	 *
+	 * @param taskID
+	 *            UUID of a task to be removed
+	 * @param userid user id of the user
+	 * @param sessionid session token acquired by login          
+	 * @return 0 for unsuccessful, 1 for successful
+	 */
+	@GET
+	@Path("/done")
+	public void markTaskAsDone(@PathParam("username") String userid,
+			@CookieParam("sessionid") String sessionid,@QueryParam("taskID") String taskID,@QueryParam("lat") float latitude, @QueryParam("lon") float longitude) {
+		GPSLocation userLocation=new GPSLocation();
+		userLocation.latitude=latitude;
+		userLocation.longitude=longitude;
+		log.info("Request to set task " + taskID + " to DONE from user " + userid
+				+ "in location "+latitude+","+longitude+", session " + sessionid);
+		TaskManager.getInstance().markTaskAsDone(taskID, userLocation);
+	}	
+	
 
 	/**
 	 * Update the task identified by newTask.ID in the database
@@ -106,4 +131,7 @@ public class TaskResource {
 				+ ", session " + sessionid);
 		TaskManager.getInstance().removeTask(userid, taskID);
 	}
+
+
+	
 }

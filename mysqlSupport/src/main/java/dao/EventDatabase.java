@@ -422,6 +422,64 @@ public enum EventDatabase {
 		}		
 	}
 	
+	
+	private static String addEventQuery (String userID, String dueDate,String startTime,String endTime,
+			String location,String title, String description) {
+
+		String insertEventQuery="Insert into Reminder (title,description,type) values ('"+title+"','"+description+"','1');";
+		insertEventQuery+="Insert into Event (User,dueDate,startTime,endTime,location,ReminderId) values ('"+userID+"','"+dueDate+"','"+startTime+"','"+endTime+"','"+location+"',LAST_INSERT_ID());";
+		
+		return insertEventQuery;
+	}
+	
+	public static void main(String[] args){
+
+		String dueDate="";
+		String notifyTimeStart="";
+		String notifyTimeEnd="";
+		String description="";
+		
+		String[] userIDs=new String[12];
+		userIDs[0]="GE-01";
+		userIDs[1]="GE-02";
+		userIDs[2]="GE-03";
+		userIDs[3]="GE-04";
+		userIDs[4]="GE-05";
+		userIDs[5]="GE-06";
+		userIDs[6]="PD-01";
+		userIDs[7]="PD-02";
+		userIDs[8]="PD-03";
+		userIDs[9]="PD-04";
+		userIDs[10]="PD-05";
+		userIDs[11]="PD-06";
+		
+		
+		String[] eventTitles=new String[3];
+		
+		eventTitles[0]="comprare il latte";
+		eventTitles[1]="andare alle poste";
+		eventTitles[2]="comprare il pane";
+
+		
+		String[] eventLocations=new String[3];
+		eventLocations[0]="loc1";
+		eventLocations[1]="loc2";
+		eventLocations[2]="loc3";
+		
+		for(int j=0;j<userIDs.length;j++){
+			
+			for(int i=0;i<eventTitles.length;i++){
+				System.out.println(addEventQuery(
+						userIDs[j],dueDate,notifyTimeStart,notifyTimeEnd,eventLocations[i],eventTitles[i],description));
+			}
+		
+		}
+		
+	}
+	
+	
+
+
 	/**
 	 * This method is used to initialize the database and return
 	 * a reference to the client of the database 
