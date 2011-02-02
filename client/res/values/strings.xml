@@ -213,4 +213,8 @@
     <string name="no_hints_found_for">No hints found for</string>
     <string name="new_hints_found_for">Found new hints for</string>
     <string name="searching_around_here">Searching..</string>
+    
+    <string name="mark_task_as_done">Done</string>
+    <string name="task_done_success">Task correctly marked as done</string>
+    <string name="task_done_error">Error during operation, please retry</string>
 </resources>

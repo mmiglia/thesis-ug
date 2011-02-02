@@ -118,6 +118,10 @@ public class SystemStatus extends Activity {
 		//Location service
 		
 		//Location provider		
+		if(locManager==null ){
+			txt_location_provider.setText(R.string.location_provider_status_ko);
+	    	locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+		}
 		locationProvider=locManager.getBestProvider(criteria,true);
 		if(locationProvider==null ){
 			txt_location_provider.setText(R.string.location_provider_status_ko);

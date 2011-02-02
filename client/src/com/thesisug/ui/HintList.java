@@ -29,7 +29,7 @@ public class HintList extends ListActivity {
 		ArrayList<Hint> hintlist = getIntent().getExtras().getParcelableArrayList("hints");
        	// create our list and custom adapter
        	SeparatedListAdapter adapter = new SeparatedListAdapter(this);		
-       	if (hintlist.isEmpty()) {
+       	if (hintlist==null||hintlist.isEmpty()) {
        		Log.i(TAG, "Cannot find any Hint object in the intent");
        		setListAdapter(adapter);
        		return;

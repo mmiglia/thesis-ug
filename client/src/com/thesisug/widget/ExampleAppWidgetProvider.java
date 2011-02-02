@@ -17,6 +17,7 @@ import com.thesisug.R;
 import com.thesisug.communication.valueobject.Hint;
 import com.thesisug.notification.TaskNotification;
 import com.thesisug.ui.HintList;
+import com.thesisug.ui.ParentTab;
 import com.thesisug.ui.Todo;
 
 public class ExampleAppWidgetProvider extends AppWidgetProvider {
@@ -29,6 +30,8 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
 	public static final String ACTION_PREV_TASK="PrevTask";
 	public static final String ACTION_NEXT_HINT="NextHint";
 	public static final String ACTION_PREV_HINT="PrevHint";
+	
+	private static Intent openHintListIntent;
 	
 	private static int tot=0;
 	private long triggeFirstTime=1000;
@@ -111,36 +114,7 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
 
         	
         }
-        if (action.equals(ACTION_OPEN_HINT_LIST)) {        	
-        	/*
-	        	if(hintList==null){
-	        		Toast.makeText(context.getApplicationContext(),"And now there are no hints!",Toast.LENGTH_SHORT).show();
-	        	}else{
-	        		Toast.makeText(context.getApplicationContext(),"YES we still got "+hintList.size()+" hints!",Toast.LENGTH_SHORT).show();
-	        	}
-        	*/
-        	
-        	//Retreive hint list for the current task
-        	
-        	String currTaskSentence=getCurrTaskSentence();
-        	
-        	if(currTaskSentence!=null){        	
-        		ArrayList<Hint> hintListForSelectedTask=getHintListForTheTask(currTaskSentence);
-        		Toast.makeText(context, "Got "+hintListForSelectedTask.size()+" hints for "+currTaskSentence, Toast.LENGTH_SHORT).show();
-	        	Intent notificationIntent = new Intent(context.getApplicationContext(), HintList.class);
-	        	notificationIntent.putParcelableArrayListExtra("hints", new ArrayList<Hint>(hintListForSelectedTask));
-	        	notificationIntent.putExtra("tasktitle", currTaskSentence);
-	        	notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);	        	
-	        	PendingIntent btnHintListPendingIntent = PendingIntent.getActivity(context, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);	        	
-	        	setButtonAction(appWidgetManager,context,R.id.widget_btn_hint_list,btnHintListPendingIntent,appWidgetIds);
-        	}else{
-        		Toast.makeText(context, "No hints, push Search for hints button first", Toast.LENGTH_SHORT).show();
-        	}
-        	//}else{
-        		//no hint
-        		//Toast.makeText(context, "hintList==null", Toast.LENGTH_SHORT).show();	
-        	//}
-        }   
+
         
         if(action.equals(ACTION_NEXT_TASK)){
         	//Setting the task text
@@ -166,6 +140,9 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
         	String hintSentence=getFirstHintForTheTask(currTaskSentence);
         	//Update hint txt
         	updateText(context,R.id.widget_txt_hint,hintSentence,appWidgetManager,appWidgetIds);
+        	
+        	//Update openHintListButton
+        	setOpenHintListButtonElements(context,currTaskSentence,getHintListForTheTask(currTaskSentence));
         }
         
         
@@ -198,6 +175,9 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
         	//Update hint txt
         	updateText(context,R.id.widget_txt_hint,hintSentence,appWidgetManager,appWidgetIds);
 
+        	//Update openHintListButton
+        	setOpenHintListButtonElements(context,currTaskSentence,getHintListForTheTask(currTaskSentence));
+        	
         }
 
         if(action.equals(ACTION_NEXT_HINT)){
@@ -228,6 +208,13 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
        
         Log.d(TAG,"Widget onReceive...done");  
 	 }
+	
+	private void setOpenHintListButtonElements(Context context,String taskSentence,ArrayList<Hint> hintList){
+    	openHintListIntent.putParcelableArrayListExtra("hints", hintList);
+    	openHintListIntent.putExtra("tasktitle", taskSentence);
+    	openHintListIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);	
+	}
+	
 	
 	private String getCurrTaskSentence(){
 		if(!taskHintsMap.keySet().isEmpty()){
@@ -335,19 +322,7 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         final int N = appWidgetIds.length;
         Log.d(TAG, "onUpdate");
-        // Perform this loop procedure for each App Widget that belongs to this provider
-        for (int i=0; i<N; i++) {
-            int appWidgetId = appWidgetIds[i];
-
-            // Create an Intent to launch ExampleActivity
-            //Intent intent = new Intent(context, TestWidget.class);
-            //PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
-            //updateText(String.valueOf(appWidgetId),context,appWidgetManager,appWidgetId);
-
-            
-        }
-        
+       
         if(tot==0){
         	Log.d(TAG, "Setup");
         	
@@ -362,11 +337,9 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
 	        searchHintIntent.setAction(ACTION_HINT_SEARCH);
 	        PendingIntent btnSearchHintPendingIntent = PendingIntent.getBroadcast(context, 0, searchHintIntent, 0);
 	        
-	        
-	        //Button goToHintList
-	        Intent hintListIntent = new Intent(context, ExampleAppWidgetProvider.class);
-	        hintListIntent.setAction(ACTION_OPEN_HINT_LIST);
-	        PendingIntent btnHintListPendingIntent = PendingIntent.getBroadcast(context, 0, hintListIntent, 0);
+	        //Button todoList
+	        Intent todoListIntent = new Intent(context, ParentTab.class);
+	        PendingIntent btnTodoListPendingIntent = PendingIntent.getActivity(context, 0, todoListIntent, 0);
 	        
 	        
 	        //Button nextTask
@@ -391,6 +364,13 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
 	    	prevHintIntent.setAction(ACTION_PREV_HINT);
 	        PendingIntent btnPrevHintIntentPendingIntent = PendingIntent.getBroadcast(context, 0, prevHintIntent, 0);
 
+	        //Button Hint list
+        	openHintListIntent = new Intent(context.getApplicationContext(), HintList.class);
+        	openHintListIntent.putParcelableArrayListExtra("hints", null);
+        	openHintListIntent.putExtra("tasktitle", "No task selected");
+        	openHintListIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);	    	
+        	PendingIntent btnHintListPendingIntent = PendingIntent.getActivity(context, 0, openHintListIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+	        
 	        //SetOnClickPendingIntent for each button
 	        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.example_appwidget);
 	        views.setOnClickPendingIntent(R.id.widget_btn_search_hint, btnSearchHintPendingIntent);
@@ -399,6 +379,7 @@ public class ExampleAppWidgetProvider extends AppWidgetProvider {
 	        views.setOnClickPendingIntent(R.id.widget_btn_prev_task, btnPrevTaskIntentPendingIntent);
 	        views.setOnClickPendingIntent(R.id.widget_btn_next_hint, btnNextHintIntentPendingIntent);
 	        views.setOnClickPendingIntent(R.id.widget_btn_prev_hint, btnPrevHintIntentPendingIntent);
+	        views.setOnClickPendingIntent(R.id.widget_btn_todo_list, btnTodoListPendingIntent);
 	        
 	        
 	        //Set text
