@@ -24,6 +24,10 @@ CREATE TABLE IF NOT EXISTS `Event` (
   `endTime` varchar(50) DEFAULT NULL,
   `location` varchar(200) DEFAULT NULL,
   `ReminderId` int(11) DEFAULT NULL,
+  `Done` int(1) DEFAULT 0,
+  `DoneTime` DATETIME DEFAULT NULL,
+  `DoneLatitude` varchar(30) DEFAULT NULL,
+  `DoneLongitude` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
@@ -93,6 +97,10 @@ CREATE TABLE IF NOT EXISTS `Task` (
   `notifyTimeEnd` varchar(50) DEFAULT NULL,
   `ReminderId` int(11) DEFAULT NULL,
   `UserGroup` int(11) DEFAULT 0,
+  `Done` int(1) DEFAULT 0,
+  `DoneTime` DATETIME DEFAULT NULL,
+  `DoneLatitude` varchar(30) DEFAULT NULL,
+  `DoneLongitude` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 select "End creation of table Task" as " ";

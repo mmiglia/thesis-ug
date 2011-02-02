@@ -337,9 +337,39 @@ public enum RegisteredUsers {
 		
 	}
 	
+	private static String addVerifiedUserQuery (String firstname, String lastname, String email, String username, 
+			String password){
+		if (usernameExist(username)) {
+			log.warn("Username already exist, choose different username");
+			return username+"EXSIST!";
+		}
+		
+		return "Insert into User (firstname, lastname, email, username, password, verified) " +
+				"values ('"+firstname+"','"+lastname+"','"+email+"','"+username+"','"+password+"','1')";
+
+		
+	}
+	
 	public static void main(String[] args){
 		
 		
+		String[] userIDs=new String[12];
+		userIDs[0]="GE-01";
+		userIDs[1]="GE-02";
+		userIDs[2]="GE-03";
+		userIDs[3]="GE-04";
+		userIDs[4]="GE-05";
+		userIDs[5]="GE-06";
+		userIDs[6]="PD-01";
+		userIDs[7]="PD-02";
+		userIDs[8]="PD-03";
+		userIDs[9]="PD-04";
+		userIDs[10]="PD-05";
+		userIDs[11]="PD-06";
+		
+		for(int i=0;i<userIDs.length;i++){
+			System.out.println(addVerifiedUserQuery(userIDs[i],userIDs[i], userIDs[i], userIDs[i], userIDs[i]));
+		}
 		
 	}
 	

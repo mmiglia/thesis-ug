@@ -245,7 +245,6 @@ public class MySQLDBManager implements IFDatabaseManagement {
 		try {
 			((Connection)connectionObjToClose).close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			log.error("Error during database disconnection:" + e.getMessage());
 			return null;

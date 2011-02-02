@@ -2,6 +2,7 @@ package businessobject;
 
 import java.util.List;
 
+import valueobject.Reminder.GPSLocation;
 import valueobject.SingleTask;
 
 /**
@@ -76,4 +77,11 @@ public interface TaskInterface {
 	 * @return list that contains all tasks from the user
 	 */
 	public List<SingleTask> retrieveAllTask(String userid);
+	
+	/**
+	 * Update the task row and set it's DONE field to 1, 
+	 * it also set the userLocation as the one passed, and then
+	 * DoneTime to the current time
+	 */
+	public boolean markTaskAsDone(String taskID,GPSLocation userLocation);
 }

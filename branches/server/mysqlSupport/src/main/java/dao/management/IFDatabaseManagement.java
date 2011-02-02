@@ -79,7 +79,14 @@ public interface IFDatabaseManagement {
 	 * correct query for the related DBMS
 	 */
 	public QueryStatus startTransaction(Object conn);
+
+	/**
+	 * This method commit a previous started transaction
+	 */
 	public QueryStatus commitTransaction(Object conn);
+	/**
+	 * This method makes a roll-back of a previous started transaction
+	 */
 	public QueryStatus rollbackTransaction(Object conn);
 	
 	
