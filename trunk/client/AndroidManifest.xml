@@ -130,6 +130,25 @@
         </activity>
         
     <uses-library android:name="com.google.android.maps" />
+    
+    <!--WIDGET  -->
+            
+		<receiver android:name=".widget.ExampleAppWidgetProvider" >
+		    <intent-filter>
+		        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+				<action android:name="com.thesisug.widget.ExampleAppWidgetProvider.ACTION_HINT_SEARCH" />
+				<action android:name="com.thesisug.widget.ExampleAppWidgetProvider.ACTION_OPEN_HINT_LIST" />
+				<action android:name="com.thesisug.widget.ExampleAppWidgetProvider.ACTION_NEW_HINT_FOUND" />
+				<action android:name="com.thesisug.widget.ExampleAppWidgetProvider.ACTION_NO_HINT_FOUND" />
+				<action android:name="com.thesisug.widget.ExampleAppWidgetProvider.ACTION_NEXT_TASK" />
+				<action android:name="com.thesisug.widget.ExampleAppWidgetProvider.ACTION_PREV_TASK" />
+				<action android:name="com.thesisug.widget.ExampleAppWidgetProvider.ACTION_NEXT_HINT" />
+				<action android:name="com.thesisug.widget.ExampleAppWidgetProvider.ACTION_PREV_HINT" />								
+		    </intent-filter>
+		    <meta-data android:name="android.appwidget.provider"
+		               android:resource="@xml/example_appwidget_info" />
+		</receiver>
+    
     </application>
 	<uses-sdk android:minSdkVersion="7" />
 </manifest> 

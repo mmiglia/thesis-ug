@@ -75,6 +75,8 @@ public class Todo extends ListActivity implements OnInitListener{
 	private static List<LinkedHashMap<String,?>> tasks = new LinkedList<LinkedHashMap<String,?>>();
 	private static String serverURI="";
 	
+	private static int currentDialog=-1;
+	
 	
 	private static TextToSpeech mTts;
 		
@@ -100,7 +102,8 @@ public class Todo extends ListActivity implements OnInitListener{
         	Log.d(TAG, "jumlah ="+accounts.length);
         	SeparatedListAdapter adapter = new SeparatedListAdapter(this);
         	setListAdapter(adapter);
-        	showDialog(0);
+        	currentDialog=0;
+        	showDialog(currentDialog);
         	username = accounts[0].name;
         	serverURI=PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("serverURI",NetworkUtilities.SERVER_URI);
         	if(!serverURI.equals(NetworkUtilities.SERVER_URI)){
@@ -132,6 +135,14 @@ public class Todo extends ListActivity implements OnInitListener{
 		    editor.putBoolean(title.getText().toString(), cbox.isChecked());
 		}
 		editor.commit();
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		if(currentDialog!=-1){
+			//dismissDialog(currentDialog);
+		}
 	}
 	
 	private LinkedHashMap<String,?> createItem(Reminder reminder, boolean remindme) {
@@ -187,7 +198,8 @@ public class Todo extends ListActivity implements OnInitListener{
 			break;
 			
 		case UPDATE_TASK_EVENT:
-        	showDialog(0);
+        	currentDialog=0;
+        	showDialog(currentDialog);
     		downloadEventThread = EventResource.getAllEvent(handler, this);
     		downloadTaskThread = TaskResource.getFirstTask(handler, this);
 			break;
@@ -290,7 +302,8 @@ public class Todo extends ListActivity implements OnInitListener{
 	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent intent){
-		showDialog(0);
+    	currentDialog=0;
+    	showDialog(currentDialog);
 		accountManager = AccountManager.get(getApplicationContext());
         accounts = accountManager.getAccountsByType(com.thesisug.Constants.ACCOUNT_TYPE);
         Log.i(TAG, "Retreived "+accounts.length+ " accounts");
@@ -403,7 +416,8 @@ public class Todo extends ListActivity implements OnInitListener{
 	
 	public void combineResult(){
 		Log.d(TAG, "after data is loaded, dismissed dialog 0");
-		dismissDialog(0); //disable the progress dialog
+		dismissDialog(currentDialog); //disable the progress dialog
+		currentDialog=-1;
 		counter = 0; // reset the counter
 
 		// create our list and custom adapter

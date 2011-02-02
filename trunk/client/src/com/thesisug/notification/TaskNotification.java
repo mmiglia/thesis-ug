@@ -110,6 +110,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	synchronized(userLocationChangeLock){
 	    	//New location already provided?
 	    	if(newLocation!=null){
+	    		lastPosition=userLocation;
 	    		userLocation=newLocation;
 	    		return true;
 	    	}
@@ -345,7 +346,9 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	        		}
 	        		 */
 	        		
-	
+	        		double actDistance=calculateDistance(userLocation,lastPosition);
+	        		//Todo.speakIt("Distance:"+actDistance);
+	        		Log.d(TAG,"Distance:"+actDistance); 
 	        		 
 	        		//asynchronous operation to download thread
 	        		Log.d(TAG,"Retreiving first tasks..");
@@ -420,7 +423,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	newnotification.contentView = contentView;
     	newnotification.contentIntent = contentIntent;
 
-    	sendDataToWidget(result,sentence);
+    	//sendDataToWidget(result,sentence);
     	
     	newnotification=addNotificationAlertMethod(newnotification,sentence,priority);
     	
@@ -447,7 +450,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	Log.d(TAG, "Vibration:"+userSettings.getBoolean("notification_hint_vibrate",false));
     	if(userSettings.getBoolean("notification_hint_vibrate",false)){
     		//newnotification.defaults |= Notification.DEFAULT_VIBRATE;
-        	//Pattern: The first value is how long to wait (off) before beginning, the second value is the length of the first vibratio
+
         	
         	long totTime=5000;
         	long usedTime=0;
@@ -465,11 +468,13 @@ public class TaskNotification extends Service implements LocationListener,OnShar
         	long[] vibratePattern = new long[(int) (totTime/Math.min(minVibrate,minPause))+5];
         	int pos=0;
         	while(usedTime<totTime){
-        		vibratePattern[pos]=vibrate;
-        		usedTime+=vibrate;
-        		pos++;
+            	//Pattern: The first value is how long to wait (off) before beginning
         		vibratePattern[pos]=pause;
         		usedTime+=pause;
+        		pos++;
+        		//the second value is the length of the first vibration
+        		vibratePattern[pos]=vibrate;
+        		usedTime+=vibrate;
         		pos++;
         	}
         	

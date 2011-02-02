@@ -14,14 +14,15 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.xml.sax.SAXException;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.Context;
+import android.location.Location;
 import android.os.Handler;
 import android.util.Log;
 
+import com.thesisug.communication.valueobject.Reminder.GPSLocation;
 import com.thesisug.communication.valueobject.SingleTask;
 import com.thesisug.communication.xmlparser.SingleTaskHandler;
 import com.thesisug.notification.TaskNotification;
@@ -36,6 +37,7 @@ public class TaskResource {
 	private static final String UPDATE_TASK = "/task/update";
 	private static final String REMOVE_TASK = "/task/erase";
 	private static final String CREATE_TASK = "/task/add";
+	private static final String TASK_DONE="/task/done";
 
 	private static List<SingleTask> runHttpGet(final String method,
 			final ArrayList<NameValuePair> params, Context c) {
@@ -44,6 +46,7 @@ public class TaskResource {
 		String query = (params == null) ? "" : URLEncodedUtils.format(params,
 				"UTF-8");
 		AccountUtil util = new AccountUtil();
+		Log.i(TAG, query);
 		HttpGet request = new HttpGet(NetworkUtilities.SERVER_URI + "/"
 				+ util.getUsername(c) + method + query);
 		request.addHeader("Cookie", "sessionid="+util.getToken(c));
@@ -74,6 +77,29 @@ public class TaskResource {
 		}
 	}
 
+	private static boolean runHttpGetToMarkTaskAsDone(final String method,
+			final ArrayList<NameValuePair> params, Context c) {
+		List<SingleTask> result = new LinkedList<SingleTask>();
+		DefaultHttpClient newClient = NetworkUtilities.createClient();
+		String query = (params == null) ? "" : "?"+URLEncodedUtils.format(params,
+				"UTF-8");
+		AccountUtil util = new AccountUtil();
+		Log.i(TAG, query);
+		HttpGet request = new HttpGet(NetworkUtilities.SERVER_URI + "/"
+				+ util.getUsername(c) + method + query);
+		request.addHeader("Cookie", "sessionid="+util.getToken(c));
+		// send the request to network
+		HttpResponse response = NetworkUtilities
+				.sendRequest(newClient, request);
+		// if we cannot connect to the server
+		if (response.getStatusLine().getStatusCode() < 200 || response.getStatusLine().getStatusCode() > 300) {
+			Log.i(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
+			return false; 
+		}else{
+			return true;
+		}
+	}	
+	
 	/*
 	 * return true upon successful POST, false otherwise
 	 */
@@ -192,6 +218,31 @@ public class TaskResource {
 		return NetworkUtilities.startBackgroundThread(runnable);
 	}
 	
+	
+	
+	/**
+	 * Send to the server the request to mark a task as done
+	 * @param handler
+	 * @param context
+	 * @return
+	 */
+	public static Thread markTaskAsDone(final Handler handler, final Context context,final String taskID, final double latitute, final double longitude) {
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				
+				ArrayList<NameValuePair> params=new ArrayList<NameValuePair>();
+				
+				params.add(new BasicNameValuePair("taskID", taskID));
+				params.add(new BasicNameValuePair("lat", String.valueOf(latitute)));
+				params.add(new BasicNameValuePair("lon", String.valueOf(longitude)));
+				
+				boolean result = runHttpGetToMarkTaskAsDone(TASK_DONE, params, context);
+				sendMarkTaskDoneResult(result, handler, context);
+			}
+		};
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
+	
 	public static Thread getFirstTask(final Handler handler, final Context context) {
 		final Runnable runnable = new Runnable() {
 			public void run() {				
@@ -213,11 +264,30 @@ public class TaskResource {
 		}
 		handler.post(new Runnable() {
 			public void run() {
-				if (context instanceof Todo)
+				if (context instanceof Todo){
 				 ((Todo)context).afterTaskLoaded(result);
-				else ((TaskNotification)context).afterTaskLoaded(result);
+				}
+				if (context instanceof TaskNotification){
+					((TaskNotification)context).afterTaskLoaded(result);
+				}
 			}
 		});
 	}
+
+	private static void sendMarkTaskDoneResult(final boolean result,
+			final Handler handler, final Context context) {
+		if (handler == null || context == null) {
+			return;
+		}
+		handler.post(new Runnable() {
+			public void run() {
+				if (context instanceof ShowTask){
+					((ShowTask)context).afterTaskDoneSet(result);
+				}	
+			}
+		});
+	}	
+	
+
 }
 
