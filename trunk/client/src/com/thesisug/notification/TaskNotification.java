@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.res.Resources;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -39,6 +40,7 @@ import com.thesisug.communication.valueobject.Hint;
 import com.thesisug.communication.valueobject.SingleTask;
 import com.thesisug.ui.HintList;
 import com.thesisug.ui.Todo;
+import com.thesisug.ui.accessibility.Morse;
 import com.thesisug.widget.ExampleAppWidgetProvider;
 
 
@@ -427,8 +429,9 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	
     	newnotification=addNotificationAlertMethod(newnotification,sentence,priority);
     	
-    	notificationManager.notify(sentence.hashCode(), newnotification);
-    	
+    	//notificationManager.notify(sentence.hashCode(), newnotification);
+    	NotificationDispatcher.dispatch(sentence, newnotification, notificationManager,userSettings
+    			.getString("notification_hint_vibrate", "off"));
 
     }
     
@@ -447,8 +450,11 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	}
     	
     	//Adding vibration
-    	Log.d(TAG, "Vibration:"+userSettings.getBoolean("notification_hint_vibrate",false));
-    	if(userSettings.getBoolean("notification_hint_vibrate",false)){
+    	//Log.d(TAG, "Vibration:"+userSettings.getBoolean("notification_hint_vibrate",false));
+    	Log.d(TAG, "Vibration" + userSettings.getString("notification_hint_vibrate", "off"));
+    	//if(userSettings.getBoolean("notification_hint_vibrate",false)){
+    	Resources res = getResources();
+    	if(userSettings.getString("notification_hint_vibrate", "off").equals("priority")){
     		//newnotification.defaults |= Notification.DEFAULT_VIBRATE;
 
         	
@@ -479,6 +485,8 @@ public class TaskNotification extends Service implements LocationListener,OnShar
         	}
         	
         	newNotification.vibrate = vibratePattern;
+    	} else if (userSettings.getString("notification_hint_vibrate", "off").equals("morse")) {
+    		newNotification.vibrate = Morse.getMorseVibrationPattern(sentence);
     	}
 
     	

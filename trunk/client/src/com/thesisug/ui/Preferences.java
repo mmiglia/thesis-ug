@@ -18,6 +18,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -62,7 +63,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.layout.preference);
 		userSettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-		
+		updateVibrationModeSummary("notification_hint_vibrate");
 	}
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences arg0, String key) {
@@ -114,9 +115,29 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 			//tryConnectionThread=LoginResource.tryConnection(insertedURI, handler, Preferences.this);
 			tryConnectionThread=NetworkUtilities.tryConnection(insertedURI,false, handler, Preferences.this);
 		}
-
+		Resources res = getResources();
+		if (key.equals("notification_hint_vibrate")) {
+			Log.d(TAG, "vibration change request");
+			// if vibration mode change was requested
+			// change is communicated through a toast
+			// message and summary (little notice below
+			// preference name) is updated and can be
+			// checked with a single glance
+			updateVibrationModeSummary(key);
+			Toast.makeText(getApplicationContext(), res.getString(R.string.vibration_change_message)
+					+ " " + userSettings.getString(key, "off"),
+					Toast.LENGTH_LONG).show();
+		}
 
 		
+	}
+	
+	private void updateVibrationModeSummary(String key) {
+		String vibrationMode = userSettings.getString(key, "off");
+		ListPreference vibratePreference = (ListPreference) getPreferenceScreen().findPreference(key);
+		String newSummary = getResources().getString(R.string.setVibrationSummaryCustomized)
+		+ " currently " + vibrationMode;
+		vibratePreference.setSummary(newSummary);
 	}
 
     protected Dialog onCreateDialog(int id) {

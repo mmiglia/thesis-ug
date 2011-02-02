@@ -6,11 +6,13 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 import com.thesisug.R;
 import com.thesisug.ui.ShowEvent;
+import com.thesisug.ui.accessibility.Morse;
 
 public class EventNotification extends BroadcastReceiver
 {
@@ -35,14 +37,20 @@ public class EventNotification extends BroadcastReceiver
     	
     	//Adding sound
     	eventnotification.defaults |= Notification.DEFAULT_SOUND;
-
+    	boolean morseYes;
+    	String notification_hint_vibrate = PreferenceManager.getDefaultSharedPreferences(context).getString("notification_hint_vibrate", "off");
+    	morseYes = notification_hint_vibrate.equals("morse");
     	//Adding vibration
-    	eventnotification.defaults |= Notification.DEFAULT_VIBRATE;
+    	if (!morseYes) {
+    		eventnotification.defaults |= Notification.DEFAULT_VIBRATE;
+    	} else {
     	//Pattern: The first value is how long to wait (off) before beginning, the second value is the length of the first vibratio
     	//long[] vibratePattern = {100,150,200,300};
     	//newnotification.vibrate = vibratePattern;
+    		eventnotification.vibrate = Morse.getMorseVibrationPattern(sentence);
+    	}
     	
-    	
-    	manager.notify(sentence.hashCode(), eventnotification);
+    	//manager.notify(sentence.hashCode(), eventnotification);
+    	NotificationDispatcher.dispatch(sentence, eventnotification, manager, notification_hint_vibrate);
     }
 }

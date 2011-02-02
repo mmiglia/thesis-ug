@@ -11,8 +11,7 @@ import android.util.Log;
 
 public class Morse {
 	
-	// >>>>>>>>> da conformare alla TAG delle altre classi
-	private static final String TAG = "classeMorse";
+	private static final String TAG = "thesisug - MorseUtilityClass";
 	
 	private static long dotDuration = 100; // duration of a dot in milliseconds
 	private static long[] initialRest = {0}; // rest before morse vibration pattern starts
