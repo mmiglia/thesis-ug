@@ -32,11 +32,18 @@
                         android:defaultValue="false"
                         android:summary="This preference can be true or false"
                         android:key="notification_hint_sound" />
-		<CheckBoxPreference
+		<!-- <CheckBoxPreference
                         android:title="Vibrate"
                         android:defaultValue="false"
                         android:summary="This preference can be true or false"
-                        android:key="notification_hint_vibrate" />
+                        android:key="notification_hint_vibrate" /> -->
+        <ListPreference
+			android:title="@string/vibration_preferences"
+			android:summary="@string/setVibrationSummaryDefault"
+			android:key="notification_hint_vibrate"
+			android:entries="@array/vibrationModeList"
+			android:entryValues="@array/vibrationModeListValue"
+			android:defaultValue="off" />
 		<CheckBoxPreference
                         android:title="Speak"
                         android:defaultValue="false"

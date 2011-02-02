@@ -217,4 +217,10 @@
     <string name="mark_task_as_done">Done</string>
     <string name="task_done_success">Task correctly marked as done</string>
     <string name="task_done_error">Error during operation, please retry</string>
+    
+    <string name="vibration_preferences">Vibrate</string>
+
+	<string name="setVibrationSummaryDefault">Select a vibration mode, default is off</string>
+	<string name="vibration_change_message">Vibration mode changed to</string>
+	<string name="setVibrationSummaryCustomized">Select a vibration mode,</string>
 </resources>
