@@ -413,30 +413,47 @@ public enum TaskDatabase {
 		userIDs[10]="PD-05";
 		userIDs[11]="PD-06";
 		*/
+
+		String[] taskDescriptions=new String[10];
+		
+		taskDescriptions[0]="comprare il latte";
+		taskDescriptions[1]="andare alle poste";
+		taskDescriptions[2]="comprare il pane";
+		taskDescriptions[3]="fare benzina";
+		taskDescriptions[4]="andare a tatro per prenotare i biglietti dello spettacolo Il commesso viaggiatore per domani";
+		taskDescriptions[5]="comprare olio motore";
+		taskDescriptions[6]="comprare il giornale";
+		
+		//Ge
+		taskDescriptions[7]="andare a prenotare il ristorante Ostaja San Vincenzo per domani";
+		//GE
+		taskDescriptions[8]="andare a vedere la vetrina del negozio ricordi mediastore";
+		//GE
+		taskDescriptions[9]="andare a visitare la Casa di Colombo";		
 		
 		String[] taskTitles=new String[10];
 		
-		taskTitles[0]="comprare il latte";
-		taskTitles[1]="andare alle poste";
-		taskTitles[2]="comprare il pane";
-		taskTitles[3]="fare benzina";
-		taskTitles[4]="andare a tatro per prenotare i biglietti dello spettacolo Il commesso viaggiatore per domani";
-		taskTitles[5]="comprare olio motore";
-		taskTitles[6]="comprare il giornale";
+		taskTitles[0]="latte";
+		taskTitles[1]="poste";
+		taskTitles[2]="pane";
+		taskTitles[3]="benzina";
+		taskTitles[4]="tatro";
+		taskTitles[5]="olio";
+		taskTitles[6]="giornale";
 		
 		//Ge
-		taskTitles[7]="andare a prenotare il ristorante Ostaja San Vincenzo per domani";
+		taskTitles[7]="ristorante";
 		//GE
-		taskTitles[8]="andare a vedere la vetrina del negozio ricordi mediastore";
+		taskTitles[8]="negozio";
 		//GE
-		taskTitles[9]="andare a visitare la Casa di Colombo";
+		taskTitles[9]="monumento";
 		
 		
 		for(int j=0;j<userIDs.length;j++){
 			
 			for(int i=0;i<taskTitles.length;i++){
 				System.out.println(addTaskQuery(
-						userIDs[j],taskTitles[i],notifyTimeStart,notifyTimeEnd,dueDate,description,3,userGroup
+						userIDs[j],taskTitles[i],notifyTimeStart,notifyTimeEnd,dueDate,taskDescriptions[i],3,userGroup
 						));
 			}
 		
