@@ -388,14 +388,19 @@ public enum TaskDatabase {
 	
 	public static void main(String[] args){
 
-		String dueDate="";
+		String dueDate="2011-12-02T17:15:31.125+01:00";
 		String userGroup="";
-		String notifyTimeStart="";
-		String notifyTimeEnd="";
-		String description="";
+		String notifyTimeStart="06:00:31.126+01:00";
+		String notifyTimeEnd="21:00:31.126+01:00";
+		String description="test task";
 		
-		String[] userIDs=new String[12];
-		userIDs[0]="GE-01";
+		String[] userIDs=new String[4];
+		userIDs[0]="PreTest-GE-01";
+		userIDs[1]="PreTest-GE-02";
+		userIDs[2]="PreTest-GE-03";
+		userIDs[3]="PreTest-GE-04";
+		
+		/*userIDs[0]="GE-01";
 		userIDs[1]="GE-02";
 		userIDs[2]="GE-03";
 		userIDs[3]="GE-04";
@@ -407,9 +412,9 @@ public enum TaskDatabase {
 		userIDs[9]="PD-04";
 		userIDs[10]="PD-05";
 		userIDs[11]="PD-06";
+		*/
 		
-		
-		String[] taskTitles=new String[7];
+		String[] taskTitles=new String[10];
 		
 		taskTitles[0]="comprare il latte";
 		taskTitles[1]="andare alle poste";
@@ -418,6 +423,14 @@ public enum TaskDatabase {
 		taskTitles[4]="andare a tatro per prenotare i biglietti dello spettacolo Il commesso viaggiatore per domani";
 		taskTitles[5]="comprare olio motore";
 		taskTitles[6]="comprare il giornale";
+		
+		//Ge
+		taskTitles[7]="andare a prenotare il ristorante Ostaja San Vincenzo per domani";
+		//GE
+		taskTitles[8]="andare a vedere la vetrina del negozio ricordi mediastore";
+		//GE
+		taskTitles[9]="andare a visitare la Casa di Colombo";
+		
 		
 		for(int j=0;j<userIDs.length;j++){
 			
@@ -429,7 +442,7 @@ public enum TaskDatabase {
 		
 		}
 		/*	
-			String userID="guido";	
+			String userID="guido";	 ts
 			List<SingleTask> taskList=TaskDatabase.instance.getAllTask(userID);
 			SingleTask t=taskList.get(0);
 			
