@@ -34,6 +34,15 @@
         <ObjectProperty IRI="#contains"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="#Bang_&amp;_Olufsen"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#Ostaja_Vincenzo"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#Piazza_indipendenza"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual IRI="#autoricambi"/>
     </Declaration>
     <Declaration>
@@ -59,6 +68,9 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#carburanti"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#casa_di_colombo"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#cereal"/>
@@ -106,6 +118,12 @@
         <NamedIndividual IRI="#milk"/>
     </Declaration>
     <Declaration>
+        <NamedIndividual IRI="#monumento"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#negozio"/>
+    </Declaration>
+    <Declaration>
         <NamedIndividual IRI="#olio"/>
     </Declaration>
     <Declaration>
@@ -113,6 +131,9 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#ospedale"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#ostaja"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#pane"/>
@@ -125,6 +146,12 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#poste"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#ricordi_mediastore"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#ristorante"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#school"/>
@@ -176,6 +203,9 @@
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#train_station"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#trattoria_toni_del_spin"/>
     </Declaration>
     <Declaration>
         <NamedIndividual IRI="#ufficio_postale"/>
@@ -211,6 +241,18 @@
     </EquivalentClasses>
     <ClassAssertion>
         <Class IRI="#Location"/>
+        <NamedIndividual IRI="#Bang_&amp;_Olufsen"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#Ostaja_Vincenzo"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#Piazza_indipendenza"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
         <NamedIndividual IRI="#autoricambi"/>
     </ClassAssertion>
     <ClassAssertion>
@@ -244,6 +286,10 @@
     <ClassAssertion>
         <Class IRI="#Location"/>
         <NamedIndividual IRI="#carburanti"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#casa_di_colombo"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="#Item"/>
@@ -307,6 +353,14 @@
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="#Item"/>
+        <NamedIndividual IRI="#monumento"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#negozio"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
         <NamedIndividual IRI="#olio"/>
     </ClassAssertion>
     <ClassAssertion>
@@ -316,6 +370,10 @@
     <ClassAssertion>
         <Class IRI="#Location"/>
         <NamedIndividual IRI="#ospedale"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#ostaja"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="#Item"/>
@@ -332,6 +390,14 @@
     <ClassAssertion>
         <Class IRI="#Item"/>
         <NamedIndividual IRI="#poste"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#ricordi_mediastore"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#ristorante"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="#Location"/>
@@ -400,6 +466,10 @@
     <ClassAssertion>
         <Class IRI="#Location"/>
         <NamedIndividual IRI="#train_station"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#trattoria_toni_del_spin"/>
     </ClassAssertion>
     <ClassAssertion>
         <Class IRI="#Location"/>
@@ -524,6 +594,26 @@
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#monumento"/>
+        <NamedIndividual IRI="#casa_di_colombo"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#monumento"/>
+        <NamedIndividual IRI="#Piazza_indipendenza"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#negozio"/>
+        <NamedIndividual IRI="#ricordi_mediastore"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#negozio"/>
+        <NamedIndividual IRI="#Bang_&amp;_Olufsen"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
         <NamedIndividual IRI="#olio"/>
         <NamedIndividual IRI="#autoricambi"/>
     </ObjectPropertyAssertion>
@@ -561,6 +651,16 @@
         <ObjectProperty IRI="#canBeFoundIn"/>
         <NamedIndividual IRI="#poste"/>
         <NamedIndividual IRI="#ufficio_postale"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#ristorante"/>
+        <NamedIndividual IRI="#trattoria_toni_del_spin"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#ristorante"/>
+        <NamedIndividual IRI="#Ostaja_Vincenzo"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
         <ObjectProperty IRI="#canBeFoundIn"/>
