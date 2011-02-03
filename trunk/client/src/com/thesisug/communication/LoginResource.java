@@ -46,7 +46,7 @@ public class LoginResource{
             }     
             
             //Try if server is on-line
-            if(response.getStatusLine().getStatusCode()==404){
+            if(!HttpResponseStatusCodeValidator.isValidRequest(response.getStatusLine().getStatusCode())){
             	//Server unavailable, display it
             	result.status=404;
             	return result;

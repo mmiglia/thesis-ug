@@ -303,7 +303,7 @@ public class NetworkUtilities {
 		try {
 			Log.i(TAG, "Before send request, method("+request.getMethod()+") to "+request.getURI());
 			response = client.execute(request);			
-			Log.i(TAG, "Successfully send request "+response.getStatusLine().getStatusCode());
+			Log.i(TAG, "Successfully send request , response status code:"+response.getStatusLine().getStatusCode());
 			return response;
 		} catch (ClientProtocolException e) {
 			Log.e(TAG, "ClientProtocol exception catched");

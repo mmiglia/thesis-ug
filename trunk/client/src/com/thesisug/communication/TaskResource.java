@@ -54,8 +54,8 @@ public class TaskResource {
 		HttpResponse response = NetworkUtilities
 				.sendRequest(newClient, request);
 		// if we cannot connect to the server
-		if (response.getStatusLine().getStatusCode() != 200) {
-			Log.i(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
+		if (!HttpResponseStatusCodeValidator.isValidRequest(response.getStatusLine().getStatusCode())){
+			Log.e(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
 			return null; // return null if there's problem with connection
 		}
 		try { // parsing XML message
@@ -92,7 +92,7 @@ public class TaskResource {
 		HttpResponse response = NetworkUtilities
 				.sendRequest(newClient, request);
 		// if we cannot connect to the server
-		if (response.getStatusLine().getStatusCode() < 200 || response.getStatusLine().getStatusCode() > 300) {
+		if (!HttpResponseStatusCodeValidator.isValidRequest(response.getStatusLine().getStatusCode())){
 			Log.i(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
 			return false; 
 		}else{
@@ -118,7 +118,8 @@ public class TaskResource {
 			// send the request to network
 			HttpResponse response = NetworkUtilities.sendRequest(newClient, request);
 			Log.i(TAG, "Status Code is "+response.getStatusLine().getStatusCode());
-			return (response.getStatusLine().getStatusCode() == 204 )? true: false;
+			return HttpResponseStatusCodeValidator.isValidRequest(response.getStatusLine().getStatusCode());
+
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
