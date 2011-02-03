@@ -73,6 +73,7 @@ public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterf
 	 * @return 5 most prioritized tasks
 	 */
 	public List<SingleTask> getFirstTasks(String userID) {
+		int firstTaskListLength=11;
 		List<SingleTask> result = TaskDatabase.instance.getAllTask(userID);
 		log.debug("Found "+result.size() + " tasks for user" );
 		Calendar now = Calendar.getInstance();
@@ -86,7 +87,7 @@ public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterf
 		}
 		log.debug("Found "+result.size() + " tasks for user that have a dueDate<deadline" );
 		Collections.sort(result); // sort based on compareTo method
-		return (result.size()<=5)? result : result.subList(0, 4); // trim the result
+		return (result.size()<=firstTaskListLength)? result : result.subList(0, 4); // trim the result
 	}	
 
 	/**
