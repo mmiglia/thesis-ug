@@ -345,7 +345,7 @@ public enum RegisteredUsers {
 		}
 		
 		return "Insert into User (firstname, lastname, email, username, password, verified) " +
-				"values ('"+firstname+"','"+lastname+"','"+email+"','"+username+"','"+password+"','1')";
+				"values ('"+firstname+"','"+lastname+"','"+email+"','"+username+"','"+password+"','1');";
 
 		
 	}
@@ -353,6 +353,15 @@ public enum RegisteredUsers {
 	public static void main(String[] args){
 		
 		
+		
+		
+		String[] userIDs=new String[4];
+		userIDs[0]="PreTest-GE-01";
+		userIDs[1]="PreTest-GE-02";
+		userIDs[2]="PreTest-GE-03";
+		userIDs[3]="PreTest-GE-04";
+		
+		/*
 		String[] userIDs=new String[12];
 		userIDs[0]="GE-01";
 		userIDs[1]="GE-02";
@@ -366,7 +375,7 @@ public enum RegisteredUsers {
 		userIDs[9]="PD-04";
 		userIDs[10]="PD-05";
 		userIDs[11]="PD-06";
-		
+		*/
 		for(int i=0;i<userIDs.length;i++){
 			System.out.println(addVerifiedUserQuery(userIDs[i],userIDs[i], userIDs[i], userIDs[i], userIDs[i]));
 		}
