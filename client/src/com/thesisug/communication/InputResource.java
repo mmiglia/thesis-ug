@@ -37,7 +37,7 @@ public class InputResource {
 		HttpResponse response = NetworkUtilities
 				.sendRequest(newClient, request);
 		// if we cannot connect to the server
-		if (response.getStatusLine().getStatusCode() != 200) {
+		if (!HttpResponseStatusCodeValidator.isValidRequest(response.getStatusLine().getStatusCode())) {
 			Log.i(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
 			return false;
 		}

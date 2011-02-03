@@ -57,7 +57,7 @@ public class GroupResource {
 		HttpResponse response = NetworkUtilities
 				.sendRequest(newClient, request);
 		// if we cannot connect to the server
-		if (response.getStatusLine().getStatusCode() != 200) {
+		if (!HttpResponseStatusCodeValidator.isValidRequest(response.getStatusLine().getStatusCode())) {
 			Log.i(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
 			return null; // return null if there's problem with connection
 		}
@@ -93,7 +93,7 @@ public class GroupResource {
 		HttpResponse response = NetworkUtilities
 				.sendRequest(newClient, request);
 		// if we cannot connect to the server
-		if (response.getStatusLine().getStatusCode() != 200) {
+		if (!HttpResponseStatusCodeValidator.isValidRequest(response.getStatusLine().getStatusCode())) {
 			Log.i(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
 			return null; // return null if there's problem with connection
 		}
@@ -129,7 +129,7 @@ public class GroupResource {
 		HttpResponse response = NetworkUtilities
 				.sendRequest(newClient, request);
 		// if we cannot connect to the server
-		if (response.getStatusLine().getStatusCode() != 200) {
+		if (!HttpResponseStatusCodeValidator.isValidRequest(response.getStatusLine().getStatusCode())) {
 			Log.i(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
 			return null; // return null if there's problem with connection
 		}
@@ -153,7 +153,7 @@ public class GroupResource {
 
 	private static boolean runHttpGetDeleteFromGroup(final String method,
 			final ArrayList<NameValuePair> params, Context c) {
-		boolean result = true;
+		
 		DefaultHttpClient newClient = NetworkUtilities.createClient();
 		String query = (params == null) ? "" : URLEncodedUtils.format(params,
 				"UTF-8");
@@ -165,6 +165,7 @@ public class GroupResource {
 		HttpResponse response = NetworkUtilities
 				.sendRequest(newClient, request);
 		//TODO change this with a correct management of deleting output
+		boolean result = true;
 		return result;
 	}
 	
@@ -187,7 +188,7 @@ public class GroupResource {
 			// send the request to network
 			HttpResponse response = NetworkUtilities.sendRequest(newClient, request);
 			Log.i(TAG, "Status Code is "+response.getStatusLine().getStatusCode());
-			return (response.getStatusLine().getStatusCode() == 204 || response.getStatusLine().getStatusCode() ==200)? true: false;
+			return HttpResponseStatusCodeValidator.isValidRequest(response.getStatusLine().getStatusCode());
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
