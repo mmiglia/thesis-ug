@@ -395,10 +395,16 @@ public enum TaskDatabase {
 		String description="test task";
 		
 		String[] userIDs=new String[4];
-		userIDs[0]="PreTest-GE-01";
-		userIDs[1]="PreTest-GE-02";
-		userIDs[2]="PreTest-GE-03";
-		userIDs[3]="PreTest-GE-04";
+		//GE
+//		userIDs[0]="PreTest-GE-01";
+//		userIDs[1]="PreTest-GE-02";
+//		userIDs[2]="PreTest-GE-03";
+//		userIDs[3]="PreTest-GE-04";
+		//TV
+		userIDs[0]="pretest-tv-01";
+		userIDs[1]="pretest-tv-02";
+		userIDs[2]="pretest-tv-03";
+		userIDs[3]="pretest-tv-04";
 		
 		/*userIDs[0]="GE-01";
 		userIDs[1]="GE-02";
@@ -406,12 +412,12 @@ public enum TaskDatabase {
 		userIDs[3]="GE-04";
 		userIDs[4]="GE-05";
 		userIDs[5]="GE-06";
-		userIDs[6]="PD-01";
-		userIDs[7]="PD-02";
-		userIDs[8]="PD-03";
-		userIDs[9]="PD-04";
-		userIDs[10]="PD-05";
-		userIDs[11]="PD-06";
+		userIDs[6]="tv-01";
+		userIDs[7]="tv-02";
+		userIDs[8]="tv-03";
+		userIDs[9]="tv-04";
+		userIDs[10]="tv-05";
+		userIDs[11]="tv-06";
 		*/
 
 		String[] taskDescriptions=new String[10];
@@ -429,7 +435,14 @@ public enum TaskDatabase {
 		//GE
 		taskDescriptions[8]="andare a vedere la vetrina del negozio ricordi mediastore";
 		//GE
-		taskDescriptions[9]="andare a visitare la Casa di Colombo";		
+		taskDescriptions[9]="andare a visitare la Casa di Colombo";
+		
+		//TV
+		taskDescriptions[7]="andare a prenotare il ristorante trattoria toni del spin per domani";
+		//TV
+		taskDescriptions[8]="andare a vedere la vetrina del negozio bang & olufsen";
+		//TV
+		taskDescriptions[9]="andare a visitare la piazza indipendenza";	
 		
 		String[] taskTitles=new String[10];
 		
