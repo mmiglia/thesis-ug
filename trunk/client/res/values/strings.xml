@@ -206,8 +206,16 @@
     <string name="connection_status">Connection</string>
     <string name="user_position_unknown">User position currently unknown, if the problem persist, try to change the location provider</string>
     <string name="error_during_retreiving_server_address">Error during the retreive of server address, try again</string>
-    
+    <string name="problem_loading_hint_map">Problem during hint journey loading, try later</string>
     <string name="notification_preferences">Notification</string>
+    <string name="no_selected_hint">No hint selected, use the buttons on top of the map or search around here</string>
+    <string name="cannot_get_journey">Cannot get journey</string>
+    <string name="get_hint_jouney">Take me there!</string>
+    <string name="start_hint_search">Something around here?</string>
+    <string name="to_do_list">Choose task/event</string>
+    <string name="hint_information">About this hint</string>
+    
+    
     
     <!-- TEXT TO SPEECH -->
     <string name="no_hints_found_for">No hints found for</string>
@@ -220,7 +228,8 @@
     
     <string name="vibration_preferences">Vibrate</string>
 
-	<string name="setVibrationSummaryDefault">Select a vibration mode, default is off</string>
+	<string name="set_vibration_summary_default">Select a vibration mode, default is off</string>
 	<string name="vibration_change_message">Vibration mode changed to</string>
-	<string name="setVibrationSummaryCustomized">Select a vibration mode,</string>
+	<string name="set_vibration_summary_customized">Select a vibration mode,</string>
+	<string name="change_server_summary">Change server</string>
 </resources>

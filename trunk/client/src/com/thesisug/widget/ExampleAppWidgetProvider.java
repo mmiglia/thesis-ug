@@ -2,6 +2,7 @@ package com.thesisug.widget;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -13,12 +14,12 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import com.thesisug.R;
 import com.thesisug.communication.valueobject.Hint;
 import com.thesisug.notification.TaskNotification;
 import com.thesisug.ui.HintList;
 import com.thesisug.ui.ParentTab;
 import com.thesisug.ui.Todo;
+import com.thesisug.R;
 
 public class ExampleAppWidgetProvider extends AppWidgetProvider {
 	private static final String TAG="thesisug - Widget";
