@@ -2,13 +2,53 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" 
     android:layout_width="fill_parent" 
     android:layout_height="fill_parent">
+<LinearLayout
+    	android:id="@+id/hintBarView"
+    	android:layout_width="wrap_content"
+    	android:layout_height="50dip">
+    	
+	<Button 
+		android:id="@+id/map_btn_prev_Hint"
+		android:layout_gravity="left"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:background="@drawable/btn_left"/> 
+	
+	<TextView
+		android:id="@+id/map_txt_Hint"
+		android:layout_width="200dip"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_horizontal|center"
+		android:text="No hints loaded"		
+	    android:textAppearance="?android:attr/textAppearanceSmall"
+	    android:layout_toRightOf="@+id/map_btn_prev_Hint"
+	    android:layout_alignBaseline="@+id/map_btn_prev_Hint"/>
+	
+	
+	<Button 
+		android:id="@+id/map_btn_next_Hint"
+		android:layout_gravity="right"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:layout_toRightOf="@+id/map_txt_Hint"
+		android:background="@drawable/btn_right"
+		android:layout_alignBaseline="@+id/map_txt_Hint"/> 
+</LinearLayout>
+<LinearLayout
+    	android:id="@+id/mapView"
+    	android:layout_width="wrap_content"
+    	android:layout_height="fill_parent"
+        android:layout_below="@+id/hintBarView">
+            	
     <com.google.android.maps.MapView 
         android:id="@+id/mapView1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:enabled="true"
         android:clickable="true"
-        android:apiKey="0167vTG4E2yutoPdJ-QmNN95eKumYcA__UjcdDw" />
+        android:layout_below="@+id/widget_btn_prev_task"
+        android:apiKey="0w8oXpEXSCQSdr9iymC_yg6bZ48wTnqQY8wWQ_Q" />
+
 
     <LinearLayout
     	android:id="@+id/zoomView1"
@@ -16,4 +56,5 @@
     	android:layout_height="wrap_content"
     	android:layout_alignBottom="@id/mapView1"
     	android:layout_centerHorizontal="true" />
+</LinearLayout>
 </RelativeLayout>

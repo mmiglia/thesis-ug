@@ -112,7 +112,8 @@ public class ContextResource{
 		handler.post(new Runnable() {
 			public void run() {
 					Log.d(TAG,"Executing  Map.afterHintsAcquired");
-					((Map) context).afterHintsAcquired(result);
+					//TODO Decide how to use map
+					//((Map) context).afterHintsAcquired(result,null);
 			}
 		});
 	}
@@ -129,8 +130,8 @@ public class ContextResource{
 					((TaskNotification) context).afterHintsAcquired(sentence, result,priority);
 				}
 				else {
-					Log.d(TAG,"Executing  Map.afterHintsAcquired");
-					((Map) context).afterHintsAcquired(result);
+					Log.e(TAG,"NOT Executed  Map.afterHintsAcquired for a modification of the program behaviour");
+					//((Map) context).afterHintsAcquired(result,null);
 				}
 			}
 		});

@@ -39,7 +39,7 @@
                         android:key="notification_hint_vibrate" /> -->
         <ListPreference
 			android:title="@string/vibration_preferences"
-			android:summary="@string/setVibrationSummaryDefault"
+			android:summary="@string/set_vibration_summary_default"
 			android:key="notification_hint_vibrate"
 			android:entries="@array/vibrationModeList"
 			android:entryValues="@array/vibrationModeListValue"
@@ -58,7 +58,7 @@
 		<PreferenceCategory android:title="@string/server_preferences">
 			<ListPreference
 			android:title="@string/server_list_title"
-			android:summary="@string/changeServerSummary"
+			android:summary="@string/change_server_summary"
 			android:key="serverURI"
 			android:entries="@array/serverList"
 			android:entryValues="@array/serverListValue" />

@@ -35,10 +35,6 @@ import com.thesisug.communication.LoginResource;
 import com.thesisug.communication.NetworkUtilities;
 import com.thesisug.communication.valueobject.LoginReply;
 
-
-import com.thesisug.R;
-import com.thesisug.communication.LoginResource;
-import com.thesisug.communication.NetworkUtilities;
 import com.thesisug.communication.valueobject.TestConnectionReply;
 import com.thesisug.notification.TaskNotification;
 
@@ -124,10 +120,13 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 			// preference name) is updated and can be
 			// checked with a single glance
 			updateVibrationModeSummary(key);
-			Toast.makeText(getApplicationContext(), res.getString(R.string.vibration_change_message)
+			
+			/* Toast.makeText(getApplicationContext(), res.getString(R.string.vibration_change_message)
+			
 					+ " " + userSettings.getString(key, "off"),
-					Toast.LENGTH_LONG).show();
+					Toast.LENGTH_LONG).show();*/
 		}
+		
 
 		
 	}
@@ -135,9 +134,9 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private void updateVibrationModeSummary(String key) {
 		String vibrationMode = userSettings.getString(key, "off");
 		ListPreference vibratePreference = (ListPreference) getPreferenceScreen().findPreference(key);
-		String newSummary = getResources().getString(R.string.setVibrationSummaryCustomized)
+		/*String newSummary = getResources().getString(R.string.set_vibration_summary_customized)
 		+ " currently " + vibrationMode;
-		vibratePreference.setSummary(newSummary);
+		vibratePreference.setSummary(newSummary);*/
 	}
 
     protected Dialog onCreateDialog(int id) {
