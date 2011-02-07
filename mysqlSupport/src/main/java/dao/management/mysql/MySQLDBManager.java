@@ -162,9 +162,7 @@ public class MySQLDBManager implements IFDatabaseManagement {
 			qsOutput.execError=true;
 			qsOutput.execErrorID=9;			
 		}
-		
-		
-		
+
 		return qsOutput;
 	}
  

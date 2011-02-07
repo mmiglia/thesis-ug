@@ -115,8 +115,7 @@ public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterf
 		SingleTask toAdd = TaskDatabase.instance.addTask(userID, title,notifyTimeStart, notifyTimeEnd, dueDate,
 				description, priority,groupId);
 		
-		for (TaskSubscriber o : subscriberlist) o.createTask(userID, toAdd);		
-		
+		for (TaskSubscriber o : subscriberlist) o.createTask(userID, toAdd);
 		
 		return true;
 	}

@@ -8,7 +8,7 @@ import valueobject.Hint;
 /**
  * Class used to pack all the Response data given by the various http request
  * into a single object
- * @author jaxer
+ * 
  *
  */
 public class Response {
