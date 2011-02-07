@@ -20,8 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.Hint;
-
 import businessobject.MapSubscriber;
+import businessobject.google.Response.ResponseData;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -82,7 +82,9 @@ public class MapsClient extends MapSubscriber {
 		}
 
 		Response r = sendSearchRequest(LOCAL_SEARCH_URI, params);
-		return r.getResponseData().getResults();
+		ResponseData respData=r.getResponseData();
+		
+		return respData.getResults();
 	}
 
 	/**
@@ -98,7 +100,7 @@ public class MapsClient extends MapSubscriber {
 			params.put("v", "1.0");
 		}
 		String json = sendHttpRequest("GET", url, params);
-		log.debug("sendSearchRequest url:"+url);
+		log.error("sendSearchRequest url:"+url);
 		GsonBuilder builder = new GsonBuilder();
 		Gson gson = builder.create();
 		Response r = gson.fromJson(json, Response.class);
