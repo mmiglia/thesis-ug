@@ -4,6 +4,7 @@ import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -20,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.Hint;
+import businessobject.Configuration;
 import businessobject.MapSubscriber;
 import businessobject.google.Response.ResponseData;
 
@@ -39,6 +41,8 @@ public class MapsClient extends MapSubscriber {
 	private HttpClient httpClient;
 	private static final String LOCAL_SEARCH_URI = "http://ajax.googleapis.com/ajax/services/search/local";
 	private final static Logger log = LoggerFactory.getLogger(MapsClient.class);
+	
+	private static String googleApiKey=Configuration.getInstance().constants.getProperty("GOOGLE_API_KEY");
 		
 	public MapsClient() {
 		this(new DefaultHttpClient());
@@ -77,6 +81,7 @@ public class MapsClient extends MapSubscriber {
 		Map<String, String> params = new LinkedHashMap<String, String>();
 		params.put("sll", lat + "," + lon);
 		params.put("mrt", "localonly");
+		params.put("key", googleApiKey);
 		if (query != null) {
 			params.put("q", query);
 		}
@@ -100,7 +105,7 @@ public class MapsClient extends MapSubscriber {
 			params.put("v", "1.0");
 		}
 		String json = sendHttpRequest("GET", url, params);
-		log.error("sendSearchRequest url:"+url);
+		log.debug("sendSearchRequest url:"+url);
 		GsonBuilder builder = new GsonBuilder();
 		Gson gson = builder.create();
 		Response r = gson.fromJson(json, Response.class);
@@ -133,7 +138,9 @@ public class MapsClient extends MapSubscriber {
 				query.deleteCharAt(query.length() - 1);
 			}
 		}
-		return query.toString();
+		String resultQuery = query.toString();
+		log.info("URL to request Google API: "+resultQuery);
+		return resultQuery;
 	}
 
 	/**
@@ -174,10 +181,17 @@ public class MapsClient extends MapSubscriber {
 
 		HttpResponse response = null;
 		HttpEntity entity = null;
+		long delays[] = {200, 300, 400, 500, 600, 700, 800, 900, 1000};
+		Random generator = new Random();
 
 		try {
-			response = c.execute(request);
-			int statusCode = response.getStatusLine().getStatusCode();
+			//introduce a random delay (taken from the values in delays[] - 200-1000ms
+			//to prevent too many query 
+			long delay = delays[generator.nextInt(delays.length)];
+			log.info("delay: "+delay+"ms before put request to google api - url: "+url);
+			Thread.sleep(delay);
+			response = c.execute(request);			
+			int statusCode = response.getStatusLine().getStatusCode();			
 			if (statusCode != HttpStatus.SC_OK) {
 				throw new RuntimeException(
 						"unexpected HTTP response status code = " + statusCode);
