@@ -18,13 +18,15 @@ public class ParentTab extends TabActivity {
 	String username, session;
 	Account[] accounts;
 	
+	private int currTab=0;
+	
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.parenttab);
         // start Task Notification service
         startService(new Intent(ParentTab.this, TaskNotification.class));
-        startService(new Intent(ParentTab.this, ErrorNotification.class));
+        //startService(new Intent(ParentTab.this, ErrorNotification.class));
         Resources res = getResources(); // Resource object to get Drawables
         TabHost tabHost = getTabHost();  // The activity TabHost
         TabHost.TabSpec spec;  // Reusable TabSpec for each tab
@@ -47,8 +49,18 @@ public class ParentTab extends TabActivity {
         		res.getDrawable(R.drawable.preferences))
         		.setContent(input);
         tabHost.addTab(spec);
-
-        tabHost.setCurrentTab(0);
+        
+        /*Bundle packet;        
+        if(getIntent()!=null){
+        	packet = getIntent().getExtras();
+	        if(packet!=null){
+	        	currTab=packet.getInt("tabNumber");
+	        }else{
+	        	currTab=0;
+	        }
+        }
+        */	        
+        tabHost.setCurrentTab(currTab);
     }
 
 }

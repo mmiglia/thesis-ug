@@ -26,6 +26,7 @@
         android:layout_height="wrap_content"
         android:textColor="#FFF"
         android:text="Ok"
+        android:gravity="left"
         android:layout_below="@+id/hint_street"/>
         
 	<Button
@@ -34,6 +35,7 @@
         android:layout_height="wrap_content"
         android:textColor="#FFF"
         android:text="Take me there"
+        android:gravity="right"
         android:layout_toRightOf="@+id/btn_ok"
         android:layout_below="@+id/hint_street"/>
                

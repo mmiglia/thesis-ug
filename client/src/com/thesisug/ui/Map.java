@@ -403,13 +403,18 @@ public class Map extends MapActivity implements LocationListener{
 
 		  ListView thelist =(ListView) dialog.findViewById(R.id.todo_map_list);
 		  
-		  String[] arrTasks=(String[])map_todoElem_hints.keySet().toArray(new String[1]);
-		  Log.d(TAG, "Got "+arrTasks.length+ " tasks");
-		  tasks_with_hints.clear();
-		  for(int i=0;i<arrTasks.length;i++){
-			  tasks_with_hints.add(arrTasks[i].toString());
+		  String[] arrTasks=(String[])map_todoElem_hints.keySet().toArray(new String[0]);
+		  if(map_todoElem_hints.keySet().size()==0){
+			  tasks_with_hints.add("No tasks selected from the notification bar");
+		  }else{
+			  Log.d(TAG, "Got "+arrTasks.length+ " tasks");
+			  	tasks_with_hints.clear();
+			  for(int i=0;i<arrTasks.length;i++){
+				  Log.d(TAG, "Adding "+arrTasks[i]+" to the list");
+				  tasks_with_hints.add(arrTasks[i].toString());
+			  }
+			  Log.d(TAG, "List: "+tasks_with_hints.size()+ " tasks");
 		  }
-		  Log.d(TAG, "List: "+tasks_with_hints.size()+ " tasks");
 		  thelist.setAdapter(new ArrayAdapter<String>(this, R.layout.todo_list_item, tasks_with_hints));
 		  
 		  thelist.setTextFilterEnabled(true);
@@ -541,6 +546,7 @@ class MarkerOverlay extends ItemizedOverlay {
 	  if(hint==null){
 		  return true;
 	  }
+	  
 	  
 	  final Context mContext = markerContext;
 	  final Dialog dialog = new Dialog(mContext);

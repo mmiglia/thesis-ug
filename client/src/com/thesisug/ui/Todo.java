@@ -442,9 +442,10 @@ public class Todo extends ListActivity implements OnInitListener{
 		
 		setListAdapter(adapter);
 		
-		//Check Hints for Tasks
+		/*Check Hints for Tasks
 		boolean _checkMinDistanceInHintSearch=false;
 		TaskNotification.getInstance().startHintSearch(null,_checkMinDistanceInHintSearch);
+		*/
 	}
 	
 		
