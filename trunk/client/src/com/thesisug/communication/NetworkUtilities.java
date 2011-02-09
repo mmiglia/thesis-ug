@@ -201,7 +201,7 @@ public class NetworkUtilities {
 			public void run() {
 				TestConnectionReply result = tryConnectionThreadBody(serverURI);
 				result.serverURI=serverURI;
-				Log.v(TAG, (result.status == 1)? "Connection available: YES": "Connection available: NO");
+				Log.v(TAG, (result.status == 1 || result.status == 2)? "Connection available: YES": "Connection available: NO");
 				sendTryConnResult(result, handler, context);
 			}
 		};

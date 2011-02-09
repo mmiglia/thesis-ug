@@ -2,6 +2,10 @@
 <resources>
 	<string-array name="distance">
 		<item>50 m</item>
+		<item>100 m</item>
+		<item>150 m</item>
+		<item>200 m</item>
+		<item>250 m</item>
 		<item>300 m</item>
 		<item>500 m</item>
 		<item>1 km</item>
@@ -10,6 +14,10 @@
 	</string-array>
 	<string-array name="distanceValue">
 		<item>50</item>
+		<item>100</item>
+		<item>150</item>
+		<item>200</item>
+		<item>250</item>
 		<item>300</item>
 		<item>500</item>
 		<item>1000</item>
@@ -19,6 +27,12 @@
 	<string-array name="period">
 		<item>50 m</item>
 		<item>100 m</item>
+		<item>150 m</item>
+		<item>200 m</item>
+		<item>250 m</item>
+		<item>300 m</item>
+		<item>350 m</item>
+		<item>400 m</item>
 		<item>500 m</item>
 		<item>1 km</item>
 		<item>5 km</item>
@@ -27,6 +41,12 @@
 	<string-array name="periodValue">
 		<item>50</item>
 		<item>100</item>
+		<item>150</item>
+		<item>200</item>
+		<item>250</item>
+		<item>300</item>
+		<item>350</item>
+		<item>400</item>
 		<item>500</item>
 		<item>1000</item>
 		<item>5000</item>
