@@ -2,12 +2,15 @@ package com.thesisug.ui;
 
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.accounts.Account;
@@ -25,7 +28,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,7 +45,7 @@ import com.thesisug.notification.TaskNotification;
 
 
 
-public class Preferences extends PreferenceActivity implements OnSharedPreferenceChangeListener{
+public class Preferences extends PreferenceActivity implements OnSharedPreferenceChangeListener {
 	private static final String TAG = "thesisug - PreferenceActivity";
 	private Thread tryConnectionThread, checkVersionThread;
 	private final Handler handler = new Handler();
@@ -60,6 +65,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		addPreferencesFromResource(R.layout.preference);
 		userSettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		updateVibrationModeSummary("notification_hint_vibrate");
+		getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 	}
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences arg0, String key) {
@@ -111,32 +117,51 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 			//tryConnectionThread=LoginResource.tryConnection(insertedURI, handler, Preferences.this);
 			tryConnectionThread=NetworkUtilities.tryConnection(insertedURI,false, handler, Preferences.this);
 		}
-		Resources res = getResources();
-		if (key.equals("notification_hint_vibrate")) {
-			Log.d(TAG, "vibration change request");
-			// if vibration mode change was requested
-			// change is communicated through a toast
-			// message and summary (little notice below
-			// preference name) is updated and can be
-			// checked with a single glance
+//		if (key.equals("notification_hint_vibrate")) {
+//			Log.d(TAG, "vibration change request");
+//			// if vibration mode change was requested
+//			// change is communicated through a toast
+//			// message and summary (little notice below
+//			// preference name) is updated and can be
+//			// checked with a single glance
+//			updateVibrationModeSummary(key);
+//			
+//			/* Toast.makeText(getApplicationContext(), res.getString(R.string.vibration_change_message)
+//			
+//					+ " " + userSettings.getString(key, "off"),
+//					Toast.LENGTH_LONG).show();*/	
+//		}
+		// update preferences displayed in the user interface
+		// to reflect changes performed from another Activity
+		// (e.g. using setQuiet())
+		if (key.equals("notification_hint_sound")) {
+			Log.v(TAG, "Updating widget for " + key);
+			Log.v(TAG, "sound");
+			CheckBoxPreference soundOnOff =
+				(CheckBoxPreference) getPreferenceScreen().findPreference(key);
+			soundOnOff.setChecked(userSettings.getBoolean(key, false));
+		} else if (key.equals("notification_hint_speak")) {
+			Log.v(TAG, "Updating widget for " + key);
+			Log.v(TAG, "speak");
+			CheckBoxPreference speakOnOff =
+				(CheckBoxPreference) getPreferenceScreen().findPreference(key);
+			speakOnOff.setChecked(userSettings.getBoolean(key, false));
+		} else if (key.equals("notification_hint_vibrate")) {
+			Log.v(TAG, "Updating widget for " + key);
+			Log.v(TAG, "vibration");
+			ListPreference morseMode =
+				(ListPreference) getPreferenceScreen().findPreference(key);
+			morseMode.setValue(userSettings.getString(key, "off"));
 			updateVibrationModeSummary(key);
-			
-			/* Toast.makeText(getApplicationContext(), res.getString(R.string.vibration_change_message)
-			
-					+ " " + userSettings.getString(key, "off"),
-					Toast.LENGTH_LONG).show();*/
 		}
-		
-
-		
 	}
 	
 	private void updateVibrationModeSummary(String key) {
 		String vibrationMode = userSettings.getString(key, "off");
 		ListPreference vibratePreference = (ListPreference) getPreferenceScreen().findPreference(key);
-		/*String newSummary = getResources().getString(R.string.set_vibration_summary_customized)
-		+ " currently " + vibrationMode;
-		vibratePreference.setSummary(newSummary);*/
+		String newSummary = getResources().getString(R.string.set_vibration_summary_customized)
+		+ " currently " + vibrationMode.toUpperCase();
+		vibratePreference.setSummary(newSummary);
 	}
 
     protected Dialog onCreateDialog(int id) {
@@ -241,16 +266,30 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
     protected void onResume() {
         super.onResume();
         // Set up a listener whenever a key changes            
-        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        // commented out to allow preference screen widgets to be updated
+        // when phone is shaked with the aim of shutting it up
+        // listener is registered once when the activity is created (onCreate())
+//        getPreferenceScreen().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
 
-        // Unregister the listener whenever a key changes            
-        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);    
+        // Unregister the listener whenever a key changes           
+        // commented out to allow preference screen widgets to be updated
+        // when phone is shaked with the aim of shutting it up
+        // listener is registered once when the activity is created (onCreate())
+//        getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);    
     }
-
-
+    public static void setQuiet() {
+    	Log.v(TAG, "entering setQuiet");
+    	// set notifications to be quiet
+		Editor settingsEditor = userSettings.edit();
+		settingsEditor.putString("notification_hint_vibrate", "off");
+		settingsEditor.putBoolean("notification_hint_sound", false);
+		settingsEditor.putBoolean("notification_hint_speak", false);
+		settingsEditor.commit();
+		Log.v(TAG, "leaving setQuiet");
+    }
 }

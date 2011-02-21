@@ -431,7 +431,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	
     	//notificationManager.notify(sentence.hashCode(), newnotification);
     	NotificationDispatcher.dispatch(sentence, newnotification, notificationManager,userSettings
-    			.getString("notification_hint_vibrate", "off"));
+    			.getString("notification_hint_vibrate", "off"), getApplicationContext());
 
     }
     
@@ -489,13 +489,13 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     		newNotification.vibrate = Morse.getMorseVibrationPattern(sentence);
     	}
 
-    	
+    	/*
     	//Voice notification
     	Log.d(TAG, "Speak:"+userSettings.getBoolean("notification_hint_speak",false));
     	if(userSettings.getBoolean("notification_hint_speak",false)){
     		Todo.speakIt((String) getText(R.string.new_hints_found_for)+sentence);
     	}
-    	
+    	*/
     	return newNotification;
     }
     
