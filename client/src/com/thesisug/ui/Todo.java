@@ -2,6 +2,7 @@ package com.thesisug.ui;
 
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,6 +25,7 @@ import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
+import android.speech.tts.TextToSpeech.OnUtteranceCompletedListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,10 +46,11 @@ import com.thesisug.communication.valueobject.SingleEvent;
 import com.thesisug.communication.valueobject.SingleTask;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 import com.thesisug.notification.EventNotification;
+import com.thesisug.notification.NotificationDispatcher;
 import com.thesisug.notification.TaskNotification;
 
 
-public class Todo extends ListActivity implements OnInitListener{
+public class Todo extends ListActivity implements OnInitListener, OnUtteranceCompletedListener{
 	public final static String TAG = "thesisug - TodoActivity";
 	public final static String ITEM_DATA = "data";
 	public final static String REMIND_ME = "remindme";
@@ -79,6 +82,7 @@ public class Todo extends ListActivity implements OnInitListener{
 	
 	
 	private static TextToSpeech mTts;
+	private static int numberOfQueuedUtterances = 0;
 		
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -219,16 +223,17 @@ public class Todo extends ListActivity implements OnInitListener{
 		return true;
 	}
 	
-	public static void speakIt(String sentence){
-			
-	   	//Avvio la sintesi vocale
-		if(userSettings.getBoolean("notification_hint_speak",false) && mTts!=null){
-			mTts.speak(sentence, TextToSpeech.QUEUE_ADD, null);
-		}else{
-			Log.d(TAG,"mTts=null?"+mTts);
-		}
-	   	Log.d(TAG, "Speak of "+sentence+" DONE!");
-	}
+//	public static void speakIt(String sentence){
+//			
+//	   	//Avvio la sintesi vocale
+//		if(userSettings.getBoolean("notification_hint_speak",false) && mTts!=null){
+//			mTts.speak(sentence, TextToSpeech.QUEUE_ADD, null);
+//		}else{
+//			Log.d(TAG,"mTts=null?"+mTts);
+//		}
+//	   	Log.d(TAG, "Speak of "+sentence+" DONE!");
+//	}
+//	
 	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -507,6 +512,34 @@ public class Todo extends ListActivity implements OnInitListener{
     }
 
 
+
+	public synchronized static void speakIt(String sentence) {
+		//Avvio la sintesi vocale
+		if(userSettings.getBoolean("notification_hint_speak",false) && mTts!=null){
+			HashMap<String,String> optionalParameters = new HashMap<String,String>();
+			optionalParameters.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "endOfSpokenMessage");
+			NotificationDispatcher.onSpokenMessageStart();
+			++numberOfQueuedUtterances;
+			mTts.speak(sentence, TextToSpeech.QUEUE_ADD, optionalParameters);
+		}else{
+			Log.d(TAG,"mTts=null?"+mTts);
+		}
+	   	Log.d(TAG, "Speak of "+sentence+" DONE!");
+		
+	}
+	
+	public synchronized static void shutUp() {
+		mTts.stop();
+		NotificationDispatcher.onSpokenMessageShutUp(numberOfQueuedUtterances);
+		numberOfQueuedUtterances = 0;
+	}
+	
+	public synchronized void onUtteranceCompleted(String uttId) {
+	    if (uttId == "endOfSpokenMessage") {
+	    	--numberOfQueuedUtterances;
+	    	NotificationDispatcher.onSpokenMessageEnd();
+	    } 
+	}
 
 	
 }

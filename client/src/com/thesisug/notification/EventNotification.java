@@ -51,6 +51,6 @@ public class EventNotification extends BroadcastReceiver
     	}
     	
     	//manager.notify(sentence.hashCode(), eventnotification);
-    	NotificationDispatcher.dispatch(sentence, eventnotification, manager, notification_hint_vibrate);
+    	NotificationDispatcher.dispatch(sentence, eventnotification, manager, notification_hint_vibrate, context);
     }
 }

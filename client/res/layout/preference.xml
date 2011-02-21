@@ -31,7 +31,8 @@
                         android:title="Sound"
                         android:defaultValue="false"
                         android:summary="This preference can be true or false"
-                        android:key="notification_hint_sound" />
+                        android:key="notification_hint_sound"
+                        android:id="@+id/notification_hint_sound" />
 		<!-- <CheckBoxPreference
                         android:title="Vibrate"
                         android:defaultValue="false"
@@ -43,12 +44,14 @@
 			android:key="notification_hint_vibrate"
 			android:entries="@array/vibrationModeList"
 			android:entryValues="@array/vibrationModeListValue"
-			android:defaultValue="off" />
+			android:defaultValue="off"
+			android:id="@+id/notification_hint_vibrate" />
 		<CheckBoxPreference
                         android:title="Speak"
                         android:defaultValue="false"
                         android:summary="This preference can be true or false"
-                        android:key="notification_hint_speak" />
+                        android:key="notification_hint_speak"
+                        android:id="@+id/notification_hint_speak" />
 	</PreferenceScreen>
 	
 	<!-- ADVANCED: server -->

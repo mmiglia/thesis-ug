@@ -2,6 +2,7 @@ package com.thesisug.ui;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.NotificationManager;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -10,6 +11,7 @@ import android.widget.TabHost;
 
 import com.thesisug.R;
 import com.thesisug.notification.ErrorNotification;
+import com.thesisug.notification.NotificationDispatcher;
 import com.thesisug.notification.TaskNotification;
 
 public class ParentTab extends TabActivity {
@@ -61,6 +63,8 @@ public class ParentTab extends TabActivity {
         }
         */	        
         tabHost.setCurrentTab(currTab);
+        startService(new Intent(ParentTab.this, NotificationDispatcher.class));
+        NotificationDispatcher.init((NotificationManager) getSystemService(NOTIFICATION_SERVICE), getApplicationContext());
     }
 
 }
