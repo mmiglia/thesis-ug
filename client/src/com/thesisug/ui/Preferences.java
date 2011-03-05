@@ -78,7 +78,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		
 		if(key.equals("parserlang")){
 			String pl = userSettings.getString("parserlang", "en.lang");
-			Toast.makeText(getApplicationContext(), "cambiato parser language in "+pl, Toast.LENGTH_SHORT).show();
+			//Toast.makeText(getApplicationContext(), "cambiato parser language in "+pl, Toast.LENGTH_SHORT).show();
 		}
 		
 		if(key.equals("serverURI_from_text")){
