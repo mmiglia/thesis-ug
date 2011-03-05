@@ -50,7 +50,7 @@ public class Input extends Activity implements OnClickListener{
         sendButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Toast.makeText(getApplicationContext(), "parser language selezionato:"+userSettings.getString("parserlang", "en.lang"), Toast.LENGTH_SHORT).show();
+				//Toast.makeText(getApplicationContext(), "parser language selezionato:"+userSettings.getString("parserlang", "en.lang"), Toast.LENGTH_SHORT).show();
 				String text = commandbox.getText().toString();
 				// filter trash command
 				if (text.length()<5) return;
