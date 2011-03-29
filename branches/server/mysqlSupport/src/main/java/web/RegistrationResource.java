@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.RegistrationReply;
+import businessobject.MailUtility;
 import businessobject.RegistrationManager;
 
 @Path("/registration")
@@ -52,5 +53,22 @@ public class RegistrationResource extends javax.servlet.http.HttpServlet {
 		log.info("Verificating registration from user email code");
 		String result = RegistrationManager.verify(ver_code, email);
 		return result;
+	}
+	
+	@GET
+	@Path("/testmail")
+	@Produces("text/plain")
+	public String TestMail(@QueryParam ("email") String email) {
+		log.info("Test send mail");
+		String subject = "Test mail";
+		String body = "Mail text: "+email;
+		try {
+			MailUtility.sendMail(email, subject, body);
+			return "Mail inviata con successo!";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Error!!! Mail non inviata!";
+		}
+		
 	}
 }
