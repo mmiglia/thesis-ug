@@ -79,4 +79,21 @@ public class ContextListener {
 				+ latitude + ":" + longitude);
 		return LocationAwareManager.checkLocationSingle(userid, sentence, latitude, longitude, distance);
 	}	
+	
+	
+	//(Mirco)creo un'altra risorsa per vedere cosa restituise google maps con "pasta"
+	@GET
+	@Path("/singleProva")
+	@Produces("application/xml")
+	public List<Hint> checkLocationSingle(@PathParam("username") String userid,
+			@CookieParam("sessionid") String sessionid) {
+		//log.info("Request single context from user " + userid + " sentence "+sentence+" from location "
+				//+ latitude + ":" + longitude);
+		float latitude=4578405;
+		float longitude=1187243;
+		int distance=150;
+		
+		return LocationAwareManager.checkLocationSingleProva(latitude, longitude, distance);
+	}	
+	
 }

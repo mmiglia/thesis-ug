@@ -103,4 +103,25 @@ public class LocationAwareManager {
 		List<Hint> toReturn = new HintManager().filterLocation(distance, latitude, longitude, result);
 		return toReturn;
 	}
+	
+	
+	
+	
+	public static List<Hint> checkLocationSingleProva(float latitude, float longitude, int distance) {
+		List<String> needs = new ArrayList<String>(); // list of user needs
+
+		/* current parser implementation is just splitting tasks-title into words
+		 *  future improvement such as the use of keyword extraction is strongly encouraged*/
+		//needs.addAll(Arrays.asList(sentence.split(" ")));
+		needs.add("pasta");
+		log.info("querylist  are checkLocationSingleProva"+ needs.size()+" : "+needs.toString());
+		List<Hint> result = new LinkedList<Hint>(); // list of search result
+		for (String query : needs) 
+			result.addAll(MapManager.getInstance().searchLocalBusiness(
+					latitude, longitude, query));
+		// filter the result
+		List<Hint> toReturn = new HintManager().filterLocation(distance, latitude, longitude, result);
+		return toReturn;
+	}
+	
 }
