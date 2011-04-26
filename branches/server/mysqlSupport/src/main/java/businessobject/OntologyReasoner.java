@@ -31,7 +31,8 @@ public class OntologyReasoner {
 	private final static Logger log = LoggerFactory
 			.getLogger(OntologyReasoner.class);
 	
-	private final static String ONTOLOGY_FILE = "http://gronksoft.altervista.org/HintsOntology.owl";
+	//private final static String ONTOLOGY_FILE = "http://gronksoft.altervista.org/HintsOntology.owl";
+	private final static String ONTOLOGY_FILE = "http://nettuno.dyndns.org/HintsOntology.owl";
 	
 	//private final static String ONTOLOGY_FILE = Configuration.getInstance().constants.getProperty("DATABASE_FOLDER")+"/HintsOntologyIta.owl";
 	private final static OntologyReasoner instance = new OntologyReasoner();
