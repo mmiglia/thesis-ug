@@ -62,6 +62,7 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 	public final static int FORCE_HINT_SEARCH=6;
 	public final static int MANAGE_GROUPS=7;
 	public final static int SYSTEM_STATUS=8;
+	public final static int VIEW_ASSERTIONS=9;
 	
 	
 	private static Thread downloadEventThread, downloadTaskThread;
@@ -164,7 +165,8 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 		menu.add(0,UPDATE_TASK_EVENT,0,"Synchronize").setIcon(R.drawable.sync);
 		menu.add(0,FORCE_HINT_SEARCH,0,"Search for hints").setIcon(R.drawable.radar);
 		menu.add(0,MANAGE_GROUPS,0,"Groups").setIcon(R.drawable.user_group);
-		menu.add(0,SYSTEM_STATUS,0,"System status").setIcon(R.drawable.traffic_lights);		
+		menu.add(0,SYSTEM_STATUS,0,"System status").setIcon(R.drawable.traffic_lights);	
+		menu.add(0,VIEW_ASSERTIONS,0,"View Assertions").setIcon(R.drawable.view_assertions);
 		menu.add(0,BACK,0,"EXIT").setIcon(R.drawable.exit);
 		return true;
 	}
@@ -216,6 +218,12 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 			intent=new Intent(Todo.this,SystemStatus.class);
 			startActivityForResult(intent, 0);
 			break;
+		case VIEW_ASSERTIONS:
+			// need to recreate intent to solve the case when user 
+			// goes back and forth between edit-show
+			intent = new Intent(Todo.this, ViewAssertions.class);
+			startActivityForResult(intent, 0);
+			break;		
 		default:
 			finish();
 			break;

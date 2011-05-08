@@ -66,11 +66,13 @@
 		<item>Padova</item>
 		<item>Unige</item>
 		<item>Localhost</item>
+		<item>Nettuno Mirco</item>
 	</string-array>
 	<string-array name="serverListValue">
 		<item>serverpd.dyndns.org</item>
 		<item>zelda.openlab-dist.org</item>
 		<item>10.0.2.2</item>
+		<item>nettuno.dyndns.org</item>
 	</string-array>
 <string-array name="vibrationModeList"><item>priority</item>
 <item>morse</item>
