@@ -24,7 +24,7 @@ import businessobject.GroupManager;
  */
 @Path("/{username}/group")
 public class GroupResource {
-	private static Logger log = LoggerFactory.getLogger(TaskResource.class);
+	private static Logger log = LoggerFactory.getLogger(GroupResource.class);
 
 	/**
 	 * Create new group into the database, the id of the new group is set to -1 because will be the DBMS that will
@@ -47,9 +47,7 @@ public class GroupResource {
 	/**
 	 * Invite a user to join the group
 	 * @param senderUserID the username of the user that send the invite
-	 * @param invite the description of the join_to_group message, see GroupInviteData for more details
-	 * 
-	 * 
+	 * @param invite the description of the join_to_group message, see GroupInviteData for more details 
 	 * @return a boolean that reflect the invite status
 	 */
 	@POST

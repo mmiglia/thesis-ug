@@ -33,5 +33,7 @@ public class TestConnectionResource{
 	    return new TestConnectionReply(1,serverURI);
 	
 	}
+	
+	
 }
 

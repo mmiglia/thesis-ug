@@ -2,6 +2,8 @@ package web;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.ServletOutputStream;
@@ -19,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import valueobject.RegistrationReply;
 import businessobject.MailUtility;
+import businessobject.OntologyReasoner;
 import businessobject.RegistrationManager;
 
 @Path("/registration")
@@ -70,5 +73,19 @@ public class RegistrationResource extends javax.servlet.http.HttpServlet {
 			return "Error!!! Mail non inviata!";
 		}
 		
+	}
+	
+	// Aggiunto solo e soltanto da MIrco.
+	@GET
+	@Path("/reasoner")
+	@Produces("text/plain")
+	public String reasoner(@QueryParam("keyword") String keyword) {
+		log.info("Test the ontology");
+		List<String> queryList = new ArrayList<String>();
+		queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(keyword));
+		String result="Location : ";
+		for (String query : queryList) 
+			result = result + " " +query;			
+		return result;
 	}
 }
