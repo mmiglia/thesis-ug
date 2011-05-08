@@ -214,8 +214,9 @@
     <string name="start_hint_search">Something around here?</string>
     <string name="to_do_list">Choose task/event</string>
     <string name="hint_information">About this hint</string>
-    
-    
+    <string name="list_assertions_username">Assertions_list</string>
+    <string name="createAssertion">Create Assertion</string>
+    <string name="updateAssertions">Update List</string>
     
     <!-- TEXT TO SPEECH -->
     <string name="no_hints_found_for">No hints found for</string>
