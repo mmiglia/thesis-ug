@@ -148,6 +148,7 @@
 	<string name="message_for_user_to_invite">Message</string>
 	<string name="chooseAGroupRequest">Choose a group request to answer</string>
 	<string name="noGroupInviteForUser">No group invite for user, try later or use the menu to create group and invite users to join it</string>
+	<string name="noAssertions">No Assertions!</string>
 	<string name="updateJoinToGroupRequest">Update</string>
 	<string name="getting_join_to_user_group_request">Updating group requests</string>
 	<string name="btn_groupInviteAccept">Join now!</string>
