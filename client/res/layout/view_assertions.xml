@@ -1,22 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout 
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" 
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"> 
-	<TextView 
-		android:id="@+id/TextView02" 
-		android:layout_height="wrap_content" 
-		android:text="@string/list_assertions_username" 
-		android:textStyle="normal|bold" 
-		android:gravity="center_vertical|center_horizontal" 
-		android:layout_width="fill_parent">
-	</TextView>
-	<ListView 
- 		android:id="@+id/joinToGroupRequestList" 
- 		android:layout_height="wrap_content"
- 		android:layout_width="fill_parent">
- 	</ListView>
-</LinearLayout>
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="10dp"
+    android:textSize="16sp" >
+</TextView>
 
 
