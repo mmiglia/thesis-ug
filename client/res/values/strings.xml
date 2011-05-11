@@ -59,7 +59,7 @@
     <string name="GPS">GPS</string>
     <string name="from">from</string>
     <string name="until">until</string>
-    <string name="location">Location</string>
+   
     <string name="priority">Priority</string>
     <string name="deadline">Deadline</string>
     <string name="notification">Allow Notification</string>
@@ -219,6 +219,16 @@
     <string name="createAssertion">Create Assertion</string>
     <string name="updateAssertions">Update List</string>
     <string name="assertionslist">Assertions List</string>
+    <string name="si_può_trovare">si può trovare in:</string>
+    <string name="search_label">Cerca </string>
+    <string name="settings_description">reminder, task, event, ontology</string>
+    <string name="location">Location</string>
+    <string name="object_title">Object</string>
+    <string name="username_title">inserted by</string>
+    <string name="n_views">Number of views</string>
+    <string name="n_votes">Number of votes</string>
+    <string name="vote">Total Score</string>
+    
     
     <!-- TEXT TO SPEECH -->
     <string name="no_hints_found_for">No hints found for</string>

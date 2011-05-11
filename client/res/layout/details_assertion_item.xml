@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:stretchColumns="1">
+
+    <RelativeLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+        <TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:id="@+id/object_title"
+            android:text="@string/object_title"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:padding="3dip" />
+        <ImageView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:src="@drawable/title"
+        	android:layout_marginTop="15dip"
+			android:layout_alignParentRight="true"/>
+        <TextView
+        	android:id="@+id/object_text"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+			android:layout_below="@id/object_title"
+        	android:textAppearance="?android:attr/textAppearanceSmall"
+            android:padding="3dip" />
+    </RelativeLayout>
+    
+    <View
+        android:layout_height="1dip"
+        android:background="#FF333333" />
+        
+    <RelativeLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+        <TextView
+        	android:id="@+id/location_title"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+            android:text="@string/location"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:padding="3dip" />
+        <ImageView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:src="@drawable/calendar"
+        	android:layout_marginTop="15dip"
+			android:layout_alignParentRight="true"/>
+        <TextView
+        	android:id="@+id/location_text"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+			android:layout_below="@id/location_title"
+        	android:textAppearance="?android:attr/textAppearanceSmall"
+            android:padding="3dip" />
+    </RelativeLayout>
+    
+    <View
+        android:layout_height="1dip"
+        android:background="#FF333333" />
+        
+    <RelativeLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+        <TextView
+        	android:id="@+id/username_title"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+            android:text="@string/username_title"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:padding="3dip" />
+        <ImageView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:src="@drawable/tab_activity_w"
+        	android:layout_marginTop="25dip"
+			android:layout_alignParentRight="true"/>
+        <TextView
+        	android:id="@+id/username_text"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+			android:layout_below="@id/username_title"
+        	android:textAppearance="?android:attr/textAppearanceSmall"
+            android:paddingTop="3dip" 
+            android:paddingLeft="3dip"/>
+ 
+    </RelativeLayout>
+
+    <View
+        android:layout_height="1dip"
+        android:background="#FF333333" />
+        
+    <RelativeLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+        <TextView
+        	android:id="@+id/n_views_title"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+            android:text="@string/n_views"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:padding="3dip" />
+       <ImageView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:src="@drawable/priority"
+        	android:layout_marginTop="15dip"
+			android:layout_alignParentRight="true"/>
+        <TextView
+        	android:id="@+id/n_views_text"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+            android:layout_below="@id/n_views_title"
+        	android:textAppearance="?android:attr/textAppearanceSmall"
+            android:padding="3dip"/>
+	
+    </RelativeLayout>
+    
+        <View
+        android:layout_height="1dip"
+        android:background="#FF333333" />
+        
+    <RelativeLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+        <TextView
+        	android:id="@+id/n_votes_title"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+            android:text="@string/n_votes"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:padding="3dip" />
+       <ImageView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:src="@drawable/priority"
+        	android:layout_marginTop="15dip"
+			android:layout_alignParentRight="true"/>
+        <TextView
+        	android:id="@+id/n_votes_text"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+            android:layout_below="@id/n_votes_title"
+        	android:textAppearance="?android:attr/textAppearanceSmall"
+            android:padding="3dip"/>
+	
+    </RelativeLayout>
+    
+        <View
+        android:layout_height="1dip"
+        android:background="#FF333333" />
+        
+    <RelativeLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+        <TextView
+        	android:id="@+id/vote_title"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+            android:text="@string/vote"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:padding="3dip" />
+       <ImageView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:src="@drawable/priority"
+        	android:layout_marginTop="15dip"
+			android:layout_alignParentRight="true"/>
+        <TextView
+        	android:id="@+id/vote_text"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+            android:layout_below="@id/vote_title"
+        	android:textAppearance="?android:attr/textAppearanceSmall"
+            android:padding="3dip"/>
+    </RelativeLayout>
+    
+    <View
+        android:layout_height="1dip"
+        android:background="#FF333333" />
+        
+    <RelativeLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+        <TextView
+        	android:id="@+id/description_text"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+            android:text="@string/description"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:padding="3dip" />
+        <ImageView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:src="@drawable/description"
+        	android:layout_marginTop="15dip"
+			android:layout_alignParentRight="true"/>
+        <TextView
+        	android:id="@+id/task_description"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+			android:layout_below="@id/description_text"
+        	android:textAppearance="?android:attr/textAppearanceSmall"
+            android:padding="3dip" />
+    </RelativeLayout>
+</TableLayout>
