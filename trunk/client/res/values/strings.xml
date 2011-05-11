@@ -218,6 +218,7 @@
     <string name="list_assertions_username">Assertions_list</string>
     <string name="createAssertion">Create Assertion</string>
     <string name="updateAssertions">Update List</string>
+    <string name="assertionslist">Assertions List</string>
     
     <!-- TEXT TO SPEECH -->
     <string name="no_hints_found_for">No hints found for</string>

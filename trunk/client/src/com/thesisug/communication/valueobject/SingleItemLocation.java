@@ -15,9 +15,9 @@ public class SingleItemLocation {
 	public String item;
 	public String location;
 	public String username;
-	public int n_views;
-	public int n_votes;
-	public double vote;
+	public String n_views;
+	public String n_votes;
+	public String vote;
 	//public String CreatedDate;
 
 	
@@ -28,14 +28,14 @@ public class SingleItemLocation {
 	/*
 	 * Basic constructor
 	 */
-	public SingleItemLocation(String item, String location, String username) {
+	public SingleItemLocation(String item, String location, String username, String n_views,String n_votes, String vote) {
 
 		this.item = item;
 		this.location = location;
 		this.username=username;
-		n_views=0;
-		n_votes=0;
-		vote=0;
+		this.n_views=n_views;
+		this.n_votes=n_votes;
+		this.vote=vote;
 	}
 	
 	public SingleItemLocation copy(){
@@ -44,9 +44,9 @@ public class SingleItemLocation {
 		ItemLocation.item=this.item;
 		ItemLocation.location=this.location;
 		ItemLocation.username=this.username;
-		ItemLocation.n_views=0;
-		ItemLocation.n_votes=0;
-		ItemLocation.vote=0;
+		ItemLocation.n_views=this.n_views;
+		ItemLocation.n_votes=this.n_votes;
+		ItemLocation.vote=this.vote;
 		return ItemLocation;
 	}
 	

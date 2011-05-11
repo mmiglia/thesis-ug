@@ -18,7 +18,9 @@ import org.xml.sax.SAXException;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.thesisug.R;
 import com.thesisug.communication.valueobject.GroupData;
 import com.thesisug.communication.valueobject.SingleItemLocation;
 import com.thesisug.communication.valueobject.GroupInviteData;
@@ -31,7 +33,7 @@ import com.thesisug.ui.ViewGroupMembers;
 
 public class AssertionsResource {
 	
-	private static final String TAG = new String("thesisug - GroupResource");
+	private static final String TAG = new String("thesisug - viewItemLocation");
 	
 	private static final String VIEW_ITEM_LOCATION = "/ontology/viewItemLocation";
 		
@@ -48,13 +50,36 @@ public class AssertionsResource {
 		// send the request to network
 		HttpResponse response = NetworkUtilities
 				.sendRequest(newClient, request);
+		
 		// if we cannot connect to the server
 		if (!HttpResponseStatusCodeValidator.isValidRequest(response.getStatusLine().getStatusCode())) {
 			Log.i(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
 			return null; // return null if there's problem with connection
 		}
 		try { // parsing XML message
+			
+			
 			result = AssertionsHandler.parseUserItemsInLocation(response.getEntity().getContent());
+			
+			/*
+			if(result==null || result.size()==0){
+				Log.d(TAG,"lista itemfoundinloc VUOTA");
+				Log.i(TAG,"lista itemfoundinloc VUOTA");
+				SingleItemLocation num1 = new SingleItemLocation("item1","location1","anuska","1","1","1");
+				SingleItemLocation num2 = new SingleItemLocation("item2","location2","anuska","1","1","1");
+				SingleItemLocation num3 = new SingleItemLocation("item3","location3","anuska","1","1","1");
+				result.add(num1);
+				result.add(num2);
+				result.add(num3);
+			}else{
+				*/
+			//---------------------------------
+			 for (SingleItemLocation o : result){
+		         	Log.d(TAG,"item : " + o.item.toString() + "->" + o.location.toString());
+					}
+			//---------------------------------
+			//}
+			
 			return result;
 		} catch (IllegalStateException e) {
 			Log.i(TAG, "Illegal State");
@@ -75,7 +100,8 @@ public class AssertionsResource {
 		final Runnable runnable = new Runnable() {
 			public void run() {
 				Log.i(TAG, "request assertionsList for the user");
-				List<SingleItemLocation> result = runHttpGetUserSingleItemLocation(VIEW_ITEM_LOCATION, null, context);			
+				List<SingleItemLocation> result = runHttpGetUserSingleItemLocation(VIEW_ITEM_LOCATION, null, context);	
+				
 				sendResult(result, handler, context);
 			}
 		};
@@ -91,10 +117,9 @@ public class AssertionsResource {
 		Log.i(TAG, "Sending message");
 		handler.post(new Runnable() {
 			public void run() {
-				if(context instanceof ViewAssertions){
+				
 					((ViewAssertions)context).afterAssertionsListLoaded(result);
-					return;
-				}
+				
 			}
 		});
 	}
