@@ -26,26 +26,41 @@ public class AssertionsHandler {
 		final List<SingleItemLocation> combine = new LinkedList<SingleItemLocation>();
     	final SingleItemLocation current = new SingleItemLocation();
 		RootElement root = new RootElement("collection");
-		Element singleGroupData = root.getChild("SingleItemLocation");
-		singleGroupData.setEndElementListener(new EndElementListener(){
+		Element singleItemLocation = root.getChild("singleItemLocation");
+		singleItemLocation.setEndElementListener(new EndElementListener(){
             public void end() {
                 combine.add(current.copy());
             }
         });
-		singleGroupData.getChild("item").setEndTextElementListener(new EndTextElementListener(){
+		singleItemLocation.getChild("item").setEndTextElementListener(new EndTextElementListener(){
             public void end(String body) {
             	current.item = body;
             }
         });
-		singleGroupData.getChild("location").setEndTextElementListener(new EndTextElementListener(){
+		singleItemLocation.getChild("location").setEndTextElementListener(new EndTextElementListener(){
             public void end(String body) {
             	current.location = body;
             }
         });
-		singleGroupData.getChild("username").setEndTextElementListener(new EndTextElementListener(){
+		singleItemLocation.getChild("username").setEndTextElementListener(new EndTextElementListener(){
             public void end(String body) {
             	current.username = body;
             }
+		});
+        singleItemLocation.getChild("n_views").setEndTextElementListener(new EndTextElementListener(){
+                public void end(String body) {
+                	current.n_views = body;
+                }
+        });
+        singleItemLocation.getChild("n_votes").setEndTextElementListener(new EndTextElementListener(){
+                    public void end(String body) {
+                    	current.n_votes = body;
+                    }
+         });
+        singleItemLocation.getChild("vote").setEndTextElementListener(new EndTextElementListener(){
+                        public void end(String body) {
+                        	current.vote = body;
+                        }  
         });
 		Log.i(TAG, "parsing Single ItemsInLocation XML message");
         Xml.parse(toParse, Xml.Encoding.UTF_8, root.getContentHandler());

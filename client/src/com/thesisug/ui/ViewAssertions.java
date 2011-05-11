@@ -2,26 +2,30 @@ package com.thesisug.ui;
 
 import java.util.List;
 
-import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.thesisug.R;
 import com.thesisug.communication.AssertionsResource;
+import com.thesisug.communication.valueobject.GroupMember;
 import com.thesisug.communication.valueobject.SingleItemLocation;
+
+
 
 
 public class ViewAssertions extends ListActivity{
@@ -41,6 +45,7 @@ public class ViewAssertions extends ListActivity{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		 	
 		//downloadAssertionsThread = AssertionsResource.getAllAssertions(handler, this);
 		//Get join to group request list 
@@ -81,19 +86,19 @@ public class ViewAssertions extends ListActivity{
 	}
 
 	
-	public void afterAssertionsListLoaded(List<SingleItemLocation> ItemLocationList){
+	public void afterAssertionsListLoaded(final List<SingleItemLocation> itemLocationList){
 		//Dismiss dialog
     	//dismissDialog(GET_JOIN_USER_GROUP_REQUEST);   
 		
 	
     	//Log.i(TAG,"groupInviteList.size():"+groupInviteList.size());
     	
-		if(ItemLocationList==null || ItemLocationList.size()==0){
+		if(itemLocationList==null || itemLocationList.size()==0){
 			Toast.makeText(getApplicationContext(), R.string.noAssertions, Toast.LENGTH_LONG).show();
 		}
-		
-		String[] item = new String[20];
 		/*
+		String[] item = new String[20];
+		
 
 		Toast.makeText(getApplicationContext(), R.string.noGroupInviteForUser, Toast.LENGTH_LONG).show();
 		String[] item = new String[20];
@@ -110,7 +115,7 @@ public class ViewAssertions extends ListActivity{
 		final AlertDialog alert = builder.create();
 		 alert.show();
 		 
-		 */
+		
 		int n_list=0;
 		                                
 		 for (SingleItemLocation o : ItemLocationList){
@@ -122,7 +127,28 @@ public class ViewAssertions extends ListActivity{
 			}
 		
 		
-		setListAdapter(new ArrayAdapter<String>(this, R.layout.view_assertions, item));
+		for (SingleItemLocation o : itemLocationList){
+		
+		Toast.makeText(getApplicationContext(),o.item + "->"+o.location , Toast.LENGTH_SHORT).show();
+		}
+		*/
+		
+		ListView l1 = (ListView) findViewById(R.id.assertionslist);
+		 l1.setAdapter(new assertionsListAdapter(this,itemLocationList));
+		 
+		 l1.setOnItemClickListener(new OnItemClickListener(){
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				//Toast.makeText(getBaseContext(), "Details for "+groupMemberList.get(arg2).username, Toast.LENGTH_LONG).show();
+				
+			}
+			 
+		 });
+
+		/*
+		setListAdapter(new ArrayAdapter<SingleItemLocation>(this, R.layout.view_assertions, itemLocationList));
 
 		  ListView lv = getListView();
 		  lv.setTextFilterEnabled(true);
@@ -136,7 +162,148 @@ public class ViewAssertions extends ListActivity{
 		    }
 		  });
 		
-}
+		  
+		  
+		 ListView l1 = (ListView) findViewById(R.id.assertionslist);
+		 l1.setAdapter(new itemLocationRequestListItemLocationAdapter(this,assertionslist));
+		 
+		 l1.setOnItemClickListener(new OnItemClickListener(){
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				Toast.makeText(getBaseContext(), "Details for "+itemLocationList.get(arg2).groupName, Toast.LENGTH_LONG).show();
+				
+			}
+			 
+		 });
+		
+		}
+	
+	/private static class itemLocationRequestListItemLocationAdapter extends BaseAdapter {
+		 private LayoutInflater mInflater;
+
+		 private List<SingleItemLocation> memberList;
+		 
+		 public itemLocationRequestListItemLocationAdapter(Context context,List<SingleItemLocation> list) {
+			 mInflater = LayoutInflater.from(context);
+			 memberList=list;
+
+		 }
+
+		 public View getView(int position, View convertView, ViewGroup parent) {
+			 final ViewHolder holder;
+			 if (convertView == null) {
+				 convertView = mInflater.inflate(R.layout.group_members_list_item, null);
+				 holder = new ViewHolder();
+				 
+				 holder.member=memberList.get(position);
+				 
+				 holder.txtUsername = (TextView) convertView
+				 .findViewById(R.id.txt_member_username);
+
+				 holder.txtUsername.setText(memberList.get(position).username);
+				 
+				 holder.txtJoinDate = (TextView) convertView
+				 .findViewById(R.id.txt_member_joindate);				 
+				 
+				 holder.txtJoinDate.setText(memberList.get(position).joinDate);
+				 
+				 convertView.setTag(holder);
+			 } else {
+				 holder = (ViewHolder) convertView.getTag();
+			 }
+			
+			 return convertView;
+		 }
+
+			 static class ViewHolder {
+				 TextView txtUsername;
+				 TextView txtJoinDate;
+	
+				 GroupMember member;
+			 }
+
+			@Override
+			public int getCount() {
+				
+				return memberList.size();
+			}
+
+			@Override
+			public Object getItem(int position) {
+				return memberList.get(position);
+			}
+
+			@Override
+			public long getItemId(int position) {
+				
+				return Long.parseLong(Integer.toString(memberList.get(position).hashCode()));
+			}*/
+
+
+		 }
+	
+	private static class assertionsListAdapter extends BaseAdapter {
+		 
+		private LayoutInflater mInflater;
+
+		 private List<SingleItemLocation> itemLocationList;
+		 
+		 public assertionsListAdapter(Context context,List<SingleItemLocation> list) {
+			 mInflater = LayoutInflater.from(context);
+			 itemLocationList=list;
+
+		 }
+
+		 public View getView(int position, View convertView, ViewGroup parent) 
+		 {
+		
+			 final ViewHolder holder;
+			 if (convertView == null) {
+				 
+				 convertView = mInflater.inflate(R.layout.assertionslist_item, null);
+				 holder = new ViewHolder();
+				 
+				 holder.itemlocation = itemLocationList.get(position);
+				 
+				 holder.item = (TextView) convertView.findViewById(R.id.item);
+
+				 holder.item.setText(itemLocationList.get(position).item +"->"+ itemLocationList.get(position).location );
+				 
+				 
+				 convertView.setTag(holder);
+			 } else {
+				 holder = (ViewHolder) convertView.getTag();
+			 }
+			
+			 return convertView;
+		 }
+
+			 static class ViewHolder {
+				 TextView item;
+				 SingleItemLocation itemlocation;
+			 }
+
+			@Override
+			public int getCount() {
+				
+				return itemLocationList.size();
+			}
+
+			@Override
+			public Object getItem(int position) {
+				return itemLocationList.get(position);
+			}
+
+			@Override
+			public long getItemId(int position) {
+				
+				return Long.parseLong(Integer.toString(itemLocationList.get(position).hashCode()));
+			}
+
+
+		 }
 	
 	
 }
