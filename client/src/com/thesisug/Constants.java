@@ -15,11 +15,11 @@ public class Constants {
     //public static final String DEFAULT_URL="http://10.0.2.2";
     
     //Server padova
-    //public static final String DEFAULT_URL="http://serverpd.dyndns.org";
+    public static final String DEFAULT_URL="http://serverpd.dyndns.org";
     
     //public static final String DEFAULT_URL="http://nettuno.dyndns.org";
     
-    public static final String DEFAULT_URL="127.0.0.1";
+    //public static final String DEFAULT_URL="127.0.0.1";
     
     public static final String PROGRAM_NAME="ephemere";
     public static final String DEFAULT_HTTP_PORT="8080";

@@ -16,7 +16,9 @@ import android.sax.RootElement;
 import android.util.Log;
 import android.util.Xml;
 
+import com.thesisug.communication.valueobject.SingleActionLocation;
 import com.thesisug.communication.valueobject.SingleItemLocation;
+import com.thesisug.communication.valueobject.SingleTask;
 
 
 public class AssertionsHandler {
@@ -68,4 +70,132 @@ public class AssertionsHandler {
         return combine;
     }
 	
+	
+	public static List<SingleActionLocation> parseUserActionInLocation(InputStream toParse) throws IOException, SAXException {
+		final List<SingleActionLocation> combine = new LinkedList<SingleActionLocation>();
+    	final SingleActionLocation current = new SingleActionLocation();
+		RootElement root = new RootElement("collection");
+		Element singleActionLocation = root.getChild("singleActionLocation");
+		singleActionLocation.setEndElementListener(new EndElementListener(){
+            public void end() {
+                combine.add(current.copy());
+            }
+        });
+		singleActionLocation.getChild("action").setEndTextElementListener(new EndTextElementListener(){
+            public void end(String body) {
+            	current.action = body;
+            }
+        });
+		singleActionLocation.getChild("location").setEndTextElementListener(new EndTextElementListener(){
+            public void end(String body) {
+            	current.location = body;
+            }
+        });
+		singleActionLocation.getChild("username").setEndTextElementListener(new EndTextElementListener(){
+            public void end(String body) {
+            	current.username = body;
+            }
+		});
+		singleActionLocation.getChild("n_views").setEndTextElementListener(new EndTextElementListener(){
+                public void end(String body) {
+                	current.n_views = body;
+                }
+        });
+		singleActionLocation.getChild("n_votes").setEndTextElementListener(new EndTextElementListener(){
+                    public void end(String body) {
+                    	current.n_votes = body;
+                    }
+         });
+		singleActionLocation.getChild("vote").setEndTextElementListener(new EndTextElementListener(){
+                        public void end(String body) {
+                        	current.vote = body;
+                        }  
+        });
+		Log.i(TAG, "parsing Single ActionInLocation XML message");
+        Xml.parse(toParse, Xml.Encoding.UTF_8, root.getContentHandler());
+        Log.i(TAG, "... parsing done, return "+combine.size()+" result");
+        return combine;
+    }
+	
+	 public static String formatSingleItemLocation (SingleItemLocation itemLocation){
+	    	XmlSerializer serializer = Xml.newSerializer();
+	        StringWriter writer = new StringWriter();
+	        try {
+	            serializer.setOutput(writer);
+	            serializer.startDocument("UTF-8", true);
+	            serializer.startTag("", "singleItemLocation");
+	            Log.d(TAG, "start");
+	            //The id of the task is taskID field, the id of the reminder is ID field 
+	            serializer.startTag("", "item");
+	            serializer.text(itemLocation.item);
+	            serializer.endTag("", "item");
+	            Log.d(TAG, "1");
+	            serializer.startTag("", "location");
+	            serializer.text(itemLocation.location);
+	            serializer.endTag("", "location");
+	            
+	            serializer.startTag("", "username");
+	            serializer.text(itemLocation.username);
+	            serializer.endTag("", "username");
+	            
+	            serializer.startTag("", "n_views");
+	            serializer.text(itemLocation.n_views);
+	            serializer.endTag("", "n_views");
+	            
+	            serializer.startTag("", "n_votes");
+	            serializer.text(itemLocation.n_votes);
+	            serializer.endTag("", "n_votes");
+	            
+	            serializer.startTag("", "vote");
+	            serializer.text(itemLocation.vote);
+	            serializer.endTag("", "vote");
+	            
+	            serializer.endTag("", "singleItemLocation");
+	            serializer.endDocument();
+	            return writer.toString();
+	        } catch (Exception e) {
+	            throw new RuntimeException(e);
+	        } 
+	    }
+	 
+	 public static String formatSingleActionLocation (SingleActionLocation actionLocation){
+	    	XmlSerializer serializer = Xml.newSerializer();
+	        StringWriter writer = new StringWriter();
+	        try {
+	            serializer.setOutput(writer);
+	            serializer.startDocument("UTF-8", true);
+	            serializer.startTag("", "singleActionLocation");
+	            Log.d(TAG, "start");
+	            //The id of the task is taskID field, the id of the reminder is ID field 
+	            serializer.startTag("", "action");
+	            serializer.text(actionLocation.action);
+	            serializer.endTag("", "action");
+	            Log.d(TAG, "1");
+	            serializer.startTag("", "location");
+	            serializer.text(actionLocation.location);
+	            serializer.endTag("", "location");
+	            
+	            serializer.startTag("", "username");
+	            serializer.text(actionLocation.username);
+	            serializer.endTag("", "username");
+	            
+	            serializer.startTag("", "n_views");
+	            serializer.text(actionLocation.n_views);
+	            serializer.endTag("", "n_views");
+	            
+	            serializer.startTag("", "n_votes");
+	            serializer.text(actionLocation.n_votes);
+	            serializer.endTag("", "n_votes");
+	            
+	            serializer.startTag("", "vote");
+	            serializer.text(actionLocation.vote);
+	            serializer.endTag("", "vote");
+	            
+	            serializer.endTag("", "singleActionLocation");
+	            serializer.endDocument();
+	            return writer.toString();
+	        } catch (Exception e) {
+	            throw new RuntimeException(e);
+	        } 
+	    }
 }

@@ -38,6 +38,17 @@ public class SingleItemLocation {
 		this.vote=vote;
 	}
 	
+	public SingleItemLocation(String item, String location) {
+
+		this.item = item;
+		this.location = location;
+		this.username="";
+		this.n_views="1";
+		this.n_votes="1";
+		this.vote="0.1";
+	}
+	
+	
 	public SingleItemLocation copy(){
 		SingleItemLocation ItemLocation=new SingleItemLocation();
 		
