@@ -221,7 +221,7 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 		case VIEW_ASSERTIONS:
 			// need to recreate intent to solve the case when user 
 			// goes back and forth between edit-show
-			intent = new Intent(Todo.this, ViewAssertions.class);
+			intent = new Intent(Todo.this, AssertionsInfo.class);
 			startActivityForResult(intent, 0);
 			break;		
 		default:

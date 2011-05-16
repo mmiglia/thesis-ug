@@ -10,13 +10,13 @@
     	android:paddingLeft="10dip"
     	android:paddingRight="10dip">
      <TextView  
-         android:id="@+id/txt_item"
+         android:id="@+id/txt_action"
          android:layout_width="wrap_content"
          android:layout_height="30dip" 
          android:layout_marginBottom="10dip"
          android:textAppearance="?android:attr/textAppearanceLarge"
          android:focusable="false"/>    
-  	<CheckBox android:id="@+id/checkbox"
+  	<CheckBox android:id="@+id/checkbox1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" 
         android:focusable="false"
@@ -24,13 +24,13 @@
         />
 
       <TextView  
-         android:id="@+id/txt_location"
+         android:id="@+id/txt_location1"
          android:layout_width="240dip"  
          android:layout_height="20dip" 
          android:layout_marginBottom="10dip"
          android:textAppearance="?android:attr/textAppearanceSmall"
          android:focusable="false"
-          android:layout_below="@+id/txt_item"/>
+          android:layout_below="@+id/txt_action"/>
           
            
          

@@ -228,7 +228,14 @@
     <string name="n_views">Number of views</string>
     <string name="n_votes">Number of votes</string>
     <string name="vote">Total Score</string>
-    
+    <string name="goon">Go on!</string>
+    <string name="info_assertions_1">Proseguendo si può aiutare il programma a capire meglio i nostri task o le nostre azioni!</string>
+    <string name="info_assertions_2">Nel primo tab si può definire dove si cercherà un oggetto.</string>
+    <string name="info_assertions_3">Nel secondo tab si può definire dove si vuole compiere un azione.</string>
+    <string name="info">Info</string>
+    <string name="action_title">Action</string>
+    <string name="title_my_assertions_item">My Assertions List </string>
+    <string name="title_other_assertions_item">Assertions List voted</string>
     
     <!-- TEXT TO SPEECH -->
     <string name="no_hints_found_for">No hints found for</string>
