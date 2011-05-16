@@ -45,11 +45,11 @@ public class OntologyListener {
 		return OntologyManager.getInstance().addItemInLocation(userid, item, location);
 	}
 	
-/*	@GET
-	@Path("/addItemInLocation")	
+	@GET
+	@Path("/addItemInLocationObject")	
 	@Consumes("application/xml")
 	@Produces("application/xml")
-	public SingleItemLocation addItemInLocation(@PathParam("username") String userid, 
+	public SingleItemLocation addItemInLocationObject(@PathParam("username") String userid, 
 			@CookieParam("sessionid") String sessionid, SingleItemLocation itemLocation)
 	{
 		log.info("Request to add item-location from user " + userid + 
@@ -58,7 +58,7 @@ public class OntologyListener {
 		
 		return OntologyManager.getInstance().addItemInLocation(userid, itemLocation.item,itemLocation.location);
 	}
-*/
+
 	/*
 	 * Visualizza tutti gli item-location inserite da {username}
 	 */
@@ -86,16 +86,16 @@ public class OntologyListener {
 			return OntologyManager.getInstance().voteItem(userid,item,location);
 	}
 
-/*	@GET
-	@Path("/voteItem")	
+	@GET
+	@Path("/voteItemObject")	
 	@Consumes("application/xml")
 	@Produces("application/xml")
-	public SingleItemLocation voteItem(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,SingleItemLocation itemLocation)
+	public SingleItemLocation voteItemObject(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,SingleItemLocation itemLocation)
 	{
 			log.info("Request to vote item-location from user " + userid + ", session "+ sessionid);
 			return OntologyManager.getInstance().voteItem(userid,itemLocation.item,itemLocation.location);
 	}
-*/	
+	
 	
 	@GET
 	@Path("/viewLocationForItem")	
@@ -105,6 +105,31 @@ public class OntologyListener {
 			log.info("Request to view location for item: " + item);
 			return OntologyManager.getInstance().viewLocationForItem(userid,item);
 	}
+	
+	@GET
+	@Path("/deleteVoteForItemLocation")	
+	//cancella il voto di un utente
+	public String deleteVoteForItemLocation(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,@QueryParam("item") String item,@QueryParam("location") String location)
+	{
+			log.info("Request to delete vote for item location: " + item);
+			return OntologyManager.getInstance().deleteVoteForItemLocation(userid,item,location);
+	}
+	
+	/*
+	 * Visualizza tutti gli item-location votati da {username}
+	 */
+	@GET
+	@Path("/viewItemLocationVoted")	
+	@Consumes("application/xml")
+	@Produces("application/xml")
+	public List<SingleItemLocation> viewItemLocationVoted(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid) 
+	{
+			log.info("Request to view item-location voted from user " + userid + ", session "+ sessionid);
+			System.out.println(" Sono in OntologyListener /viewItemLocationVoted");
+			return OntologyManager.getInstance().retrieveAllItemLocationVoted(userid);
+	}
+	
+	
 	
 // ACTION
 	@GET
@@ -119,12 +144,12 @@ public class OntologyListener {
 		
 		return OntologyManager.getInstance().addActionInLocation(userid, action, location);
 	}
-/*	
+	
 	@GET
-	@Path("/addActionInLocation")	
+	@Path("/addActionInLocationObject")	
 	@Consumes("application/xml")
 	@Produces("application/xml")
-	public SingleActionLocation addActionInLocation(@PathParam("username") String userid, 
+	public SingleActionLocation addActionInLocationObject(@PathParam("username") String userid, 
 			@CookieParam("sessionid") String sessionid, SingleActionLocation actionLocation) 
 	{
 		log.info("Request to add action-location from user " + userid + ", session "+ sessionid);
@@ -132,7 +157,7 @@ public class OntologyListener {
 		
 		return OntologyManager.getInstance().addActionInLocation(userid, actionLocation.action,actionLocation.location);
 	}
-*/	
+	
 	/*
 	 * Visualizza tutti le action-location inserite da {username}
 	 */
@@ -157,17 +182,17 @@ public class OntologyListener {
 			log.info("Request to vote item-location from user " + userid + ", session "+ sessionid);
 			return OntologyManager.getInstance().voteAction(userid,action,location);
 	}
-/*	
+	
 	@GET
-	@Path("/voteAction")	
+	@Path("/voteActionObject")	
 	@Consumes("application/xml")
 	@Produces("application/xml")
-	public SingleActionLocation voteItem(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid, SingleActionLocation actionLocation ) 
+	public SingleActionLocation voteItemObject(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid, SingleActionLocation actionLocation ) 
 	{
 			log.info("Request to vote item-location from user " + userid + ", session "+ sessionid);
 			return OntologyManager.getInstance().voteAction(userid,actionLocation.action,actionLocation.location);
 	}
-*/
+
 	
 	@GET
 	@Path("/viewLocationForAction")	
@@ -176,6 +201,29 @@ public class OntologyListener {
 	{
 			log.info("Request to view location for action: " + action);
 			return OntologyManager.getInstance().viewLocationForAction(userid,action);
+	}
+	
+	/*
+	 * Visualizza tutti le action-location votate da {username}
+	 */
+	@GET
+	@Path("/viewActionLocationVoted")	
+	@Consumes("application/xml")
+	@Produces("application/xml")
+	public List<SingleActionLocation> viewActionLocationVoted(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid) 
+	{
+			log.info("Request to view action-location voted from user " + userid + ", session "+ sessionid);
+			System.out.println(" Sono in OntologyListener /viewActionLocationVoted");
+			return OntologyManager.getInstance().retrieveAllActionLocationVoted(userid);
+	}
+	
+	@GET
+	@Path("/deleteVoteForActionLocation")	
+	//@Produces("application/xml")
+	public String deleteVoteForActionLocation(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,@QueryParam("action") String action,@QueryParam("location") String location)
+	{
+			log.info("Request to delete vote for item location: " + action);
+			return OntologyManager.getInstance().deleteVoteForActionLocation(userid,action,location);
 	}
 	
 //LOCATION	
@@ -192,13 +240,13 @@ public class OntologyListener {
 		
 		return OntologyManager.getInstance().addLocationInLocation(userid, location1, location2);
 	}
-/*
+
 	
 	@GET
-	@Path("/addLocationInLocation")	
+	@Path("/addLocationInLocationObject")	
 	@Consumes("application/xml")
 	@Produces("application/xml")
-	public SingleLocationLocation addLocationInLocation(@PathParam("username") String userid, 
+	public SingleLocationLocation addLocationInLocationObject(@PathParam("username") String userid, 
 			SingleLocationLocation locationLocation,
 			@CookieParam("sessionid") String sessionid) 
 	{
@@ -207,7 +255,7 @@ public class OntologyListener {
 		
 		return OntologyManager.getInstance().addLocationInLocation(userid, locationLocation.location1, locationLocation.location2);
 	}
-*/
+
 	/*
 	 * Visualizza tutti le location-location inserite da {username}
 	 */
@@ -233,17 +281,17 @@ public class OntologyListener {
 			return OntologyManager.getInstance().voteLocation(userid,location1,location2);
 	}
 
-/*	
+	
 	@GET
-	@Path("/voteLocation")	
+	@Path("/voteLocationObject")	
 	@Consumes("application/xml")
 	@Produces("application/xml")
 	public SingleLocationLocation voteLocation(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid, SingleLocationLocation locationLocation ) 
 	{
 			log.info("Request to vote item-location from user " + userid + ", session "+ sessionid);
-			return OntologyManager.getInstance().voteLocation(userid,locationLocation.action,locationLocation.location2);
+			return OntologyManager.getInstance().voteLocation(userid,locationLocation.location1,locationLocation.location2);
 	}
-*/
+
 	
 	@GET
 	@Path("/viewLocationForLocation")	

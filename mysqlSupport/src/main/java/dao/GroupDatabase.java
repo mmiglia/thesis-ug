@@ -333,7 +333,7 @@ public enum GroupDatabase {
 		
 		//Join to group invite
 		String selectQuery="Select * from GroupRequest join UserGroup on GroupRequest.UserGroup=UserGroup.id where GroupRequest.User='"+username+"'";
-
+		System.out.println(selectQuery);
 		
 		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
 		
