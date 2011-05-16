@@ -2,6 +2,10 @@ package businessobject;
 
 import java.util.List;
 
+import javax.ws.rs.CookieParam;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +70,18 @@ public class OntologyManager implements OntologyInterface {
 	}
 	
 	/**
+	 * retrieve all item-location voted by this user
+	 * 
+	 * @param userid unique UUID of the user
+	 * @return list that contains all item-location entered by the user
+	 */
+	public List<SingleItemLocation> retrieveAllItemLocationVoted(String userid) 
+	{
+		System.out.println(" Sono in Ontology manager retrieveAllItemLocationVoted");
+		return OntologyDatabase.istance.getAllItemLocationVoted(userid);
+	}
+	
+	/**
 	 * vote for an item-location
 	 * 
 	 * @param userid unique UUID of the user
@@ -88,6 +104,21 @@ public class OntologyManager implements OntologyInterface {
 	{
 		return OntologyDatabase.istance.viewLocationForItem(userid,item);
 	}
+	
+	/**
+	 * delete vote for an item-location by the user userid
+	 * 
+	 * @param userid unique UUID of the user
+	 * @param item 
+	 * @param location
+	 * @return a string declaring the correct deletion of the vote
+	 */
+	public String deleteVoteForItemLocation(String userid,String item,String location)
+	{
+			log.info("Request to delete vote for item-location: " + item+" - "+location);
+			return OntologyDatabase.istance.deleteVoteForItemLocation(userid,item,location);
+	}
+	
 	
 //ACTION	
 		
@@ -117,6 +148,18 @@ public class OntologyManager implements OntologyInterface {
 	}
 	
 	/**
+	 * retrieve all action-location voted by this user
+	 * 
+	 * @param userid unique UUID of the user
+	 * @return list that contains all action-location entered by the user
+	 */
+	public List<SingleActionLocation> retrieveAllActionLocationVoted(String userid) 
+	{
+		System.out.println(" Sono in Ontology manager retrieveAllActionLocationVoted");
+		return OntologyDatabase.istance.getAllActionLocationVoted(userid);
+	}
+	
+	/**
 	 * vote for an action-location
 	 * 
 	 * @param userid unique UUID of the user
@@ -138,6 +181,21 @@ public class OntologyManager implements OntologyInterface {
 	{
 		return OntologyDatabase.istance.viewLocationForAction(userid,action);
 	}
+	
+	/**
+	 * delete vote for an action-location by the user userid
+	 * 
+	 * @param userid unique UUID of the user
+	 * @param action 
+	 * @param location
+	 * @return a string declaring the correct deletion of the vote
+	 */
+	public String deleteVoteForActionLocation(String userid,String action,String location)
+	{
+			log.info("Request to delete vote for action-location: " + action+" - "+location);
+			return OntologyDatabase.istance.deleteVoteForActionLocation(userid,action,location);
+	}
+	
 	
 //LOCATION
 	/**

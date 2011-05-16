@@ -33,6 +33,37 @@ public class Hint {
 
 	public Hint(){}
 	
+	/*
+	 * 16-5-2011
+	 * Costructor for hint in database
+	 * @author anuska
+	 */
+	public Hint(String title,String url,String content,String titleNoFormatting,
+			String lat,String lng,String streetAddress,String city,String ddUrl,
+			String ddUrlToHere,String ddUrlFromHere,String staticMapUrl,
+			String listingType,String region,String country,List<PhoneNumber> phoneNumbers,
+			List<String> addressLines)
+	{
+		this.title = title;
+		this.url = url;
+		this.content = content;
+		this.titleNoFormatting = titleNoFormatting;
+		this.lat = lat;
+		this.lng = lng;
+		this.streetAddress=streetAddress;
+		this.city=city;
+		this.ddUrl=ddUrl;
+		this.ddUrlToHere=ddUrlToHere;
+		this.ddUrlFromHere=ddUrlFromHere;
+		this.staticMapUrl=staticMapUrl;
+		this.listingType=listingType;
+		this.region=region;
+		this.country=country;
+		this.phoneNumbers=phoneNumbers;
+		this.addressLines=addressLines;
+			
+	}
+	
 	@Override
 	public String toString() {
 		return build(this);
@@ -100,6 +131,21 @@ public class Hint {
 	{
 		public String type;
 		public String number;
+		
+		/*
+		 * 16-5-2011
+		 * Costructor for hint in database
+		 * @author anuska
+		 */
+		public PhoneNumber(String type,String number)
+		{
+			this.type=type;
+			this.number=number;	
+		}
+		public PhoneNumber()
+		{
+		}
+		
 		public String toString()
 		{
 			return build(this);
@@ -135,4 +181,6 @@ public class Hint {
 		}
 		return newcopy;
 	}
+	
+	
 }

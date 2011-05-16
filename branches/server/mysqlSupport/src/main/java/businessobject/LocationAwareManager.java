@@ -103,6 +103,46 @@ public class LocationAwareManager {
 		List<Hint> toReturn = new HintManager().filterLocation(distance, latitude, longitude, result);
 		return toReturn;
 	}
+	/*
+	 * 13-05-2011
+	 * @author Anuska
+	 */
+	public static List<Hint> checkLocationSingleDB(String userid, String sentence, float latitude, float longitude, int distance) {
+		List<String> needs = new ArrayList<String>(); // list of user needs
+
+		/* current parser implementation is just splitting tasks-title into words
+		 *  future improvement such as the use of keyword extraction is strongly encouraged*/
+		needs.addAll(Arrays.asList(sentence.split(" ")));
+		
+		// remove duplicates by using HashSet
+		HashSet<String> needsfilter = new HashSet<String>(needs);
+		needs.clear();
+		needs.addAll(needsfilter);
+
+	//	List<String> queryList = new ArrayList<String>(); // list of inferred search query string
+	//	for (String o : needs) queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
+	//	log.info("querylist are "+ queryList.size()+" : "+queryList.toString());
+		List<Hint> result = new LinkedList<Hint>(); // list of search result
+		
+		//Interrogazione Database
+	//	for (String query : queryList) 
+	//		result.addAll(CachingManager.searchLocalBusinessDB(
+	//				latitude, longitude, query,distance));
+			result.addAll(CachingManager.searchLocalBusinessDB(
+					latitude, longitude, sentence,distance));
+		System.out.println("LocationAwareManager result.addAll");
+		/*//Interrogazione a Google
+		for (String query : queryList) 
+			result.addAll(MapManager.getInstance().searchLocalBusiness(
+					latitude, longitude, query));
+		// filter the result
+		 * 
+		 */
+		List<Hint> toReturn = new HintManager().filterLocation(distance, latitude, longitude, result);
+		//http://localhost:8080/ephemere/anuska/location/singleDB?q=pane&lat=45.69553&lon=11.830902&dist=0
+		System.out.println("LocationAwareManager filterLocation");
+		return toReturn;
+	}
 	
 	
 	

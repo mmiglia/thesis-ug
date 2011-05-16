@@ -17,6 +17,8 @@ import valueobject.Hint;
 import valueobject.SingleTask;
 import businessobject.LocationAwareManager;
 import businessobject.TaskManager;
+import businessobject.CachingManager;
+
 
 /**
  * Responsible for getting the right task/event near user location/time.
@@ -77,8 +79,27 @@ public class ContextListener {
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request single context from user " + userid + " sentence "+sentence+" from location "
 				+ latitude + ":" + longitude);
+		
 		return LocationAwareManager.checkLocationSingle(userid, sentence, latitude, longitude, distance);
 	}	
+	
+	@GET
+	@Path("/singleDB")
+	//@Consumes("application/xml")
+	@Produces("application/xml")
+	public List<Hint> checkLocationSingleDB(@QueryParam("q")String sentence, @QueryParam("lat") float latitude, @QueryParam("lon") float longitude, @QueryParam("dist") int distance,
+			@PathParam("username") String userid,
+			@CookieParam("sessionid") String sessionid) {
+		log.info("Request single context from user " + userid + " sentence "+sentence+" from location "
+				+ latitude + ":" + longitude);
+		List<Hint> list= LocationAwareManager.checkLocationSingleDB(userid, sentence, latitude, longitude, distance);
+		//List<Hint> list= LocationAwareManager.checkLocationSingle(userid, sentence, latitude, longitude, distance);
+		
+		// salvare nel db: FUNZIONA
+		//CachingManager.cachingListHint(userid, sentence, latitude, longitude, distance,list);
+		return list ;
+	}
+	
 	
 	
 	//(Mirco)creo un'altra risorsa per vedere cosa restituise google maps con "pasta"

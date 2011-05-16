@@ -55,7 +55,24 @@ public interface OntologyInterface {
 	 * @return list of locations where the item can be found
 	 */
 	public List<Location> viewLocationForItem(String userid,String item);
+	
+	/**
+	 * delete vote for an item-location by the user userid
+	 * 
+	 * @param userid unique UUID of the user
+	 * @param item 
+	 * @param location
+	 * @return a string declaring the correct deletion of the vote
+	 */
+	public String deleteVoteForItemLocation(String userid,String item,String location);
 
+	/**
+	 * retrieve all item-location voted by this user
+	 * 
+	 * @param userid unique UUID of the user
+	 * @return list that contains all item-location entered by the user
+	 */
+	public List<SingleItemLocation> retrieveAllItemLocationVoted(String userid);
 //ACTION
 	/**
 	 * Enter in the database the couple action-location (this action can be 
@@ -93,6 +110,24 @@ public interface OntologyInterface {
 	 */
 	public List<Location> viewLocationForAction(String userid,String action);
 
+	/**
+	 * delete vote for an action-location by the user userid
+	 * 
+	 * @param userid unique UUID of the user
+	 * @param action 
+	 * @param location
+	 * @return a string declaring the correct deletion of the vote
+	 */
+	public String deleteVoteForActionLocation(String userid,String action,String location);
+
+	/**
+	 * retrieve all action-location entered by this user
+	 * 
+	 * @param userid unique UUID of the user
+	 * @return list that contains all action-location entered by the user
+	 */
+	public List<SingleActionLocation> retrieveAllActionLocationVoted(String userid); 
+	
 
 	
 //LOCATION
