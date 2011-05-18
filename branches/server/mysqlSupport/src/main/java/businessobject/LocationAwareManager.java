@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import valueobject.Hint;
 import valueobject.SingleTask;
 
+import businessobject.CachingManager;
+
 /**
  * Check if, in the current place, there are task that can be completed. 
  * To understand the correct word to use in the search query it uses OntologyReasoner class
@@ -96,9 +98,16 @@ public class LocationAwareManager {
 		for (String o : needs) queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
 		log.info("querylist are "+ queryList.size()+" : "+queryList.toString());
 		List<Hint> result = new LinkedList<Hint>(); // list of search result
+		/* modificato in modo che salvi i risultati in cache con la query relativa*/
 		for (String query : queryList) 
-			result.addAll(MapManager.getInstance().searchLocalBusiness(
-					latitude, longitude, query));
+		{
+			List<Hint> listToAdd = MapManager.getInstance().searchLocalBusiness(
+					latitude, longitude, query);
+			result.addAll(listToAdd);
+			System.out.println("for string query:"+query);
+			CachingManager.cachingListHint(userid, query, latitude, longitude, distance,listToAdd);
+			System.out.println("inserito nel db");
+		}
 		// filter the result
 		List<Hint> toReturn = new HintManager().filterLocation(distance, latitude, longitude, result);
 		return toReturn;
@@ -119,17 +128,19 @@ public class LocationAwareManager {
 		needs.clear();
 		needs.addAll(needsfilter);
 
-	//	List<String> queryList = new ArrayList<String>(); // list of inferred search query string
-	//	for (String o : needs) queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
-	//	log.info("querylist are "+ queryList.size()+" : "+queryList.toString());
+		List<String> queryList = new ArrayList<String>(); // list of inferred search query string
+		for (String o : needs) queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
+		log.info("querylist are "+ queryList.size()+" : "+queryList.toString());
 		List<Hint> result = new LinkedList<Hint>(); // list of search result
 		
 		//Interrogazione Database
-	//	for (String query : queryList) 
+		for (String query : queryList) {
 	//		result.addAll(CachingManager.searchLocalBusinessDB(
 	//				latitude, longitude, query,distance));
 			result.addAll(CachingManager.searchLocalBusinessDB(
 					latitude, longitude, sentence,distance));
+			CachingManager.cachingListHint(userid, query, latitude, longitude, distance,result);
+		}
 		System.out.println("LocationAwareManager result.addAll");
 		/*//Interrogazione a Google
 		for (String query : queryList) 
@@ -141,6 +152,8 @@ public class LocationAwareManager {
 		List<Hint> toReturn = new HintManager().filterLocation(distance, latitude, longitude, result);
 		//http://localhost:8080/ephemere/anuska/location/singleDB?q=pane&lat=45.69553&lon=11.830902&dist=0
 		System.out.println("LocationAwareManager filterLocation");
+		// salvare nel db: FUNZIONA
+		
 		return toReturn;
 	}
 	

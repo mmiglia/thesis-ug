@@ -33,8 +33,8 @@ public class CachingManager {
 			public static List<Hint> searchLocalBusinessDB(float latitude, float longitude,String query,int distance)
 			{
 				System.out.println("Siamo in CachingManager");
-				CachingDatabase.istance.searchLocalBusinessDB(latitude,longitude,query,distance);
-				return null;
+				return CachingDatabase.istance.searchLocalBusinessDB(latitude,longitude,query,distance);
+				
 			}
 
 }

@@ -62,9 +62,9 @@ public interface OntologyInterface {
 	 * @param userid unique UUID of the user
 	 * @param item 
 	 * @param location
-	 * @return a string declaring the correct deletion of the vote
+	 * @return true if the vote is correct deleted
 	 */
-	public String deleteVoteForItemLocation(String userid,String item,String location);
+	public boolean deleteVoteForItemLocation(String userid,String item,String location);
 
 	/**
 	 * retrieve all item-location voted by this user
@@ -116,9 +116,9 @@ public interface OntologyInterface {
 	 * @param userid unique UUID of the user
 	 * @param action 
 	 * @param location
-	 * @return a string declaring the correct deletion of the vote
+	 * @return true if the vote is correct delete
 	 */
-	public String deleteVoteForActionLocation(String userid,String action,String location);
+	public boolean deleteVoteForActionLocation(String userid,String action,String location);
 
 	/**
 	 * retrieve all action-location entered by this user

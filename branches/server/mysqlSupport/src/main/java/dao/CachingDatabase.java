@@ -254,6 +254,7 @@ public enum CachingDatabase {
 			System.out.println("Sono nel finally della select principale");
 		}
 		System.out.println("Sto per ritornare hintList");
+		System.out.println(hintList);
 		return hintList;
 	}
 

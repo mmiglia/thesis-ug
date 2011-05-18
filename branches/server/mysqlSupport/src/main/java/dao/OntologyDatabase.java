@@ -76,7 +76,10 @@ public enum OntologyDatabase {
 			log.error("Error during Item-Location adding... Assertion not added");
 			dbManager.dbDisconnect(conn);
 			
-			return null;
+			// Essendo già inserite do solo il mio voto
+			itemLocationToReturn = OntologyDatabase.istance.voteItemByAdding(user,item,location);
+	
+			return itemLocationToReturn;
 		}
 	
 		log.info("Assertion added!");	
@@ -277,6 +280,107 @@ public enum OntologyDatabase {
 		
 		return itemLocationToReturn;
 	}
+	
+	//voteItemByAdding
+	public SingleItemLocation voteItemByAdding(String user,String item, String location)
+	{	
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		//Starting transaction
+		QueryStatus qs=dbManager.startTransaction(conn);
+		
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("Error during transaction starting... Vote for item not added");
+			log.error("Error during transaction starting... Vote for item not added");
+			dbManager.dbDisconnect(conn);
+			return null;
+		}	
+		
+		// Inserisco nella tabella Item_Voted che l'utente user ha votato per una item-Location
+		String insertQuery="Insert into Item_voted(Item,Location,Username,Vote) values ('"+item+"','"+location+"','"+user+"',1) ";
+		System.out.println(insertQuery);
+		
+		qs=dbManager.customQuery(conn, insertQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			System.out.println("Error during vote item '"+item+"','"+location+"' "+"... not added - the user has been voted");
+			log.error("Error during vote item '"+item+"','"+location+"' "+"... not added - - the user has been voted");
+			dbManager.dbDisconnect(conn);
+			return null;
+		}
+		
+		/*Seleziono il rank dell'utente che ha votato per aggiornare il voto totale della
+		  coppia item-location
+		*/
+		String rank=  userRank(user);
+		System.out.println("rank utente: "+ rank);
+		
+		String updateQuery= "update Item_foundIn_Loc set Vote = (Vote+"+rank+"),N_votes=(N_votes + 1),N_views=(N_views +1) where Item='"+item+"' and Location='"+location+"'";
+		System.out.println(updateQuery);
+		qs=dbManager.customQuery(conn, updateQuery);
+		
+		if(qs.execError){
+			log.error(qs.explainError());
+			System.out.println("Error during update Vote in Item_foundIn_Loc operation.. aborting operation");
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			log.error("Error during update Vote in Item_foundIn_Loc operation.. aborting operation");
+			dbManager.dbDisconnect(conn);
+			return null;
+		}
+		
+		log.info("Vote from "+user+" for (item: "+item+" location: "+location+")... added!");
+		
+		String selectQuery= "select * from Item_foundIn_Loc where Item='"+item+"' and Location='"+location+"'";
+		System.out.println(selectQuery);
+		
+		qs=dbManager.customQuery(conn, selectQuery);
+		ResultSet rs=(ResultSet)qs.customQueryOutput;
+		SingleItemLocation itemLocationToReturn = null;
+		try{
+			//Creating SingleItemLocation object from data inserted into the database
+			if(rs.next()){
+				itemLocationToReturn = new SingleItemLocation(
+												rs.getString("Item"),
+												rs.getString("Location") ,
+												rs.getString("Username") , 
+												rs.getInt("N_views") ,
+												rs.getInt("N_votes"),
+												rs.getDouble("Vote")
+										);
+			}else{
+				//Rolling back
+				dbManager.rollbackTransaction(conn);
+				
+				dbManager.dbDisconnect(conn);
+				return null;
+			}
+		}catch(SQLException sqlE){
+				//TODO manage exception
+				sqlE.printStackTrace();
+				
+				//Rolling back
+				dbManager.rollbackTransaction(conn);
+				
+				dbManager.dbDisconnect(conn);
+		}
+		
+		dbManager.commitTransaction(conn);
+		dbManager.dbDisconnect(conn);
+		
+		return itemLocationToReturn;
+	}
 
 	public List<Location> viewLocationForItem(String userid,String item) 
 	{
@@ -292,6 +396,7 @@ public enum OntologyDatabase {
 
 		try{
 			while(rs.next()){
+				OntologyDatabase.istance.updateItemNviews(item,rs.getString("Location"));
 				LocationList.add( new Location(rs.getString("Location")));
 			}
 		}catch(SQLException sqlE){
@@ -305,7 +410,46 @@ public enum OntologyDatabase {
 		
 	}
 	
-	public String deleteVoteForItemLocation(String userid,String item,String location)
+	public void updateItemNviews(String item, String location)
+	{	Connection conn= (Connection) dbManager.dbConnect();
+	
+		//Starting transaction
+		QueryStatus qs=dbManager.startTransaction(conn);
+	
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("Error during transaction starting...Update N_views for item-location not done");
+			log.error("Error during transaction starting... Update N_views for item-location not done");
+			dbManager.dbDisconnect(conn);
+			return;
+		}	
+	
+		String updateQuery= "update Item_foundIn_Loc set N_views = N_views+1 where Item='"+item+"' and Location='"+location+"'";
+		System.out.println(updateQuery);
+		qs=dbManager.customQuery(conn, updateQuery);
+	
+		if(qs.execError){
+			log.error(qs.explainError());
+			System.out.println("Error during update N_views operation in Item_foundInLoc .. aborting operation");
+			qs.occourtedErrorException.printStackTrace();
+		
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+		
+			log.error("Error during update N_views operation in Item_foundInLoc .. aborting operation");
+			dbManager.dbDisconnect(conn);
+
+		}
+		
+		dbManager.commitTransaction(conn);
+		
+		return;
+		
+	}
+	
+	public boolean deleteVoteForItemLocation(String userid,String item,String location)
 	{
 		Connection conn= (Connection) dbManager.dbConnect();
 		
@@ -319,7 +463,7 @@ public enum OntologyDatabase {
 			System.out.println("Error during transaction starting... Delete vote for item-location not done");
 			log.error("Error during transaction starting... Delete vote for item-location not done");
 			dbManager.dbDisconnect(conn);
-			return "Error during transaction starting... Delete vote for item-location not done";
+			return false;
 		}	
 		DateUtils cancDate = new DateUtils();
 		String cancellationDate = cancDate.now();
@@ -338,7 +482,7 @@ public enum OntologyDatabase {
 			
 			log.error("Error during delete vote operation in Item_voted .. aborting operation");
 			dbManager.dbDisconnect(conn);
-			return "Error during delete vote operation in Item_voted .. aborting operation";
+			return false;
 		}
 		
 		String rank=  userRank(userid);
@@ -358,13 +502,13 @@ public enum OntologyDatabase {
 			
 			log.error("Error during delete Vote operation in Item_foundIn_Loc .. aborting operation");
 			dbManager.dbDisconnect(conn);
-			return "Error during delete Vote operation in Item_foundIn_Loc .. aborting operation";
+			return false;
 		}
 		
 		dbManager.commitTransaction(conn);
 		dbManager.dbDisconnect(conn);
 		
-		return "Il voto è stato cancellato con successo";
+		return true;
 	}
 	
 	
@@ -418,7 +562,9 @@ public enum OntologyDatabase {
 			log.error("Error during Item-Location adding... Assertion not added");
 			dbManager.dbDisconnect(conn);
 			
-			return null;
+			//Essendo già inserito do il mio voto
+			actionLocationToReturn = OntologyDatabase.istance.voteActionByAdding(user,action,location);
+			return actionLocationToReturn;
 		}
 		
 		log.info("Assertion added!");	
@@ -625,6 +771,106 @@ public enum OntologyDatabase {
 		return actionLocationToReturn;
 	}
 	
+	 //voteActionByAdding
+	public SingleActionLocation voteActionByAdding(String user,String action, String location)
+	{	
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		//Starting transaction
+		QueryStatus qs=dbManager.startTransaction(conn);
+		
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("Error during transaction starting... Vote for action not added");
+			log.error("Error during transaction starting... Vote for action not added");
+			dbManager.dbDisconnect(conn);
+			return null;
+		}	
+		
+		// Inserisco nella tabella Action_Voted che l'utente user ha votato per una action-Location
+		String insertQuery="Insert into Action_voted(Action,Location,Username,Vote) values ('"+action+"','"+location+"','"+user+"',1) ";
+		System.out.println(insertQuery);
+		
+		qs=dbManager.customQuery(conn, insertQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			System.out.println("Error during vote action '"+action+"','"+location+"' "+"... not added - the user has been voted");
+			log.error("Error during vote action '"+action+"','"+location+"' "+"... not added - the user has been voted");
+			dbManager.dbDisconnect(conn);
+			return null;
+		}
+		
+		/*Seleziono il rank dell'utente che ha votato per aggiornare il voto totale della
+		  coppia action-location
+		*/
+		
+		String rank=  userRank(user);
+		System.out.println("rank utente: "+ rank);
+		
+		String updateQuery= "update Action_foundIn_Loc set Vote = (Vote+"+rank+"),N_votes=(N_votes + 1),N_views=(N_views+1) where Action ='"+action+"' and Location='"+location+"'";
+		System.out.println(updateQuery);
+		qs=dbManager.customQuery(conn, updateQuery);
+		
+		if(qs.execError){
+			log.error(qs.explainError());
+			System.out.println("Error during update Vote in Action_foundIn_Loc operation.. aborting operation");
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			log.error("Error during update Vote in Action_foundIn_Loc operation.. aborting operation");
+			dbManager.dbDisconnect(conn);
+			return null;
+		}
+		
+		log.info("Vote from "+user+" for (action: "+action+" location: "+location+")... added!");
+		
+		String selectQuery= "select * from Action_foundIn_Loc where Action='"+action+"' and Location='"+location+"'";
+		System.out.println(selectQuery);
+		
+		qs=dbManager.customQuery(conn, selectQuery);
+		ResultSet rs=(ResultSet)qs.customQueryOutput;
+		SingleActionLocation actionLocationToReturn = null;
+		try{
+			//Creating SingleActionLocation object from data inserted into the database
+			if(rs.next()){
+				actionLocationToReturn = new SingleActionLocation(
+												rs.getString("Action"),
+												rs.getString("Location") ,
+												rs.getString("Username") , 
+												rs.getInt("N_views") ,
+												rs.getInt("N_votes"),
+												rs.getDouble("Vote")
+										);
+			}else{
+				//Rolling back
+				dbManager.rollbackTransaction(conn);
+				
+				dbManager.dbDisconnect(conn);
+				return null;
+			}
+		}catch(SQLException sqlE){
+				//TODO manage exception
+				sqlE.printStackTrace();
+				//Rolling back
+				dbManager.rollbackTransaction(conn);
+				
+				dbManager.dbDisconnect(conn);
+		}
+		
+		dbManager.commitTransaction(conn);
+		dbManager.dbDisconnect(conn);
+		
+		return actionLocationToReturn;
+	}
 	public List<Location> viewLocationForAction(String userid,String action) 
 	{
 		ArrayList<Location> LocationList=new ArrayList<Location>();
@@ -640,6 +886,7 @@ public enum OntologyDatabase {
 
 		try{
 			while(rs.next()){
+				OntologyDatabase.istance.updateActionNviews(action,rs.getString("Location"));
 				LocationList.add( new Location(rs.getString("Location")));
 			}
 		}catch(SQLException sqlE){
@@ -653,7 +900,46 @@ public enum OntologyDatabase {
 		
 	}
 	
-	public String deleteVoteForActionLocation(String userid,String action,String location)
+	public void updateActionNviews(String action, String location)
+	{	Connection conn= (Connection) dbManager.dbConnect();
+	
+		//Starting transaction
+		QueryStatus qs=dbManager.startTransaction(conn);
+	
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("Error during transaction starting...Update N_views for action-location not done");
+			log.error("Error during transaction starting... Update N_views for action-location not done");
+			dbManager.dbDisconnect(conn);
+			return;
+		}	
+	
+		String updateQuery= "update Action_foundIn_Loc set N_views = N_views+1 where Action='"+action+"' and Location='"+location+"'";
+		System.out.println(updateQuery);
+		qs=dbManager.customQuery(conn, updateQuery);
+	
+		if(qs.execError){
+			log.error(qs.explainError());
+			System.out.println("Error during update N_views operation in Action_foundIn_Loc .. aborting operation");
+			qs.occourtedErrorException.printStackTrace();
+		
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+		
+			log.error("Error during update N_views operation in Action_foundIn_Loc .. aborting operation");
+			dbManager.dbDisconnect(conn);
+
+		}
+		
+		dbManager.commitTransaction(conn);
+		
+		return;
+		
+	}
+	
+	public boolean deleteVoteForActionLocation(String userid,String action,String location)
 	{
 		Connection conn= (Connection) dbManager.dbConnect();
 		
@@ -667,7 +953,7 @@ public enum OntologyDatabase {
 			System.out.println("Error during transaction starting... Delete vote for action-location not done");
 			log.error("Error during transaction starting... Delete vote for action-location not done");
 			dbManager.dbDisconnect(conn);
-			return "Error during transaction starting... Delete vote for action-location not done";
+			return false;
 		}	
 		DateUtils cancDate = new DateUtils();
 		String cancellationDate = cancDate.now();
@@ -686,7 +972,7 @@ public enum OntologyDatabase {
 			
 			log.error("Error during delete vote operation in Action_voted .. aborting operation");
 			dbManager.dbDisconnect(conn);
-			return "Error during delete vote operation in Action_voted .. aborting operation";
+			return false;
 		}
 		
 		String rank=  userRank(userid);
@@ -706,13 +992,13 @@ public enum OntologyDatabase {
 			
 			log.error("Error during delete Vote operation in Action_foundIn_Loc .. aborting operation");
 			dbManager.dbDisconnect(conn);
-			return "Error during delete Vote operation in Action_foundIn_Loc .. aborting operation";
+			return false;
 		}
 		
 		dbManager.commitTransaction(conn);
 		dbManager.dbDisconnect(conn);
 		
-		return "Il voto è stato cancellato con successo";
+		return true;
 	}
 	
 //LOCATION
@@ -764,7 +1050,10 @@ public enum OntologyDatabase {
 			log.error("Error during Location-Location adding... Assertion not added");
 			dbManager.dbDisconnect(conn);
 			
-			return null;
+			//Essendo già inserito do solo il mio voto
+			locationLocationToReturn = OntologyDatabase.istance.voteLocation(user,location1,location2);
+			
+			return locationLocationToReturn;
 		}
 	
 		log.info("Assertion added!");	
