@@ -51,6 +51,11 @@ public class ViewAssertions_Action extends Activity{
 		//Get join to group request list 
 		downloadAssertionsThread = AssertionsResource.getAssertions_action(handler, ViewAssertions_Action.this);
 	}
+	 protected void onResume() {
+	        super.onResume();
+	        // The activity has become visible (it is now "resumed").
+	        downloadAssertionsThread = AssertionsResource.getAssertions_action(handler, ViewAssertions_Action.this);
+	    }
 	
 	
 	
@@ -109,7 +114,7 @@ public class ViewAssertions_Action extends Activity{
 					//SingleItemLocation itemLocation = (SingleItemLocation) item.get(ITEM_DATA);
 					//Toast.makeText(getBaseContext(), "Details for "+itemLocationList.get(arg2).item, Toast.LENGTH_LONG).show();
 					
-					/*intent = new Intent(getApplicationContext(), Details_assertion_item.class);
+					intent = new Intent(getApplicationContext(), Details_assertion_action.class);
 					intent.putExtra("action", actionLocationList.get(arg2).action);
 					intent.putExtra("location", actionLocationList.get(arg2).location);
 					intent.putExtra("username", actionLocationList.get(arg2).username);
@@ -118,7 +123,7 @@ public class ViewAssertions_Action extends Activity{
 					intent.putExtra("vote", actionLocationList.get(arg2).vote);
 					intent.putExtra("description", actionLocationList.get(arg2).action + " si può trovare in " + actionLocationList.get(arg2).location); 
 					Log.i(TAG,"details_assertion_action:"+ actionLocationList.get(arg2).action + "->" + actionLocationList.get(arg2).location);	
-					startActivityForResult(intent, 0);*/
+					startActivityForResult(intent, 0);
 			
 			}
 			 

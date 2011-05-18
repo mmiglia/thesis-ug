@@ -54,6 +54,13 @@ public class ViewAssertions extends Activity{
 		downloadAssertionsThread = AssertionsResource.getAssertions(handler, ViewAssertions.this);
 	}
 	
+	  protected void onResume() {
+	        super.onResume();
+	        // The activity has become visible (it is now "resumed").
+	        downloadAssertionsThread = AssertionsResource.getAssertions(handler, ViewAssertions.this);
+	    }
+
+	
 	
 	
 	@Override
