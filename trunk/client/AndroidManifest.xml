@@ -139,6 +139,11 @@
                   android:label="@string/app_name" android:theme="@android:style/Theme">                  
         </activity>
         
+        <activity android:name=".ui.Details_assertion_action"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        
+        
         <activity android:name=".ui.Create_Assertion_item"
                   android:label="@string/app_name" android:theme="@android:style/Theme">                  
         </activity>

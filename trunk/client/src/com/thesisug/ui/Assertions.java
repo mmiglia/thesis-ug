@@ -7,17 +7,20 @@ import android.os.Bundle;
 import android.widget.TabHost;
 
 import com.thesisug.R;
+import com.thesisug.communication.AssertionsResource;
 
 public class Assertions extends TabActivity{
+	
+	Intent intent;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.assertions);
 		
 		 	Resources res = getResources(); // Resource object to get Drawables
-		    TabHost tabHost = getTabHost();  // The activity TabHost
+		 	TabHost tabHost = getTabHost();  // The activity TabHost
 		    TabHost.TabSpec spec;  // Resusable TabSpec for each tab
-		    Intent intent;  // Reusable Intent for each tab
+		      // Reusable Intent for each tab
 
 		    // Create an Intent to launch an Activity for the tab (to be reused)
 		    intent = new Intent().setClass(this, ViewAssertions.class);
@@ -35,9 +38,11 @@ public class Assertions extends TabActivity{
 		                  .setContent(intent);
 		    tabHost.addTab(spec);
 
-
-		    tabHost.setCurrentTab(0);
-		
+		     	tabHost.setCurrentTab(0);
+			
+			
 	}	
+	
+
 
 }

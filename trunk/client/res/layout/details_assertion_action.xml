@@ -12,8 +12,8 @@
         <TextView
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-        	android:id="@+id/object_title"
-            android:text="@string/object_title"
+        	android:id="@+id/action_title"
+            android:text="@string/action_title"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:padding="3dip" />
         <ImageView
@@ -23,10 +23,10 @@
         	android:layout_marginTop="15dip"
 			android:layout_alignParentRight="true"/>
         <TextView
-        	android:id="@+id/object_text"
+        	android:id="@+id/action_text"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-			android:layout_below="@id/object_title"
+			android:layout_below="@id/action_title"
         	android:textAppearance="?android:attr/textAppearanceSmall"
             android:padding="3dip" />
     </RelativeLayout>
@@ -217,9 +217,7 @@
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
 			android:layout_below="@id/description_text"
-        	
+        	android:textAppearance="?android:attr/textAppearanceSmall"
             android:padding="3dip" />
- 
-            
     </RelativeLayout>
 </TableLayout>

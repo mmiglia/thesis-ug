@@ -24,36 +24,35 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.thesisug.R;
 import com.thesisug.communication.AssertionsResource;
 import com.thesisug.communication.NetworkUtilities;
-import com.thesisug.communication.valueobject.SingleItemLocation;
+import com.thesisug.communication.valueobject.SingleActionLocation;
 
 
-public class Details_assertion_item extends Activity{
+public class Details_assertion_action extends Activity{
 	
-	private static final String TAG = "thesisug - Details_assertion_item";
+	private static final String TAG = "thesisug - Details_assertion_action";
 	private final Handler handler = new Handler();	
 	private static final int DELETE_ASSERTIONS=0;
 	private static final int BACK=1;
-	private SingleItemLocation itemLocation;
-	private String item;
+	private SingleActionLocation actionLocation;
+	private String action;
     private String location;
     private String username;
     private String n_views;
     private String n_votes;
     private String vote;
     private String description;
-   
 	
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		final Bundle packet = getIntent().getExtras();
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		setContentView(R.layout.details_assertion_item);
+		setContentView(R.layout.details_assertion_action);
 		
 		  Intent intent=getIntent(); // l'intent di questa activity
         
          
-          item=intent.getStringExtra("item");
+          action=intent.getStringExtra("action");
           location=intent.getStringExtra("location");
           username=intent.getStringExtra("username");
           n_views=intent.getStringExtra("n_views");
@@ -61,10 +60,10 @@ public class Details_assertion_item extends Activity{
           vote=intent.getStringExtra("vote");
           description=intent.getStringExtra("description");
           
-          itemLocation = new SingleItemLocation(item,location,username,n_views,n_votes,vote);
+          actionLocation = new SingleActionLocation(action,location,username,n_views,n_votes,vote);
           
-          TextView textObject=(TextView)findViewById(R.id.object_text);   
-          textObject.append(item);
+          TextView textObject=(TextView)findViewById(R.id.action_text);   
+          textObject.append(action);
           
           TextView textlocation=(TextView)findViewById(R.id.location_text);   
           textlocation.append(location);
@@ -99,7 +98,7 @@ public class Details_assertion_item extends Activity{
 
 		case DELETE_ASSERTIONS:
 			
-			Thread deleteAssertionItem = AssertionsResource.deleteAssertions_item(itemLocation, handler, Details_assertion_item.this);
+			Thread deleteAssertionAction = AssertionsResource.deleteAssertions_action(actionLocation, handler, Details_assertion_action.this);
 			break;			
 			
 		case BACK:
@@ -115,13 +114,16 @@ public void finishSave (boolean result) {
 	Log.i(TAG,"finishSave  FATTO!");
 	 if (result)
 	 { 
-		Toast.makeText(Details_assertion_item.this, R.string.edit_success,Toast.LENGTH_LONG).show();
-		
+		Toast.makeText(Details_assertion_action.this, R.string.edit_success,Toast.LENGTH_LONG).show();
+		/*intent = new Intent(getApplicationContext(), Details_assertion_action.class);
+		intent.putExtra("tab", "action");
+		startActivityForResult(intent, 0);*/
 	 	finish();
 	 }
 	 else
-		 Toast.makeText(Details_assertion_item.this, R.string.saving_error, Toast.LENGTH_LONG).show();
-	    
+		 Toast.makeText(Details_assertion_action.this, R.string.saving_error, Toast.LENGTH_LONG).show();
+	     /*intent=new Intent(Details_assertion_action.this,Assertions.class);
+		 startActivityForResult(intent, 0);*/
 	 
    	
    }
@@ -142,3 +144,4 @@ public void afterAssertionsListLoaded(final boolean result){
 	
 	
 }
+

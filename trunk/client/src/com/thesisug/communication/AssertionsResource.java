@@ -25,6 +25,8 @@ import com.thesisug.communication.valueobject.SingleItemLocation;
 import com.thesisug.communication.xmlparser.AssertionsHandler;
 import com.thesisug.ui.Create_Assertion_action;
 import com.thesisug.ui.Create_Assertion_item;
+import com.thesisug.ui.Details_assertion_action;
+import com.thesisug.ui.Details_assertion_item;
 import com.thesisug.ui.ViewAssertions;
 import com.thesisug.ui.ViewAssertions_Action;
 
@@ -42,6 +44,14 @@ public class AssertionsResource {
 	private static final String VIEW_ITEM_LOCATION = "/ontology/viewItemLocation";
 	private static final String VIEW_ACTION_LOCATION = "/ontology/viewActionLocation";
 	private static final String VIEW_ITEM_LOCATION_VOTED ="/ontology/viewItemLocationVoted";
+	private static final String VIEW_ACTION_LOCATION_VOTED ="/ontology/viewActionLocationVoted";
+	
+	private static final String DELETE_ITEM = "/ontology/deleteVoteForItemLocation";
+	private static final String DELETE_ACTION = "/ontology/deleteVoteForActionLocation";
+	private static final String DELETE_ITEM_OBJECT="/ontology/deleteVoteForItemLocationObject";
+	private static final String DELETE_ACTION_OBJECT="/ontology/deleteVoteForActionLocationObject";
+	
+	
 	
 		
 	private static List<SingleItemLocation> runHttpGetUserSingleItemLocation(final String method,
@@ -102,6 +112,29 @@ public class AssertionsResource {
 	}
 	
 
+	private static boolean runHttpGetUserDeleteItem(final String method,
+			final ArrayList<NameValuePair> params, Context c) {
+		
+		DefaultHttpClient newClient = NetworkUtilities.createClient();
+		String query = (params == null) ? "" : URLEncodedUtils.format(params,
+				"UTF-8");
+		AccountUtil util = new AccountUtil();
+		HttpGet request = new HttpGet(NetworkUtilities.SERVER_URI + "/"
+				+ util.getUsername(c) + method +"?"+ query);
+		Log.i(TAG, NetworkUtilities.SERVER_URI + "/" + util.getUsername(c) + method +"?"+ query);
+		request.addHeader("Cookie", "sessionid="+util.getToken(c));
+		// send the request to network
+		HttpResponse response = NetworkUtilities
+				.sendRequest(newClient, request);
+		Log.i(TAG, NetworkUtilities.SERVER_URI + "/" + util.getUsername(c) + method +"?"+ query + "FATTO!");
+		// if we cannot connect to the server
+		if (!HttpResponseStatusCodeValidator.isValidRequest(response.getStatusLine().getStatusCode())) {
+			Log.i(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
+			return false; // return null if there's problem with connection
+		}
+			return true;
+	}
+	
 	
 	private static List<SingleActionLocation> runHttpGetUserSingleActionLocation(final String method,
 			final ArrayList<NameValuePair> params, Context c) {
@@ -235,13 +268,14 @@ public class AssertionsResource {
 		final Runnable runnable = new Runnable() {
 			public void run() {
 				Log.i(TAG, "request assertionsList_actionlocation for the user");
-				List<SingleActionLocation> result = runHttpGetUserSingleActionLocation(VIEW_ACTION_LOCATION, null, context);	
+				List<SingleActionLocation> result = runHttpGetUserSingleActionLocation(VIEW_ACTION_LOCATION_VOTED, null, context);	
 				sendResult_action(result, handler, context);
 			}
 		};
 		// start group list request
 		return NetworkUtilities.startBackgroundThread(runnable);
 	}
+	
 	
 	
 	
@@ -322,4 +356,112 @@ public class AssertionsResource {
 		};
 		return NetworkUtilities.startBackgroundThread(runnable);
 	}
+	
+	
+	public static Thread deleteAssertions_item(final SingleItemLocation toDelete, final Handler handler, final Context context) {
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				String body = AssertionsHandler.formatSingleItemLocation(toDelete);
+				Log.i(TAG,body);
+				final boolean result =runHttpPost(DELETE_ITEM_OBJECT, null,body, context);
+				Log.i(TAG,"ok DELETE_ITEM_OBJECT");
+				if (handler == null || context == null) {
+					return;
+				}
+				handler.post(new Runnable() {
+					public void run() {
+						Log.i(TAG,"ok DELETE_ITEM_OBJECT 2");
+						((Details_assertion_item) context).finishSave(result);
+					}
+				});
+			}
+		};
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
+	
+	public static Thread deleteAssertions_action(final SingleActionLocation toDelete, final Handler handler, final Context context) {
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				String body = AssertionsHandler.formatSingleActionLocation(toDelete);
+				Log.i(TAG,body);
+				final boolean result =runHttpPost(DELETE_ACTION_OBJECT, null,body, context);
+				Log.i(TAG,"ok DELETE_ACTION_OBJECT");
+				if (handler == null || context == null) {
+					return;
+				}
+				handler.post(new Runnable() {
+					public void run() {
+						Log.i(TAG,"ok DELETE_ACTION_OBJECT 2");
+						((Details_assertion_action) context).finishSave(result);
+					}
+				});
+			}
+		};
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
+	
+	
+/*public static Thread deleteAssertions_item(final SingleItemLocation toDelete, final Handler handler, final Context context) {
+		
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				Log.i(TAG, "request deleteAssertions_item for the user");
+				
+				ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		        nameValuePairs.add(new BasicNameValuePair("item",toDelete.item));
+		        nameValuePairs.add(new BasicNameValuePair("location",toDelete.location));
+		        Log.i(TAG, "request deleteAssertions_item for the user:nameValuePairs OK! ");
+		        boolean result = runHttpGetUserDeleteItem(DELETE_ITEM, nameValuePairs, context);	
+				Log.i(TAG, "ritornato " + result + "dalla richiesta di cancellazione!");
+				if (handler == null || context == null) {
+					return;
+				}
+				handler.post(new Runnable() {
+					public void run() {
+						Log.i(TAG, "alla prox avvio della funzione finishSave!");
+						((Details_assertion_item) context).finishSave(result);
+					}
+				});
+			}
+		};
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
+	
+public static Thread deleteAssertions_item(final SingleItemLocation toDelete, final Handler handler, final Context context) {
+		
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				Log.i(TAG, "request deleteAssertions_item for the user");
+				
+				ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		        nameValuePairs.add(new BasicNameValuePair("item",toDelete.item));
+		        nameValuePairs.add(new BasicNameValuePair("location",toDelete.location));
+		        Log.i(TAG, "request deleteAssertions_item for the user:nameValuePairs OK! ");
+		       
+				boolean result = runHttpGetUserDeleteItem(DELETE_ITEM, nameValuePairs, context);
+				sendResult_delete_item(result, handler, context);
+			}
+		};
+		// start group list request
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
+
+private static void sendResult_delete_item(final boolean result,final Handler handler, final Context context) {
+	if (handler == null || context == null) {
+		return;
+	}
+	Log.i(TAG, "Sending message");
+	handler.post(new Runnable() {
+		public void run() {
+			
+				((Details_assertion_item)context).afterAssertionsListLoaded(result);
+			
+		}
+	});
+}*/
+	
+	
+	
 }
+
+
