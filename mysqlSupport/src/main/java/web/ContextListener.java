@@ -92,12 +92,15 @@ public class ContextListener {
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request single context from user " + userid + " sentence "+sentence+" from location "
 				+ latitude + ":" + longitude);
-		List<Hint> list= LocationAwareManager.checkLocationSingleDB(userid, sentence, latitude, longitude, distance);
+		// recupero i dati dal DB: FUNZIONA
+		//List<Hint> list= LocationAwareManager.checkLocationSingleDB(userid, sentence, latitude, longitude, distance);
+		
 		//List<Hint> list= LocationAwareManager.checkLocationSingle(userid, sentence, latitude, longitude, distance);
 		
 		// salvare nel db: FUNZIONA
 		//CachingManager.cachingListHint(userid, sentence, latitude, longitude, distance,list);
-		return list ;
+		//return list ;
+		return LocationAwareManager.checkLocationSingle(userid, sentence, latitude, longitude, distance);
 	}
 	
 	

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -19,6 +20,7 @@ import valueobject.SingleLocationLocation;
 import valueobject.Location;
 
 import businessobject.OntologyManager;
+import businessobject.OntologyReasoner;
 
 
 /**
@@ -45,10 +47,14 @@ public class OntologyListener {
 		return OntologyManager.getInstance().addItemInLocation(userid, item, location);
 	}
 	
-	@GET
+	@POST
 	@Path("/addItemInLocationObject")	
 	@Consumes("application/xml")
 	@Produces("application/xml")
+	/*
+	@return null if the couple item-location is already entered in ontology 
+			file or in the db, a SingleItemLocation otherwise
+	*/
 	public SingleItemLocation addItemInLocationObject(@PathParam("username") String userid, 
 			@CookieParam("sessionid") String sessionid, SingleItemLocation itemLocation)
 	{
@@ -86,7 +92,7 @@ public class OntologyListener {
 			return OntologyManager.getInstance().voteItem(userid,item,location);
 	}
 
-	@GET
+	@POST
 	@Path("/voteItemObject")	
 	@Consumes("application/xml")
 	@Produces("application/xml")
@@ -109,10 +115,20 @@ public class OntologyListener {
 	@GET
 	@Path("/deleteVoteForItemLocation")	
 	//cancella il voto di un utente
-	public String deleteVoteForItemLocation(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,@QueryParam("item") String item,@QueryParam("location") String location)
+	public boolean deleteVoteForItemLocation(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,@QueryParam("item") String item,@QueryParam("location") String location)
 	{
 			log.info("Request to delete vote for item location: " + item);
 			return OntologyManager.getInstance().deleteVoteForItemLocation(userid,item,location);
+	}
+	
+	@POST
+	@Path("/deleteVoteForItemLocationObject")	
+	@Consumes("application/xml")
+	//cancella il voto di un utente
+	public boolean deleteVoteForItemLocationObject(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,SingleItemLocation itemLocation)
+	{
+			log.info("Request to delete vote for item location: " + itemLocation.item);
+			return OntologyManager.getInstance().deleteVoteForItemLocation(userid,itemLocation.item,itemLocation.location);
 	}
 	
 	/*
@@ -129,6 +145,17 @@ public class OntologyListener {
 			return OntologyManager.getInstance().retrieveAllItemLocationVoted(userid);
 	}
 	
+	/*
+	 * Prova inserimento di un item-location nell'ontologia
+	 */
+	@GET
+	@Path("/updateOntology")	
+	@Consumes("application/xml")
+	public boolean updateOntology(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid) 
+	{       
+			//OntologyReasoner reasoner= new OntologyReasoner();
+			return OntologyReasoner.getInstance().updateOntology();
+	}
 	
 	
 // ACTION
@@ -145,10 +172,14 @@ public class OntologyListener {
 		return OntologyManager.getInstance().addActionInLocation(userid, action, location);
 	}
 	
-	@GET
+	@POST
 	@Path("/addActionInLocationObject")	
 	@Consumes("application/xml")
 	@Produces("application/xml")
+	/*
+	@return null if the couple action-location is already entered in ontology 
+			file or in the db, a SingleActionLocation otherwise
+	*/
 	public SingleActionLocation addActionInLocationObject(@PathParam("username") String userid, 
 			@CookieParam("sessionid") String sessionid, SingleActionLocation actionLocation) 
 	{
@@ -183,7 +214,7 @@ public class OntologyListener {
 			return OntologyManager.getInstance().voteAction(userid,action,location);
 	}
 	
-	@GET
+	@POST
 	@Path("/voteActionObject")	
 	@Consumes("application/xml")
 	@Produces("application/xml")
@@ -220,10 +251,20 @@ public class OntologyListener {
 	@GET
 	@Path("/deleteVoteForActionLocation")	
 	//@Produces("application/xml")
-	public String deleteVoteForActionLocation(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,@QueryParam("action") String action,@QueryParam("location") String location)
+	public boolean deleteVoteForActionLocation(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,@QueryParam("action") String action,@QueryParam("location") String location)
 	{
 			log.info("Request to delete vote for item location: " + action);
 			return OntologyManager.getInstance().deleteVoteForActionLocation(userid,action,location);
+	}
+	
+	@POST
+	@Path("/deleteVoteForActionLocationObject")	
+	@Consumes("application/xml")
+	//cancella il voto di un utente
+	public boolean deleteVoteForActionLocation(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,SingleActionLocation actionLocation)
+	{
+			log.info("Request to delete vote for item location: " + actionLocation.action);
+			return OntologyManager.getInstance().deleteVoteForItemLocation(userid,actionLocation.action,actionLocation.location);
 	}
 	
 //LOCATION	
@@ -242,7 +283,7 @@ public class OntologyListener {
 	}
 
 	
-	@GET
+	@POST
 	@Path("/addLocationInLocationObject")	
 	@Consumes("application/xml")
 	@Produces("application/xml")
@@ -282,7 +323,7 @@ public class OntologyListener {
 	}
 
 	
-	@GET
+	@POST
 	@Path("/voteLocationObject")	
 	@Consumes("application/xml")
 	@Produces("application/xml")

@@ -1,5 +1,7 @@
 package businessobject;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ws.rs.CookieParam;
@@ -9,6 +11,7 @@ import javax.ws.rs.QueryParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import valueobject.Hint;
 import valueobject.SingleItemLocation;
 import valueobject.SingleActionLocation;
 import valueobject.SingleLocationLocation;
@@ -41,6 +44,31 @@ public class OntologyManager implements OntologyInterface {
 	*/
 	public SingleItemLocation addItemInLocation(String user, String item,String location) 
 	{
+		String ite = item.toLowerCase();
+		String loc = location.toLowerCase();
+		ite.replaceAll(" ", "_");
+		loc.replaceAll(" ", "_");
+		
+		List<String> queryList = new ArrayList<String>(); // list of inferred search query string
+		queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(ite));
+		List<Hint> result = new LinkedList<Hint>(); // list of search result
+			
+		for (String query : queryList) 
+		{	/* se c'è già nell'ontologia la coppia item-location torno null, 
+				 * in quanto non lo inserisco nel db
+				 */
+				if (query.compareToIgnoreCase(loc)==0)
+				{
+					log.info("item-location: " + item+" - "+location+" già in ontologia");
+					System.out.println("item-location già dentro l'ontologia");
+					return null;
+				}
+		}
+		
+		/*
+		 * Se arriva qua significa che la coppia item-location non è già 
+		 * presente nell'ontologia, allora la inserisco nel db
+		 */
 		return OntologyDatabase.istance.addItemInLocation(user,item,location);
 	}
 	 
@@ -111,9 +139,9 @@ public class OntologyManager implements OntologyInterface {
 	 * @param userid unique UUID of the user
 	 * @param item 
 	 * @param location
-	 * @return a string declaring the correct deletion of the vote
+	 * @return true if the vote is correct deleted
 	 */
-	public String deleteVoteForItemLocation(String userid,String item,String location)
+	public boolean deleteVoteForItemLocation(String userid,String item,String location)
 	{
 			log.info("Request to delete vote for item-location: " + item+" - "+location);
 			return OntologyDatabase.istance.deleteVoteForItemLocation(userid,item,location);
@@ -130,10 +158,35 @@ public class OntologyManager implements OntologyInterface {
 	 * @param location the location in wich the item can be made
 	 * @return an object SingleActionLocation if the couple action-location has been entered with success
 	*/
-	public SingleActionLocation addActionInLocation(String user, String item,
+	public SingleActionLocation addActionInLocation(String user, String action,
 			String location) 
-	{
-		return OntologyDatabase.istance.addActionInLocation(user,item,location);
+	{	
+		String act = action.toLowerCase();
+		String loc = location.toLowerCase();
+		act.replaceAll(" ", "_");
+		loc.replaceAll(" ", "_");
+		
+		List<String> queryList = new ArrayList<String>(); // list of inferred search query string
+		queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(act));
+		List<Hint> result = new LinkedList<Hint>(); // list of search result
+			
+		for (String query : queryList) 
+		{	/* se c'è già nell'ontologia la coppia item-location torno null, 
+				 * in quanto non lo inserisco nel db
+				 */
+				if (query.compareToIgnoreCase(loc)==0)
+				{
+					log.info("action-location: " + action+" - "+location+" già in ontologia");
+					System.out.println("action-location già dentro l'ontologia");
+					return null;
+				}
+		}
+		
+		/*
+		 * Se arriva qua significa che la coppia item-location non è già 
+		 * presente nell'ontologia, allora la inserisco nel db
+		 */
+		return OntologyDatabase.istance.addActionInLocation(user,action,location);
 	}
 	
 	/**
@@ -188,9 +241,9 @@ public class OntologyManager implements OntologyInterface {
 	 * @param userid unique UUID of the user
 	 * @param action 
 	 * @param location
-	 * @return a string declaring the correct deletion of the vote
+	 * @return true if the vote is correct deleted
 	 */
-	public String deleteVoteForActionLocation(String userid,String action,String location)
+	public boolean deleteVoteForActionLocation(String userid,String action,String location)
 	{
 			log.info("Request to delete vote for action-location: " + action+" - "+location);
 			return OntologyDatabase.istance.deleteVoteForActionLocation(userid,action,location);
