@@ -128,7 +128,7 @@ public class OntologyManager implements OntologyInterface {
 	 * @param item 
 	 * @return list of locations where the item can be found
 	 */
-	public List<Location> viewLocationForItem(String userid,String item) 
+	public List<String> viewLocationForItem(String userid,String item) 
 	{
 		return OntologyDatabase.istance.viewLocationForItem(userid,item);
 	}
@@ -230,7 +230,7 @@ public class OntologyManager implements OntologyInterface {
 	 * @param action
 	 * @return list of locations where the item can be found
 	 */
-	public List<Location> viewLocationForAction(String userid,String action) 
+	public List<String> viewLocationForAction(String userid,String action) 
 	{
 		return OntologyDatabase.istance.viewLocationForAction(userid,action);
 	}
