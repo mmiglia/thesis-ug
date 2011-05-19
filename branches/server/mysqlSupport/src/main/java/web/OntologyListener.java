@@ -1,5 +1,8 @@
 package web;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -18,6 +21,7 @@ import valueobject.SingleItemLocation;
 import valueobject.SingleActionLocation;
 import valueobject.SingleLocationLocation;
 import valueobject.Location;
+import valueobject.Item;
 
 import businessobject.OntologyManager;
 import businessobject.OntologyReasoner;
@@ -32,7 +36,80 @@ import businessobject.OntologyReasoner;
 
 public class OntologyListener {
 	private static Logger log = LoggerFactory.getLogger(OntologyListener.class);
-
+/*
+ * Funzione per controllare nell'ontologia una frase e capire quali sono le parole
+ *  chiavi da ricercare e poi 
+ * 
+ */
+	@GET
+	@Path("/checkInOntologyDb")	
+	@Consumes("application/xml")
+	@Produces("application/xml")
+	public List<Item> checkInOntologyDb(@PathParam("username") String userid, 
+			@QueryParam("title") String title,
+			@CookieParam("sessionid") String sessionid) 
+	{
+		log.info("Request to check title from user " + userid + 
+				", session "+ sessionid);
+		System.out.println("title: "+title);
+		List<String> needs = new ArrayList<String>();
+		String[] words = title.split(" ");
+		needs.addAll(Arrays.asList(words));
+		System.out.println("needs: "+needs);
+		// remove duplicates by using HashSet
+		HashSet<String> needsfilter = new HashSet<String>(needs);
+		needs.clear();
+		needs.addAll(needsfilter);
+		
+		System.out.println("needs dopo filter: "+needs);
+		List<Item> queryListItem = new ArrayList<Item>(); // list of inferred search query string
+		for (String o : needs)
+		{	List<String> ontList = new ArrayList<String>();
+		    List<String> dList = new ArrayList<String>();
+			/*
+			List<String> dListI = new ArrayList<String>();
+			List<String> dListA = new ArrayList<String>();
+			*/
+			System.out.println("sono dentro al for");
+			Item item= new Item();
+			item.name=o;
+			System.out.println("item.name= "+item.name);
+			
+			ontList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
+			item.ontologyList=ontList;
+			System.out.println(item.ontologyList);
+			System.out.println("sono dentro al for dopo listOntology");
+			
+			/*
+			dListI.addAll(OntologyManager.getInstance().viewLocationForItem(userid,o));
+			dListA.addAll(OntologyManager.getInstance().viewLocationForAction(userid,o));
+			*/
+			
+			dList.addAll(OntologyManager.getInstance().viewLocationForItem(userid,o));
+			dList.addAll(OntologyManager.getInstance().viewLocationForAction(userid,o));
+			
+			
+			item.dbList=dList;
+			System.out.println(item.dbList);
+			System.out.println("sono dentro al for dopo listDB");
+		 	if (item.ontologyList.isEmpty())
+		 		if (item.dbList.isEmpty())
+		 			item.nScreen=4;
+		 		else item.nScreen=3;
+		 	else 
+		 		if (item.dbList.isEmpty())
+		 			item.nScreen=2;
+		 		else item.nScreen=1;
+		 	System.out.println("SOno dentro al for");
+		 	queryListItem.add(item);
+		}
+		return queryListItem;
+	}	
+	
+	
+	
+	
+	
 //ITEM	
 	@GET
 	@Path("/addItemInLocation")	
@@ -55,14 +132,14 @@ public class OntologyListener {
 	@return null if the couple item-location is already entered in ontology 
 			file or in the db, a SingleItemLocation otherwise
 	*/
-	public SingleItemLocation addItemInLocationObject(@PathParam("username") String userid, 
+	public void addItemInLocationObject(@PathParam("username") String userid, 
 			@CookieParam("sessionid") String sessionid, SingleItemLocation itemLocation)
 	{
 		log.info("Request to add item-location from user " + userid + 
 				", session "+ sessionid);
 		log.info("Add"+ itemLocation.item + "in location" + itemLocation.location);
 		
-		return OntologyManager.getInstance().addItemInLocation(userid, itemLocation.item,itemLocation.location);
+		OntologyManager.getInstance().addItemInLocation(userid, itemLocation.item,itemLocation.location);
 	}
 
 	/*
@@ -106,7 +183,7 @@ public class OntologyListener {
 	@GET
 	@Path("/viewLocationForItem")	
 	@Produces("application/xml")
-	public List<Location> viewLocationForItem(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,@QueryParam("item") String item)
+	public List<String> viewLocationForItem(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,@QueryParam("item") String item)
 	{
 			log.info("Request to view location for item: " + item);
 			return OntologyManager.getInstance().viewLocationForItem(userid,item);
@@ -150,11 +227,11 @@ public class OntologyListener {
 	 */
 	@GET
 	@Path("/updateOntology")	
-	@Consumes("application/xml")
-	public boolean updateOntology(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid) 
+	//@Consumes("application/xml")
+	public void updateOntology(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,@QueryParam("item") String item,@QueryParam("location") String location) 
 	{       
-			//OntologyReasoner reasoner= new OntologyReasoner();
-			return OntologyReasoner.getInstance().updateOntology();
+			
+			OntologyReasoner.getInstance().updateOntology(item,location);
 	}
 	
 	
@@ -175,18 +252,18 @@ public class OntologyListener {
 	@POST
 	@Path("/addActionInLocationObject")	
 	@Consumes("application/xml")
-	@Produces("application/xml")
+	
 	/*
 	@return null if the couple action-location is already entered in ontology 
 			file or in the db, a SingleActionLocation otherwise
 	*/
-	public SingleActionLocation addActionInLocationObject(@PathParam("username") String userid, 
+	public void addActionInLocationObject(@PathParam("username") String userid, 
 			@CookieParam("sessionid") String sessionid, SingleActionLocation actionLocation) 
 	{
 		log.info("Request to add action-location from user " + userid + ", session "+ sessionid);
 		log.info("Add "+ actionLocation.action + "in location" + actionLocation.location);
 		
-		return OntologyManager.getInstance().addActionInLocation(userid, actionLocation.action,actionLocation.location);
+		OntologyManager.getInstance().addActionInLocation(userid, actionLocation.action,actionLocation.location);
 	}
 	
 	/*
@@ -228,7 +305,7 @@ public class OntologyListener {
 	@GET
 	@Path("/viewLocationForAction")	
 	@Produces("application/xml")
-	public List<Location> viewLocationForAction(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,@QueryParam("action") String action)
+	public List<String> viewLocationForAction(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,@QueryParam("action") String action)
 	{
 			log.info("Request to view location for action: " + action);
 			return OntologyManager.getInstance().viewLocationForAction(userid,action);

@@ -1,5 +1,7 @@
 package valueobject;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /* 6-5-2011
@@ -13,7 +15,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class Item {
 	
-	public String item;
+	public String name;
+	public int nScreen; //il tipo di schermata
+	public int itemActionType; //1=item,0=action
+	public List<String> ontologyList;
+	public List<String> dbList;
+
 	
 	public Item()
 	{
@@ -24,9 +31,12 @@ public class Item {
 	 * Constructor for this class	 
 	 * @param item
 	 */
-	public Item(String item) 
+	public Item(String name,int nScreen,List<String> ontologyList,List<String> dbList) 
 	{
-		this.item = item;	
+		this.name = name;
+		this.nScreen = nScreen;
+		this.ontologyList = ontologyList;
+		this.dbList = dbList;
 	}
 
 }

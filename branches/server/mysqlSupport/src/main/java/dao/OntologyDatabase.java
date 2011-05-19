@@ -382,9 +382,9 @@ public enum OntologyDatabase {
 		return itemLocationToReturn;
 	}
 
-	public List<Location> viewLocationForItem(String userid,String item) 
+	public List<String> viewLocationForItem(String userid,String item) 
 	{
-		ArrayList<Location> LocationList=new ArrayList<Location>();
+		ArrayList<String> LocationList=new ArrayList<String>();
 		
 		Connection conn= (Connection) dbManager.dbConnect();
 			
@@ -397,7 +397,7 @@ public enum OntologyDatabase {
 		try{
 			while(rs.next()){
 				OntologyDatabase.istance.updateItemNviews(item,rs.getString("Location"));
-				LocationList.add( new Location(rs.getString("Location")));
+				LocationList.add( rs.getString("Location"));
 			}
 		}catch(SQLException sqlE){
 			//TODO
@@ -871,9 +871,9 @@ public enum OntologyDatabase {
 		
 		return actionLocationToReturn;
 	}
-	public List<Location> viewLocationForAction(String userid,String action) 
+	public List<String> viewLocationForAction(String userid,String action) 
 	{
-		ArrayList<Location> LocationList=new ArrayList<Location>();
+		ArrayList<String> LocationList=new ArrayList<String>();
 		
 		Connection conn= (Connection) dbManager.dbConnect();
 			
@@ -887,7 +887,7 @@ public enum OntologyDatabase {
 		try{
 			while(rs.next()){
 				OntologyDatabase.istance.updateActionNviews(action,rs.getString("Location"));
-				LocationList.add( new Location(rs.getString("Location")));
+				LocationList.add(rs.getString("Location"));
 			}
 		}catch(SQLException sqlE){
 			//TODO
