@@ -37,9 +37,11 @@ import businessobject.OntologyReasoner;
 public class OntologyListener {
 	private static Logger log = LoggerFactory.getLogger(OntologyListener.class);
 /*
- * Funzione per controllare nell'ontologia una frase e capire quali sono le parole
- *  chiavi da ricercare e poi 
- * 
+ * Funzione per controllare nell'ontologia una frase e  ricercare  nell'ontologia
+ *  e nel database ogni parola e vedere dove si può trovare(cioè la location)
+ * @return ritorna una lista di oggetti di tipo Item, 
+ * se non c'è nessuna corrispondenza né nell'ontologia né nel database 
+ * torna una lista vuota
  */
 	@GET
 	@Path("/checkInOntologyDb")	
@@ -51,57 +53,77 @@ public class OntologyListener {
 	{
 		log.info("Request to check title from user " + userid + 
 				", session "+ sessionid);
-		System.out.println("title: "+title);
+		
 		List<String> needs = new ArrayList<String>();
 		String[] words = title.split(" ");
 		needs.addAll(Arrays.asList(words));
-		System.out.println("needs: "+needs);
+	
 		// remove duplicates by using HashSet
 		HashSet<String> needsfilter = new HashSet<String>(needs);
 		needs.clear();
 		needs.addAll(needsfilter);
 		
-		System.out.println("needs dopo filter: "+needs);
+		
 		List<Item> queryListItem = new ArrayList<Item>(); // list of inferred search query string
 		for (String o : needs)
 		{	List<String> ontList = new ArrayList<String>();
 		    List<String> dList = new ArrayList<String>();
-			/*
-			List<String> dListI = new ArrayList<String>();
-			List<String> dListA = new ArrayList<String>();
-			*/
-			System.out.println("sono dentro al for");
+		
+		   
 			Item item= new Item();
 			item.name=o;
-			System.out.println("item.name= "+item.name);
 			
 			ontList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
 			item.ontologyList=ontList;
-			System.out.println(item.ontologyList);
-			System.out.println("sono dentro al for dopo listOntology");
 			
-			/*
-			dListI.addAll(OntologyManager.getInstance().viewLocationForItem(userid,o));
-			dListA.addAll(OntologyManager.getInstance().viewLocationForAction(userid,o));
-			*/
-			
-			dList.addAll(OntologyManager.getInstance().viewLocationForItem(userid,o));
-			dList.addAll(OntologyManager.getInstance().viewLocationForAction(userid,o));
-			
-			
+			if (!ontList.isEmpty())
+				if (OntologyReasoner.getInstance().isItem(o))
+				{	
+					item.itemActionType=1;	//è un Item
+					dList.addAll(OntologyManager.getInstance().viewLocationForItem(userid,o));
+				}
+				else
+				{	
+					item.itemActionType=0;	//è un Action
+					dList.addAll(OntologyManager.getInstance().viewLocationForAction(userid,o));
+				}
+			else
+			{
+				dList.addAll(OntologyManager.getInstance().viewLocationForItem(userid,o));
+				if (!dList.isEmpty())
+				{	
+					item.itemActionType=1;		// è un Item
+				}	
+				else	
+				{	
+					dList.addAll(OntologyManager.getInstance().viewLocationForAction(userid,o));
+					if (!dList.isEmpty())
+						item.itemActionType=0; //è un Action
+				}
+			}		
+					
 			item.dbList=dList;
-			System.out.println(item.dbList);
-			System.out.println("sono dentro al for dopo listDB");
+		
 		 	if (item.ontologyList.isEmpty())
 		 		if (item.dbList.isEmpty())
 		 			item.nScreen=4;
-		 		else item.nScreen=3;
+		 		else 
+		 		{
+		 			item.nScreen=3;
+		 			queryListItem.add(item);
+		 		}
 		 	else 
 		 		if (item.dbList.isEmpty())
+		 		{
 		 			item.nScreen=2;
-		 		else item.nScreen=1;
-		 	System.out.println("SOno dentro al for");
-		 	queryListItem.add(item);
+		 			queryListItem.add(item);
+		 		}
+		 		else
+		 		{
+		 			item.nScreen=1;
+		 			queryListItem.add(item);
+		 		}
+		 	
 		}
 		return queryListItem;
 	}	
@@ -179,7 +201,7 @@ public class OntologyListener {
 			return OntologyManager.getInstance().voteItem(userid,itemLocation.item,itemLocation.location);
 	}
 	
-	
+	// modificati, da List<Location> A List<String> quindi da errore x' non è xml
 	@GET
 	@Path("/viewLocationForItem")	
 	@Produces("application/xml")
@@ -187,6 +209,15 @@ public class OntologyListener {
 	{
 			log.info("Request to view location for item: " + item);
 			return OntologyManager.getInstance().viewLocationForItem(userid,item);
+	}
+	// modificati, da List<Location> A List<String> quindi da errore x' non è xml
+	@GET
+	@Path("/viewLocationForItemVoted")	
+	@Produces("application/xml")
+	public List<String> viewLocationForItemVoted(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,@QueryParam("item") String item)
+	{
+			log.info("Request to view location for item: " + item);
+			return OntologyManager.getInstance().viewLocationForItemVoted(userid,item);
 	}
 	
 	@GET
@@ -301,7 +332,7 @@ public class OntologyListener {
 			return OntologyManager.getInstance().voteAction(userid,actionLocation.action,actionLocation.location);
 	}
 
-	
+	// modificati, da List<Location> A List<String> quindi da errore x' non è xml
 	@GET
 	@Path("/viewLocationForAction")	
 	@Produces("application/xml")
@@ -309,6 +340,19 @@ public class OntologyListener {
 	{
 			log.info("Request to view location for action: " + action);
 			return OntologyManager.getInstance().viewLocationForAction(userid,action);
+	}
+	
+	// modificati, da List<Location> A List<String> quindi da errore x' non è xml
+	@GET
+	@Path("/viewLocationForActionVoted")	
+	@Produces("application/xml")
+	public List<String> viewLocationForActionVoted(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,@QueryParam("action") String action)
+	{
+			log.info("Request to view location for action: " + action);
+			//List<String> list = OntologyManager.getInstance().viewLocationForActionVoted(userid,action);
+			return OntologyManager.getInstance().viewLocationForActionVoted(userid,action);
+			//System.out.println(list);
+			//return list;
 	}
 	
 	/*

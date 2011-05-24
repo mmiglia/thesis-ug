@@ -79,7 +79,7 @@ public class ContextListener {
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request single context from user " + userid + " sentence "+sentence+" from location "
 				+ latitude + ":" + longitude);
-		
+		System.out.println("Sono in /single");
 		return LocationAwareManager.checkLocationSingle(userid, sentence, latitude, longitude, distance);
 	}	
 	

@@ -53,12 +53,41 @@ public class LocationAwareManager {
 		needs.addAll(needsfilter);
 		log.info("needs are "+ needs.size()+" : "+needs.toString());
 		List<String> queryList = new ArrayList<String>(); // list of inferred search query string
-		for (String o : needs) queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
+		/*23-5-2011
+		 * Aggiunto il controllo delle location nel db(ritorna quelle votate dall'utente)
+		 * @author Anuska
+		 */
+		//for (String o : needs) queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
+		for (String o : needs) 
+		{	System.out.println("Sono in LocationAwareManager checkLocationAll for needs:"+o);
+			queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
+			queryList.addAll(OntologyManager.getInstance().viewLocationForItemVoted(userid,o));
+			queryList.addAll(OntologyManager.getInstance().viewLocationForActionVoted(userid,o));
+		}
 		log.info("querylist are "+ queryList.size()+" : "+queryList.toString());
+		/* Anuska
+		 * se non trovo niente nell'ontologia o nel db allora mando direttamente
+		 * la query ricevuta a google
+		 */
+		if (queryList.isEmpty())
+		{	
+			System.out.println("Nessuna corrispondenza:mando direttamente la query dei bisogni");
+			queryList.addAll(needs);
+		}
+		
+		
 		List<Hint> result = new LinkedList<Hint>(); // list of search result
+		
+		/* Anuska - modificato in modo che salvi i risultati in cache con la query relativa*/
 		for (String query : queryList) 
-			result.addAll(MapManager.getInstance().searchLocalBusiness(
-					latitude, longitude, query));
+		{
+			List<Hint> listToAdd = MapManager.getInstance().searchLocalBusiness(
+					latitude, longitude, query);
+			result.addAll(listToAdd);
+			System.out.println("for string query:"+query);
+			CachingManager.cachingListHint(userid, query, latitude, longitude, distance,listToAdd);
+			System.out.println("inserito nel db");
+		}
 		log.info("result are "+result.size());
 		// filter the result
 		List<Hint> toReturn = new HintManager().filterLocation(distance, latitude, longitude, result);
@@ -84,7 +113,7 @@ public class LocationAwareManager {
 	 */
 	public static List<Hint> checkLocationSingle(String userid, String sentence, float latitude, float longitude, int distance) {
 		List<String> needs = new ArrayList<String>(); // list of user needs
-
+		System.out.println("Sono in LocationAwareManager checkLocationSingle ");
 		/* current parser implementation is just splitting tasks-title into words
 		 *  future improvement such as the use of keyword extraction is strongly encouraged*/
 		needs.addAll(Arrays.asList(sentence.split(" ")));
@@ -95,10 +124,34 @@ public class LocationAwareManager {
 		needs.addAll(needsfilter);
 
 		List<String> queryList = new ArrayList<String>(); // list of inferred search query string
-		for (String o : needs) queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
+		
+		/*20-5-2011
+		 * Aggiunto il controllo delle location nel db(ritorna quelle votate dall'utente)
+		 * @author Anuska
+		 */
+		for (String o : needs) 
+		{	System.out.println("Sono in LocationAwareManager checkLocationSingle for needs:"+o);
+			queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
+			queryList.addAll(OntologyManager.getInstance().viewLocationForItemVoted(userid,o));
+			queryList.addAll(OntologyManager.getInstance().viewLocationForActionVoted(userid,o));
+		}
+		System.out.println("posso trovarlo in: "+queryList);
+		
+		/* Anuska
+		 * se non trovo niente nell'ontologia o nel db allora mando direttamente
+		 * la query ricevuta a google
+		 */
+		if (queryList.isEmpty())
+		{	
+			System.out.println("Nessuna corrispondenza:mando direttamente la query");
+			//queryList.add(sentence.replaceAll(" ", "%20"));
+			queryList.addAll(needs);
+		}
+		
 		log.info("querylist are "+ queryList.size()+" : "+queryList.toString());
 		List<Hint> result = new LinkedList<Hint>(); // list of search result
-		/* modificato in modo che salvi i risultati in cache con la query relativa*/
+		
+		/* Anuska - modificato in modo che salvi i risultati in cache con la query relativa*/
 		for (String query : queryList) 
 		{
 			List<Hint> listToAdd = MapManager.getInstance().searchLocalBusiness(

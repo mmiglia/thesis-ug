@@ -57,6 +57,15 @@ public interface OntologyInterface {
 	public List<String> viewLocationForItem(String userid,String item);
 	
 	/**
+	 * view location for item voted by userid
+	 * 
+	 * @param userid unique UUID of the user
+	 * @param item 
+	 * @return list of locations where the item can be found
+	 */
+	public List<String> viewLocationForItemVoted(String userid,String item);
+	
+	/**
 	 * delete vote for an item-location by the user userid
 	 * 
 	 * @param userid unique UUID of the user
@@ -110,6 +119,15 @@ public interface OntologyInterface {
 	 */
 	public List<String> viewLocationForAction(String userid,String action);
 
+	/**
+	 * view location for an action voted by userid
+	 * 
+	 * @param userid unique UUID of the user
+	 * @param action
+	 * @return list of locations where the item can be found
+	 */
+	public List<String> viewLocationForActionVoted(String userid,String action); 
+	
 	/**
 	 * delete vote for an action-location by the user userid
 	 * 

@@ -187,7 +187,6 @@ public enum OntologyDatabase {
 		
 		//Starting transaction
 		QueryStatus qs=dbManager.startTransaction(conn);
-		
 		if(qs.execError){
 			//TODO decide what to do in this case (transaction not started)
 			log.error(qs.explainError());
@@ -198,10 +197,13 @@ public enum OntologyDatabase {
 			return null;
 		}	
 		
-		// Inserisco nella tabella Item_Voted che l'utente user ha votato per una item-Location
-		String insertQuery="Insert into Item_voted(Item,Location,Username,Vote) values ('"+item+"','"+location+"','"+user+"',1) ";
-		System.out.println(insertQuery);
+
+		DateUtils date = new DateUtils();
+		String insertDate = date.now();
 		
+		// Inserisco nella tabella Item_Voted che l'utente user ha votato per una item-Location
+		String insertQuery="Insert into Item_voted(Item,Location,Username,Vote,Date) values ('"+item+"','"+location+"','"+user+"',1,'"+insertDate+"') ";
+		System.out.println(insertQuery);
 		qs=dbManager.customQuery(conn, insertQuery);
 		if(qs.execError){
 			log.error(qs.explainError());
@@ -212,6 +214,25 @@ public enum OntologyDatabase {
 			
 			System.out.println("Error during vote item '"+item+"','"+location+"' "+"... not added - the user has been voted");
 			log.error("Error during vote item '"+item+"','"+location+"' "+"... not added - - the user has been voted");
+			
+			dbManager.dbDisconnect(conn);
+			return null;
+		}
+		
+		// Inserisco nella tabella Item_voted_historical che l'utente user ha votato per una item-Location
+		insertQuery="Insert into Item_voted_historical(Item,Location,Username,Vote,Date) values ('"+item+"','"+location+"','"+user+"',1,'"+insertDate+"') ";
+		System.out.println(insertQuery);
+		qs=dbManager.customQuery(conn, insertQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			System.out.println("Error during vote item '"+item+"','"+location+"' "+"... not added in Item_voted_historical");
+			log.error("Error during vote item '"+item+"','"+location+"' "+"... not added in Item_voted_historical");
+			
 			dbManager.dbDisconnect(conn);
 			return null;
 		}
@@ -288,7 +309,6 @@ public enum OntologyDatabase {
 		
 		//Starting transaction
 		QueryStatus qs=dbManager.startTransaction(conn);
-		
 		if(qs.execError){
 			//TODO decide what to do in this case (transaction not started)
 			log.error(qs.explainError());
@@ -299,8 +319,12 @@ public enum OntologyDatabase {
 			return null;
 		}	
 		
+
+		DateUtils date = new DateUtils();
+		String insertDate = date.now();
+		
 		// Inserisco nella tabella Item_Voted che l'utente user ha votato per una item-Location
-		String insertQuery="Insert into Item_voted(Item,Location,Username,Vote) values ('"+item+"','"+location+"','"+user+"',1) ";
+		String insertQuery="Insert into Item_voted(Item,Location,Username,Vote,Date) values ('"+item+"','"+location+"','"+user+"',1,'"+insertDate+"') ";
 		System.out.println(insertQuery);
 		
 		qs=dbManager.customQuery(conn, insertQuery);
@@ -313,6 +337,24 @@ public enum OntologyDatabase {
 			
 			System.out.println("Error during vote item '"+item+"','"+location+"' "+"... not added - the user has been voted");
 			log.error("Error during vote item '"+item+"','"+location+"' "+"... not added - - the user has been voted");
+			dbManager.dbDisconnect(conn);
+			return null;
+		}
+		
+		// Inserisco nella tabella Item_voted_historical che l'utente user ha votato per una item-Location
+		insertQuery="Insert into Item_voted_historical(Item,Location,Username,Vote,Date) values ('"+item+"','"+location+"','"+user+"',1,'"+insertDate+"') ";
+		System.out.println(insertQuery);
+		qs=dbManager.customQuery(conn, insertQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			System.out.println("Error during vote item '"+item+"','"+location+"' "+"... not added in Item_voted_historical");
+			log.error("Error during vote item '"+item+"','"+location+"' "+"... not added in Item_voted_historical");
+			
 			dbManager.dbDisconnect(conn);
 			return null;
 		}
@@ -410,6 +452,34 @@ public enum OntologyDatabase {
 		
 	}
 	
+	public List<String> viewLocationForItemVoted(String userid,String item) 
+	{
+		ArrayList<String> LocationList=new ArrayList<String>();
+		
+		Connection conn= (Connection) dbManager.dbConnect();
+			
+		String selectQuery="select * from Item_voted where Item='"+item+
+		"' and Vote=1 and Username='"+userid+"'";
+		System.out.println(selectQuery);
+		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
+		
+		ResultSet rs=(ResultSet)qs.customQueryOutput;
+
+		try{
+			while(rs.next()){
+				LocationList.add( rs.getString("Location"));
+			}
+		}catch(SQLException sqlE){
+			//TODO
+			
+		}finally{	
+			dbManager.dbDisconnect(conn);
+		}
+		
+		return LocationList;
+		
+	}
+	
 	public void updateItemNviews(String item, String location)
 	{	Connection conn= (Connection) dbManager.dbConnect();
 	
@@ -465,9 +535,50 @@ public enum OntologyDatabase {
 			dbManager.dbDisconnect(conn);
 			return false;
 		}	
+		
 		DateUtils cancDate = new DateUtils();
 		String cancellationDate = cancDate.now();
-	
+		
+		//cancello il voto in Item_voted
+		String deleteQuery="delete from Item_voted where Item='"+item+
+						   "' and Location='"+location+
+						   "' and Username='"+userid+"'";
+		
+		System.out.println(deleteQuery);
+		qs=dbManager.customQuery(conn, deleteQuery);
+		
+		if(qs.execError){
+			log.error(qs.explainError());
+			System.out.println("Error during delete vote operation in Item_voted .. aborting operation");
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			log.error("Error during delete vote operation in Item_voted .. aborting operation");
+			dbManager.dbDisconnect(conn);
+			return false;
+		}
+		//aggiorno la tabella Item_voted_historical inserendo 
+		//che l'utente ha cancellato il voto
+		
+		String insertQuery="Insert into Item_voted_historical(Item,Location,Username,Vote,Date) values ('"+item+"','"+location+"','"+userid+"',0,'"+cancellationDate+"') ";
+		System.out.println(insertQuery);
+		qs=dbManager.customQuery(conn, insertQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			System.out.println("Error during delete vote item '"+item+"','"+location+"' "+"... in Item_voted_historical");
+			log.error("Error during delete vote item '"+item+"','"+location+"' "+"... in Item_voted_historical");
+			
+			dbManager.dbDisconnect(conn);
+			return false;
+		}
+	/*
 		String updateQuery= "update Item_voted set Vote = 0,CancellationDate ='"+cancellationDate+"' where Item='"+item+"' and Location='"+location+"' and Username = '"+userid+"'";
 		System.out.println(updateQuery);
 		qs=dbManager.customQuery(conn, updateQuery);
@@ -484,11 +595,11 @@ public enum OntologyDatabase {
 			dbManager.dbDisconnect(conn);
 			return false;
 		}
-		
+		*/
 		String rank=  userRank(userid);
 		System.out.println("rank utente: "+ rank);
 		
-		updateQuery= "update Item_foundIn_Loc set Vote = (Vote-"+rank+"),N_votes=(N_votes - 1) where Item='"+item+"' and Location='"+location+"'";
+		String updateQuery= "update Item_foundIn_Loc set Vote = (Vote-"+rank+"),N_votes=(N_votes - 1) where Item='"+item+"' and Location='"+location+"'";
 		System.out.println(updateQuery);
 		qs=dbManager.customQuery(conn, updateQuery);
 		
@@ -677,7 +788,6 @@ public enum OntologyDatabase {
 		
 		//Starting transaction
 		QueryStatus qs=dbManager.startTransaction(conn);
-		
 		if(qs.execError){
 			//TODO decide what to do in this case (transaction not started)
 			log.error(qs.explainError());
@@ -688,8 +798,11 @@ public enum OntologyDatabase {
 			return null;
 		}	
 		
+		DateUtils date = new DateUtils();
+		String insertDate = date.now();
+		
 		// Inserisco nella tabella Action_Voted che l'utente user ha votato per una action-Location
-		String insertQuery="Insert into Action_voted(Action,Location,Username,Vote) values ('"+action+"','"+location+"','"+user+"',1) ";
+		String insertQuery="Insert into Action_voted(Action,Location,Username,Vote,Date) values ('"+action+"','"+location+"','"+user+"',1,'"+insertDate+"') ";
 		System.out.println(insertQuery);
 		
 		qs=dbManager.customQuery(conn, insertQuery);
@@ -706,6 +819,23 @@ public enum OntologyDatabase {
 			return null;
 		}
 		
+		// Inserisco nella tabella Action_voted_historical che l'utente user ha votato per una action-Location
+		insertQuery="Insert into Action_voted_historical(Action,Location,Username,Vote,Date) values ('"+action+"','"+location+"','"+user+"',1,'"+insertDate+"') ";
+		System.out.println(insertQuery);
+		qs=dbManager.customQuery(conn, insertQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			System.out.println("Error during vote action '"+action+"','"+location+"' "+"... not added in Action_voted_historical");
+			log.error("Error during vote action '"+action+"','"+location+"' "+"... not added in Action_voted_historical");
+			
+			dbManager.dbDisconnect(conn);
+			return null;
+		}
 		/*Seleziono il rank dell'utente che ha votato per aggiornare il voto totale della
 		  coppia action-location
 		*/
@@ -778,7 +908,6 @@ public enum OntologyDatabase {
 		
 		//Starting transaction
 		QueryStatus qs=dbManager.startTransaction(conn);
-		
 		if(qs.execError){
 			//TODO decide what to do in this case (transaction not started)
 			log.error(qs.explainError());
@@ -787,10 +916,13 @@ public enum OntologyDatabase {
 			log.error("Error during transaction starting... Vote for action not added");
 			dbManager.dbDisconnect(conn);
 			return null;
-		}	
+		}
+
+		DateUtils date = new DateUtils();
+		String insertDate = date.now();
 		
 		// Inserisco nella tabella Action_Voted che l'utente user ha votato per una action-Location
-		String insertQuery="Insert into Action_voted(Action,Location,Username,Vote) values ('"+action+"','"+location+"','"+user+"',1) ";
+		String insertQuery="Insert into Action_voted(Action,Location,Username,Vote,Date) values ('"+action+"','"+location+"','"+user+"',1,'"+insertDate+"') ";
 		System.out.println(insertQuery);
 		
 		qs=dbManager.customQuery(conn, insertQuery);
@@ -807,6 +939,23 @@ public enum OntologyDatabase {
 			return null;
 		}
 		
+		// Inserisco nella tabella Action_voted_historical che l'utente user ha votato per una action-Location
+		insertQuery="Insert into Action_voted_historical(Action,Location,Username,Vote,Date) values ('"+action+"','"+location+"','"+user+"',1,'"+insertDate+"') ";
+		System.out.println(insertQuery);
+		qs=dbManager.customQuery(conn, insertQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			System.out.println("Error during vote action '"+action+"','"+location+"' "+"... not added in Action_voted_historical");
+			log.error("Error during vote action '"+action+"','"+location+"' "+"... not added in Action_voted_historical");
+			
+			dbManager.dbDisconnect(conn);
+			return null;
+		}
 		/*Seleziono il rank dell'utente che ha votato per aggiornare il voto totale della
 		  coppia action-location
 		*/
@@ -871,6 +1020,7 @@ public enum OntologyDatabase {
 		
 		return actionLocationToReturn;
 	}
+	
 	public List<String> viewLocationForAction(String userid,String action) 
 	{
 		ArrayList<String> LocationList=new ArrayList<String>();
@@ -887,6 +1037,36 @@ public enum OntologyDatabase {
 		try{
 			while(rs.next()){
 				OntologyDatabase.istance.updateActionNviews(action,rs.getString("Location"));
+				LocationList.add(rs.getString("Location"));
+			}
+		}catch(SQLException sqlE){
+			//TODO
+			
+		}finally{	
+			dbManager.dbDisconnect(conn);
+		}
+		
+		return LocationList;
+		
+	}
+	
+	public List<String> viewLocationForActionVoted(String userid,String action) 
+	{
+		ArrayList<String> LocationList=new ArrayList<String>();
+		
+		Connection conn= (Connection) dbManager.dbConnect();
+			
+		String selectQuery="select * from Action_voted where Action='"+action+
+		"' and Vote=1 and Username='"+userid+"'";
+		
+		System.out.println(selectQuery);
+		
+		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
+		
+		ResultSet rs=(ResultSet)qs.customQueryOutput;
+
+		try{
+			while(rs.next()){
 				LocationList.add(rs.getString("Location"));
 			}
 		}catch(SQLException sqlE){
@@ -955,10 +1135,51 @@ public enum OntologyDatabase {
 			dbManager.dbDisconnect(conn);
 			return false;
 		}	
+		
 		DateUtils cancDate = new DateUtils();
 		String cancellationDate = cancDate.now();
+		
+		//cancello il voto in Item_voted
+		String deleteQuery="delete from Action_voted where Action='"+action+
+						   "' and Location='"+location+
+						   "' and Username='"+userid+"'";
+		
+		System.out.println(deleteQuery);
+		qs=dbManager.customQuery(conn, deleteQuery);
+		
+		if(qs.execError){
+			log.error(qs.explainError());
+			System.out.println("Error during delete vote operation in Action_voted .. aborting operation");
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			log.error("Error during delete vote operation in Action_voted .. aborting operation");
+			dbManager.dbDisconnect(conn);
+			return false;
+		}
+		//aggiorno la tabella Action_voted_historical inserendo 
+		//che l'utente ha cancellato il voto
+		
+		String insertQuery="Insert into Action_voted_historical(Action,Location,Username,Vote,Date) values ('"+action+"','"+location+"','"+userid+"',0,'"+cancellationDate+"') ";
+		System.out.println(insertQuery);
+		qs=dbManager.customQuery(conn, insertQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			System.out.println("Error during delete vote action '"+action+"','"+location+"' "+"... in Action_voted_historical");
+			log.error("Error during delete vote action '"+action+"','"+location+"' "+"... in Action_voted_historical");
+			
+			dbManager.dbDisconnect(conn);
+			return false;
+		}
 	
-		String updateQuery= "update Action_voted set Vote = 0,CancellationDate ='"+cancellationDate+"' where Action='"+action+"' and Location='"+location+"' and Username = '"+userid+"'";
+		/*String updateQuery= "update Action_voted set Vote = 0,CancellationDate ='"+cancellationDate+"' where Action='"+action+"' and Location='"+location+"' and Username = '"+userid+"'";
 		System.out.println(updateQuery);
 		qs=dbManager.customQuery(conn, updateQuery);
 		
@@ -973,12 +1194,12 @@ public enum OntologyDatabase {
 			log.error("Error during delete vote operation in Action_voted .. aborting operation");
 			dbManager.dbDisconnect(conn);
 			return false;
-		}
+		}*/
 		
 		String rank=  userRank(userid);
 		System.out.println("rank utente: "+ rank);
 		
-		updateQuery= "update Action_foundIn_Loc set Vote = (Vote-"+rank+"),N_votes=(N_votes - 1) where Action='"+action+"' and Location='"+location+"'";
+		String updateQuery= "update Action_foundIn_Loc set Vote = (Vote-"+rank+"),N_votes=(N_votes - 1) where Action='"+action+"' and Location='"+location+"'";
 		System.out.println(updateQuery);
 		qs=dbManager.customQuery(conn, updateQuery);
 		
