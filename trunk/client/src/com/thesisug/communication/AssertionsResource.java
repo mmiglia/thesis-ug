@@ -20,6 +20,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
+import com.thesisug.communication.valueobject.Item;
 import com.thesisug.communication.valueobject.SingleActionLocation;
 import com.thesisug.communication.valueobject.SingleItemLocation;
 import com.thesisug.communication.xmlparser.AssertionsHandler;
@@ -29,6 +30,7 @@ import com.thesisug.ui.Details_assertion_action;
 import com.thesisug.ui.Details_assertion_item;
 import com.thesisug.ui.ViewAssertions;
 import com.thesisug.ui.ViewAssertions_Action;
+import com.thesisug.ui.Vote_ont_db;
 
 public class AssertionsResource {
 	
@@ -50,6 +52,8 @@ public class AssertionsResource {
 	private static final String DELETE_ACTION = "/ontology/deleteVoteForActionLocation";
 	private static final String DELETE_ITEM_OBJECT="/ontology/deleteVoteForItemLocationObject";
 	private static final String DELETE_ACTION_OBJECT="/ontology/deleteVoteForActionLocationObject";
+	
+	private static final String CHECK_IN_ONTOLOGY_DB = "/ontology/checkInOntologyDb";
 	
 	
 	
@@ -173,6 +177,45 @@ public class AssertionsResource {
 		}
 	}
 	
+	private static List<Item> runHttpGetUsercheckInOntologyDb(final String method,
+			final ArrayList<NameValuePair> params, Context c) {
+		List<Item> result = new LinkedList<Item>();
+		DefaultHttpClient newClient = NetworkUtilities.createClient();
+		String query = (params == null) ? "" : URLEncodedUtils.format(params,
+				"UTF-8");
+		AccountUtil util = new AccountUtil();
+		HttpGet request = new HttpGet(NetworkUtilities.SERVER_URI + "/"
+				+ util.getUsername(c) + method + "?"+ query);
+		request.addHeader("Cookie", "sessionid="+util.getToken(c));
+		Log.i(TAG, "RICHIESTA RUNHTTPGETUSER CHECK ONOTOLGY DB RITORNATA");
+		// send the request to network
+		HttpResponse response = NetworkUtilities
+				.sendRequest(newClient, request);
+		// if we cannot connect to the server
+		if (!HttpResponseStatusCodeValidator.isValidRequest(response.getStatusLine().getStatusCode())) {
+			Log.i(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
+			return null; // return null if there's problem with connection
+		}
+		try { // parsing XML message
+			Log.i(TAG, "INVIO RICHIESTA RUNHTTPGETUSER CHECK ONOTOLGY DB RITORNATA");
+			result = AssertionsHandler.parseUserItems(response.getEntity().getContent());
+			Log.i(TAG, "FATTO IL PARSER DI RICHIESTA RUNHTTPGETUSER CHECK ONOTOLGY DB RITORNATA");
+			
+			return result;
+		} catch (IllegalStateException e) {
+			Log.i(TAG, "Illegal State");
+			e.printStackTrace();
+			return result;
+		} catch (IOException e) {
+			Log.i(TAG, "IOException");
+			e.printStackTrace();
+			return result;
+		} catch (SAXException e) {
+			Log.i(TAG, "SAXException");
+			e.printStackTrace();
+			return result;
+		}
+	}
 	
 	private static boolean runHttpPost(final String method,
 			final ArrayList<NameValuePair> params, final String msgBody, Context c) {
@@ -263,6 +306,8 @@ public class AssertionsResource {
 		return NetworkUtilities.startBackgroundThread(runnable);
 	}
 	
+	
+	
 
 	public static Thread getAssertions_action(final Handler handler, final Context context) {
 		final Runnable runnable = new Runnable() {
@@ -270,6 +315,24 @@ public class AssertionsResource {
 				Log.i(TAG, "request assertionsList_actionlocation for the user");
 				List<SingleActionLocation> result = runHttpGetUserSingleActionLocation(VIEW_ACTION_LOCATION_VOTED, null, context);	
 				sendResult_action(result, handler, context);
+			}
+		};
+		// start group list request
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
+	
+	public static Thread checkInOntologyDb(final String title, final Handler handler, final Context context) {
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				Log.i(TAG, "SONO ALLINTERNO DI CHECKONOTOLOGYDB____________");
+				
+				ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		        nameValuePairs.add(new BasicNameValuePair("title",title));
+		        
+				
+				List<Item> result = runHttpGetUsercheckInOntologyDb(CHECK_IN_ONTOLOGY_DB, nameValuePairs, context);	
+				Log.i(TAG, "SONO ALLINTERNO DI CHECKONOTOLOGYDB____________RISULTATI OTTENUTI");
+				//sendResult_item(result, handler, context);
 			}
 		};
 		// start group list request
@@ -290,6 +353,24 @@ public class AssertionsResource {
 			public void run() {
 				
 					((ViewAssertions)context).afterAssertionsListLoaded(result);
+					//((Vote_ont_db)context).afterAssertionsListLoaded(result);
+				
+			}
+		});
+	}
+	
+	private static void sendResult_item(final List<Item> result, final Handler handler, final Context context) {
+		
+		if (handler == null || context == null) {
+			return;
+		}
+		Log.i(TAG, "Sending message");
+		handler.post(new Runnable() {
+			
+			public void run() {
+				
+					
+					((Vote_ont_db)context).afterAssertionsListLoaded(result);
 				
 			}
 		});

@@ -16,9 +16,10 @@ import android.sax.RootElement;
 import android.util.Log;
 import android.util.Xml;
 
+import com.thesisug.communication.valueobject.Item;
 import com.thesisug.communication.valueobject.SingleActionLocation;
 import com.thesisug.communication.valueobject.SingleItemLocation;
-import com.thesisug.communication.valueobject.SingleTask;
+import com.thesisug.communication.valueobject.Hint.PhoneNumber;
 
 
 public class AssertionsHandler {
@@ -66,6 +67,64 @@ public class AssertionsHandler {
         });
 		Log.i(TAG, "parsing Single ItemsInLocation XML message");
         Xml.parse(toParse, Xml.Encoding.UTF_8, root.getContentHandler());
+        Log.i(TAG, "... parsing done, return "+combine.size()+" result");
+        return combine;
+    }
+	
+	public static List<Item> parseUserItems(InputStream toParse) throws IOException, SAXException {
+		final List<Item> combine = new LinkedList<Item>();
+    	final Item current = new Item();
+    	Log.d(TAG,"Sono DENTRO AL METODO PARSEUSERITEMS____________");
+		RootElement root = new RootElement("collection");
+		Element item = root.getChild("item");
+		
+		item.setEndElementListener(new EndElementListener(){
+            public void end() {
+                combine.add(current.copy());
+                current.ontologyList = new LinkedList<String>();
+                current.dbList = new LinkedList<String>();
+            }
+        });
+		
+		item.getChild("name").setEndTextElementListener(new EndTextElementListener(){
+            public void end(String body) {
+            	Log.d(TAG,"Item name: "+body);
+            	current.name = body;
+            }
+        });
+		item.getChild("nScreen").setEndTextElementListener(new EndTextElementListener(){
+            public void end(String body) {
+            	Log.d(TAG,"Item nScreen: "+body);
+            	current.nScreen = body;
+            }
+        });
+		item.getChild("itemActionType").setEndTextElementListener(new EndTextElementListener(){
+            public void end(String body) {
+            	Log.d(TAG,"Item itemActionType: "+body);
+            	current.itemActionType = body;
+            }
+		});
+		item.getChild("ontologyList").setEndTextElementListener(new EndTextElementListener(){
+            public void end(String body) {
+            	Log.d(TAG,"Item ontologyList: "+body);
+            	current.ontologyList.add(new String(body));
+            }
+        });
+
+		item.getChild("dbList").setEndTextElementListener(new EndTextElementListener(){
+                    public void end(String body) {
+                    	Log.d(TAG,"Item dbList: "+body);
+                    	current.dbList.add(new String(body));
+                    	
+                    }
+         });
+		
+		
+		Log.d(TAG,"FINE PARSE parseUserItems");
+		Log.i(TAG, "parsing Single ItemsInLocation XML message");
+        Xml.parse(toParse, Xml.Encoding.UTF_8, root.getContentHandler());
+        Log.d(TAG,"DOPO XML PARSE parseUserItems");
+		
         Log.i(TAG, "... parsing done, return "+combine.size()+" result");
         return combine;
     }

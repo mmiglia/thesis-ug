@@ -16,6 +16,7 @@ import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,6 +36,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.SimpleAdapter.ViewBinder;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.thesisug.R;
@@ -63,6 +65,7 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 	public final static int MANAGE_GROUPS=7;
 	public final static int SYSTEM_STATUS=8;
 	public final static int VIEW_ASSERTIONS=9;
+	
 	
 	
 	private static Thread downloadEventThread, downloadTaskThread;
@@ -304,11 +307,11 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 			Log.i(TAG, "created dialog"+id);
 			return dialog;
 		}
-	
 		final ProgressDialog dialog = new ProgressDialog(this);
 		dialog.setCancelable(true);
 		return dialog;
 	}
+	
 	
 	/**
 	 * Called when user returns after login screen
@@ -377,6 +380,9 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 		if (dataComplete()){
 			combineResult(); //if events is already loaded too
 		}
+		
+		
+		
 	}
 	
 	public void afterEventLoaded(List<SingleEvent> data){

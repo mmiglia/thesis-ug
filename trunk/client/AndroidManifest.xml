@@ -151,6 +151,11 @@
         <activity android:name=".ui.Create_Assertion_action"
                   android:label="@string/app_name" android:theme="@android:style/Theme">                  
         </activity>
+      
+       <activity android:name=".ui.Vote_ont_db"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        
         
         
          <activity android:name=".ui.Assertions"
