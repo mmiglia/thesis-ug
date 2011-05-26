@@ -73,6 +73,7 @@ public class OntologyManager implements OntologyInterface {
 	}
 	 
 	
+	
 	/**
 	 * Create new item-location couple by supplying SingleItemLocation instance
 	 * @param userID unique UUID of the user

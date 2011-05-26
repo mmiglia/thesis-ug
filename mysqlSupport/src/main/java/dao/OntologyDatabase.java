@@ -430,7 +430,7 @@ public enum OntologyDatabase {
 		
 		Connection conn= (Connection) dbManager.dbConnect();
 			
-		String selectQuery="select * from Item_foundIn_Loc where Item='"+item+"'";
+		String selectQuery="select * from Item_foundIn_Loc where Item='"+item+"' and Promotion=0";
 		
 		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
 		
@@ -438,18 +438,56 @@ public enum OntologyDatabase {
 
 		try{
 			while(rs.next()){
-				OntologyDatabase.istance.updateItemNviews(item,rs.getString("Location"));
+				//OntologyDatabase.istance.updateItemNviews(item,rs.getString("Location"));
 				LocationList.add( rs.getString("Location"));
 			}
 		}catch(SQLException sqlE){
 			//TODO
 			
 		}finally{	
-			dbManager.dbDisconnect(conn);
+			
 		}
-		
+		//aggiorno il numero di visualizzazioni in Item_founIn_Loc
+		updateNviewsItem(item);
+		dbManager.dbDisconnect(conn);
 		return LocationList;
 		
+	}
+	
+	public void updateNviewsItem(String item)
+	{
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		//Starting transaction
+		QueryStatus qs=dbManager.startTransaction(conn);
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("Error during transaction starting...N_views for item not updated");
+			log.error("Error during transaction starting... N_views for item not updated");
+			dbManager.dbDisconnect(conn);
+			return;
+		}
+		String updateQuery= "update Item_foundIn_Loc set N_views=(N_views +1) where Item='"+item+"' and Promotion=0";
+		System.out.println(updateQuery);
+		qs=dbManager.customQuery(conn, updateQuery);
+		
+		if(qs.execError){
+			log.error(qs.explainError());
+			System.out.println("Error during update N_views in Item_foundIn_Loc operation.. aborting operation");
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			log.error("Error during update N_views in Item_foundIn_Loc operation.. aborting operation");
+			dbManager.dbDisconnect(conn);
+			return;
+		}
+		dbManager.commitTransaction(conn);
+		dbManager.dbDisconnect(conn);
+		return;
 	}
 	
 	public List<String> viewLocationForItemVoted(String userid,String item) 
@@ -458,8 +496,12 @@ public enum OntologyDatabase {
 		
 		Connection conn= (Connection) dbManager.dbConnect();
 			
-		String selectQuery="select * from Item_voted where Item='"+item+
-		"' and Vote=1 and Username='"+userid+"'";
+		String selectQuery="select * from Item_voted join Item_foundIn_Loc on " +
+				"Item_foundIn_Loc.Item = Item_voted.Item and " +
+				"Item_foundIn_Loc.Location = Item_voted.Location " +
+				"where Item_voted.Item='"+item+
+				"' and Item_voted.Vote=1 and Item_voted.Username='"+userid+"'"+
+				" and Item_foundIn_Loc.Promotion=0";
 		System.out.println(selectQuery);
 		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
 		
@@ -1027,7 +1069,7 @@ public enum OntologyDatabase {
 		
 		Connection conn= (Connection) dbManager.dbConnect();
 			
-		String selectQuery="select * from Action_foundIn_Loc where Action='"+action+"'";
+		String selectQuery="select * from Action_foundIn_Loc where Action='"+action+"' and Promotion=0";
 		System.out.println(selectQuery);
 		
 		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
@@ -1036,18 +1078,56 @@ public enum OntologyDatabase {
 
 		try{
 			while(rs.next()){
-				OntologyDatabase.istance.updateActionNviews(action,rs.getString("Location"));
+				//OntologyDatabase.istance.updateActionNviews(action,rs.getString("Location"));
 				LocationList.add(rs.getString("Location"));
 			}
 		}catch(SQLException sqlE){
 			//TODO
 			
 		}finally{	
-			dbManager.dbDisconnect(conn);
+			
 		}
-		
+		//aggiorno il numero di visualizzazioni in Action_founIn_Loc
+		updateNviewsAction(action);
+		dbManager.dbDisconnect(conn);
 		return LocationList;
 		
+	}
+	
+	public void updateNviewsAction(String action)
+	{
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		//Starting transaction
+		QueryStatus qs=dbManager.startTransaction(conn);
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("Error during transaction starting... N_views for action not updated");
+			log.error("Error during transaction starting... N_views for action not updated");
+			dbManager.dbDisconnect(conn);
+			return;
+		}
+		String updateQuery= "update Action_foundIn_Loc set N_views=(N_views +1) where Action='"+action+"' and Promotion=0";
+		System.out.println(updateQuery);
+		qs=dbManager.customQuery(conn, updateQuery);
+		
+		if(qs.execError){
+			log.error(qs.explainError());
+			System.out.println("Error during update N_views in Action_foundIn_Loc operation.. aborting operation");
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			log.error("Error during update N_views in Action_foundIn_Loc operation.. aborting operation");
+			dbManager.dbDisconnect(conn);
+			return;
+		}
+		dbManager.commitTransaction(conn);
+		dbManager.dbDisconnect(conn);
+		return;
 	}
 	
 	public List<String> viewLocationForActionVoted(String userid,String action) 
@@ -1056,8 +1136,12 @@ public enum OntologyDatabase {
 		
 		Connection conn= (Connection) dbManager.dbConnect();
 			
-		String selectQuery="select * from Action_voted where Action='"+action+
-		"' and Vote=1 and Username='"+userid+"'";
+		String selectQuery="select * from Action_voted join Action_foundIn_Loc on " +
+				"Action_foundIn_Loc.Action = Action_voted.Action and " +
+				"Action_foundIn_Loc.Location = Action_voted.Location " +
+				"where Action_voted.Action='"+action+
+				"' and Action_voted.Vote=1 and Action_voted.Username='"+userid+"'"+
+				" and Action_foundIn_Loc.Promotion=0";
 		
 		System.out.println(selectQuery);
 		
