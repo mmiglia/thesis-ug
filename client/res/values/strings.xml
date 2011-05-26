@@ -236,7 +236,7 @@
     <string name="action_title">Action</string>
     <string name="title_my_assertions_item">My Assertions List </string>
     <string name="title_other_assertions_item">Assertions List voted</string>
-   
+   <string name="add_location">Add location</string>
     
     <!-- TEXT TO SPEECH -->
     <string name="no_hints_found_for">No hints found for</string>

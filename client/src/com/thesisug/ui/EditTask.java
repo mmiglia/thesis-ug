@@ -10,22 +10,28 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
 
 import com.thesisug.R;
 import com.thesisug.communication.GroupResource;
@@ -38,7 +44,7 @@ import com.thesisug.notification.TaskNotification;
 public class EditTask extends Activity {
 	private static final String TAG = "thesisug - EditTask";
 	// constants for dialog box choosing
-	private static final int TIMEFROM_DIALOG_ID = 0, DEADLINE_DATE_ID = 1, TIMETO_DIALOG_ID = 2, DEADLINE_TIME_ID = 3, SAVE_DATA_ID = 4, CREATE_DATA_ID = 5, DATE_ERROR_ID=6;
+	private static final int TIMEFROM_DIALOG_ID = 0, DEADLINE_DATE_ID = 1, TIMETO_DIALOG_ID = 2, DEADLINE_TIME_ID = 3, SAVE_DATA_ID = 4, CREATE_DATA_ID = 5, DATE_ERROR_ID=6, ASSERTIONS=8;
     // constants for origin activity chooser
 	private static final int CREATE_TASK = 1, EDIT_TASK = 2; 
 	private static final int GET_USER_GROUP_DIALOG = 7;
@@ -65,6 +71,7 @@ public class EditTask extends Activity {
     
 	private String packetGroupID="0";
 	private boolean setSpinnerSelectedElementAsBundle=true;
+	String titleForCheckVoted;
 	
     @Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -161,6 +168,7 @@ public class EditTask extends Activity {
 					groupID=spinnerGroupList.getSelectedItem().toString().split("-")[0];
 					
 					//TODO Verificare la gestione dell'id del reminder e del gruppo (per ora metto -1 ad entrambi visto che è poi il sistema ad assegnare questi valori)
+					titleForCheckVoted = title.getText().toString();
 					task = new SingleTask("-1",title.getText().toString(), 
 							new XsDateTimeFormat(false,true).format(notifyStart),
 							new XsDateTimeFormat(false,true).format(notifyEnd), 
@@ -213,9 +221,20 @@ public class EditTask extends Activity {
     
     public void finishSave (boolean result) {
     	switch (currentDialog){
-    		case EDIT_TASK : dismissDialog(SAVE_DATA_ID); break;
-    		case CREATE_TASK : dismissDialog(CREATE_DATA_ID); break;
+    		case EDIT_TASK : dismissDialog(SAVE_DATA_ID); 
+    		
+    		break;
+    		case CREATE_TASK : dismissDialog(CREATE_DATA_ID);
+    		
+    		break;
     	}
+    	
+    	
+    	Intent intent1 = new Intent(this, Vote_ont_db.class);
+    	intent1.putExtra("title", "pane");
+    	startActivity(intent1);
+    	
+		
     	if (result) {
     		Intent intent = new Intent();
 			intent.putExtra("title", title.getText().toString());
@@ -232,11 +251,23 @@ public class EditTask extends Activity {
 			// (distingue fra creazione e modifica)
 			switch (currentDialog) {
 			case EDIT_TASK: Toast.makeText(EditTask.this, R.string.edit_success,
-                    Toast.LENGTH_LONG).show(); break;
+                    Toast.LENGTH_LONG).show(); 
+					
+			break;
 			case CREATE_TASK: Toast.makeText(EditTask.this, R.string.create_success,
-                    Toast.LENGTH_LONG).show(); break;
+                    Toast.LENGTH_LONG).show(); 
+			
+			break;
 			}
+			
+			
+			/*CustomizeDialog customizeDialog = new CustomizeDialog(this, EditTask.this);
+			customizeDialog.show();*/
+		
+		
 			finish();
+
+			
     	} else {
     		Toast.makeText(EditTask.this, R.string.saving_error,
                     Toast.LENGTH_LONG).show();
@@ -334,12 +365,14 @@ public class EditTask extends Activity {
             .setPositiveButton(R.string.change, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {}
             })
-            .create();
+            .create();	
 		case GET_USER_GROUP_DIALOG:
 			createDialog = new ProgressDialog(this);
 			createDialog.setCancelable(true);
 			createDialog.setMessage(getText(R.string.getting_user_group_list));
 			return createDialog;
+		//Prova dialogo ontologica-----------------------------------------------------
+			
 		}
 		return null;
 	}
