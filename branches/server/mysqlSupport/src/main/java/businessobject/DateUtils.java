@@ -16,6 +16,5 @@ public class DateUtils {
     return sdf.format(cal.getTime());
 
   }
-
 }
 

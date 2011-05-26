@@ -9,6 +9,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gdata.data.DateTime;
+
 import valueobject.Hint;
 import valueobject.SingleItemLocation;
 import valueobject.SingleActionLocation;
@@ -258,4 +260,22 @@ public enum CachingDatabase {
 		return hintList;
 	}
 
+	/*
+	 * Metodo per eliminare i record che sono da troppo tempo in cache
+	 */
+	public void cachingDelete()
+	{	// confrontare timestamp
+		DateUtils date = new DateUtils();
+		String nowDate = date.now();
+		DateTime d= DateTime.parseDate(nowDate);
+		//d.compareTo(o);
+		//Console.WriteLine(d.Millisecond.ToString());
+		
+		
+		
+		//Date d1 = rs.getTimestamp("nome 1");
+		//Date d2 = rs.getTimestamp("nome 2");
+		//d2.getTime() 
+		
+	}
 }

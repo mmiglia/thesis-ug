@@ -8,7 +8,9 @@ import org.slf4j.LoggerFactory;
 import valueobject.Hint;
 
 import dao.CachingDatabase;
-
+/* Manager per salvare, recuperare ed eliminare i dati in cache
+ * @author Anuska
+ */
 
 public class CachingManager {
 	
@@ -35,6 +37,12 @@ public class CachingManager {
 				System.out.println("Siamo in CachingManager");
 				return CachingDatabase.istance.searchLocalBusinessDB(latitude,longitude,query,distance);
 				
+			}
+			//
+			public static void cachingDelete()
+			{
+				System.out.println("Siamo in CachingManager-cachingDelete");
+				CachingDatabase.istance.cachingDelete();
 			}
 
 }

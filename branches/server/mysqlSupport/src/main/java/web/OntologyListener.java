@@ -73,57 +73,95 @@ public class OntologyListener {
 			Item item= new Item();
 			item.name=o;
 			
-			ontList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
-			item.ontologyList=ontList;
-			
-			if (!ontList.isEmpty())
-				if (OntologyReasoner.getInstance().isItem(o))
-				{	
-					item.itemActionType=1;	//è un Item
-					dList.addAll(OntologyManager.getInstance().viewLocationForItem(userid,o));
-				}
-				else
-				{	
-					item.itemActionType=0;	//è un Action
-					dList.addAll(OntologyManager.getInstance().viewLocationForAction(userid,o));
-				}
-			else
+			List<String> list1 = OntologyManager.getInstance().viewLocationForItemVoted(userid,o);
+			System.out.println("list1:"+ list1);
+			List<String> list2 = OntologyManager.getInstance().viewLocationForActionVoted(userid,o);
+			System.out.println("list2:"+ list2);
+			//l'utente non ha votato niente per quell'item
+			if (list1.isEmpty() && list2.isEmpty())
 			{
-				dList.addAll(OntologyManager.getInstance().viewLocationForItem(userid,o));
-				if (!dList.isEmpty())
-				{	
-					item.itemActionType=1;		// è un Item
-				}	
-				else	
-				{	
-					dList.addAll(OntologyManager.getInstance().viewLocationForAction(userid,o));
+				ontList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
+				item.ontologyList=ontList;
+			
+				if (!ontList.isEmpty())
+					if (OntologyReasoner.getInstance().isItem(o))
+					{	
+						item.itemActionType=1;	//è un Item
+						dList.addAll(OntologyManager.getInstance().viewLocationForItem(userid,o));
+					}
+					else
+					{	
+						item.itemActionType=0;	//è un Action
+						dList.addAll(OntologyManager.getInstance().viewLocationForAction(userid,o));
+					}
+				else
+				{
+					dList.addAll(OntologyManager.getInstance().viewLocationForItem(userid,o));
 					if (!dList.isEmpty())
-						item.itemActionType=0; //è un Action
-				}
-			}		
+					{	
+						item.itemActionType=1;		// è un Item
+					}	
+					else	
+					{	
+						dList.addAll(OntologyManager.getInstance().viewLocationForAction(userid,o));
+						if (!dList.isEmpty())
+							item.itemActionType=0; //è un Action
+					}
+				}		
 					
-			item.dbList=dList;
+				item.dbList=dList;
 		
-		 	if (item.ontologyList.isEmpty())
-		 		if (item.dbList.isEmpty())
-		 			item.nScreen=4;
-		 		else 
-		 		{
-		 			item.nScreen=3;
-		 			queryListItem.add(item);
-		 		}
-		 	else 
-		 		if (item.dbList.isEmpty())
-		 		{
-		 			item.nScreen=2;
-		 			queryListItem.add(item);
-		 		}
-		 		else
-		 		{
-		 			item.nScreen=1;
-		 			queryListItem.add(item);
-		 		}
+				if (item.ontologyList.isEmpty())
+					if (item.dbList.isEmpty())
+					{	//non ho trovato niente né in ontologia né in db 
+						//quindi non lo inserisco nella lista di ritorno
+						item.nScreen=4;
+					}
+					else 
+					{
+						//non ho trovato niente in ontologia ma qualcosa nel db
+						item.nScreen=3; 
+						queryListItem.add(item);
+					}
+				else 
+					if (item.dbList.isEmpty())
+					{
+						//ho trovato qualcosa in ontologia, ma niente nel db
+						item.nScreen=2;
+						queryListItem.add(item);
+					}
+					else
+					{	
+						//ho trovato sia in ontologia sia in db
+						item.nScreen=1;
+						queryListItem.add(item);
+					}
 		 	
+			}
+			/*
+			 * se l'utente ha già votato per quell'item ritorno nScreen=5 che significa
+			 * che non compare più la schermata di votazione perchè ha già votato
+			 */
+			else //if (list1.isEmpty() && list2.isEmpty())
+			{	if (!list1.isEmpty())
+			    {
+					item.itemActionType=1; //item
+					item.dbList=list1;
+					System.out.println("!list1.isEmpty()");
+			    }
+				else
+				{
+					item.itemActionType=0; //action
+					item.dbList=list2;
+					System.out.println("item.itemActionType="+item.itemActionType);
+					System.out.println("item.dbList="+item.dbList);
+				}
+				ontList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
+				item.ontologyList=ontList;
+				item.nScreen=5;
+				queryListItem.add(item);
+			}
+			
 		}
 		return queryListItem;
 	}	
@@ -149,7 +187,7 @@ public class OntologyListener {
 	@POST
 	@Path("/addItemInLocationObject")	
 	@Consumes("application/xml")
-	@Produces("application/xml")
+	//@Produces("application/xml")
 	/*
 	@return null if the couple item-location is already entered in ontology 
 			file or in the db, a SingleItemLocation otherwise
@@ -208,7 +246,9 @@ public class OntologyListener {
 	public List<String> viewLocationForItem(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,@QueryParam("item") String item)
 	{
 			log.info("Request to view location for item: " + item);
-			return OntologyManager.getInstance().viewLocationForItem(userid,item);
+			List<String> list = OntologyManager.getInstance().viewLocationForItem(userid,item);
+			System.out.println(list);
+			return list;
 	}
 	// modificati, da List<Location> A List<String> quindi da errore x' non è xml
 	@GET
@@ -217,7 +257,9 @@ public class OntologyListener {
 	public List<String> viewLocationForItemVoted(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,@QueryParam("item") String item)
 	{
 			log.info("Request to view location for item: " + item);
-			return OntologyManager.getInstance().viewLocationForItemVoted(userid,item);
+			List<String> list = OntologyManager.getInstance().viewLocationForItemVoted(userid,item);
+			System.out.println(list);
+			return list; 
 	}
 	
 	@GET
@@ -339,7 +381,9 @@ public class OntologyListener {
 	public List<String> viewLocationForAction(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,@QueryParam("action") String action)
 	{
 			log.info("Request to view location for action: " + action);
-			return OntologyManager.getInstance().viewLocationForAction(userid,action);
+			List<String> list = OntologyManager.getInstance().viewLocationForAction(userid,action);
+			System.out.println(list);
+			return list;
 	}
 	
 	// modificati, da List<Location> A List<String> quindi da errore x' non è xml
@@ -349,10 +393,10 @@ public class OntologyListener {
 	public List<String> viewLocationForActionVoted(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,@QueryParam("action") String action)
 	{
 			log.info("Request to view location for action: " + action);
-			//List<String> list = OntologyManager.getInstance().viewLocationForActionVoted(userid,action);
-			return OntologyManager.getInstance().viewLocationForActionVoted(userid,action);
-			//System.out.println(list);
-			//return list;
+			List<String> list = OntologyManager.getInstance().viewLocationForActionVoted(userid,action);
+			//return OntologyManager.getInstance().viewLocationForActionVoted(userid,action);
+			System.out.println(list);
+			return list;
 	}
 	
 	/*

@@ -52,6 +52,7 @@ public class LocationAwareManager {
 		needs.clear();
 		needs.addAll(needsfilter);
 		log.info("needs are "+ needs.size()+" : "+needs.toString());
+		System.out.println("needs are "+ needs.size()+" : "+needs.toString());
 		List<String> queryList = new ArrayList<String>(); // list of inferred search query string
 		/*23-5-2011
 		 * Aggiunto il controllo delle location nel db(ritorna quelle votate dall'utente)
@@ -65,9 +66,10 @@ public class LocationAwareManager {
 			queryList.addAll(OntologyManager.getInstance().viewLocationForActionVoted(userid,o));
 		}
 		log.info("querylist are "+ queryList.size()+" : "+queryList.toString());
+		System.out.println("querylist are "+ queryList.size()+" : "+queryList.toString());
 		/* Anuska
-		 * se non trovo niente nell'ontologia o nel db allora mando direttamente
-		 * la query ricevuta a google
+		 * se non trovo niente nell'ontologia o nel db allora cerco con 
+		 * la query ricevuta
 		 */
 		if (queryList.isEmpty())
 		{	
@@ -75,10 +77,10 @@ public class LocationAwareManager {
 			queryList.addAll(needs);
 		}
 		
-		
+		/*
 		List<Hint> result = new LinkedList<Hint>(); // list of search result
 		
-		/* Anuska - modificato in modo che salvi i risultati in cache con la query relativa*/
+		// Anuska - modificato in modo che salvi i risultati in cache con la query relativa
 		for (String query : queryList) 
 		{
 			List<Hint> listToAdd = MapManager.getInstance().searchLocalBusiness(
@@ -91,7 +93,53 @@ public class LocationAwareManager {
 		log.info("result are "+result.size());
 		// filter the result
 		List<Hint> toReturn = new HintManager().filterLocation(distance, latitude, longitude, result);
+		return toReturn;*/
+		log.info("querylist are "+ queryList.size()+" : "+queryList.toString());
+		
+		List<Hint> result = new LinkedList<Hint>();
+		List<Hint> toReturn= new LinkedList<Hint>();
+		List<Hint> toReturn1= new LinkedList<Hint>();
+		List<Hint> toReturn2= new LinkedList<Hint>();
+		
+		for (String query : queryList) 
+		{
+			List<Hint> result1 = new LinkedList<Hint>(); // list of search result IN CACHE
+			result1.addAll(CachingManager.searchLocalBusinessDB(
+							latitude, longitude, query,distance));
+			if (distance==0)
+			{	//significa che non ho vincoli sulla distanza, io li pongo a 50 Km
+				toReturn1 = new HintManager().filterLocation(50000, latitude, longitude, result1);
+				System.out.println("distance =0 Risultato ricerca in cache:"+ toReturn1);
+			}
+			else
+			{
+				toReturn1 = new HintManager().filterLocation(distance, latitude, longitude, result1);
+				System.out.println("distance <>0 Risultato ricerca in cache:"+ toReturn1);
+				
+			}
+			
+			
+			//Se non trovo niente allora interrogo Google
+			if (toReturn1.isEmpty())
+			{	//cerco in Google e salvo i risultati in cache
+				System.out.println("Interrogo google per query:"+query);
+					List<Hint> result2 = new LinkedList<Hint>(); // list of search result IN GOOGLE
+					List<Hint> listToAdd = new LinkedList<Hint>();
+					listToAdd = MapManager.getInstance().searchLocalBusiness(
+							latitude, longitude, query);
+					System.out.println("for string query:"+query);
+					CachingManager.cachingListHint(userid, query, latitude, longitude, distance,listToAdd);
+					System.out.println("inserito nel db");
+			
+					//filter the result
+					toReturn2 = new HintManager().filterLocation(distance, latitude, longitude, listToAdd);
+					System.out.println("Risultato ricerca in Google:"+ listToAdd);
+					toReturn.addAll(toReturn2);
+			}else toReturn.addAll(toReturn1);
+		}
+
 		return toReturn;
+		
 	}
 	
 	/**
@@ -138,8 +186,8 @@ public class LocationAwareManager {
 		System.out.println("posso trovarlo in: "+queryList);
 		
 		/* Anuska
-		 * se non trovo niente nell'ontologia o nel db allora mando direttamente
-		 * la query ricevuta a google
+		 * se non trovo niente nell'ontologia o nel db allora cerco con
+		 * la query ricevuta
 		 */
 		if (queryList.isEmpty())
 		{	
@@ -149,20 +197,76 @@ public class LocationAwareManager {
 		}
 		
 		log.info("querylist are "+ queryList.size()+" : "+queryList.toString());
-		List<Hint> result = new LinkedList<Hint>(); // list of search result
 		
-		/* Anuska - modificato in modo che salvi i risultati in cache con la query relativa*/
+		List<Hint> result = new LinkedList<Hint>();
+		/* Anuska - prima cerca nella cache*/
+		/*
 		for (String query : queryList) 
 		{
-			List<Hint> listToAdd = MapManager.getInstance().searchLocalBusiness(
-					latitude, longitude, query);
-			result.addAll(listToAdd);
-			System.out.println("for string query:"+query);
-			CachingManager.cachingListHint(userid, query, latitude, longitude, distance,listToAdd);
-			System.out.println("inserito nel db");
+			result1.addAll(CachingManager.searchLocalBusinessDB(
+							latitude, longitude, query,distance));
 		}
-		// filter the result
-		List<Hint> toReturn = new HintManager().filterLocation(distance, latitude, longitude, result);
+		List<Hint> toReturn = new HintManager().filterLocation(distance, latitude, longitude, result1);
+		System.out.println("Risultato ricerca in cache:"+ toReturn);
+		//Se non trovo niente allora interrogo Google
+		if (toReturn.isEmpty())
+		{	//cerco in Google e salvo i risultati in cache
+			for (String query : queryList) 
+			{	// Anuska - modificato in modo che salvi i risultati in cache con la query relativa
+				
+				List<Hint> listToAdd = MapManager.getInstance().searchLocalBusiness(
+						latitude, longitude, query);
+				result2.addAll(listToAdd);
+				System.out.println("for string query:"+query);
+				CachingManager.cachingListHint(userid, query, latitude, longitude, distance,listToAdd);
+				System.out.println("inserito nel db");
+			}
+			//filter the result
+			toReturn = new HintManager().filterLocation(distance, latitude, longitude, result2);
+			System.out.println("Risultato ricerca in Google:"+ result1);
+		}
+		*/
+		List<Hint> toReturn= new LinkedList<Hint>();
+		List<Hint> toReturn1= new LinkedList<Hint>();
+		List<Hint> toReturn2= new LinkedList<Hint>();
+		
+		for (String query : queryList) 
+		{
+			List<Hint> result1 = new LinkedList<Hint>(); // list of search result IN CACHE
+			result1.addAll(CachingManager.searchLocalBusinessDB(
+							latitude, longitude, query,distance));
+			if (distance==0)
+			{	//significa che non ho vincoli sulla distanza, io li pongo a 50 Km
+				toReturn1 = new HintManager().filterLocation(50000, latitude, longitude, result1);
+				System.out.println("distance =0 Risultato ricerca in cache:"+ toReturn1);
+			}
+			else
+			{
+				toReturn1 = new HintManager().filterLocation(distance, latitude, longitude, result1);
+				System.out.println("distance <>0 Risultato ricerca in cache:"+ toReturn1);
+				
+			}
+			
+			
+			//Se non trovo niente allora interrogo Google
+			if (toReturn1.isEmpty())
+			{	//cerco in Google e salvo i risultati in cache
+				System.out.println("Interrogo google per query:"+query);
+					List<Hint> result2 = new LinkedList<Hint>(); // list of search result IN GOOGLE
+					List<Hint> listToAdd = new LinkedList<Hint>();
+					listToAdd = MapManager.getInstance().searchLocalBusiness(
+							latitude, longitude, query);
+					System.out.println("for string query:"+query);
+					CachingManager.cachingListHint(userid, query, latitude, longitude, distance,listToAdd);
+					System.out.println("inserito nel db");
+			
+					//filter the result
+					toReturn2 = new HintManager().filterLocation(distance, latitude, longitude, listToAdd);
+					System.out.println("Risultato ricerca in Google:"+ listToAdd);
+					toReturn.addAll(toReturn2);
+			}else toReturn.addAll(toReturn1);
+		}
+
 		return toReturn;
 	}
 	/*
