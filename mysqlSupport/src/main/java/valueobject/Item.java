@@ -18,9 +18,10 @@ public class Item {
 	public String name;
 	public int nScreen; //il tipo di schermata
 	public int itemActionType; //1=item,0=action
-	public List<String> ontologyList;
-	public List<String> dbList;
-
+	//public List<String> ontologyList;
+	//public List<String> dbList;
+	public String ontologyList=new String();
+	public String dbList=new String();
 	
 	public Item()
 	{
@@ -31,7 +32,7 @@ public class Item {
 	 * Constructor for this class	 
 	 * @param item
 	 */
-	public Item(String name,int nScreen,List<String> ontologyList,List<String> dbList) 
+	public Item(String name,int nScreen,String ontologyList,String dbList) 
 	{
 		this.name = name;
 		this.nScreen = nScreen;
