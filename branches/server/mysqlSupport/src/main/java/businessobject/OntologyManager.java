@@ -121,6 +121,17 @@ public class OntologyManager implements OntologyInterface {
 		return OntologyDatabase.istance.voteItem(userid,item,location);
 	}
 	
+	/**
+	 * vote for an item-locationList
+	 * 
+	 * @param userid unique UUID of the user
+	 * @return the couple item-location if the vote is been saved
+	 */
+	public void voteItemLocationList(String userid,String item,List<String> location) 
+	{
+		OntologyDatabase.istance.voteItemLocationList(userid,item,location);
+	}
+	
 	
 	/**
 	 * view location for an item
@@ -234,6 +245,17 @@ public class OntologyManager implements OntologyInterface {
 	public SingleActionLocation voteAction(String userid,String action, String location) 
 	{
 		return OntologyDatabase.istance.voteAction(userid,action,location);
+	}
+	
+	/**
+	 * vote for an action-location
+	 * 
+	 * @param userid unique UUID of the user
+	 * @return the couple action-location if the vote is been saved
+	 */
+	public void voteActionLocationList(String userid,String action, List<String> location) 
+	{
+		OntologyDatabase.istance.voteActionLocationList(userid,action,location);
 	}
 	
 	/**

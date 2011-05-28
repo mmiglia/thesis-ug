@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -300,6 +301,92 @@ public enum OntologyDatabase {
 		dbManager.dbDisconnect(conn);
 		
 		return itemLocationToReturn;
+	}
+	
+	//voteItemLocationList
+	public void voteItemLocationList(String user,String item,List<String> location)
+	{	
+		Connection conn= (Connection) dbManager.dbConnect();
+		System.out.println("Sono in voteItemLocationList ");
+		/*Seleziono il rank dell'utente che ha votato per aggiornare il voto totale della
+		  coppia item-location
+		*/
+		String rank=  userRank(user);
+		System.out.println("rank utente: "+ rank);
+		
+		DateUtils date = new DateUtils();
+		String insertDate = date.now();
+		String o;
+		ListIterator<String> it = location.listIterator();
+       while(it.hasNext())
+       {	
+    	o=it.next();  
+       
+		//Starting transaction
+		QueryStatus qs=dbManager.startTransaction(conn);
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("Error during transaction starting... Vote for item not added");
+			log.error("Error during transaction starting... Vote for item not added");
+			continue;// passa alla prossima iterazione del while
+		}	
+		
+		// Inserisco nella tabella Item_Voted che l'utente user ha votato per una item-Location
+		String insertQuery="Insert into Item_voted(Item,Location,Username,Vote,Date) values ('"+item+"','"+o+"','"+user+"',1,'"+insertDate+"') ";
+		System.out.println(insertQuery);
+		qs=dbManager.customQuery(conn, insertQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			System.out.println("Error during vote item '"+item+"','"+o+"' "+"... not added - the user has been voted");
+			log.error("Error during vote item '"+item+"','"+o+"' "+"... not added - - the user has been voted");
+			continue;// passa alla prossima iterazione del while
+		}
+		
+		// Inserisco nella tabella Item_voted_historical che l'utente user ha votato per una item-Location
+		insertQuery="Insert into Item_voted_historical(Item,Location,Username,Vote,Date) values ('"+item+"','"+o+"','"+user+"',1,'"+insertDate+"') ";
+		System.out.println(insertQuery);
+		qs=dbManager.customQuery(conn, insertQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			System.out.println("Error during vote item '"+item+"','"+o+"' "+"... not added in Item_voted_historical");
+			log.error("Error during vote item '"+item+"','"+o+"' "+"... not added in Item_voted_historical");
+			continue;// passa alla prossima iterazione del while
+		}
+		
+		
+		
+		String updateQuery= "update Item_foundIn_Loc set Vote = (Vote+"+rank+"),N_votes=(N_votes + 1) where Item='"+item+"' and Location='"+o+"'";
+		System.out.println(updateQuery);
+		qs=dbManager.customQuery(conn, updateQuery);
+		
+		if(qs.execError){
+			log.error(qs.explainError());
+			System.out.println("Error during update Vote in Item_foundIn_Loc operation.. aborting operation");
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			log.error("Error during update Vote in Item_foundIn_Loc operation.. aborting operation");
+			continue;// passa alla prossima iterazione del while
+		}
+		
+		log.info("Vote from "+user+" for (item: "+item+" location: "+o+")... added!");
+		dbManager.commitTransaction(conn);
+       }
+       dbManager.dbDisconnect(conn);
 	}
 	
 	//voteItemByAdding
@@ -941,6 +1028,92 @@ public enum OntologyDatabase {
 		dbManager.dbDisconnect(conn);
 		
 		return actionLocationToReturn;
+	}
+	
+	//voteActionLocationList
+	public void voteActionLocationList(String user,String action,List<String> location)
+	{	
+		Connection conn= (Connection) dbManager.dbConnect();
+		System.out.println("Sono in voteActionLocationList ");
+		/*Seleziono il rank dell'utente che ha votato per aggiornare il voto totale della
+		  coppia item-location
+		*/
+		String rank=  userRank(user);
+		System.out.println("rank utente: "+ rank);
+		
+		DateUtils date = new DateUtils();
+		String insertDate = date.now();
+		String o;
+		ListIterator<String> it = location.listIterator();
+       while(it.hasNext())
+       {	
+    	o=it.next();  
+       
+		//Starting transaction
+		QueryStatus qs=dbManager.startTransaction(conn);
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("Error during transaction starting... Vote for action not added");
+			log.error("Error during transaction starting... Vote for action not added");
+			continue;// passa alla prossima iterazione del while
+		}	
+		
+		// Inserisco nella tabella Item_Voted che l'utente user ha votato per una item-Location
+		String insertQuery="Insert into Action_voted(Action,Location,Username,Vote,Date) values ('"+action+"','"+o+"','"+user+"',1,'"+insertDate+"') ";
+		System.out.println(insertQuery);
+		qs=dbManager.customQuery(conn, insertQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			System.out.println("Error during vote action '"+action+"','"+o+"' "+"... not added - the user has been voted");
+			log.error("Error during vote action '"+action+"','"+o+"' "+"... not added - - the user has been voted");
+			continue;// passa alla prossima iterazione del while
+		}
+		
+		// Inserisco nella tabella Item_voted_historical che l'utente user ha votato per una item-Location
+		insertQuery="Insert into Action_voted_historical(Action,Location,Username,Vote,Date) values ('"+action+"','"+o+"','"+user+"',1,'"+insertDate+"') ";
+		System.out.println(insertQuery);
+		qs=dbManager.customQuery(conn, insertQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			System.out.println("Error during vote action '"+action+"','"+o+"' "+"... not added in Action_voted_historical");
+			log.error("Error during vote action '"+action+"','"+o+"' "+"... not added in Action_voted_historical");
+			continue;// passa alla prossima iterazione del while
+		}
+		
+		
+		
+		String updateQuery= "update Action_foundIn_Loc set Vote = (Vote+"+rank+"),N_votes=(N_votes + 1) where Action='"+action+"' and Location='"+o+"'";
+		System.out.println(updateQuery);
+		qs=dbManager.customQuery(conn, updateQuery);
+		
+		if(qs.execError){
+			log.error(qs.explainError());
+			System.out.println("Error during update Vote in Action_foundIn_Loc operation.. aborting operation");
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			log.error("Error during update Vote in Action_foundIn_Loc operation.. aborting operation");
+			continue;// passa alla prossima iterazione del while
+		}
+		
+		log.info("Vote from "+user+" for (action: "+action+" location: "+o+")... added!");
+		dbManager.commitTransaction(conn);
+       }
+       dbManager.dbDisconnect(conn);
 	}
 	
 	 //voteActionByAdding

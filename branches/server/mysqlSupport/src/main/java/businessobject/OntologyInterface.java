@@ -40,6 +40,14 @@ public interface OntologyInterface {
 	public SingleItemLocation voteItem(String userid,String item, String location) ;
 	
 	/**
+	 * vote for an item-locationList
+	 * 
+	 * @param userid unique UUID of the user
+	 * @return the couple item-location if the vote is been saved
+	 */
+	public void voteItemLocationList(String userid,String item,List<String> location); 
+	
+	/**
 	 * Retrieve all item-location entered by this user
 	 * 
 	 * @param userid unique UUID of the user
@@ -109,6 +117,14 @@ public interface OntologyInterface {
 	 * @return the couple action-location if the vote is been saved
 	 */
 	public SingleActionLocation voteAction(String userid,String action, String location);
+	
+	/**
+	 * vote for an action-location
+	 * 
+	 * @param userid unique UUID of the user
+	 * @return the couple action-location if the vote is been saved
+	 */
+	public void voteActionLocationList(String userid,String action, List<String> location);
 	
 	/**
 	 * view location for an action

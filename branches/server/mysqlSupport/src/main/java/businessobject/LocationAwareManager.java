@@ -177,6 +177,7 @@ public class LocationAwareManager {
 		 * Aggiunto il controllo delle location nel db(ritorna quelle votate dall'utente)
 		 * @author Anuska
 		 */
+		
 		for (String o : needs) 
 		{	System.out.println("Sono in LocationAwareManager checkLocationSingle for needs:"+o);
 			queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
