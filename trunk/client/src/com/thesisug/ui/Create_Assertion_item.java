@@ -62,7 +62,7 @@ public class Create_Assertion_item extends Activity{
 				location = editLocation.getText().toString();
 				description = editDescription.getText().toString();
 				Log.i(TAG,"Parole dai Edittext:" + object + location);
-				Toast.makeText(Create_Assertion_item.this, "Parole dai Edittext:" + object + location,Toast.LENGTH_LONG).show();
+				//Toast.makeText(Create_Assertion_item.this, "Parole dai Edittext:" + object + location,Toast.LENGTH_LONG).show();
 				
 				itemLocation = new SingleItemLocation(object,location);
 				itemLocation.item = object;
@@ -89,11 +89,21 @@ public class Create_Assertion_item extends Activity{
 		 if (result)
 		 { 
 			Toast.makeText(Create_Assertion_item.this, R.string.edit_success,Toast.LENGTH_LONG).show();
-		 	intent = new Intent();
+			intent = new Intent(getApplicationContext(), Assertions.class);
+			intent.putExtra("item", editObject.getText().toString());
+			intent.putExtra("location", editLocation.getText().toString());
+			intent.putExtra("description", editDescription.getText().toString());
+			
+			startActivityForResult(intent, 0);
+			finish();
+			
+			/*
+			intent = new Intent();
 			intent.putExtra("item", editObject.getText().toString());
 			intent.putExtra("location", editLocation.getText().toString());
 			intent.putExtra("description", editDescription.getText().toString());
 			setResult(RESULT_OK, intent);
+			finish();*/
 		 }
 		 else
 			 Toast.makeText(Create_Assertion_item.this, R.string.saving_error, Toast.LENGTH_LONG).show();

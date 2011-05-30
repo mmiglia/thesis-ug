@@ -56,7 +56,7 @@ public class Create_Assertion_action extends Activity{
 				location = editLocation.getText().toString();
 				description = editDescription.getText().toString();
 				Log.i(TAG,"Parole dai Edittext:" + action + location);
-				Toast.makeText(Create_Assertion_action.this, "Parole dai Edittext:" + action + location,Toast.LENGTH_LONG).show();
+				//Toast.makeText(Create_Assertion_action.this, "Parole dai Edittext:" + action + location,Toast.LENGTH_LONG).show();
 				
 				actionLocation = new SingleActionLocation(action,location);
 				actionLocation.action = action;
@@ -81,9 +81,10 @@ public class Create_Assertion_action extends Activity{
 	 public void finishSave (boolean result) {
 		 
 		 if (result)
+		 {
 			 Toast.makeText(Create_Assertion_action.this, R.string.edit_success,Toast.LENGTH_LONG).show();
-		 	
-		 
+		 	finish();
+		 }
 		 else
 			 Toast.makeText(Create_Assertion_action.this, R.string.saving_error, Toast.LENGTH_LONG).show();
 		 

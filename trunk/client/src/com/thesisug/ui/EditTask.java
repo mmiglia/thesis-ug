@@ -231,7 +231,7 @@ public class EditTask extends Activity {
     	
     	
     	Intent intent1 = new Intent(this, Vote_ont_db.class);
-    	intent1.putExtra("title", "pane");
+    	intent1.putExtra("title", title.getText().toString());
     	startActivity(intent1);
     	
 		
