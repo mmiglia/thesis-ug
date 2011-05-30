@@ -21,6 +21,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.thesisug.communication.valueobject.Item;
+import com.thesisug.communication.valueobject.ItemLocationList;
 import com.thesisug.communication.valueobject.SingleActionLocation;
 import com.thesisug.communication.valueobject.SingleItemLocation;
 import com.thesisug.communication.xmlparser.AssertionsHandler;
@@ -54,6 +55,9 @@ public class AssertionsResource {
 	private static final String DELETE_ACTION_OBJECT="/ontology/deleteVoteForActionLocationObject";
 	
 	private static final String CHECK_IN_ONTOLOGY_DB = "/ontology/checkInOntologyDb";
+	private static final String VOTE_ITEM_LIST = "/ontology/voteItemLocationList";
+	private static final String ADD_LOCATION = "/ontology/addLocation";
+	
 	
 	
 	
@@ -130,6 +134,28 @@ public class AssertionsResource {
 		// send the request to network
 		HttpResponse response = NetworkUtilities
 				.sendRequest(newClient, request);
+		Log.i(TAG, NetworkUtilities.SERVER_URI + "/" + util.getUsername(c) + method +"?"+ query + "FATTO!");
+		// if we cannot connect to the server
+		if (!HttpResponseStatusCodeValidator.isValidRequest(response.getStatusLine().getStatusCode())) {
+			Log.i(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
+			return false; // return null if there's problem with connection
+		}
+			return true;
+	}
+	
+	private static boolean runHttpUserAddLocation(final String method,
+			final ArrayList<NameValuePair> params, Context c) {
+		
+		DefaultHttpClient newClient = NetworkUtilities.createClient();
+		String query = (params == null) ? "" : URLEncodedUtils.format(params,
+				"UTF-8");
+		AccountUtil util = new AccountUtil();
+		HttpGet request = new HttpGet(NetworkUtilities.SERVER_URI + "/"
+				+ util.getUsername(c) + method +"?"+ query);
+		Log.i(TAG, NetworkUtilities.SERVER_URI + "/" + util.getUsername(c) + method +"?"+ query);
+		request.addHeader("Cookie", "sessionid="+util.getToken(c));
+		// send the request to network
+		HttpResponse response = NetworkUtilities.sendRequest(newClient, request);
 		Log.i(TAG, NetworkUtilities.SERVER_URI + "/" + util.getUsername(c) + method +"?"+ query + "FATTO!");
 		// if we cannot connect to the server
 		if (!HttpResponseStatusCodeValidator.isValidRequest(response.getStatusLine().getStatusCode())) {
@@ -294,6 +320,22 @@ public class AssertionsResource {
 	}
 
 	
+	public static Thread addLocation(final String title, final String location,final Handler handler, final Context context) {
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				Log.i(TAG, "request addLocation for title : " + title + " e location: "+ location +" for the user");
+				ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		        nameValuePairs.add(new BasicNameValuePair("title",title));
+		        nameValuePairs.add(new BasicNameValuePair("location",location));
+				Boolean result = runHttpUserAddLocation(ADD_LOCATION, nameValuePairs, context);	
+				sendResult_Loc(result, handler, context);
+			}
+		};
+		// start group list request
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
+	
+	
 	public static Thread getAssertions(final Handler handler, final Context context) {
 		final Runnable runnable = new Runnable() {
 			public void run() {
@@ -332,7 +374,7 @@ public class AssertionsResource {
 				
 				List<Item> result = runHttpGetUsercheckInOntologyDb(CHECK_IN_ONTOLOGY_DB, nameValuePairs, context);	
 				Log.i(TAG, "SONO ALLINTERNO DI CHECKONOTOLOGYDB____________RISULTATI OTTENUTI");
-				//sendResult_item(result, handler, context);
+				sendResult_item(result, handler, context);
 			}
 		};
 		// start group list request
@@ -353,6 +395,23 @@ public class AssertionsResource {
 			public void run() {
 				
 					((ViewAssertions)context).afterAssertionsListLoaded(result);
+					//((Vote_ont_db)context).afterAssertionsListLoaded(result);
+				
+			}
+		});
+	}
+	
+	
+	private static void sendResult_Loc(final Boolean result,
+			final Handler handler, final Context context) {
+		if (handler == null || context == null) {
+			return;
+		}
+		Log.i(TAG, "Sending message");
+		handler.post(new Runnable() {
+			public void run() {
+				
+				((Vote_ont_db)context).finishSave_Loc(result);
 					//((Vote_ont_db)context).afterAssertionsListLoaded(result);
 				
 			}
@@ -409,7 +468,46 @@ public class AssertionsResource {
 				handler.post(new Runnable() {
 					public void run() {
 						
-						((Create_Assertion_item) context).finishSave(result);
+						//((Create_Assertion_item) context).finishSave(result);
+						if (context instanceof Create_Assertion_item)
+							((Create_Assertion_item) context).finishSave(result);
+						else
+							((Vote_ont_db) context).finishSave(result);
+						
+						
+					}
+				});
+			}
+		};
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
+	
+	
+	public static Thread voteList(final ItemLocationList toVoted, final Handler handler, final Context context) {
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				
+				
+				String body = AssertionsHandler.formatItemLocationList(toVoted);
+				
+
+				/*ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		        nameValuePairs.add(new BasicNameValuePair("item",toAdd.item));
+		        nameValuePairs.add(new BasicNameValuePair("location",toAdd.location));*/
+	
+				Log.i(TAG,body);
+				//final boolean result = runHttpAddUserSingleItemLocation(CREATE_ITEM_LOCATION, nameValuePairs, context);
+				final boolean result = runHttpPost(VOTE_ITEM_LIST, null,body, context);
+				if (handler == null || context == null) {
+					return;
+				}
+				handler.post(new Runnable() {
+					public void run() {
+						
+					
+							((Vote_ont_db) context).finishSave_voted(result);
+						
+						
 					}
 				});
 			}

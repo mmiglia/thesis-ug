@@ -8,17 +8,20 @@
         	android:layout_height="wrap_content"
         	android:id="@+id/title"
         	android:layout_below="@+id/RelativeLayout01"
-            android:text="Info sul task inserito!"
+            android:text="Information on the added task!"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:paddingBottom="3dip" />
+            android:paddingBottom="3dip" 
+            android:visibility="invisible"
+            android:textColor="#FF4500"/>
   <TextView
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
         	android:layout_below="@+id/title"
-            android:text="L'oggetto:"
+            android:text="The object:"
             android:id="@+id/title2"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:paddingBottom="3dip" />
+            android:paddingBottom="3dip" 
+            android:visibility="invisible"/>
 	    
 		<TextView
         	android:layout_width="wrap_content"
@@ -26,39 +29,44 @@
             android:id="@+id/obj"
             android:layout_below="@+id/title2"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:paddingBottom="3dip" />
+            android:paddingBottom="3dip" 
+            android:visibility="invisible"/>
    <TextView
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-            android:text="può essere trovato in:"
+            android:text="can be found in:"
             android:id="@+id/find"
             android:layout_below="@+id/obj"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:paddingBottom="3dip" />     
+            android:paddingBottom="3dip" 
+            android:visibility="invisible"/>     
 <TextView
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-            android:text="supermercato, panificio"
+            android:text=""
+            android:textColor="#00FF00"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:paddingBottom="3dip"
             android:layout_below="@+id/find" 
-            android:id="@+id/text_ont"/>
+            android:id="@+id/text_ont"
+            android:visibility="invisible"/>
             
             <TextView
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-            android:text="altri utenti hanno proposto:"
+            android:text="others have proposed:"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:paddingBottom="3dip"
               android:layout_below="@+id/text_ont" 
-            android:id="@+id/user_voted"/> 
+            android:id="@+id/user_voted"
+            android:visibility="invisible"/> 
 
  <ListView 
 		 		android:id="@+id/list_db" 
 		 		android:layout_height="fill_parent"
 		 		android:layout_width="fill_parent"
 		 		android:layout_below="@+id/user_voted"
-		 		>
+		 		android:visibility="invisible">
 	</ListView>	
 
 
@@ -66,26 +74,29 @@
                 android:layout_width="fill_parent" android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true">
 <Button 
-			android:id="@+id/goon_button"
+			android:id="@+id/add_button"
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent" 
 			android:layout_weight="1"
 			android:text="@string/add_location" 
-			android:layout_margin="3dip"/>
+			android:layout_margin="3dip"
+			android:visibility="invisible"/>
 			<Button 
-			android:id="@+id/vote"
+			android:id="@+id/vote_button"
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent" 
 			android:layout_weight="1"
 			android:text="vote" 
-			android:layout_margin="3dip"/>
+			android:layout_margin="3dip"
+			android:visibility="invisible"/>
 		<Button 
-			android:id="@+id/back_button"
+			android:id="@+id/next_button"
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent" 
 			android:layout_weight="1"
-			android:text="@string/back" 
-			android:layout_margin="3dip"/>
+			android:text="@string/Next" 
+			android:layout_margin="3dip"
+			android:visibility="invisible"/>
 </LinearLayout>
 </RelativeLayout>
 

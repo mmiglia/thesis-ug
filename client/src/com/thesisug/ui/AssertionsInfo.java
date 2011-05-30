@@ -26,6 +26,7 @@ public class AssertionsInfo extends Activity{
 			public void onClick(View v) {
 				intent = new Intent(getApplicationContext(), Assertions.class);
 				startActivityForResult(intent,0);
+				finish();
 				}
 		});
 		

@@ -17,9 +17,9 @@ import android.util.Log;
 import android.util.Xml;
 
 import com.thesisug.communication.valueobject.Item;
+import com.thesisug.communication.valueobject.ItemLocationList;
 import com.thesisug.communication.valueobject.SingleActionLocation;
 import com.thesisug.communication.valueobject.SingleItemLocation;
-import com.thesisug.communication.valueobject.Hint.PhoneNumber;
 
 
 public class AssertionsHandler {
@@ -81,8 +81,8 @@ public class AssertionsHandler {
 		item.setEndElementListener(new EndElementListener(){
             public void end() {
                 combine.add(current.copy());
-                current.ontologyList = new LinkedList<String>();
-                current.dbList = new LinkedList<String>();
+                /*current.ontologyList = new LinkedList<String>();
+                current.dbList = new LinkedList<String>();*/
             }
         });
 		
@@ -104,22 +104,31 @@ public class AssertionsHandler {
             	current.itemActionType = body;
             }
 		});
+		
+		
 		item.getChild("ontologyList").setEndTextElementListener(new EndTextElementListener(){
             public void end(String body) {
             	Log.d(TAG,"Item ontologyList: "+body);
-            	current.ontologyList.add(new String(body));
+            	current.ontologyList=body;
             }
         });
-
+		
 		item.getChild("dbList").setEndTextElementListener(new EndTextElementListener(){
                     public void end(String body) {
                     	Log.d(TAG,"Item dbList: "+body);
-                    	current.dbList.add(new String(body));
-                    	
+                    	current.dbList=body;
                     }
          });
 		
+		/*
+		Log.d(TAG,"Item lista ontologyList appena presa");
+		for (String o : current.ontologyList)
+			Log.i(TAG,o.toString());
+		Log.d(TAG,"Item lista odbList appena presa");
+		for (String o : current.dbList)
+			Log.i(TAG,o.toString());
 		
+		*/
 		Log.d(TAG,"FINE PARSE parseUserItems");
 		Log.i(TAG, "parsing Single ItemsInLocation XML message");
         Xml.parse(toParse, Xml.Encoding.UTF_8, root.getContentHandler());
@@ -210,6 +219,32 @@ public class AssertionsHandler {
 	            serializer.endTag("", "vote");
 	            
 	            serializer.endTag("", "singleItemLocation");
+	            serializer.endDocument();
+	            return writer.toString();
+	        } catch (Exception e) {
+	            throw new RuntimeException(e);
+	        } 
+	    }
+	 
+	 public static String formatItemLocationList (ItemLocationList item){
+	    	XmlSerializer serializer = Xml.newSerializer();
+	        StringWriter writer = new StringWriter();
+	        try {
+	            serializer.setOutput(writer);
+	            serializer.startDocument("UTF-8", true);
+	            serializer.startTag("", "itemLocationList ");
+	            Log.d(TAG, "start");
+	            //The id of the task is taskID field, the id of the reminder is ID field 
+	            serializer.startTag("", "item");
+	            serializer.text(item.item);
+	            serializer.endTag("", "item");
+	            Log.d(TAG, "1");
+	            serializer.startTag("", "locations");
+	            serializer.text(item.locations);
+	            serializer.endTag("", "locations");
+
+	            
+	            serializer.endTag("", "itemLocationList ");
 	            serializer.endDocument();
 	            return writer.toString();
 	        } catch (Exception e) {
