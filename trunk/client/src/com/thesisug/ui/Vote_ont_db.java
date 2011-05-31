@@ -153,7 +153,7 @@ public class Vote_ont_db extends Activity {
 */
 					
 					
-	
+					
 					}
 			});
 		 
@@ -304,24 +304,24 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 		next_button.setVisibility(View.INVISIBLE);
 		
 		
-		final CharSequence[] items = {"Vuoi trovare qualcosa?", "Vuoi Compiere un'azione?", "Vuoi raggiungere una luogo?"};
+		final CharSequence[] items = {"Do you want to find something?", "Do you want to do smething?", "Do you want to go to a place?"};
 
 		 AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		 builder.setTitle("Nessuna corrispondenza! Scegli:");
+		 builder.setTitle("No match in ontology & Db! Choose one:");
 		 builder.setItems(items, new DialogInterface.OnClickListener() {
 
 		     public void onClick(DialogInterface dialog, int item) {
 		         //Toast.makeText(getApplicationContext(), items[item], Toast.LENGTH_SHORT).show();
-		    	 if (items[item].equals("Vuoi trovare qualcosa?")){
+		    	 if (items[item].equals("Do you want to find something?")){
 		    		 intent = new Intent(getApplicationContext(), Create_Assertion_item.class);
 					startActivityForResult(intent,0);
 					finish();
-		     		}else if (items[item].equals("Vuoi Compiere un'azione?"))
+		     		}else if (items[item].equals("Do you want to do smething?"))
 		     		{
 			    		 intent = new Intent(getApplicationContext(), Create_Assertion_action.class);
 						startActivityForResult(intent,0);
 						finish();
-			     	}else if (items[item].equals("Vuoi raggiungere una luogo?"))
+			     	}else if (items[item].equals("Do you want to go to a place?"))
 		     		{
 			     		Custom_dialog_location customizeDialog_loc = new Custom_dialog_location(Vote_ont_db.this);
 						customizeDialog_loc.show();
@@ -601,12 +601,14 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 			Thread creationAssertionItem = AssertionsResource.createItemLocation(n,
 					handler, Vote_ont_db.this);
 			
+			
 		}else if (o.itemActionType.equals("0"))
 		{
 			SingleActionLocation n = new SingleActionLocation(o.name,loc_to_add);
 			
 			Thread creationAssertionAction = AssertionsResource.createActionLocation(n,
 					handler, Vote_ont_db.this);
+			
 		}	
 			
 		//Toast.makeText(Vote_ont_db.this,loc_to_add,Toast.LENGTH_LONG).show();
@@ -653,9 +655,7 @@ public void imp_location(final String location)
 			if (location.getText().toString().equals(""))
 			{
 				Toast.makeText(Vote_ont_db.this, "Empty fields!Compile it!",Toast.LENGTH_LONG).show();
-				loc= location.getText().toString();
-				imp_loc(loc);
-				dismiss();
+				
 			}else{
 				loc= location.getText().toString();
 				imp_loc(loc);
@@ -711,11 +711,14 @@ public void imp_location(final String location)
 		}
 		else if (v == cancel_button)
 		{
-			if (location.getText().toString().equals(""))
-			{
-				Toast.makeText(Vote_ont_db.this, "Empty fields!Compile it for the program to help you solve the task!",Toast.LENGTH_LONG).show();
-			}else	
+			//if (location.getText().toString().equals(""))
+			//{
+				Toast.makeText(Vote_ont_db.this, "Empty fields!If you want that the program to help you solve the task compile it next times!",Toast.LENGTH_LONG).show();
+			//}else	
+				
 				dismiss();
+				finish();
+				
 		
 			}
 		}

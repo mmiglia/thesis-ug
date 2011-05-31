@@ -70,7 +70,7 @@ public class Create_Assertion_action extends Activity{
 				
 				Thread creationAssertionAction = AssertionsResource.createActionLocation(actionLocation,
 						handler, Create_Assertion_action.this);
-			}
+				}
 		    //Fine corpo tasto SAVE----------------------------------------------------------------------------		
 				}
 		});

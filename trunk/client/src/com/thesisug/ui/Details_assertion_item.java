@@ -88,7 +88,7 @@ public class Details_assertion_item extends Activity{
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu){
-		menu.add(0,DELETE_ASSERTIONS,0,R.string.deleting).setIcon(R.drawable.trash);	
+		menu.add(0,DELETE_ASSERTIONS,0,"Delete vote!").setIcon(R.drawable.trash);	
 		menu.add(0,BACK,0,R.string.back).setIcon(R.drawable.go_previous_black);
 		return true;
 	}
