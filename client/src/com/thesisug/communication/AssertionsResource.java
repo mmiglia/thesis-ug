@@ -563,8 +563,8 @@ public class AssertionsResource {
 				handler.post(new Runnable() {
 					public void run() {
 						
-						if (context instanceof Create_Assertion_item)
-							((Create_Assertion_item) context).finishSave(result);
+						if (context instanceof Create_Assertion_action)
+							((Create_Assertion_action) context).finishSave(result);
 						else
 							((Vote_ont_db) context).finishSave(result);
 					}

@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+<TableLayout 
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:stretchColumns="1">
-
+ 
+  
     <RelativeLayout
     	android:layout_width="fill_parent"
     	android:layout_height="wrap_content"
@@ -207,6 +212,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:padding="3dip" />
         <ImageView
+        android:id="@+id/img_desc"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
         	android:src="@drawable/description"
@@ -216,10 +222,12 @@
         	android:id="@+id/task_description"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-			android:layout_below="@id/description_text"
+			android:layout_below="@id/img_desc"
         	
             android:padding="3dip" />
  
             
     </RelativeLayout>
-</TableLayout>
+    </TableLayout>
+  </ScrollView>
+
