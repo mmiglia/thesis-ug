@@ -16,6 +16,7 @@ import android.sax.RootElement;
 import android.util.Log;
 import android.util.Xml;
 
+import com.thesisug.communication.valueobject.ActionLocationList;
 import com.thesisug.communication.valueobject.Item;
 import com.thesisug.communication.valueobject.ItemLocationList;
 import com.thesisug.communication.valueobject.SingleActionLocation;
@@ -252,6 +253,32 @@ public class AssertionsHandler {
 	        } 
 	    }
 	 
+	 public static String formatActionLocationList (ActionLocationList action){
+	    	XmlSerializer serializer = Xml.newSerializer();
+	        StringWriter writer = new StringWriter();
+	        try {
+	            serializer.setOutput(writer);
+	            serializer.startDocument("UTF-8", true);
+	            serializer.startTag("", "actionLocationList ");
+	            Log.d(TAG, "start");
+	            //The id of the task is taskID field, the id of the reminder is ID field 
+	            serializer.startTag("", "action");
+	            serializer.text(action.action);
+	            serializer.endTag("", "action");
+	            Log.d(TAG, "1");
+	            serializer.startTag("", "locations");
+	            serializer.text(action.locations);
+	            serializer.endTag("", "locations");
+
+	            
+	            serializer.endTag("", "actionLocationList ");
+	            serializer.endDocument();
+	            return writer.toString();
+	        } catch (Exception e) {
+	            throw new RuntimeException(e);
+	        } 
+	    }
+	 
 	 public static String formatSingleActionLocation (SingleActionLocation actionLocation){
 	    	XmlSerializer serializer = Xml.newSerializer();
 	        StringWriter writer = new StringWriter();
@@ -292,4 +319,7 @@ public class AssertionsHandler {
 	            throw new RuntimeException(e);
 	        } 
 	    }
+	 
+	
+	 
 }

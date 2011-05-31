@@ -20,6 +20,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
+import com.thesisug.communication.valueobject.ActionLocationList;
 import com.thesisug.communication.valueobject.Item;
 import com.thesisug.communication.valueobject.ItemLocationList;
 import com.thesisug.communication.valueobject.SingleActionLocation;
@@ -56,6 +57,8 @@ public class AssertionsResource {
 	
 	private static final String CHECK_IN_ONTOLOGY_DB = "/ontology/checkInOntologyDb";
 	private static final String VOTE_ITEM_LIST = "/ontology/voteItemLocationList";
+	private static final String VOTE_ACTION_LIST = "/ontology/voteActionLocationList";
+	
 	private static final String ADD_LOCATION = "/ontology/addLocation";
 	
 	
@@ -515,6 +518,38 @@ public class AssertionsResource {
 		return NetworkUtilities.startBackgroundThread(runnable);
 	}
 	
+	
+	public static Thread voteList_action(final ActionLocationList toVoted, final Handler handler, final Context context) {
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				
+				
+				String body = AssertionsHandler.formatActionLocationList(toVoted);
+				
+
+				/*ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		        nameValuePairs.add(new BasicNameValuePair("item",toAdd.item));
+		        nameValuePairs.add(new BasicNameValuePair("location",toAdd.location));*/
+	
+				Log.i(TAG,body);
+				//final boolean result = runHttpAddUserSingleItemLocation(CREATE_ITEM_LOCATION, nameValuePairs, context);
+				final boolean result = runHttpPost(VOTE_ACTION_LIST, null,body, context);
+				if (handler == null || context == null) {
+					return;
+				}
+				handler.post(new Runnable() {
+					public void run() {
+						
+					
+							((Vote_ont_db) context).finishSave_voted(result);
+						
+						
+					}
+				});
+			}
+		};
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
 
 	public static Thread createActionLocation(final SingleActionLocation toAdd, final Handler handler, final Context context) {
 		final Runnable runnable = new Runnable() {
@@ -528,7 +563,10 @@ public class AssertionsResource {
 				handler.post(new Runnable() {
 					public void run() {
 						
-						((Create_Assertion_action) context).finishSave(result);
+						if (context instanceof Create_Assertion_item)
+							((Create_Assertion_item) context).finishSave(result);
+						else
+							((Vote_ont_db) context).finishSave(result);
 					}
 				});
 			}

@@ -61,6 +61,11 @@ public class Create_Assertion_item extends Activity{
 				object = editObject.getText().toString();
 				location = editLocation.getText().toString();
 				description = editDescription.getText().toString();
+				
+				if (object.equals("") || location.equals("")){
+					 Toast.makeText(Create_Assertion_item.this, "Empty fields!Compile!",Toast.LENGTH_LONG).show();
+				}else
+				{	
 				Log.i(TAG,"Parole dai Edittext:" + object + location);
 				//Toast.makeText(Create_Assertion_item.this, "Parole dai Edittext:" + object + location,Toast.LENGTH_LONG).show();
 				
@@ -70,13 +75,15 @@ public class Create_Assertion_item extends Activity{
 				
 				Thread creationAssertionItem = AssertionsResource.createItemLocation(itemLocation,
 						handler, Create_Assertion_item.this);
-
+				}
 		    //Fine corpo tasto SAVE----------------------------------------------------------------------------		
 				}
 		});
 		
 		back.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
+				intent = new Intent(getApplicationContext(), Assertions.class);
+				startActivityForResult(intent,0);
 				finish();
 				}
 		});
