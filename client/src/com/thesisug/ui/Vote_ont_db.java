@@ -2,7 +2,6 @@ package com.thesisug.ui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -33,6 +32,7 @@ import android.widget.Toast;
 
 import com.thesisug.R;
 import com.thesisug.communication.AssertionsResource;
+import com.thesisug.communication.valueobject.ActionLocationList;
 import com.thesisug.communication.valueobject.Item;
 import com.thesisug.communication.valueobject.ItemLocationList;
 import com.thesisug.communication.valueobject.SingleActionLocation;
@@ -67,7 +67,7 @@ public class Vote_ont_db extends Activity {
 	List<String> locationsVoted;
 	String loc_to_add;
 	List<String> list_vote = new LinkedList<String>();
-	
+	Thread VoteAssertion;
 
 	
 	
@@ -179,10 +179,10 @@ public class Vote_ont_db extends Activity {
 					
 					//Toast.makeText(getBaseContext(), locationsList, Toast.LENGTH_LONG).show();
 					
-					
-					Thread VoteAssertion = AssertionsResource.voteList(new ItemLocationList(o.name,locationsList),
-							handler, Vote_ont_db.this);
-					
+					if (o.itemActionType.equals("1"))
+						VoteAssertion = AssertionsResource.voteList(new ItemLocationList(o.name,locationsList),handler, Vote_ont_db.this);
+					else
+						VoteAssertion = AssertionsResource.voteList_action(new ActionLocationList(o.name,locationsList),handler, Vote_ont_db.this);
 					
 					}
 			});
@@ -192,43 +192,85 @@ public class Vote_ont_db extends Activity {
 					
 					if (it.hasNext()) {
 						
-						o = it.next();
-
-							if (o.itemActionType.equals("1")){
-						    	title2.setText("The object: ");
-							  	find.setText("can be found in ");
-							}
-							else{
-							  	title2.setText("The action: ");
-							  	find.setText("can do in ");
-							}
-					  
-							txt_Object.clearComposingText();
-							txt_Ont.clearComposingText();
-							txt_Object.setText(o.name);
-					  
-							if (o.ontologyList.equals(""))
-								txt_Ont.setText("Nessuna corrispondenza nell'ontologia!");
-							else
-								txt_Ont.setText(o.ontologyList);
-					  
-							locations = new ArrayList<String>();
-				       
-							String[] location = o.dbList.split(",");
-							locations.addAll(Arrays.asList(location));
+						if (o.itemActionType.equals("1")){
+					    	title2.setText("The object:");
+						  	find.setText("can be found in ");
+						}
+						else{
+						  	title2.setText("The action: ");
+						  	find.setText("can do in ");
+						}
+				  
+						txt_Object.clearComposingText();
+						txt_Ont.clearComposingText();
+						txt_Object.setText(o.name);
+				  
+						if (o.ontologyList.equals(""))
+							txt_Ont.setText("No match in the ontology!");
+						else
+							txt_Ont.setText(o.ontologyList);
+				  
+						locations = new ArrayList<String>();
+			       
+						String[] location = o.dbList.split(",");
+						locations.addAll(Arrays.asList(location));
+					
+						//Toast.makeText(getBaseContext(), "Lista: " + locations, Toast.LENGTH_LONG).show();
+						if(locations==null || locations.size()==0 || locations.get(0).equals("")){
+							Toast.makeText(getBaseContext(), "No vote from users", Toast.LENGTH_LONG).show();
+							locations.remove("");
+						}else
+						{
 						
-							l1.setAdapter(new assertionsListAdapter(Vote_ont_db.this,locations));
-				
-							titleText.setVisibility(View.VISIBLE);
-							title2.setVisibility(View.VISIBLE);
-							txt_Object.setVisibility(View.VISIBLE);
-							find .setVisibility(View.VISIBLE);
-							text_ont.setVisibility(View.VISIBLE); 
-							user_voted.setVisibility(View.VISIBLE);
-							l1 .setVisibility(View.VISIBLE);
-							add_button.setVisibility(View.VISIBLE);
-							vote_button.setVisibility(View.VISIBLE);
-							next_button.setVisibility(View.VISIBLE);
+						l1.setAdapter(new assertionsListAdapter(Vote_ont_db.this,locations));
+						
+						l1.setOnItemClickListener(new OnItemClickListener(){
+
+							@Override
+							public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+									long arg3) {
+								
+								//checkBoxItem = (CheckBox)findViewById(R.id.checkbox);
+									//LinkedHashMap item = (LinkedHashMap) (arg0.getItemAtPosition(arg2));
+									//SingleItemLocation itemLocation = (SingleItemLocation) item.get(ITEM_DATA);
+									//if (!checkBoxItem.isChecked())
+									//{
+								checkBoxItem =(CheckBox) arg1.findViewById(R.id.checkbox);	
+								
+								
+								
+								if (!checkBoxItem.isChecked())
+								{
+									list_vote.add(locations.get(arg2).toString());
+										
+										checkBoxItem.setChecked(true);
+									}
+									else
+									{
+										list_vote.remove(locations.get(arg2).toString());
+										checkBoxItem.setChecked(false);
+									}	
+									
+									//Toast.makeText(getBaseContext(), "Details for "+locations.get(arg2).toString(), Toast.LENGTH_LONG).show();
+									//Toast.makeText(getBaseContext(), list_vote.toString(), Toast.LENGTH_LONG).show();
+									
+							
+							}
+							 
+						 });
+						
+						}
+						
+						titleText.setVisibility(View.VISIBLE);
+						title2.setVisibility(View.VISIBLE);
+						txt_Object.setVisibility(View.VISIBLE);
+						find .setVisibility(View.VISIBLE);
+						text_ont.setVisibility(View.VISIBLE); 
+						user_voted.setVisibility(View.VISIBLE);
+						l1 .setVisibility(View.VISIBLE);
+						add_button.setVisibility(View.VISIBLE);
+						vote_button.setVisibility(View.VISIBLE);
+						next_button.setVisibility(View.VISIBLE);
 							
 						 
 					}else
@@ -339,12 +381,12 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 				
 				
 				if (o.itemActionType.equals("1")){
-			    	title2.setText("L'oggetto: ");
-				  	find.setText("può essere trovato in ");
+			    	title2.setText("The object:");
+				  	find.setText("can be found in ");
 				}
 				else{
-				  	title2.setText("L'azione: ");
-				  	find.setText("si può compiere in ");
+				  	title2.setText("The action: ");
+				  	find.setText("can do in ");
 				}
 		  
 				txt_Object.clearComposingText();
@@ -352,7 +394,7 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 				txt_Object.setText(o.name);
 		  
 				if (o.ontologyList.equals(""))
-					txt_Ont.setText("Nessuna corrispondenza nell'ontologia!");
+					txt_Ont.setText("No match in the ontology!");
 				else
 					txt_Ont.setText(o.ontologyList);
 		  
@@ -360,13 +402,20 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 	       
 				String[] location = o.dbList.split(",");
 				locations.addAll(Arrays.asList(location));
-			
-				l1.setAdapter(new assertionsListAdapter(this,locations));
+				//Toast.makeText(getBaseContext(), "Lista: " + locations, Toast.LENGTH_LONG).show();
 				
-				l1.setOnItemClickListener(new OnItemClickListener(){
+				if(locations==null || locations.size()==0 || locations.get(0).equals("")){
+					Toast.makeText(getBaseContext(), "No vote from users", Toast.LENGTH_LONG).show();
+					locations.remove("");
+					
+				}else
+				{	
+					l1.setAdapter(new assertionsListAdapter(this,locations));
+				
+					l1.setOnItemClickListener(new OnItemClickListener(){
 
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+						@Override
+						public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 							long arg3) {
 						
 						//checkBoxItem = (CheckBox)findViewById(R.id.checkbox);
@@ -374,13 +423,13 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 							//SingleItemLocation itemLocation = (SingleItemLocation) item.get(ITEM_DATA);
 							//if (!checkBoxItem.isChecked())
 							//{
-						checkBoxItem =(CheckBox) arg1.findViewById(R.id.checkbox);	
+							checkBoxItem =(CheckBox) arg1.findViewById(R.id.checkbox);	
 						
 						
 						
-						if (!checkBoxItem.isChecked())
-						{
-							list_vote.add(locations.get(arg2).toString());
+							if (!checkBoxItem.isChecked())
+							{
+								list_vote.add(locations.get(arg2).toString());
 								
 								checkBoxItem.setChecked(true);
 							}
@@ -394,10 +443,10 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 							//Toast.makeText(getBaseContext(), list_vote.toString(), Toast.LENGTH_LONG).show();
 							
 					
-					}
+						}
 					 
-				 });
-				
+					});
+				}
 				
 				
 				titleText.setVisibility(View.VISIBLE);
@@ -551,6 +600,7 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 			
 			Thread creationAssertionItem = AssertionsResource.createItemLocation(n,
 					handler, Vote_ont_db.this);
+			
 		}else if (o.itemActionType.equals("0"))
 		{
 			SingleActionLocation n = new SingleActionLocation(o.name,loc_to_add);
@@ -568,6 +618,7 @@ public void imp_location(final String location)
 		location_for_location = location;
 		
 		Thread creationAssertionAction = AssertionsResource.addLocation(title,location_for_location,handler, Vote_ont_db.this);
+		
 		finish();
 	}
 	
@@ -599,11 +650,18 @@ public void imp_location(final String location)
 		public void onClick(View v) {
 		/** When OK Button is clicked, dismiss the dialog */
 		if (v == add_button){
-			loc= location.getText().toString();
-			
-			imp_loc(loc);
-			dismiss();
-		}
+			if (location.getText().toString().equals(""))
+			{
+				Toast.makeText(Vote_ont_db.this, "Empty fields!Compile it!",Toast.LENGTH_LONG).show();
+				loc= location.getText().toString();
+				imp_loc(loc);
+				dismiss();
+			}else{
+				loc= location.getText().toString();
+				imp_loc(loc);
+				dismiss();
+				}
+			}
 		else if (v == cancel_button)
 			dismiss();
 		}
@@ -639,15 +697,28 @@ public void imp_location(final String location)
 		public void onClick(View v) {
 		/** When OK Button is clicked, dismiss the dialog */
 		if (v == add_button){
-			loc= location.getText().toString();
 			
-			imp_location(loc);
-			dismiss();
+			if (location.getText().toString().equals(""))
+			{
+				Toast.makeText(Vote_ont_db.this, "Empty fields!Compile it!",Toast.LENGTH_LONG).show();
+				
+			}else{
+				loc= location.getText().toString();
+				imp_location(loc);
+				dismiss();
+		
+			}
 		}
 		else if (v == cancel_button)
-			dismiss();
+		{
+			if (location.getText().toString().equals(""))
+			{
+				Toast.makeText(Vote_ont_db.this, "Empty fields!Compile it for the program to help you solve the task!",Toast.LENGTH_LONG).show();
+			}else	
+				dismiss();
+		
+			}
 		}
-
 		}
 	
 	
@@ -658,6 +729,7 @@ public void imp_location(final String location)
 			Toast.makeText(Vote_ont_db.this, R.string.edit_success,Toast.LENGTH_LONG).show();
 			locations.add(loc_to_add);
 			l1.setAdapter(new assertionsListAdapter(Vote_ont_db.this,locations));
+			//check.setChecked(true);
 
 		 	/*intent = new Intent();
 			intent.putExtra("item", editObject.getText().toString());
