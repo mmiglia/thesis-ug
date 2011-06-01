@@ -22,6 +22,14 @@
 			android:defaultValue="en.lang"
 			android:entries="@array/p_lang"
 			android:entryValues="@array/p_lang_value" />
+			
+		<ListPreference
+			android:title="@string/navigation_preferences"
+			android:summary="@string/selectNavigator"
+			android:key="selected_navigator"
+			android:defaultValue="ListGoogle"
+			android:entries="@array/navig"
+			android:entryValues="@array/navigValue" />
 
 	</PreferenceCategory>
 	<!-- NOTIFICATION -->
@@ -53,6 +61,11 @@
                         android:key="notification_hint_speak"
                         android:id="@+id/notification_hint_speak" />
 	</PreferenceScreen>
+	
+	
+
+	
+	
 	
 	<!-- ADVANCED: server -->
 	<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"

@@ -238,7 +238,8 @@
     <string name="title_other_assertions_item">Assertions List voted</string>
    <string name="add_location">Add location</string>
    <string name="Next">Next</string>
-    
+    <string name="navigation_preferences">Navigation Preference</string>
+    <string name="selectNavigator">Select the navigator to use to reach the place</string>
     <!-- TEXT TO SPEECH -->
     <string name="no_hints_found_for">No hints found for</string>
     <string name="new_hints_found_for">Found new hints for</string>

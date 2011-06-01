@@ -60,6 +60,8 @@ public class AssertionsResource {
 	private static final String VOTE_ACTION_LIST = "/ontology/voteActionLocationList";
 	
 	private static final String ADD_LOCATION = "/ontology/addLocation";
+	private static final String STOP_VOTE = "/ontology/vote";
+	
 	
 	
 	
