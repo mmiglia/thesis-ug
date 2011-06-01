@@ -17,6 +17,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
@@ -185,6 +186,7 @@ public class Map extends MapActivity implements LocationListener{
 		GeoPoint placePoint =new GeoPoint((int)(Float.parseFloat(selHint.lat)*1e6),(int)(Float.parseFloat(selHint.lng)*1e6));
 		OverlayItem overlayHint=new OverlayItem(placePoint, selHint.titleNoFormatting,selHint.streetAddress);
     	place.addOverlay(overlayHint,true,selHint);
+    	
     	place.setHighlited(overlayHint);
 		txtHint.setText(selHint.titleNoFormatting);
     	mapOverlays.add(place);
@@ -295,12 +297,27 @@ public class Map extends MapActivity implements LocationListener{
 		return true;
 	}
     
+	
+	
 	private void getSelectedHintJourney(){
 		if(selectedHint!=null){
-			if(isValidURI(selectedHint.ddUrl)){
-				Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(selectedHint.ddUrl));
-				startActivity(browserIntent);
-			}else{
+			if (usersettings.getString("selected_navigator", "ListGoogle").equals("ListGoogle")){
+				Toast.makeText(getApplicationContext(), "Utilizzo ListGoosle", Toast.LENGTH_SHORT).show();
+				if(isValidURI(selectedHint.ddUrl)){
+					Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(selectedHint.ddUrl));
+					startActivity(browserIntent);
+				}
+				
+			}else if(usersettings.getString("selected_navigator", "ListGoogle").equals("Navigator")){
+				Toast.makeText(getApplicationContext(), "Utilizzo Navigator", Toast.LENGTH_SHORT).show();
+				 Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri
+			               .parse("google.navigation:q=" + selectedHint.lat + "," + selectedHint.lng));
+			       // Uri.parse("http://maps.google.com/maps?saddr=20.344,34.34&daddr=20.5666,45.345");
+			       startActivity(intent);
+			       //Speech.speak("viaggere con prudenza", false);
+			
+			}
+			else{
 				Toast.makeText(getApplicationContext(), R.string.cannot_get_journey, Toast.LENGTH_SHORT).show();
 			}
 		}else{
@@ -386,6 +403,9 @@ public class Map extends MapActivity implements LocationListener{
     	for (Hint o : result){
     		if(!o.equals(selectedHint)){
     			place.addOverlay(new OverlayItem(new GeoPoint((int)(Float.parseFloat(o.lat)*1e6),(int)(Float.parseFloat(o.lng)*1e6)), o.titleNoFormatting,o.streetAddress),false,o);
+    			
+    		
+    		
     		}
     	}
     	mapOverlays.add(place);
@@ -576,10 +596,30 @@ class MarkerOverlay extends ItemizedOverlay {
 	  btnTakeMeThere.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
-				if(hint!=null){
-					if(hint.ddUrl!=""){
-						Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(hint.ddUrl));
-						mContext.startActivity(browserIntent);
+				
+				SharedPreferences usersettings = PreferenceManager.getDefaultSharedPreferences(mContext);
+				
+				if(hint!=null)
+				{
+					
+					if (usersettings.getString("selected_navigator", "ListGoogle").equals("ListGoogle"))
+					{
+						//Toast.makeText(getApplicationContext(), "Utilizzo ListGoosle", Toast.LENGTH_SHORT).show();
+						if(hint.ddUrl!=""){
+							Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(hint.ddUrl));
+							mContext.startActivity(browserIntent);
+						}
+						
+						
+					}else if(usersettings.getString("selected_navigator", "ListGoogle").equals("Navigator"))
+					{
+						//Toast.makeText(getApplicationContext(), "Utilizzo Navigator", Toast.LENGTH_SHORT).show();
+						 Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri
+					               .parse("google.navigation:q=" + hint.lat + "," + hint.lng));
+					       
+						mContext.startActivity(intent);
+					       
+
 					}else{
 						Toast.makeText(mContext, R.string.cannot_get_journey, Toast.LENGTH_SHORT).show();
 					}

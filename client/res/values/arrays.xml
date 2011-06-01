@@ -38,6 +38,8 @@
 		<item>5 km</item>
 		<item>never</item>
 	</string-array>
+	
+	
 	<string-array name="periodValue">
 		<item>50</item>
 		<item>100</item>
@@ -51,6 +53,15 @@
 		<item>1000</item>
 		<item>5000</item>
 		<item>0</item>
+	</string-array>
+	
+	<string-array name="navig">
+		<item>List of directions from Google</item>
+		<item>Navigator turn by turn</item>
+	</string-array>
+	<string-array name="navigValue">
+		<item>ListGoogle</item>
+		<item>Navigator</item>
 	</string-array>
 	
 	<string-array name="p_lang">

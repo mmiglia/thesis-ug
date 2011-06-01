@@ -52,6 +52,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private final Handler handlerVer = new MyHandler();
 	private boolean VERSION_OK = false;
 	private String insertedURI="";
+	public String navigator;
 	private static int currentDialog=0;
 	private static SharedPreferences userSettings;
 	
@@ -81,6 +82,12 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 			//Toast.makeText(getApplicationContext(), "cambiato parser language in "+pl, Toast.LENGTH_SHORT).show();
 		}
 		
+		if (key.equals("selected_navigator")){
+			
+			navigator = userSettings.getString("selected_navigator", "ListGoogle");
+			Toast.makeText(getApplicationContext(), navigator, Toast.LENGTH_SHORT).show();
+		}
+			
 		if(key.equals("serverURI_from_text")){
 			insertedURI=PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getString("serverURI_from_text",NetworkUtilities.SERVER_URI);
 			Log.d(TAG,"insertedURI:"+insertedURI);
