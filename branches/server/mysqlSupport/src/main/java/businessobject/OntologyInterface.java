@@ -17,6 +17,22 @@ import valueobject.Location;
 */
 
 public interface OntologyInterface {
+
+	/**
+	 * The user vote for an object(item/action) because he don't want vote again for it
+	 * 
+	 * @param userid unique UUID of the user
+	 * 
+	 */
+	public void vote(String userid,String object);
+	
+	/**
+	 * The user vote for an object(item/action) because he don't want vote again for it
+	 * 
+	 * @param userid unique UUID of the user
+	 * 
+	 */
+	public boolean hasVoted(String userid,String object);
 	
 //ITEM
 	/**
@@ -165,6 +181,25 @@ public interface OntologyInterface {
 
 	
 //LOCATION
+	
+	/**
+	 * Enter in the database the couple title-location (this title can be 
+	 * made in this location)
+	 * @param user username of the user that enter the couple title-location
+	 * @param title : the title of the task
+	 * @param location : the location in wich the title can be made
+	 * @return void
+	*/
+	public void addLocation(String userid,String title,String location);
+	
+	/*
+	 * find a location for a title
+	 * @param user username of the user that are looking for a title
+	 * @param title : the title of the task
+	 * @return the location in wich the title can be made
+	 */
+	public String findLocation(String user,String title);
+	
 	/**
 	 * Enter in the database the couple location-location (this location can be 
 	 * made in this location)

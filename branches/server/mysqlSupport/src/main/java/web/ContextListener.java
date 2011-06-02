@@ -14,10 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.Hint;
-import valueobject.SingleTask;
+import businessobject.LocationAwareAllThread;
 import businessobject.LocationAwareManager;
-import businessobject.TaskManager;
-import businessobject.CachingManager;
+import businessobject.LocationAwareThread;
 
 
 /**
@@ -52,7 +51,10 @@ public class ContextListener {
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Receive ALL context from user " + userid + " from location "
 				+ latitude + ":" + longitude);
-		return LocationAwareManager.checkLocationAll(userid, latitude, longitude, distance);
+		LocationAwareAllThread locT= new LocationAwareAllThread(userid,  latitude, longitude, distance);	
+		return locT.checkLocationSingleThread(userid, latitude, longitude, distance);
+		
+		//return LocationAwareManager.checkLocationAll(userid, latitude, longitude, distance);
 	}
 
 	/**
@@ -79,8 +81,10 @@ public class ContextListener {
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request single context from user " + userid + " sentence "+sentence+" from location "
 				+ latitude + ":" + longitude);
-		System.out.println("Sono in /single");
-		return LocationAwareManager.checkLocationSingle(userid, sentence, latitude, longitude, distance);
+		LocationAwareThread locT= new LocationAwareThread(userid, sentence, latitude, longitude, distance);	
+		return locT.checkLocationSingleThread(userid, sentence, latitude, longitude, distance);
+		
+		//return LocationAwareManager.checkLocationSingle(userid, sentence, latitude, longitude, distance);
 	}	
 	
 	@GET
@@ -101,6 +105,20 @@ public class ContextListener {
 		//CachingManager.cachingListHint(userid, sentence, latitude, longitude, distance,list);
 		//return list ;
 		return LocationAwareManager.checkLocationSingle(userid, sentence, latitude, longitude, distance);
+	}
+	
+	@GET
+	@Path("/singleT")
+	//@Consumes("application/xml")
+	@Produces("application/xml")
+	public List<Hint> checkLocationSingleThread(@QueryParam("q")String sentence, @QueryParam("lat") float latitude, @QueryParam("lon") float longitude, @QueryParam("dist") int distance,
+			@PathParam("username") String userid,
+			@CookieParam("sessionid") String sessionid) {
+		log.info("Request single context from user " + userid + " sentence "+sentence+" from location "
+				+ latitude + ":" + longitude);
+		LocationAwareThread locT= new LocationAwareThread(userid, sentence, latitude, longitude, distance);	
+		return locT.checkLocationSingleThread(userid, sentence, latitude, longitude, distance);
+		//return LocationAwareManager.checkLocationSingle(userid, sentence, latitude, longitude, distance);
 	}
 	
 	
