@@ -33,6 +33,75 @@ public enum OntologyDatabase {
 	//MySQL database manager
 	private static final MySQLDBManager dbManager=new MySQLDBManager();
 
+	
+	public static void vote(String user,String object)
+	{
+		Connection conn= (Connection) dbManager.dbConnect();
+		log.info("Connected to the db");
+		
+		//Starting transaction
+		QueryStatus qs=dbManager.startTransaction(conn);
+		
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("Error during transaction starting...VOTE for object not added");
+			log.error("Error during transaction starting...VOTE for object not added");
+			dbManager.dbDisconnect(conn);
+			return;
+		}	
+		
+		
+		String insertQuery="Insert into Voted (object,username) values ('"+object+"','"+user+"')";
+		
+		qs=dbManager.customQuery(conn, insertQuery);
+		
+		System.out.println(insertQuery);
+		
+		if(qs.execError)
+		{
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			System.out.println("ERRORE: object-user già inserito nella tabella Voted");
+			log.error("Error during Location adding... Assertion not added");
+			dbManager.dbDisconnect(conn);
+		}
+	
+		log.info("Assertion added!");	
+
+		dbManager.commitTransaction(conn);	
+		dbManager.dbDisconnect(conn);	
+		
+	}
+	public static boolean hasVoted(String user,String object)
+	{
+		Connection conn= (Connection) dbManager.dbConnect();
+		boolean toReturn=false;
+		String selectQuery="Select * from Voted where username='"+user+"' and object='"+object+"'";
+		System.out.println(selectQuery);
+		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
+		
+		ResultSet rs=(ResultSet)qs.customQueryOutput;
+
+		try{
+			while(rs.next()){
+				toReturn= true;
+			}
+		}catch(SQLException sqlE){
+			//TODO
+			
+		}finally{	
+			dbManager.dbDisconnect(conn);
+		}
+		
+		return toReturn;
+		
+	}
 //ITEM
 	/**
 	 * Enter in the database the couple item-location (this item can be 
@@ -386,6 +455,9 @@ public enum OntologyDatabase {
 		log.info("Vote from "+user+" for (item: "+item+" location: "+o+")... added!");
 		dbManager.commitTransaction(conn);
        }
+       //salvo nella tabella Voted che ho votato e non voglio più essere 
+       //"disturbato" per quell'item
+       vote(user,item);
        dbManager.dbDisconnect(conn);
 	}
 	
@@ -1060,7 +1132,7 @@ public enum OntologyDatabase {
 			continue;// passa alla prossima iterazione del while
 		}	
 		
-		// Inserisco nella tabella Item_Voted che l'utente user ha votato per una item-Location
+		// Inserisco nella tabella Action_Voted che l'utente user ha votato per una action-Location
 		String insertQuery="Insert into Action_voted(Action,Location,Username,Vote,Date) values ('"+action+"','"+o+"','"+user+"',1,'"+insertDate+"') ";
 		System.out.println(insertQuery);
 		qs=dbManager.customQuery(conn, insertQuery);
@@ -1113,6 +1185,9 @@ public enum OntologyDatabase {
 		log.info("Vote from "+user+" for (action: "+action+" location: "+o+")... added!");
 		dbManager.commitTransaction(conn);
        }
+       //salvo nella tabella Voted che ho votato e non voglio più essere 
+       //"disturbato" per quell'action
+       vote(user,action);
        dbManager.dbDisconnect(conn);
 	}
 	
@@ -1480,6 +1555,84 @@ public enum OntologyDatabase {
 	}
 	
 //LOCATION
+	
+	public static void addLocation(String user,String title,String location)
+	{
+		Connection conn= (Connection) dbManager.dbConnect();
+		log.info("Connected to the db");
+		
+		//Starting transaction
+		QueryStatus qs=dbManager.startTransaction(conn);
+		
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("Error during transaction starting...location-location not added");
+			log.error("Error during transaction starting...location-location not added");
+			dbManager.dbDisconnect(conn);
+			return;
+		}	
+		
+		
+		String insertQuery="Insert into Location (title,location,username) values ('"+title+"','"+location+"','"+user+"')";
+		
+		qs=dbManager.customQuery(conn, insertQuery);
+		
+		System.out.println(insertQuery);
+		
+		if(qs.execError)
+		{
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			System.out.println("ERRORE: title già inserito nella tabella location");
+			log.error("Error during Location adding... Assertion not added");
+			dbManager.dbDisconnect(conn);
+		}
+	
+		log.info("Assertion added!");	
+
+		dbManager.commitTransaction(conn);	
+		dbManager.dbDisconnect(conn);	
+		
+	}
+	
+	public static String findLocation(String user,String title)
+	{
+		String location="";
+		
+		Connection conn= (Connection) dbManager.dbConnect();
+		
+		String selectQuery="select location from Location "+
+				"where title='"+title+"'";
+		
+		System.out.println(selectQuery);
+		
+		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
+		
+		ResultSet rs=(ResultSet)qs.customQueryOutput;
+
+		try{
+			while(rs.next()){
+				location=rs.getString("Location");
+			}
+		}catch(SQLException sqlE){
+			//TODO
+			
+		}finally{	
+			dbManager.dbDisconnect(conn);
+		}
+		
+		return location;	
+	}
+
+	
+	
+	
 	/**
 	 * Enter in the database the couple item-location (this item can be 
 	 * found in this location)

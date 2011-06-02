@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ActionLocationList {
 	
 	public String action;
-	public List<String> location;
+	public String locations;
 	
 	public ActionLocationList()
 	{
@@ -27,10 +27,10 @@ public class ActionLocationList {
 	 * Constructor for this class	 
 	 * @param item
 	 */
-	public ActionLocationList(String action,List<String> location) 
+	public ActionLocationList(String action,String locations) 
 	{
 		this.action = action;
-		this.location = location;
+		this.locations = locations;
 		
 	}
 

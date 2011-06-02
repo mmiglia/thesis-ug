@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.Hint;
+import valueobject.Item;
 import valueobject.SingleTask;
 
 import businessobject.CachingManager;
@@ -40,6 +41,7 @@ public class LocationAwareManager {
 		// get all user tasks
 		List<SingleTask> tasks= TaskManager.getInstance().retrieveAllTask(userid);
 		log.info("Retreived " + tasks.size()+" task for user "+ userid);
+		
 		List<String> needs = new ArrayList<String>(); // list of user needs
 		/* current parser implementation is just splitting tasks-title into words
 		*  future improvement such as the use of keyword extraction is strongly encouraged*/
@@ -54,6 +56,9 @@ public class LocationAwareManager {
 		log.info("needs are "+ needs.size()+" : "+needs.toString());
 		System.out.println("needs are "+ needs.size()+" : "+needs.toString());
 		List<String> queryList = new ArrayList<String>(); // list of inferred search query string
+		
+		
+		
 		/*23-5-2011
 		 * Aggiunto il controllo delle location nel db(ritorna quelle votate dall'utente)
 		 * @author Anuska
@@ -162,29 +167,43 @@ public class LocationAwareManager {
 	public static List<Hint> checkLocationSingle(String userid, String sentence, float latitude, float longitude, int distance) {
 		List<String> needs = new ArrayList<String>(); // list of user needs
 		System.out.println("Sono in LocationAwareManager checkLocationSingle ");
-		/* current parser implementation is just splitting tasks-title into words
-		 *  future improvement such as the use of keyword extraction is strongly encouraged*/
-		needs.addAll(Arrays.asList(sentence.split(" ")));
 		
-		// remove duplicates by using HashSet
-		HashSet<String> needsfilter = new HashSet<String>(needs);
-		needs.clear();
-		needs.addAll(needsfilter);
-
-		List<String> queryList = new ArrayList<String>(); // list of inferred search query string
-		
-		/*20-5-2011
-		 * Aggiunto il controllo delle location nel db(ritorna quelle votate dall'utente)
-		 * @author Anuska
+		/* 30-5-2011
+		 * Controllo se nel db Location c'è il title del task, se si interrogo 
+		 * Google con la location relativa
 		 */
-		
-		for (String o : needs) 
-		{	System.out.println("Sono in LocationAwareManager checkLocationSingle for needs:"+o);
-			queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
-			queryList.addAll(OntologyManager.getInstance().viewLocationForItemVoted(userid,o));
-			queryList.addAll(OntologyManager.getInstance().viewLocationForActionVoted(userid,o));
+		String location = OntologyManager.getInstance().findLocation(userid,sentence.toLowerCase());
+		List<String> queryList = new ArrayList<String>(); // list of inferred search query string
+		if (!location.equalsIgnoreCase(""))
+		{	
+			queryList.add(location);
 		}
-		System.out.println("posso trovarlo in: "+queryList);
+		else
+		{
+		
+			/* current parser implementation is just splitting tasks-title into words
+			 *  future improvement such as the use of keyword extraction is strongly encouraged*/
+			
+			needs.addAll(Arrays.asList(sentence.split(" ")));
+		
+			// remove duplicates by using HashSet
+			HashSet<String> needsfilter = new HashSet<String>(needs);
+			needs.clear();
+			needs.addAll(needsfilter);
+		
+			/*20-5-2011
+			 * Aggiunto il controllo delle location nel db(ritorna quelle votate dall'utente)
+			 * @author Anuska
+			 */
+		
+			for (String o : needs) 
+			{	System.out.println("Sono in LocationAwareManager checkLocationSingle for needs:"+o);
+				queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
+				queryList.addAll(OntologyManager.getInstance().viewLocationForItemVoted(userid,o));
+				queryList.addAll(OntologyManager.getInstance().viewLocationForActionVoted(userid,o));
+			}
+			System.out.println("posso trovarlo in: "+queryList);
+		}
 		
 		/* Anuska
 		 * se non trovo niente nell'ontologia o nel db allora cerco con
@@ -270,6 +289,127 @@ public class LocationAwareManager {
 
 		return toReturn;
 	}
+	
+	
+	/* 1-6-2011 thread
+	 * 
+	 */
+	
+	
+	public static List<Hint> checkLocationSingleThread(String userid, String sentence, float latitude, float longitude, int distance) {
+		List<String> needs = new ArrayList<String>(); // list of user needs
+		System.out.println("Sono in LocationAwareManager checkLocationSingleThread ");
+		
+		//mi trovo le location in cui posso soddisfare i miei needs
+		String location = OntologyManager.getInstance().findLocation(userid,sentence.toLowerCase());
+		List<String> queryList = new ArrayList<String>(); // list of inferred search query string
+		if (!location.equalsIgnoreCase(""))
+		{	
+			queryList.add(location);
+		}
+		else
+		{
+		
+			/* current parser implementation is just splitting tasks-title into words
+			 *  future improvement such as the use of keyword extraction is strongly encouraged*/
+			
+			needs.addAll(Arrays.asList(sentence.split(" ")));
+		
+			// remove duplicates by using HashSet
+			HashSet<String> needsfilter = new HashSet<String>(needs);
+			needs.clear();
+			needs.addAll(needsfilter);
+		
+			/*20-5-2011
+			 * Aggiunto il controllo delle location nel db(ritorna quelle votate dall'utente)
+			 * @author Anuska
+			 */
+		
+			for (String o : needs) 
+			{	System.out.println("Sono in LocationAwareManager checkLocationSingle for needs:"+o);
+				queryList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
+				queryList.addAll(OntologyManager.getInstance().viewLocationForItemVoted(userid,o));
+				queryList.addAll(OntologyManager.getInstance().viewLocationForActionVoted(userid,o));
+			}
+			System.out.println("posso trovarlo in: "+queryList);
+		}
+		/* Anuska
+		 * se non trovo niente nell'ontologia o nel db allora cerco con
+		 * la query ricevuta
+		 */
+		if (queryList.isEmpty())
+		{	
+			System.out.println("Nessuna corrispondenza:mando direttamente la query");
+			//queryList.add(sentence.replaceAll(" ", "%20"));
+			queryList.addAll(needs);
+		}
+		
+		log.info("querylist are "+ queryList.size()+" : "+queryList.toString());
+		
+		List<Hint> result = new LinkedList<Hint>();
+		
+		List<Hint> toReturn= new LinkedList<Hint>();
+		List<Hint> toReturn1= new LinkedList<Hint>();
+		List<Hint> toReturn2= new LinkedList<Hint>();
+		
+		
+		for (String query : queryList) 
+		{
+			List<Hint> result1 = new LinkedList<Hint>(); // list of search result IN CACHE
+			result1.addAll(CachingManager.searchLocalBusinessDB(
+							latitude, longitude, query,distance));
+			if (distance==0)
+			{	//significa che non ho vincoli sulla distanza, io li pongo a 50 Km
+				toReturn1 = new HintManager().filterLocation(50000, latitude, longitude, result1);
+				System.out.println("distance =0 Risultato ricerca in cache:"+ toReturn1);
+			}
+			else
+			{
+				toReturn1 = new HintManager().filterLocation(distance, latitude, longitude, result1);
+				System.out.println("distance <>0 Risultato ricerca in cache:"+ toReturn1);
+				
+			}
+		}	
+			
+		/*	//Se non trovo niente allora interrogo Google
+			if (toReturn1.isEmpty())
+			{	//cerco in Google e salvo i risultati in cache
+				System.out.println("Interrogo google per query:"+query);
+					List<Hint> result2 = new LinkedList<Hint>(); // list of search result IN GOOGLE
+					List<Hint> listToAdd = new LinkedList<Hint>();
+					listToAdd = MapManager.getInstance().searchLocalBusiness(
+							latitude, longitude, query);
+					System.out.println("for string query:"+query);
+					CachingManager.cachingListHint(userid, query, latitude, longitude, distance,listToAdd);
+					System.out.println("inserito nel db");
+			
+					//filter the result
+					toReturn2 = new HintManager().filterLocation(distance, latitude, longitude, listToAdd);
+					System.out.println("Risultato ricerca in Google:"+ listToAdd);
+					toReturn.addAll(toReturn2);
+			}else toReturn.addAll(toReturn1);
+		}
+*/
+		return toReturn;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/*
 	 * 13-05-2011
 	 * @author Anuska

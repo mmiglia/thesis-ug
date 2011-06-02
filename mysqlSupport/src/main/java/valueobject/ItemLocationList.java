@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ItemLocationList {
 	
 	public String item;
-	public List<String> location;
+	public String locations; // locazioni separate da una virgola
 	
 	public ItemLocationList()
 	{
@@ -27,10 +27,10 @@ public class ItemLocationList {
 	 * Constructor for this class	 
 	 * @param item
 	 */
-	public ItemLocationList(String item,List<String> location) 
+	public ItemLocationList(String item,String locations) 
 	{
 		this.item = item;
-		this.location = location;
+		this.locations = locations;
 		
 	}
 

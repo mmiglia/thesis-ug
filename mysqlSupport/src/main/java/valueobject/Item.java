@@ -17,7 +17,7 @@ public class Item {
 	
 	public String name;
 	public int nScreen; //il tipo di schermata
-	public int itemActionType; //1=item,0=action
+	public int itemActionType; //1=item,0=action,2=location
 	//public List<String> ontologyList;
 	//public List<String> dbList;
 	public String ontologyList=new String();

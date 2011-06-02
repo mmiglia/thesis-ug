@@ -33,6 +33,29 @@ public class OntologyManager implements OntologyInterface {
 		return InstanceHolder.INSTANCE;
 	}
 	
+	
+	/**
+	 * The user vote for an object(item/action) because he don't want vote again for it
+	 * 
+	 * @param userid unique UUID of the user
+	 * 
+	 */
+	public void vote(String userid,String object) 
+	{
+		OntologyDatabase.istance.vote(userid,object);
+	}
+	
+	/**
+	 * The user vote for an object(item/action) because he don't want vote again for it
+	 * 
+	 * @param userid unique UUID of the user
+	 * 
+	 */
+	public boolean hasVoted(String userid,String object) 
+	{
+		return OntologyDatabase.istance.hasVoted(userid,object);
+	}
+	
 //ITEM
 	/**
 	 * Enter in the database the couple item-location (this item can be 
@@ -298,6 +321,26 @@ public class OntologyManager implements OntologyInterface {
 	
 	
 //LOCATION
+	/**
+	 * Enter in the database the couple title-location (this title can be 
+	 * made in this location)
+	 * @param user username of the user that enter the couple title-location
+	 * @param title : the title of the task
+	 * @param location : the location in wich the title can be made
+	 * @return void
+	*/
+	public void addLocation(String user,String title,String location)
+	{
+		OntologyDatabase.istance.addLocation(user,title,location);
+	}
+	
+	/*find a location for a title*/
+	public String findLocation(String user,String title)
+	{
+		return OntologyDatabase.istance.findLocation(user, title);
+	}
+	
+	
 	/**
 	 * Enter in the database the couple location-location (this location can be 
 	 * made in this location)
