@@ -28,6 +28,7 @@ import com.thesisug.communication.valueobject.SingleItemLocation;
 import com.thesisug.communication.xmlparser.AssertionsHandler;
 import com.thesisug.ui.Create_Assertion_action;
 import com.thesisug.ui.Create_Assertion_item;
+import com.thesisug.ui.Create_Assertion_item_NoDb;
 import com.thesisug.ui.Details_assertion_action;
 import com.thesisug.ui.Details_assertion_item;
 import com.thesisug.ui.ViewAssertions;
@@ -149,6 +150,28 @@ public class AssertionsResource {
 	}
 	
 	private static boolean runHttpUserAddLocation(final String method,
+			final ArrayList<NameValuePair> params, Context c) {
+		
+		DefaultHttpClient newClient = NetworkUtilities.createClient();
+		String query = (params == null) ? "" : URLEncodedUtils.format(params,
+				"UTF-8");
+		AccountUtil util = new AccountUtil();
+		HttpGet request = new HttpGet(NetworkUtilities.SERVER_URI + "/"
+				+ util.getUsername(c) + method +"?"+ query);
+		Log.i(TAG, NetworkUtilities.SERVER_URI + "/" + util.getUsername(c) + method +"?"+ query);
+		request.addHeader("Cookie", "sessionid="+util.getToken(c));
+		// send the request to network
+		HttpResponse response = NetworkUtilities.sendRequest(newClient, request);
+		Log.i(TAG, NetworkUtilities.SERVER_URI + "/" + util.getUsername(c) + method +"?"+ query + "FATTO!");
+		// if we cannot connect to the server
+		if (!HttpResponseStatusCodeValidator.isValidRequest(response.getStatusLine().getStatusCode())) {
+			Log.i(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
+			return false; // return null if there's problem with connection
+		}
+			return true;
+	}
+	
+	private static boolean runHttpUserStopVote(final String method,
 			final ArrayList<NameValuePair> params, Context c) {
 		
 		DefaultHttpClient newClient = NetworkUtilities.createClient();
@@ -340,6 +363,21 @@ public class AssertionsResource {
 		return NetworkUtilities.startBackgroundThread(runnable);
 	}
 	
+	public static Thread stop_vote(final String object,final Handler handler, final Context context) {
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				Log.i(TAG, "request stop_vote : " + object +" for the user");
+				ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		        nameValuePairs.add(new BasicNameValuePair("object",object));
+		       
+				Boolean result = runHttpUserStopVote(STOP_VOTE, nameValuePairs, context);	
+				sendResult_vote(result,object, handler, context);
+			}
+		};
+		// start group list request
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
+	
 	
 	public static Thread getAssertions(final Handler handler, final Context context) {
 		final Runnable runnable = new Runnable() {
@@ -423,6 +461,22 @@ public class AssertionsResource {
 		});
 	}
 	
+	private static void sendResult_vote(final Boolean result,final String object,
+			final Handler handler, final Context context) {
+		if (handler == null || context == null) {
+			return;
+		}
+		Log.i(TAG, "Sending message");
+		handler.post(new Runnable() {
+			public void run() {
+				
+				((Vote_ont_db)context).finishSave_stop_vote(result,object);
+					//((Vote_ont_db)context).afterAssertionsListLoaded(result);
+				
+			}
+		});
+	}
+	
 	private static void sendResult_item(final List<Item> result, final Handler handler, final Context context) {
 		
 		if (handler == null || context == null) {
@@ -477,7 +531,7 @@ public class AssertionsResource {
 						if (context instanceof Create_Assertion_item)
 							((Create_Assertion_item) context).finishSave(result);
 						else
-							((Vote_ont_db) context).finishSave(result);
+							((Create_Assertion_item_NoDb) context).finishSave(result);
 						
 						
 					}

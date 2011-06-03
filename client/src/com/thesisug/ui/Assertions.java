@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.widget.TabHost;
 
 import com.thesisug.R;
-import com.thesisug.communication.AssertionsResource;
 
 public class Assertions extends TabActivity{
 	

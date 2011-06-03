@@ -148,6 +148,10 @@
                   android:label="@string/app_name" android:theme="@android:style/Theme">                  
         </activity>
         
+        <activity android:name=".ui.Create_Assertion_item_NoDb"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        
         <activity android:name=".ui.Create_Assertion_action"
                   android:label="@string/app_name" android:theme="@android:style/Theme">                  
         </activity>

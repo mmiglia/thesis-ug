@@ -3,6 +3,8 @@
         android:layout_width="fill_parent" android:layout_height="fill_parent"
         xmlns:android="http://schemas.android.com/apk/res/android">
 
+
+
 <TextView
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
@@ -63,7 +65,9 @@
 
  <ListView 
 		 		android:id="@+id/list_db" 
-		 		android:layout_height="fill_parent"
+		 		android:layout_height="wrap_content"
+		 		android:layout_marginBottom="52dip"
+		 		
 		 		android:layout_width="fill_parent"
 		 		android:layout_below="@+id/user_voted"
 		 		android:visibility="invisible">
