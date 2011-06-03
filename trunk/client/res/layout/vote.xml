@@ -1,6 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent">
+<LinearLayout 
+        android:layout_width="fill_parent" android:layout_height="fill_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+<ScrollView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    >
+
+<RelativeLayout android:id="@+id/RelativeLayout01"
+        android:layout_width="fill_parent" android:layout_height="fill_parent"
+        >
+
+<TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:id="@+id/title"
+        	android:layout_below="@+id/RelativeLayout01"
+            android:text="Information on the added task!"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingBottom="3dip" 
+            android:visibility="invisible"
+            android:textColor="#FF4500"/>
+  <TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:layout_below="@+id/title"
+            android:text="The object:"
+            android:id="@+id/title2"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:paddingBottom="3dip" 
+            android:visibility="invisible"/>
+	    
+		<TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+            android:id="@+id/obj"
+            android:layout_below="@+id/title2"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingBottom="3dip" 
+            android:visibility="invisible"/>
+   <TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+            android:text="can be found in:"
+            android:id="@+id/find"
+            android:layout_below="@+id/obj"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:paddingBottom="3dip" 
+            android:visibility="invisible"/>     
+<TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#00FF00"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:paddingBottom="3dip"
+            android:layout_below="@+id/find" 
+            android:id="@+id/text_ont"
+            android:visibility="invisible"/>
+            
+            <TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+            android:text="others have proposed:"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingBottom="3dip"
+              android:layout_below="@+id/text_ont" 
+            android:id="@+id/user_voted"
+            android:visibility="invisible"/> 
+
+ <ListView 
+		 		android:id="@+id/list_db" 
+		 		android:layout_height="fill_parent"
+		 		android:layout_width="fill_parent"
+		 		android:layout_below="@+id/user_voted"
+		 		android:visibility="invisible">
+	</ListView>	
+
+</RelativeLayout>
+</ScrollView>
+
+<RelativeLayout android:id="@+id/LinearLayout01"
+                android:layout_width="fill_parent" android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true">
+<Button 
+			android:id="@+id/add_button"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent" 
+			android:layout_weight="1"
+			android:text="@string/add_location" 
+			android:layout_margin="3dip"
+			android:visibility="invisible"/>
+			<Button 
+			android:id="@+id/vote_button"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent" 
+			android:layout_weight="1"
+			android:text="vote" 
+			android:layout_margin="3dip"
+			android:visibility="invisible"/>
+		<Button 
+			android:id="@+id/next_button"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent" 
+			android:layout_weight="1"
+			android:text="@string/Next" 
+			android:layout_margin="3dip"
+			android:visibility="invisible"/>
+</RelativeLayout>
+
 </LinearLayout>

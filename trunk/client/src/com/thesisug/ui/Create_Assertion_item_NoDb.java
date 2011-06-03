@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 import com.thesisug.communication.AssertionsResource;
 
-public class Create_Assertion_item extends Activity{
+public class Create_Assertion_item_NoDb extends Activity{
 	
 	private static final String TAG = "thesisug - Create_Assertion_item";
 	private final Handler handler = new Handler();	
@@ -64,7 +64,7 @@ public class Create_Assertion_item extends Activity{
 				description = editDescription.getText().toString();
 				
 				if (object.equals("") || location.equals("")){
-					 Toast.makeText(Create_Assertion_item.this, "Empty fields!Compile!",Toast.LENGTH_LONG).show();
+					 Toast.makeText(Create_Assertion_item_NoDb.this, "Empty fields!Compile!",Toast.LENGTH_LONG).show();
 				}else
 				{	
 				Log.i(TAG,"Parole dai Edittext:" + object + location);
@@ -75,7 +75,7 @@ public class Create_Assertion_item extends Activity{
 				itemLocation.location= location;
 				
 				Thread creationAssertionItem = AssertionsResource.createItemLocation(itemLocation,
-						handler, Create_Assertion_item.this);
+						handler, Create_Assertion_item_NoDb.this);
 				}
 		    //Fine corpo tasto SAVE----------------------------------------------------------------------------		
 				}
@@ -96,21 +96,12 @@ public class Create_Assertion_item extends Activity{
 		 
 		 if (result)
 		 { 
-			Toast.makeText(Create_Assertion_item.this, R.string.edit_success,Toast.LENGTH_LONG).show();
-			
-			
-				intent = new Intent(getApplicationContext(), Assertions.class);
-				intent.putExtra("item", editObject.getText().toString());
-				intent.putExtra("location", editLocation.getText().toString());
-				intent.putExtra("description", editDescription.getText().toString());
-				startActivityForResult(intent, 0);
-		
+			Toast.makeText(Create_Assertion_item_NoDb.this, R.string.edit_success,Toast.LENGTH_LONG).show();
 				finish();
-			
 			
 		 }
 		 else
-			 Toast.makeText(Create_Assertion_item.this, R.string.saving_error, Toast.LENGTH_LONG).show();
+			 Toast.makeText(Create_Assertion_item_NoDb.this, R.string.saving_error, Toast.LENGTH_LONG).show();
 		 
 		 
 	    	

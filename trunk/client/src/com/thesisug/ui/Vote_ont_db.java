@@ -44,6 +44,7 @@ public class Vote_ont_db extends Activity {
 	private static Thread downloadAssertionsThread;
 	TextView txt_Object;
 	TextView txt_Ont;
+
 	
 	private final static Handler handler = new Handler();
 	private List<SingleActionLocation> listActionlocatin;
@@ -179,13 +180,18 @@ public class Vote_ont_db extends Activity {
 					
 					//Toast.makeText(getBaseContext(), locationsList, Toast.LENGTH_LONG).show();
 					
-					if (o.itemActionType.equals("1"))
-						VoteAssertion = AssertionsResource.voteList(new ItemLocationList(o.name,locationsList),handler, Vote_ont_db.this);
-					else
-						VoteAssertion = AssertionsResource.voteList_action(new ActionLocationList(o.name,locationsList),handler, Vote_ont_db.this);
-					
-					}
-			});
+				if (o.itemActionType.equals("1") && !(list_vote.isEmpty())){
+					//Toast.makeText(getBaseContext(), "VOTE ITEM", Toast.LENGTH_LONG).show();
+					VoteAssertion = AssertionsResource.voteList(new ItemLocationList(o.name,locationsList),handler, Vote_ont_db.this);
+				}else if (o.itemActionType.equals("0") && !(list_vote.isEmpty())){
+					//Toast.makeText(getBaseContext(), "VOTE ACTION", Toast.LENGTH_LONG).show();	
+					VoteAssertion = AssertionsResource.voteList_action(new ActionLocationList(o.name,locationsList),handler, Vote_ont_db.this);
+				}else
+					VoteAssertion = AssertionsResource.stop_vote(o.name,handler, Vote_ont_db.this);
+						
+						
+				}		
+				});
 		 
 		next_button.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
@@ -285,10 +291,13 @@ public class Vote_ont_db extends Activity {
 	}
 	
 	
+
+	
+	
 public void afterAssertionsListLoaded(final List<Item> itemList){
 	
 	//setContentView(R.layout.vote_ont_db);
-	//Toast.makeText(Vote_ont_db.this,"OK",Toast.LENGTH_LONG).show();
+	//Toast.makeText(Vote_ont_db.this,itemList.toString(),Toast.LENGTH_LONG).show();
 	
 	if(itemList==null || itemList.size()==0){
 		
@@ -304,7 +313,7 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 		next_button.setVisibility(View.INVISIBLE);
 		
 		
-		final CharSequence[] items = {"Do you want to find something?", "Do you want to do smething?", "Do you want to go to a place?"};
+		final CharSequence[] items = {"Do you want to find something?", "Do you want to do something?", "Do you want to go to a place?"};
 
 		 AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		 builder.setTitle("No match in ontology & Db! Choose one:");
@@ -313,10 +322,10 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 		     public void onClick(DialogInterface dialog, int item) {
 		         //Toast.makeText(getApplicationContext(), items[item], Toast.LENGTH_SHORT).show();
 		    	 if (items[item].equals("Do you want to find something?")){
-		    		 intent = new Intent(getApplicationContext(), Create_Assertion_item.class);
+		    		 intent = new Intent(getApplicationContext(), Create_Assertion_item_NoDb.class);
 					startActivityForResult(intent,0);
 					finish();
-		     		}else if (items[item].equals("Do you want to do smething?"))
+		     		}else if (items[item].equals("Do you want to do something?"))
 		     		{
 			    		 intent = new Intent(getApplicationContext(), Create_Assertion_action.class);
 						startActivityForResult(intent,0);
@@ -410,6 +419,7 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 					
 				}else
 				{	
+					//Toast.makeText(getBaseContext(), "Lista: " + locations, Toast.LENGTH_LONG).show();
 					l1.setAdapter(new assertionsListAdapter(this,locations));
 				
 					l1.setOnItemClickListener(new OnItemClickListener(){
@@ -777,12 +787,21 @@ public void imp_location(final String location)
 			Toast.makeText(Vote_ont_db.this, R.string.edit_success,Toast.LENGTH_LONG).show();
 			vote_button.setEnabled(false);
 
-		 	/*intent = new Intent();
-			intent.putExtra("item", editObject.getText().toString());
-			intent.putExtra("location", editLocation.getText().toString());
-			intent.putExtra("description", editDescription.getText().toString());
-			setResult(RESULT_OK, intent);
-			finish();*/
+		 }
+		 else
+			 Toast.makeText(Vote_ont_db.this, R.string.saving_error, Toast.LENGTH_LONG).show();
+		 
+		 
+	    	
+	    }
+	
+	public void finishSave_stop_vote (boolean result,String object) {
+		 
+		 if (result)
+		 { 
+			Toast.makeText(Vote_ont_db.this, "Stop votation for " + object + " ! ",Toast.LENGTH_LONG).show();
+			vote_button.setEnabled(false);
+
 		 }
 		 else
 			 Toast.makeText(Vote_ont_db.this, R.string.saving_error, Toast.LENGTH_LONG).show();

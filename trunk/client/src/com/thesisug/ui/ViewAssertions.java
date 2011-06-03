@@ -41,7 +41,7 @@ public class ViewAssertions extends Activity{
 	
 	private static int currentDialog;	
 	private static Thread downloadAssertionsThread;
-	
+	private assertionsListAdapter adapter;
 	private final static Handler handler = new Handler();
 	private List<SingleItemLocation> listitemlocatin;
 	
@@ -57,7 +57,9 @@ public class ViewAssertions extends Activity{
 	  protected void onResume() {
 	        super.onResume();
 	        // The activity has become visible (it is now "resumed").
+	        
 	        downloadAssertionsThread = AssertionsResource.getAssertions(handler, ViewAssertions.this);
+	        
 	    }
 
 	
@@ -106,7 +108,10 @@ public class ViewAssertions extends Activity{
 
 		
 		ListView l1 = (ListView) findViewById(R.id.assertionslist);
-		 l1.setAdapter(new assertionsListAdapter(this,itemLocationList));
+		 
+		 adapter = new assertionsListAdapter(this,itemLocationList);
+		
+		l1.setAdapter(adapter);
 		 
 		 l1.setOnItemClickListener(new OnItemClickListener(){
 
@@ -133,6 +138,9 @@ public class ViewAssertions extends Activity{
 			}
 			 
 		 });
+		 
+		 
+		
 		 }
 	
 	private static class assertionsListAdapter extends BaseAdapter {

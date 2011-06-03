@@ -85,7 +85,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		if (key.equals("selected_navigator")){
 			
 			navigator = userSettings.getString("selected_navigator", "ListGoogle");
-			Toast.makeText(getApplicationContext(), navigator, Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), "Navigation turn by turn", Toast.LENGTH_SHORT).show();
 		}
 			
 		if(key.equals("serverURI_from_text")){
