@@ -32,7 +32,7 @@ public class LocationAwareAllThread implements Runnable{
 		//checkLocationSingleThread(userid, sentence, latitude, longitude, distance);
 	}
 	
-	public List<Hint> checkLocationSingleThread(String userid, float latitude, float longitude, int distance) {
+	public List<Hint> checkLocationAllThread(String userid, float latitude, float longitude, int distance) {
 		// get all user tasks
 		List<SingleTask> tasks= TaskManager.getInstance().retrieveAllTask(userid);
 		List<String> needs = new ArrayList<String>(); // list of user needs
@@ -142,7 +142,9 @@ public class LocationAwareAllThread implements Runnable{
 		for (String query : queryList) 
 		{
 			System.out.println("ho avviato il thread per salvare solo nel db");
-			List<Hint> result2 = new LinkedList<Hint>(); // list of search result IN GOOGLE
+			
+			CachingManager.cachingDelete();
+			
 			List<Hint> listToAdd = new LinkedList<Hint>();
 			listToAdd = MapManager.getInstance().searchLocalBusiness(
 					latitude, longitude, query);

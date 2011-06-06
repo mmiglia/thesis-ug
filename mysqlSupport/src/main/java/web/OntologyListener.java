@@ -94,11 +94,12 @@ public class OntologyListener {
 				boolean isLocation=false;
 				Item item= new Item();
 				item.name=o;
-			
+				
 				List<String> list1 = OntologyManager.getInstance().viewLocationForItemVoted(userid,o);
 				System.out.println("list1:"+ list1);
 				List<String> list2 = OntologyManager.getInstance().viewLocationForActionVoted(userid,o);
 				System.out.println("list2:"+ list2);
+			
 				boolean hasVoted = OntologyManager.getInstance().hasVoted(userid,o);
 				//l'utente non ha votato niente per quell'item
 				//if (list1.isEmpty() && list2.isEmpty())
@@ -108,6 +109,7 @@ public class OntologyListener {
 				//
 				if (!hasVoted)
 				{
+					
 					ontList.addAll(OntologyReasoner.getInstance().getSearchQuery(o));
 					
 					for (String l : ontList)

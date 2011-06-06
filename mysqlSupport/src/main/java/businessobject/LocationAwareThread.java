@@ -136,13 +136,16 @@ public class LocationAwareThread implements Runnable{
 		for (String query : queryList) 
 		{
 			System.out.println("ho avviato il thread per salvare solo nel db");
-			List<Hint> result2 = new LinkedList<Hint>(); // list of search result IN GOOGLE
+			
+			CachingManager.cachingDelete();
+			
 			List<Hint> listToAdd = new LinkedList<Hint>();
 			listToAdd = MapManager.getInstance().searchLocalBusiness(
 					latitude, longitude, query);
 			System.out.println("for string query:"+query);
 			CachingManager.cachingListHint(userid, query, latitude, longitude, distance,listToAdd);
 			System.out.println("inserito nel db");
+			
 	
 		}
 		

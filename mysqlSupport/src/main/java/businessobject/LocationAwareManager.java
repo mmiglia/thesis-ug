@@ -455,6 +455,11 @@ public class LocationAwareManager {
 		return toReturn;
 	}
 	
+	public static void cachingDelete()
+	{
+		CachingManager.cachingDelete();
+		
+	}
 	
 	
 	
