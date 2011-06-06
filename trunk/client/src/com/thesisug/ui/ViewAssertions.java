@@ -1,6 +1,5 @@
 package com.thesisug.ui;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import android.app.Activity;
@@ -16,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,7 +24,6 @@ import android.widget.Toast;
 import com.thesisug.R;
 import com.thesisug.communication.AssertionsResource;
 import com.thesisug.communication.valueobject.SingleItemLocation;
-import com.thesisug.ui.Details_assertion_item;
 
 
 
@@ -43,7 +42,7 @@ public class ViewAssertions extends Activity{
 	private static Thread downloadAssertionsThread;
 	private assertionsListAdapter adapter;
 	private final static Handler handler = new Handler();
-	private List<SingleItemLocation> listitemlocatin;
+	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -87,6 +86,7 @@ public class ViewAssertions extends Activity{
 
 		case UPDATE_ASSERTIONS:
 			downloadAssertionsThread = AssertionsResource.getAssertions(handler, ViewAssertions.this);
+			adapter.notifyDataSetChanged();
 			break;			
 			
 		case BACK:
@@ -101,6 +101,8 @@ public class ViewAssertions extends Activity{
 	
 	public void afterAssertionsListLoaded(final List<SingleItemLocation> itemLocationList){
 	
+		
+		//Toast.makeText(getBaseContext(), itemLocationList.toString(), Toast.LENGTH_LONG).show();
     	
 		if(itemLocationList==null || itemLocationList.size()==0){
 			Toast.makeText(getApplicationContext(), R.string.noAssertions, Toast.LENGTH_LONG).show();
@@ -110,8 +112,12 @@ public class ViewAssertions extends Activity{
 		ListView l1 = (ListView) findViewById(R.id.assertionslist);
 		 
 		 adapter = new assertionsListAdapter(this,itemLocationList);
-		
+		 
+
+		 
 		l1.setAdapter(adapter);
+		
+		adapter.notifyDataSetChanged();
 		 
 		 l1.setOnItemClickListener(new OnItemClickListener(){
 
@@ -150,7 +156,8 @@ public class ViewAssertions extends Activity{
 		 private List<SingleItemLocation> itemLocationList;
 		 
 		 public assertionsListAdapter(Context context,List<SingleItemLocation> list) {
-			 mInflater = LayoutInflater.from(context);
+			// mInflater = LayoutInflater.from(context);
+			 mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			 itemLocationList=list;
 
 		 }
@@ -180,6 +187,11 @@ public class ViewAssertions extends Activity{
 			 } else {
 				 holder = (ViewHolder) convertView.getTag();
 			 }
+			 
+			 holder.txt_item.setText("'" +  itemLocationList.get(position).item +"'");
+			 
+			 
+			 holder.txt_location.setText(itemLocationList.get(position).location);
 			
 			 return convertView;
 		 }

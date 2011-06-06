@@ -567,6 +567,10 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 			 } else {
 				 holder = (ViewHolder) convertView.getTag();
 			 }
+			 
+			 holder.txt_location.setText(Locations.get(position).toString());
+			 
+			 holder.check.setClickable(false);
 			
 			 return convertView;
 		 }

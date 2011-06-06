@@ -530,10 +530,10 @@ public class AssertionsResource {
 						//((Create_Assertion_item) context).finishSave(result);
 						if (context instanceof Create_Assertion_item)
 							((Create_Assertion_item) context).finishSave(result);
-						else
+						else if (context instanceof Create_Assertion_item_NoDb)
 							((Create_Assertion_item_NoDb) context).finishSave(result);
-						
-						
+						else 
+							((Vote_ont_db) context).finishSave(result);
 					}
 				});
 			}
