@@ -17,6 +17,7 @@ import valueobject.Hint;
 import businessobject.LocationAwareAllThread;
 import businessobject.LocationAwareManager;
 import businessobject.LocationAwareThread;
+import businessobject.OntologyManager;
 
 
 /**
@@ -52,7 +53,7 @@ public class ContextListener {
 		log.info("Receive ALL context from user " + userid + " from location "
 				+ latitude + ":" + longitude);
 		LocationAwareAllThread locT= new LocationAwareAllThread(userid,  latitude, longitude, distance);	
-		return locT.checkLocationSingleThread(userid, latitude, longitude, distance);
+		return locT.checkLocationAllThread(userid, latitude, longitude, distance);
 		
 		//return LocationAwareManager.checkLocationAll(userid, latitude, longitude, distance);
 	}
@@ -87,6 +88,14 @@ public class ContextListener {
 		//return LocationAwareManager.checkLocationSingle(userid, sentence, latitude, longitude, distance);
 	}	
 	
+	@GET
+	@Path("/cachingDelete")	
+	public  static void  cachingDelete(@PathParam("username") String userID)
+	{
+		LocationAwareManager.cachingDelete();
+	
+	
+	}
 	@GET
 	@Path("/singleDB")
 	//@Consumes("application/xml")

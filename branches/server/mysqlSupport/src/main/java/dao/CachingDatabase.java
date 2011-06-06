@@ -9,19 +9,15 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gdata.data.DateTime;
-
 import valueobject.Hint;
-import valueobject.SingleItemLocation;
-import valueobject.SingleActionLocation;
-import valueobject.SingleLocationLocation;
-import valueobject.Location;
 import valueobject.Hint.PhoneNumber;
+import businessobject.DateUtils;
+import businessobject.DateUtilsNoTime;
+
+import com.google.gdata.data.DateTime;
 
 import dao.management.QueryStatus;
 import dao.management.mysql.MySQLDBManager;
-
-import businessobject.DateUtils;
 
 /**
  * Singleton class that acts as a database that will save all the hint that arrive from Google, with this class
@@ -46,7 +42,8 @@ public enum CachingDatabase {
 		Connection conn= (Connection) dbManager.dbConnect();
 		log.info("Connected to the db");
 		
-		
+		DateUtilsNoTime today=new DateUtilsNoTime();
+		String dateNow =today.now(); 
 		String insertQuery;
 		
 		for (Hint h:list)
@@ -65,7 +62,7 @@ public enum CachingDatabase {
 			}
 			insertQuery="insert into CachingGoogle (title,url,content,titleNoFormatting," +
 					"lat,lng,streetAddress,city,ddUrl,ddUrlToHere,ddUrlFromHere,staticMapUrl," +
-					"listingType,region,country,sentence,user) values (";
+					"listingType,region,country,insertionDate,sentence,user) values (";
 			insertQuery += "'"+h.title+"',";
 			insertQuery += "'"+h.url+"',";
 			insertQuery += "'"+h.content+"',";
@@ -82,6 +79,7 @@ public enum CachingDatabase {
 			insertQuery += "'"+h.listingType+"',";
 			insertQuery += "'"+h.region+"',";
 			insertQuery += "'"+h.country+"',";
+			insertQuery += "'"+dateNow+"',";
 			insertQuery += "'"+sentence+"',";
 			insertQuery += "'"+user+"')";
 			
@@ -103,13 +101,14 @@ public enum CachingDatabase {
 			for (PhoneNumber p : h.phoneNumbers)
 			{	
 				qs=dbManager.startTransaction(conn);
-				insertQuery = "insert into CachingGooglePhoneNumber (title,lat,lng,number,type)";
+				insertQuery = "insert into CachingGooglePhoneNumber (title,lat,lng,number,type,insertionDate)";
 				insertQuery += "values( ";
 				insertQuery += "'"+h.title+"',";
 				insertQuery += "'"+h.lat+"',";
 				insertQuery += "'"+h.lng+"',";
 				insertQuery += "'"+p.number+"',";
-				insertQuery += "'"+p.type+"')";
+				insertQuery += "'"+p.type+"',";
+				insertQuery += "'"+dateNow+"')";
 				
 				qs=dbManager.customQuery(conn, insertQuery);
 				System.out.println(insertQuery);
@@ -130,12 +129,13 @@ public enum CachingDatabase {
 			for (String a : h.addressLines)
 			{	
 				qs=dbManager.startTransaction(conn);
-				insertQuery = "insert into CachingGoogleAddressLines (title,lat,lng,addressLine)";
+				insertQuery = "insert into CachingGoogleAddressLines (title,lat,lng,addressLine,insertionDate)";
 				insertQuery += "values( ";
 				insertQuery += "'"+h.title+"',";
 				insertQuery += "'"+h.lat+"',";
 				insertQuery += "'"+h.lng+"',";
-				insertQuery += "'"+ a +"')";
+				insertQuery += "'"+ a +"',";
+				insertQuery += "'"+dateNow+"')";
 				
 				qs=dbManager.customQuery(conn, insertQuery);
 				System.out.println(insertQuery);
@@ -260,22 +260,131 @@ public enum CachingDatabase {
 		return hintList;
 	}
 
+
+	
 	/*
 	 * Metodo per eliminare i record che sono da troppo tempo in cache
 	 */
 	public void cachingDelete()
-	{	// confrontare timestamp
-		DateUtils date = new DateUtils();
+	{	
+		DateUtilsNoTime date = new DateUtilsNoTime();
 		String nowDate = date.now();
-		DateTime d= DateTime.parseDate(nowDate);
-		//d.compareTo(o);
-		//Console.WriteLine(d.Millisecond.ToString());
+		System.out.println(nowDate);
 		
+		cachingDeleteCachingGoogle(nowDate);
+		cachingDeleteCachingGoogleAddressLines(nowDate);
+		cachingDeleteCachingGooglePhoneNumber(nowDate);
+	
+	}
+	
+	public void cachingDeleteCachingGoogle(String nowDate)
+	{	
+		Connection conn= (Connection) dbManager.dbConnect();
+		//Starting transaction
+		QueryStatus qs=dbManager.startTransaction(conn);
 		
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("Error during transaction starting...list<Hint> not added");
+			log.error("Error during transaction starting...list<Hint> not added");
+			dbManager.dbDisconnect(conn);
+			return;
+		}
 		
-		//Date d1 = rs.getTimestamp("nome 1");
-		//Date d2 = rs.getTimestamp("nome 2");
-		//d2.getTime() 
+		String deleteQuery="delete from CachingGoogle "+
+		"where insertionDate<>'"+nowDate+"'";
+		qs=dbManager.customQuery(conn, deleteQuery);
+		System.out.println(deleteQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("ERRORE: durante caching delete");
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			log.error("ERROR during caching delete");
+			dbManager.dbDisconnect(conn);
+			return;
+		}
+		dbManager.commitTransaction(conn);
+		dbManager.dbDisconnect(conn);
+		
+	}
+	
+	public void cachingDeleteCachingGoogleAddressLines(String nowDate)
+	{	
+		Connection conn= (Connection) dbManager.dbConnect();
+		//Starting transaction
+		QueryStatus qs=dbManager.startTransaction(conn);
+		
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("Error during transaction starting...list<Hint> not added");
+			log.error("Error during transaction starting...list<Hint> not added");
+			dbManager.dbDisconnect(conn);
+			return;
+		}
+	
+		String deleteQuery="delete from CachingGoogleAddressLines "+
+		"where insertionDate<>'"+nowDate+"'";
+		qs=dbManager.customQuery(conn, deleteQuery);
+		System.out.println(deleteQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("ERRORE: durante caching delete");
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			log.error("ERROR during caching delete");
+			dbManager.dbDisconnect(conn);
+			return;
+		}
+		dbManager.commitTransaction(conn);
+		dbManager.dbDisconnect(conn);
+		
+	}
+	
+	public void cachingDeleteCachingGooglePhoneNumber(String nowDate)
+	{	
+		Connection conn= (Connection) dbManager.dbConnect();
+		//Starting transaction
+		QueryStatus qs=dbManager.startTransaction(conn);
+		
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("Error during transaction starting...list<Hint> not added");
+			log.error("Error during transaction starting...list<Hint> not added");
+			dbManager.dbDisconnect(conn);
+			return;
+		}
+		
+		String deleteQuery="delete from CachingGooglePhoneNumber "+
+		"where insertionDate<>'"+nowDate+"'";
+		qs=dbManager.customQuery(conn, deleteQuery);
+		System.out.println(deleteQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("ERRORE: durante caching delete");
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			log.error("ERROR during caching delete");
+			dbManager.dbDisconnect(conn);
+			return;
+		}
+		dbManager.commitTransaction(conn);
+		dbManager.dbDisconnect(conn);
 		
 	}
 }
