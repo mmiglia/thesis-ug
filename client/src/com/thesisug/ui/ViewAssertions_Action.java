@@ -167,6 +167,10 @@ public class ViewAssertions_Action extends Activity{
 			 } else {
 				 holder = (ViewHolder) convertView.getTag();
 			 }
+			 
+			 holder.txt_action.setText("'" +  actionLocationList.get(position).action +"'");
+
+			 holder.txt_location1.setText(actionLocationList.get(position).location);
 			
 			 return convertView;
 		 }
