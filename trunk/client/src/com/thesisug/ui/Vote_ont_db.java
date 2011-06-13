@@ -65,9 +65,12 @@ public class Vote_ont_db extends Activity {
 	ListView l1;
 	List<String> locations;
 	Item o;
+	String l;
 	List<String> locationsVoted;
 	String loc_to_add;
 	List<String> list_vote = new LinkedList<String>();
+	List<String> list_vote_negative = new LinkedList<String>();
+	List<String> list_dup = new LinkedList<String>();
 	Thread VoteAssertion;
 
 	
@@ -167,7 +170,6 @@ public class Vote_ont_db extends Activity {
 					//crea l'iteratore
 					while (iterator.hasNext()) {
 						
-						
 						locationsList = locationsList + iterator.next().toString() + ",";
 	
 					}
@@ -178,19 +180,47 @@ public class Vote_ont_db extends Activity {
 		                   locationsList=locationsList.substring(0, u);
 		               }
 					
-					//Toast.makeText(getBaseContext(), locationsList, Toast.LENGTH_LONG).show();
+					ListIterator<String> iterator_negative= list_vote_negative.listIterator();
+					String locationsListNegative="";
 					
-				if (o.itemActionType.equals("1") && !(list_vote.isEmpty())){
+					//crea l'iteratore
+					while (iterator_negative.hasNext()) {
+						
+						locationsListNegative = locationsListNegative + iterator_negative.next().toString() + ",";
+	
+					}
+					
+					if (!locationsListNegative.equals(""))
+		               {
+		                   int u=locationsListNegative.lastIndexOf(",");
+		                   locationsListNegative=locationsListNegative.substring(0, u);
+		               }
+					
+					
+				Toast.makeText(getBaseContext(), locationsList, Toast.LENGTH_LONG).show();
+				Toast.makeText(getBaseContext(), locationsListNegative, Toast.LENGTH_LONG).show();
+				
+					
+				/*if (o.itemActionType.equals("1") && !(list_vote.isEmpty())){
 					//Toast.makeText(getBaseContext(), "VOTE ITEM", Toast.LENGTH_LONG).show();
-					VoteAssertion = AssertionsResource.voteList(new ItemLocationList(o.name,locationsList),handler, Vote_ont_db.this);
+					VoteAssertion = AssertionsResource.voteList(new ItemLocationList(o.name,locationsList,locationsListNegative),handler, Vote_ont_db.this);
 				}else if (o.itemActionType.equals("0") && !(list_vote.isEmpty())){
 					//Toast.makeText(getBaseContext(), "VOTE ACTION", Toast.LENGTH_LONG).show();	
-					VoteAssertion = AssertionsResource.voteList_action(new ActionLocationList(o.name,locationsList),handler, Vote_ont_db.this);
+					VoteAssertion = AssertionsResource.voteList_action(new ActionLocationList(o.name,locationsList,locationsListNegative),handler, Vote_ont_db.this);
 				}else
-					VoteAssertion = AssertionsResource.stop_vote(o.name,handler, Vote_ont_db.this);
-						
-						
-				}		
+					VoteAssertion = AssertionsResource.stop_vote(o.name,handler, Vote_ont_db.this);*/
+		
+					if (o.itemActionType.equals("1")) {
+						//Toast.makeText(getBaseContext(), "VOTE ITEM", Toast.LENGTH_LONG).show();
+						VoteAssertion = AssertionsResource.voteList(new ItemLocationList(o.name,locationsList,locationsListNegative),handler, Vote_ont_db.this);
+					}else if (o.itemActionType.equals("0")) {
+						//Toast.makeText(getBaseContext(), "VOTE ACTION", Toast.LENGTH_LONG).show();	
+						VoteAssertion = AssertionsResource.voteList_action(new ActionLocationList(o.name,locationsList,locationsListNegative),handler, Vote_ont_db.this);
+					}
+					
+				}	
+				
+				
 				});
 		 
 		next_button.setOnClickListener(new View.OnClickListener() {
@@ -230,7 +260,7 @@ public class Vote_ont_db extends Activity {
 						}else
 						{
 						
-						l1.setAdapter(new assertionsListAdapter(Vote_ont_db.this,locations));
+						l1.setAdapter(new assertionsListAdapter(Vote_ont_db.this,locations,list_vote));
 						
 						l1.setOnItemClickListener(new OnItemClickListener(){
 
@@ -249,13 +279,14 @@ public class Vote_ont_db extends Activity {
 								
 								if (!checkBoxItem.isChecked())
 								{
-									list_vote.add(locations.get(arg2).toString());
-										
+										list_vote_negative.remove(locations.get(arg2).toString());
+										list_vote.add(locations.get(arg2).toString());
 										checkBoxItem.setChecked(true);
 									}
 									else
 									{
 										list_vote.remove(locations.get(arg2).toString());
+										list_vote_negative.add(locations.get(arg2).toString());
 										checkBoxItem.setChecked(false);
 									}	
 									
@@ -422,7 +453,20 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 				}else
 				{	
 					//Toast.makeText(getBaseContext(), "Lista: " + locations, Toast.LENGTH_LONG).show();
-					l1.setAdapter(new assertionsListAdapter(this,locations));
+					
+					ListIterator<String> iterator= locations.listIterator();
+					
+					
+					//crea l'iteratore
+					while (iterator.hasNext()) {
+						
+						l = iterator.next().toString();
+						list_dup.add(l);
+						list_vote_negative.add(l);
+	
+					}
+					
+					l1.setAdapter(new assertionsListAdapter(this,locations,list_vote));
 				
 					l1.setOnItemClickListener(new OnItemClickListener(){
 
@@ -441,6 +485,7 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 						
 							if (!checkBoxItem.isChecked())
 							{
+								list_vote_negative.remove(locations.get(arg2).toString());
 								list_vote.add(locations.get(arg2).toString());
 								
 								checkBoxItem.setChecked(true);
@@ -448,6 +493,7 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 							else
 							{
 								list_vote.remove(locations.get(arg2).toString());
+								list_vote_negative.add(locations.get(arg2).toString());
 								checkBoxItem.setChecked(false);
 							}	
 							
@@ -538,10 +584,13 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 		private LayoutInflater mInflater;
 
 		 private List<String> Locations;
+		 private List<String> locChecked;
 		 
-		 public assertionsListAdapter(Context context,List<String> list) {
+		 
+		 public assertionsListAdapter(Context context,List<String> list, List<String> locChecked1) {
 			 mInflater = LayoutInflater.from(context);
 			 Locations=list;
+			 locChecked = locChecked1;
 
 		 }
 
@@ -563,7 +612,8 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 				 
 				 holder.check = (CheckBox) convertView.findViewById(R.id.checkbox);
 				 
-				holder.check.setClickable(false);
+	
+				 holder.check.setClickable(false);
 				 
 				 convertView.setTag(holder);
 			 } else {
@@ -572,7 +622,16 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 			 
 			 holder.txt_location.setText(Locations.get(position).toString());
 			 
-			 holder.check.setClickable(false);
+			 
+			 
+			 if (locChecked.contains(holder.location))
+			 {
+ 
+				 holder.check.setChecked(true);
+	 
+			 }
+			
+			 	holder.check.setClickable(false);
 			
 			 return convertView;
 		 }
@@ -582,6 +641,7 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 				 TextView txt_location;
 				 CheckBox check;
 				 String location;
+				 List<String> locChecked;
 			 }
 
 			@Override
@@ -609,6 +669,7 @@ public void afterAssertionsListLoaded(final List<Item> itemList){
 	
 	{
 		loc_to_add = location;
+		list_vote.add(loc_to_add);
 		if (o.itemActionType.equals("1"))
 		{
 			
@@ -672,7 +733,11 @@ public void imp_location(final String location)
 			{
 				Toast.makeText(Vote_ont_db.this, "Empty fields!Compile it!",Toast.LENGTH_LONG).show();
 				
-			}else{
+			}else if (list_dup.contains(location.getText().toString()))
+			{
+				Toast.makeText(Vote_ont_db.this, "Location already exit!",Toast.LENGTH_LONG).show();
+			}else 
+			{
 				loc= location.getText().toString();
 				imp_loc(loc);
 				dismiss();
@@ -747,7 +812,7 @@ public void imp_location(final String location)
 		 { 
 			Toast.makeText(Vote_ont_db.this, R.string.edit_success,Toast.LENGTH_LONG).show();
 			locations.add(loc_to_add);
-			l1.setAdapter(new assertionsListAdapter(Vote_ont_db.this,locations));
+			l1.setAdapter(new assertionsListAdapter(Vote_ont_db.this,locations,list_vote));
 			//check.setChecked(true);
 
 		 	/*intent = new Intent();
@@ -807,6 +872,7 @@ public void imp_location(final String location)
 		 { 
 			Toast.makeText(Vote_ont_db.this, "Stop votation for " + object + " ! ",Toast.LENGTH_LONG).show();
 			vote_button.setEnabled(false);
+			add_button.setEnabled(false);
 
 		 }
 		 else

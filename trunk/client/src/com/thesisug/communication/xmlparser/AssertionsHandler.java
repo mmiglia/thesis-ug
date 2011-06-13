@@ -243,7 +243,9 @@ public class AssertionsHandler {
 	            serializer.startTag("", "locations");
 	            serializer.text(item.locations);
 	            serializer.endTag("", "locations");
-
+	            serializer.startTag("", "locationsNegative");
+	            serializer.text(item.locationsNegative);
+	            serializer.endTag("", "locationsNegative");
 	            
 	            serializer.endTag("", "itemLocationList ");
 	            serializer.endDocument();
@@ -269,8 +271,10 @@ public class AssertionsHandler {
 	            serializer.startTag("", "locations");
 	            serializer.text(action.locations);
 	            serializer.endTag("", "locations");
-
-	            
+	            serializer.startTag("", "locationsNegative");
+	            serializer.text(action.locations);
+	            serializer.endTag("", "locationsNegative");
+	
 	            serializer.endTag("", "actionLocationList ");
 	            serializer.endDocument();
 	            return writer.toString();
