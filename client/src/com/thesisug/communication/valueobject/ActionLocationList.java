@@ -17,6 +17,8 @@ public class ActionLocationList {
    
    public String action;
    public String locations;
+   public String locationsNegative;
+   
    
    public ActionLocationList()
    {
@@ -27,10 +29,11 @@ public class ActionLocationList {
     * Constructor for this class     
     * @param item
     */
-   public ActionLocationList(String action,String locations) 
+   public ActionLocationList(String action,String locations, String locationsNegative) 
    {
        this.action = action;
        this.locations = locations;
+       this.locationsNegative =locationsNegative;
        
    }
    
