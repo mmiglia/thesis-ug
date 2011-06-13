@@ -198,6 +198,8 @@ public class Vote_ont_db extends Activity {
 					
 					if (it.hasNext()) {
 						
+						o = it.next();
+						
 						if (o.itemActionType.equals("1")){
 					    	title2.setText("The object:");
 						  	find.setText("can be found in ");
