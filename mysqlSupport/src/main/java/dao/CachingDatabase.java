@@ -274,6 +274,7 @@ public enum CachingDatabase {
 		cachingDeleteCachingGoogle(nowDate);
 		cachingDeleteCachingGoogleAddressLines(nowDate);
 		cachingDeleteCachingGooglePhoneNumber(nowDate);
+		cachingDeleteDateUpdate(nowDate);
 	
 	}
 	
@@ -387,4 +388,68 @@ public enum CachingDatabase {
 		dbManager.dbDisconnect(conn);
 		
 	}
+	
+	public void cachingDeleteDateUpdate(String nowDate)
+	{
+		Connection conn= (Connection) dbManager.dbConnect();
+		//Starting transaction
+		QueryStatus qs=dbManager.startTransaction(conn);
+		
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("Error during transaction starting...cancellation cache date not added");
+			log.error("Error during transaction starting...cancellation cache date not added");
+			dbManager.dbDisconnect(conn);
+			return;
+		}
+		
+		String deleteQuery="insert into CachingCancellationDate(date) values ("+
+		"'"+nowDate+"')";
+		qs=dbManager.customQuery(conn, deleteQuery);
+		System.out.println(deleteQuery);
+		if(qs.execError){
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("ERRORE: durante caching delete");
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			log.error("ERROR during caching delete");
+			dbManager.dbDisconnect(conn);
+			return;
+		}
+		dbManager.commitTransaction(conn);
+		dbManager.dbDisconnect(conn);
+	}
+	
+	public boolean isAlreadyDeleteCacheToday()
+	{
+		DateUtilsNoTime date = new DateUtilsNoTime();
+		String nowDate = date.now();
+		
+		Connection conn= (Connection) dbManager.dbConnect();
+		boolean toReturn=false;
+		String selectQuery="Select * from CachingCancellationDate where date='"+nowDate+"'";
+		System.out.println(selectQuery);
+		QueryStatus qs=dbManager.customSelect(conn, selectQuery);
+		
+		ResultSet rs=(ResultSet)qs.customQueryOutput;
+
+		try{
+			while(rs.next()){
+				toReturn= true;
+			}
+		}catch(SQLException sqlE){
+			//TODO
+			
+		}finally{	
+			dbManager.dbDisconnect(conn);
+		}
+		
+		return toReturn;
+	}
+	
 }

@@ -67,6 +67,7 @@ public class OntologyManager implements OntologyInterface {
 	*/
 	public SingleItemLocation addItemInLocation(String user, String item,String location) 
 	{
+		
 		String ite = item.toLowerCase();
 		String loc = location.toLowerCase();
 		ite.replaceAll(" ", "_");
@@ -77,9 +78,9 @@ public class OntologyManager implements OntologyInterface {
 		List<Hint> result = new LinkedList<Hint>(); // list of search result
 			
 		for (String query : queryList) 
-		{	/* se c'è già nell'ontologia la coppia item-location torno null, 
-				 * in quanto non lo inserisco nel db
-				 */
+		{	//se c'è già nell'ontologia la coppia item-location torno null, 
+			//in quanto non lo inserisco nel db
+	
 				if (query.compareToIgnoreCase(loc)==0)
 				{
 					log.info("item-location: " + item+" - "+location+" già in ontologia");
@@ -150,9 +151,9 @@ public class OntologyManager implements OntologyInterface {
 	 * @param userid unique UUID of the user
 	 * @return the couple item-location if the vote is been saved
 	 */
-	public void voteItemLocationList(String userid,String item,List<String> location) 
+	public void voteItemLocationList(String userid,String item,List<String> location,List<String> locationNeg) 
 	{
-		OntologyDatabase.istance.voteItemLocationList(userid,item,location);
+		OntologyDatabase.istance.voteItemLocationList(userid,item,location,locationNeg);
 	}
 	
 	
@@ -276,9 +277,9 @@ public class OntologyManager implements OntologyInterface {
 	 * @param userid unique UUID of the user
 	 * @return the couple action-location if the vote is been saved
 	 */
-	public void voteActionLocationList(String userid,String action, List<String> location) 
+	public void voteActionLocationList(String userid,String action, List<String> location,List<String> locationNeg) 
 	{
-		OntologyDatabase.istance.voteActionLocationList(userid,action,location);
+		OntologyDatabase.istance.voteActionLocationList(userid,action,location,locationNeg);
 	}
 	
 	/**

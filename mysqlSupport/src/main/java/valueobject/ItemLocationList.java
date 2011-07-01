@@ -17,6 +17,8 @@ public class ItemLocationList {
 	
 	public String item;
 	public String locations; // locazioni separate da una virgola
+	public String locationsNegative;
+
 	
 	public ItemLocationList()
 	{
@@ -31,6 +33,8 @@ public class ItemLocationList {
 	{
 		this.item = item;
 		this.locations = locations;
+	    this.locationsNegative = locationsNegative;
+
 		
 	}
 

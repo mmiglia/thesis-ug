@@ -631,7 +631,12 @@ public class OntologyListener {
 			String[] words = itemLocationList.locations.split(",");
 			locationList.addAll(Arrays.asList(words));
 			
-			OntologyManager.getInstance().voteItemLocationList(userid,itemLocationList.item,locationList);
+			//creo la lista di location, dato che mi arriva una stringa con le location separate da una virgola
+			List<String> locationListNeg= new LinkedList<String>();
+			String[] wordsNeg = itemLocationList.locationsNegative.split(",");
+			locationListNeg.addAll(Arrays.asList(wordsNeg));
+			
+			OntologyManager.getInstance().voteItemLocationList(userid,itemLocationList.item,locationList,locationListNeg);
 			
 	}
 
@@ -703,7 +708,7 @@ public class OntologyListener {
 	
 	/*
 	 * Prova inserimento di un item-location nell'ontologia
-	 */
+	 
 	@GET
 	@Path("/updateOntology")	
 	//@Consumes("application/xml")
@@ -712,8 +717,7 @@ public class OntologyListener {
 			
 			OntologyReasoner.getInstance().updateOntology(item,location);
 	}
-	
-	
+	*/	
 // ACTION
 	@GET
 	@Path("/addActionInLocation")	
@@ -793,7 +797,12 @@ public class OntologyListener {
 			String[] words = actionLocationList.locations.split(",");
 			locationList.addAll(Arrays.asList(words));
 			
-			OntologyManager.getInstance().voteActionLocationList(userid,actionLocationList.action,locationList);
+			//creo la lista di location negative, dato che mi arriva una stringa con le location separate da una virgola
+			List<String> locationListNeg= new LinkedList<String>();
+			String[] wordsNeg = actionLocationList.locationsNegative.split(",");
+			locationListNeg.addAll(Arrays.asList(wordsNeg));
+			
+			OntologyManager.getInstance().voteActionLocationList(userid,actionLocationList.action,locationList,locationListNeg);
 			//OntologyManager.getInstance().voteActionLocationList(userid,action,location);
 	}
 	

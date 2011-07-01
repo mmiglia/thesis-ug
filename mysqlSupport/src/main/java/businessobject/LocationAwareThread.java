@@ -136,8 +136,8 @@ public class LocationAwareThread implements Runnable{
 		for (String query : queryList) 
 		{
 			System.out.println("ho avviato il thread per salvare solo nel db");
-			
-			CachingManager.cachingDelete();
+			if (!CachingManager.isAlreadyDeleteCacheToday())
+				CachingManager.cachingDelete();
 			
 			List<Hint> listToAdd = new LinkedList<Hint>();
 			listToAdd = MapManager.getInstance().searchLocalBusiness(
