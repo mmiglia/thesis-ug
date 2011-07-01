@@ -17,6 +17,7 @@ public class ActionLocationList {
 	
 	public String action;
 	public String locations;
+	public String locationsNegative;
 	
 	public ActionLocationList()
 	{
@@ -31,6 +32,8 @@ public class ActionLocationList {
 	{
 		this.action = action;
 		this.locations = locations;
+	    this.locationsNegative = locationsNegative;
+
 		
 	}
 

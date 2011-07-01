@@ -45,4 +45,10 @@ public class CachingManager {
 				CachingDatabase.istance.cachingDelete();
 			}
 
+			public static boolean isAlreadyDeleteCacheToday()
+			{
+				System.out.println("Siamo in CachingManager-isAlreadyDeleteCacheToday");
+				return CachingDatabase.istance.isAlreadyDeleteCacheToday();
+			}
+			
 }
