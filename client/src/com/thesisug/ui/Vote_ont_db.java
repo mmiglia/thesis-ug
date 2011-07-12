@@ -15,6 +15,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -41,6 +42,7 @@ import com.thesisug.communication.valueobject.SingleItemLocation;
 
 public class Vote_ont_db extends Activity {
 	
+	private static final String TAG = new String("thesisug - Vote_ont_db");
 	private static Thread downloadAssertionsThread;
 	TextView txt_Object;
 	TextView txt_Ont;
@@ -196,9 +198,11 @@ public class Vote_ont_db extends Activity {
 		                   locationsListNegative=locationsListNegative.substring(0, u);
 		               }
 					
-					
-				Toast.makeText(getBaseContext(), locationsList, Toast.LENGTH_LONG).show();
-				Toast.makeText(getBaseContext(), locationsListNegative, Toast.LENGTH_LONG).show();
+					Log.i(TAG, "LISTA VOTI POSITIVI: " + locationsList);
+					Log.i(TAG, "LISTA VOTI NEGATIVI: " + locationsListNegative);
+				
+				//Toast.makeText(getBaseContext(), locationsList, Toast.LENGTH_LONG).show();
+				//Toast.makeText(getBaseContext(), locationsListNegative, Toast.LENGTH_LONG).show();
 				
 					
 				/*if (o.itemActionType.equals("1") && !(list_vote.isEmpty())){
@@ -729,13 +733,16 @@ public void imp_location(final String location)
 		public void onClick(View v) {
 		/** When OK Button is clicked, dismiss the dialog */
 		if (v == add_button){
-			if (location.getText().toString().equals(""))
+			if (location.getText().toString().equals("") )
 			{
 				Toast.makeText(Vote_ont_db.this, "Empty fields!Compile it!",Toast.LENGTH_LONG).show();
 				
 			}else if (list_dup.contains(location.getText().toString()))
 			{
 				Toast.makeText(Vote_ont_db.this, "Location already exit!",Toast.LENGTH_LONG).show();
+			}else if ( txt_Ont.getText().toString().contains(location.getText().toString()) ){
+				Toast.makeText(Vote_ont_db.this, "Location already exist in the ontology!",Toast.LENGTH_LONG).show();
+			
 			}else 
 			{
 				loc= location.getText().toString();

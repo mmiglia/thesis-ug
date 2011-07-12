@@ -272,7 +272,7 @@ public class AssertionsHandler {
 	            serializer.text(action.locations);
 	            serializer.endTag("", "locations");
 	            serializer.startTag("", "locationsNegative");
-	            serializer.text(action.locations);
+	            serializer.text(action.locationsNegative);
 	            serializer.endTag("", "locationsNegative");
 	
 	            serializer.endTag("", "actionLocationList ");
