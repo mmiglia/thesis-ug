@@ -9,6 +9,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import businessobject.google.MapsClient;
+
 import valueobject.Coordinate;
 import valueobject.Place;
 import dao.management.QueryStatus;
@@ -175,7 +177,7 @@ public enum PlacesDatabase {
    		
    		
    		String query="Insert into Place" +
-           " (title,lat,lng,streetAddress,streetNumber,city,username,userGroup) values ('" + title + "','"+ placeCoordinate.lat + "','" + placeCoordinate.lng + "','" + 
+           " (title,lat,lng,streetAddress,streetNumber,city,username,userGroup) values ('" + title + "','"+ placeCoordinate.getLat() + "','" + placeCoordinate.getLng() + "','" + 
            	 streetAddress + "','" + streetNumber + "','"+ city + "',0)";
    		
    		System.out.println(query);
@@ -202,13 +204,13 @@ public enum PlacesDatabase {
               
       }
        
-       public Coordinate convertAddressToCoordinate(String streetAddress,String streetNumber,String city)
+       public static final Coordinate convertAddressToCoordinate(final String streetAddress,final String streetNumber,final String city)
        {
     	   
     	   
-    	   
-    	   
-    	   return new Coordinate("","");
+    	   MapsClient geocoding = new MapsClient(); // currently there's only google, so we use direct call
+   		   Coordinate c = geocoding.covertAddressToCoordinate(streetAddress + "," + streetNumber + ","+ city);
+    	   return c;
     	   
        }
        
