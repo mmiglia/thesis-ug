@@ -37,7 +37,7 @@ public class PlacesManager {
    	 * @param lng the longitude of the private place to insert
    	 * @return the place
    	*/
-   	public Place addPrivatePlace(String user, String titlePlace,String streetAddressPlace, String streetNumberPlace, String cityPlace) 
+   	public void addPrivatePlace(String user, String titlePlace,String streetAddressPlace, String streetNumberPlace, String cityPlace) 
    	{
    		
    		String title = titlePlace.toLowerCase();
@@ -46,8 +46,10 @@ public class PlacesManager {
    		String city = cityPlace.toLowerCase();
    		
    		title.replaceAll(" ", "_");
+   		
+   		System.out.println("placeManager:"+title+" "+streetAddress+" "+streetNumber+" "+city);
    	
-   		return PlacesDatabase.istance.addPrivatePlace(user,title,streetAddress,streetNumber,city);
+   		PlacesDatabase.istance.addPrivatePlace(user,title,streetAddress,streetNumber,city);
    	}
        
        /**
@@ -79,7 +81,7 @@ public class PlacesManager {
         */
        public void deletePrivatePlace(String userid,String title,String lat, String lng) 
        {
-               return PlacesDatabase.istance.deletePrivatePlace(userid, title, lat,  lng);
+               PlacesDatabase.istance.deletePrivatePlace(userid, title, lat,  lng);
        }
        
 }

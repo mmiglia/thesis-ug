@@ -174,18 +174,19 @@ public enum PlacesDatabase {
    		}	
    		
    		Coordinate placeCoordinate = convertAddressToCoordinate(streetAddress,streetNumber,city);
-   		
+   		System.out.println("coordinate- lat:"+placeCoordinate.getLat());
+   		System.out.println("coordinate- lng:"+placeCoordinate.getLng());
    		
    		String query="Insert into Place" +
-           " (title,lat,lng,streetAddress,streetNumber,city,username,userGroup) values ('" + title + "','"+ placeCoordinate.getLat() + "','" + placeCoordinate.getLng() + "','" + 
-           	 streetAddress + "','" + streetNumber + "','"+ city + "',0)";
+           " (title,lat,lng,streetAddress,streetNumber,city,user,userGroup) values ('" + title + "','"+ placeCoordinate.getLat() + "','" + placeCoordinate.getLng() + "','" + 
+           	 streetAddress + "','" + streetNumber + "','"+ city + "','"+userID+"',0)";
    		
    		System.out.println(query);
    		qs=dbManager.customQuery(conn, query);
    		
    		if(qs.execError){
    			log.error(qs.explainError());
-   			System.out.println("Error during delete vote operation in Item_voted .. aborting operation");
+   			System.out.println("Error during add private Place .. aborting operation");
    			qs.occourtedErrorException.printStackTrace();
    			
    			//Rolling back
@@ -204,12 +205,19 @@ public enum PlacesDatabase {
               
       }
        
-       public static final Coordinate convertAddressToCoordinate(final String streetAddress,final String streetNumber,final String city)
+       public static final Coordinate convertAddressToCoordinate(String streetAddress,String streetNumber, String city)
        {
-    	   
-    	   
+    	   streetAddress = streetAddress.replaceAll(" ", "+");
+    	   streetNumber = streetNumber.replaceAll(" ","+");
+    	   city = city.replaceAll(" ","+");
+    	   streetAddress = streetAddress.replaceAll("%20", "+");
+    	   streetNumber = streetNumber.replaceAll("%20","+");
+    	   city = city.replaceAll("%20","+");
+    	   String address = streetAddress + ","+ streetNumber+","+city;
+    	   System.out.println("placeDatabase- convertAddressToCoordinate, address:"+address);
     	   MapsClient geocoding = new MapsClient(); // currently there's only google, so we use direct call
-   		   Coordinate c = geocoding.covertAddressToCoordinate(streetAddress + "," + streetNumber + ","+ city);
+   		   //Coordinate c = geocoding.covertAddressToCoordinate(address);
+    	   Coordinate c = new Coordinate("12","45");
     	   return c;
     	   
        }
