@@ -32,7 +32,24 @@ public class PlacesResource {
        
        private static Logger log = LoggerFactory.getLogger(PlacesResource.class);
 
-       @POST
+       @GET
+       @Path("/addPrivatePlaceGET")        
+       public void addPrivatePlaceGET(@PathParam("username") String userid, 
+                       @CookieParam("sessionid") String sessionid,@QueryParam("title") String title, @QueryParam("streetAddress") String streetAddress,@QueryParam("streetNumber") String streetNumber,@QueryParam("city") String city)
+       {
+               log.info("Request to add item-location from user " + userid + 
+                               ", session "+ sessionid);
+               System.out.println("placeResource");
+              PlacesManager.getInstance().addPrivatePlace(userid, title,streetAddress,streetNumber,city);
+       }
+       
+       
+       
+       
+       
+       
+       
+    @POST
    	@Path("/addPrivatePlace")	
    	@Consumes("application/xml")
    	//@Produces("application/xml")
