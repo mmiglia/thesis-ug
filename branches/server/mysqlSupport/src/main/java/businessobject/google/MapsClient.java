@@ -20,11 +20,12 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import valueobject.Coordinate;
 import valueobject.Hint;
 import businessobject.Configuration;
 import businessobject.MapSubscriber;
 import businessobject.google.Response.ResponseData;
-
+import businessobject.google.ResponseC.ResponseDataC;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -40,6 +41,7 @@ import com.google.gson.GsonBuilder;
 public class MapsClient extends MapSubscriber {
 	private HttpClient httpClient;
 	private static final String LOCAL_SEARCH_URI = "http://ajax.googleapis.com/ajax/services/search/local";
+	private static final String GOOGLE_GEOCODING = "http://maps.googleapis.com/maps/api/geocode/json";
 	private final static Logger log = LoggerFactory.getLogger(MapsClient.class);
 	
 	private static String googleApiKey=Configuration.getInstance().constants.getProperty("GOOGLE_API_KEY");
@@ -92,6 +94,18 @@ public class MapsClient extends MapSubscriber {
 		return respData.getResults();
 	}
 
+	
+	
+	public Coordinate covertAddressToCoordinate(String address) {
+		Map<String, String> params = new LinkedHashMap<String, String>();
+		params.put("address", address);
+		params.put("sensor", "false");
+		ResponseC r = sendGeocodingRequest(GOOGLE_GEOCODING, params);
+		ResponseDataC respData=r.getResponseData();
+		
+		return respData.getResults();
+	}
+	
 	/**
 	 * 
 	 * 
@@ -101,9 +115,7 @@ public class MapsClient extends MapSubscriber {
 	 * the Respons object that returns
 	 */
 	private Response sendSearchRequest(String url, Map<String, String> params) {
-		if (params.get("v") == null) {
-			params.put("v", "1.0");
-		}
+		
 		String json = sendHttpRequest("GET", url, params);
 		log.debug("sendSearchRequest url:"+url);
 		GsonBuilder builder = new GsonBuilder();
@@ -114,6 +126,18 @@ public class MapsClient extends MapSubscriber {
 		return r;
 	}
 
+	
+	private ResponseC sendGeocodingRequest(String url, Map<String, String> params) {
+		
+		String json = sendHttpRequest("GET", url, params);
+		log.debug("sendSearchRequest url:"+url);
+		GsonBuilder builder = new GsonBuilder();
+		Gson gson = builder.create();
+		ResponseC r = gson.fromJson(json, ResponseC.class);
+		r.setJson(json);
+
+		return r;
+	}
 	/**
 	 * Create a query string using the typical GET format:
 	 * ?name=value&name2=value2 etc

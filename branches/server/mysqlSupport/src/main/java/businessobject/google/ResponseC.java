@@ -3,6 +3,7 @@ package businessobject.google;
 import java.util.ArrayList;
 import java.util.List;
 
+import valueobject.Coordinate;
 import valueobject.Hint;
 
 /**
@@ -11,9 +12,9 @@ import valueobject.Hint;
  * 
  *
  */
-public class Response {
+public class ResponseC {
 	private String json;
-	private ResponseData responseData;
+	private ResponseDataC responseDataC;
 	private String responseDetails;
 	private Integer responseStatus;
 
@@ -21,14 +22,14 @@ public class Response {
 		this.json = j;
 	}
 
-	public ResponseData getResponseData() {
-		return responseData;
+	public ResponseDataC getResponseData() {
+		return responseDataC;
 	}
 	
 	
 
-	public void setResponseData(ResponseData responseData) {
-		this.responseData = responseData;
+	public void setResponseData(ResponseDataC responseData) {
+		this.responseDataC = responseData;
 	}
 
 	public String getJson() {
@@ -63,17 +64,17 @@ public class Response {
 		this.responseStatus = status;
 	}
 
-	public static class ResponseData {
-		private List<Hint> results;
+	public static class ResponseDataC {
+		private Coordinate results;
 
-		public List<Hint> getResults() {
+		public Coordinate getResults() {
 			if (results == null) {
-				results = new ArrayList<Hint>();
+				results = new Coordinate("","");
 			}
 			return results;
 		}
 
-		public void setResults(List<Hint> resultList) {
+		public void setResults(Coordinate resultList) {
 			this.results = resultList;
 		}
 	}
