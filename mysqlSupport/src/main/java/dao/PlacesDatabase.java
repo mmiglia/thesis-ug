@@ -216,8 +216,8 @@ public enum PlacesDatabase {
     	   String address = streetAddress + ","+ streetNumber+","+city;
     	   System.out.println("placeDatabase- convertAddressToCoordinate, address:"+address);
     	   MapsClient geocoding = new MapsClient(); // currently there's only google, so we use direct call
-   		   //Coordinate c = geocoding.covertAddressToCoordinate(address);
-    	   Coordinate c = new Coordinate("12","45");
+   		   Coordinate c = geocoding.covertAddressToCoordinate(address);
+    	   //Coordinate c = new Coordinate("12","45");
     	   return c;
     	   
        }
