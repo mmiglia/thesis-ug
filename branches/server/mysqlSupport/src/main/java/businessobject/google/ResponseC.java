@@ -3,8 +3,7 @@ package businessobject.google;
 import java.util.ArrayList;
 import java.util.List;
 
-import valueobject.Coordinate;
-import valueobject.Hint;
+import valueobject.Address;
 
 /**
  * Class used to pack all the Response data given by the various http request
@@ -28,8 +27,8 @@ public class ResponseC {
 	
 	
 
-	public void setResponseData(ResponseDataC responseData) {
-		this.responseDataC = responseData;
+	public void setResponseData(ResponseDataC responseDataC) {
+		this.responseDataC = responseDataC;
 	}
 
 	public String getJson() {
@@ -65,16 +64,17 @@ public class ResponseC {
 	}
 
 	public static class ResponseDataC {
-		private Coordinate results;
+		
+		private List<Address> results;
 
-		public Coordinate getResults() {
+		public List<Address> getResults() {
 			if (results == null) {
-				results = new Coordinate("","");
+				results = new ArrayList<Address>();
 			}
 			return results;
 		}
 
-		public void setResults(Coordinate resultList) {
+		public void setResults(List<Address> resultList) {
 			this.results = resultList;
 		}
 	}
