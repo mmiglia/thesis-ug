@@ -12,6 +12,7 @@ public class Geometry {
 	
 	public Viewport viewport;
 	
+	public Geometry(){}
 	
-	
+
 }
