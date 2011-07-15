@@ -2,11 +2,16 @@ package valueobject;
 
 public class Coordinate {
 	
-	private String lat;
-	private String lng;
+	private double lat;
+	private double lng;
 		
+	
+	public Coordinate() 
+	{
+		
+	}
 
-	public Coordinate(String lat,String lng) 
+	public Coordinate(double lat,double lng) 
 	{
 		
 		this.lat = lat;
@@ -14,12 +19,12 @@ public class Coordinate {
 	
 	}
 	
-	public String getLat()
+	public double getLat()
 	{
 		return lat;
 	}
 
-	public String getLng()
+	public double getLng()
 	{
 		return lng;
 	}
