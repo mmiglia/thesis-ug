@@ -220,9 +220,8 @@ public class MapsClient extends MapSubscriber {
 		ResponseDataC respData=r.getResponseData();
 		System.out.println("respData");
 		System.out.println("Coordinate ricevute" + respData.getResults().get(0).geometry.location.getLat() + "," + respData.getResults().get(0).geometry.location.getLng());
-		
-		return respData.getResults().get(0).geometry.location;
-		//return new Coordinate("0","0");
+		//return respData.getResults().get(0).geometry.location;
+		return new Coordinate(respData.getResults().get(0).geometry.location.getLat(),respData.getResults().get(0).geometry.location.getLng());
 	}
 	
 private ResponseC sendGeocodingRequest(String url, Map<String, String> params) {

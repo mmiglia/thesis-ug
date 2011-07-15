@@ -62,8 +62,24 @@ public class Address {
 			public Viewport(){}
 		}
 		
-		
+		public static class Coordinate {
+			
+			private String lat;
+			private String lng;
+				
 
+			public Coordinate() {}
+			
+			public String getLat()
+			{
+				return lat;
+			}
+
+			public String getLng()
+			{
+				return lng;
+			}
+
+	  }
 	}
-	
 }
