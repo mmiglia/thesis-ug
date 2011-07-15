@@ -1,12 +1,13 @@
 package valueobject;
 
-import java.util.List;
+import java.util.ArrayList;
+import java.util.ArrayList;
 
 
 public class AddressList {
-	public List<Address> address;
+	public ArrayList<Result> address;
 	
-	public List<Address> getList()
+	public ArrayList<Result> getList()
 	 {
 		return address;
 	}
