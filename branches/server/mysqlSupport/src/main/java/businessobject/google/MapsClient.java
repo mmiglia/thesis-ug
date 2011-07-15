@@ -1,9 +1,5 @@
 package businessobject.google;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,6 +20,8 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import valueobject.Address;
+import valueobject.AddressList;
 import valueobject.Coordinate;
 import valueobject.Hint;
 import businessobject.Configuration;
@@ -216,23 +214,43 @@ public class MapsClient extends MapSubscriber {
 		params.put("address", address);
 		params.put("sensor", "false");
 		ResponseC r = sendGeocodingRequest(GOOGLE_GEOCODING, params);
+		//AddressList r = sendGeocodingRequest(GOOGLE_GEOCODING, params);
+		
+		System.out.println("r.getJson():"+r.getJson());
 		ResponseDataC respData=r.getResponseData();
-		
+		System.out.println("respData");
 		System.out.println("Coordinate ricevute" + respData.getResults().get(0).geometry.location.getLat() + "," + respData.getResults().get(0).geometry.location.getLng());
-		return respData.getResults().get(0).geometry.location;
 		
+		return respData.getResults().get(0).geometry.location;
+		//return new Coordinate("0","0");
 	}
 	
 private ResponseC sendGeocodingRequest(String url, Map<String, String> params) {
+	//private AddressList sendGeocodingRequest(String url, Map<String, String> params) {
+			
+	
+	/*
+		System.out.println("------------------------------json creato dall'oggetto----------------------");
 		
+		Address address = new Address();
+		Gson gson1 = new Gson();
+		String json1= gson1.toJson(address);
+		System.out.println(json1);
+		
+
+		System.out.println("------------------------------fine json creato dall'oggetto----------------------");
+	*/
 		String json = sendHttpRequest("GET", url, params);
 
 		log.debug("sendSearchRequest url:"+url);
 		GsonBuilder builder = new GsonBuilder();
 		Gson gson = builder.create();
 		ResponseC r = gson.fromJson(json, ResponseC.class);
+		//AddressList r = gson.fromJson(json, AddressList.class);
+		
 		r.setJson(json);
-
+		System.out.println("json ricevuto:" + json);
+		System.out.println("r:" + r);
 		return r;
 	}
 	
