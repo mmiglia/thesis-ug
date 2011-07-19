@@ -1,5 +1,7 @@
 package web;
 
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -15,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.Place;
+import valueobject.PlaceClient;
 import valueobject.SingleItemLocation;
 
 import businessobject.OntologyManager;
@@ -32,6 +35,8 @@ public class PlacesResource {
       
       private static Logger log = LoggerFactory.getLogger(PlacesResource.class);
 
+//PRIVATE
+      
       @GET
       @Path("/addPrivatePlaceGET")        
       public void addPrivatePlaceGET(@PathParam("username") String userid, 
@@ -40,93 +45,144 @@ public class PlacesResource {
       {
               log.info("Request to add private place from user " + userid + 
                               ", session "+ sessionid);
-              System.out.println("placeResource");
-             PlacesManager.getInstance().addPrivatePlace(userid, title,streetAddress,streetNumber,cap,city);
+             System.out.println("placeResource");
+             List<String> categoryList= new LinkedList<String>();
+             PlacesManager.getInstance().addPrivatePlace(userid, title,streetAddress,streetNumber,cap,city,categoryList);
       }
        
-   @POST
+     @POST
      @Path("/addPrivatePlace")    
      @Consumes("application/xml")
-  
      public void addPrivatePlace(@PathParam("username") String userid, 
-             @CookieParam("sessionid") String sessionid, Place place)
+             @CookieParam("sessionid") String sessionid, PlaceClient place)
      {
          log.info("Request to add private place from user " + userid + 
                  ", session "+ sessionid);
          log.info("Add"+ place.title + " " + place.lat + " " + place.lng);
          
-         PlacesManager.getInstance().addPrivatePlace(userid, place.title,place.streetAddress,place.streetNumber,place.cap,place.city);
+       //creo la lista di category, dato che mi arriva una stringa con le location separate da una virgola
+ 		List<String> categoryList= new LinkedList<String>();
+ 		String[] words = place.category.split(",");
+ 		categoryList.addAll(Arrays.asList(words));
+ 		
+        PlacesManager.getInstance().addPrivatePlace(userid, place.title,place.streetAddress,place.streetNumber,place.cap,place.city,categoryList);
+     }
+     
+     /*
+      * Visualizza tutti i luoghi privati inseriti dall'utente
+      */
+     @GET
+     @Path("/privatePlaces")        
+     @Produces("application/xml")
+     public List<Place> privatePlaces(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid) 
+     {
+    	 log.info("Request to view private places from user " + userid + ", session "+ sessionid);
+         System.out.println("-PlacesResource metodo privatePlaces");
+         return PlacesManager.getInstance().retrieveAllPrivatePlaces(userid);
      }
    
-   @GET
-   @Path("/addPublicPlaceGET")        
-   public void addPublicPlaceGET(@PathParam("username") String userid, 
+     /*
+      * Cancella un luogo privato
+      */
+     @GET
+     @Path("/deletePrivatePlace")        
+     public void deletePrivatePlace(@PathParam("username") String userid,@QueryParam("title") String title,@QueryParam("lat") String lat,@QueryParam("lng") String lng,@CookieParam("sessionid") String sessionid) 
+     {
+    	 log.info("Request to delete private place from user " + userid + ", session "+ sessionid);
+         System.out.println("-PlacesResource metodo deletePrivatePlace");
+         PlacesManager.getInstance().deletePrivatePlace(userid,title,lat,lng);
+     }
+    
+//PUBLIC  
+     
+     @GET
+     @Path("/addPublicPlaceGET")        
+     public void addPublicPlaceGET(@PathParam("username") String userid, 
                    @CookieParam("sessionid") String sessionid,@QueryParam("title") String title, @QueryParam("streetAddress") String streetAddress,@QueryParam("streetNumber") String streetNumber
                    ,@QueryParam("cap") String cap,@QueryParam("city") String city)
-   {
-           log.info("Request to add public place from user " + userid + 
+     {
+    	 log.info("Request to add public place from user " + userid + 
                            ", session "+ sessionid);
-           System.out.println("placeResource");
-          //PlacesManager.getInstance().addPublicPlace(userid, title,streetAddress,streetNumber,cap,city);
-   }
+         System.out.println("placeResource");
+         String category="bar,enoteca,osteria";
+        
+         //creo la lista di category, dato che mi arriva una stringa con le location separate da una virgola
+   		 List<String> categoryList= new LinkedList<String>();
+   		 String[] words = category.split(",");
+   		 categoryList.addAll(Arrays.asList(words));
+         
+   		 PlacesManager.getInstance().addPublicPlace(userid, title,streetAddress,streetNumber,cap,city,categoryList);
+     }
     
-@POST
-   @Path("/addPrivatePlace")    
-   @Consumes("application/xml")
-
-   public void addPublicPlace(@PathParam("username") String userid, 
-           @CookieParam("sessionid") String sessionid, Place place)
-   {
-       log.info("Request to add item-location from user " + userid + 
+    
+     @POST
+     @Path("/addPublicPlace")    
+     @Consumes("application/xml")
+     public void addPublicPlace(@PathParam("username") String userid, 
+           @CookieParam("sessionid") String sessionid, PlaceClient place)
+     {
+    	 log.info("Request to add item-location from user " + userid + 
                ", session "+ sessionid);
-       log.info("Add"+ place.title + " " + place.lat + " " + place.lng);
+    	 log.info("Add"+ place.title + " " + place.lat + " " + place.lng);
+     
+    	 //creo la lista di category, dato che mi arriva una stringa con le location separate da una virgola
+    	 List<String> categoryList= new LinkedList<String>();
+    	 String[] words = place.category.split(",");
+    	 categoryList.addAll(Arrays.asList(words));
+		
+    	 PlacesManager.getInstance().addPublicPlace(userid, place.title,place.streetAddress,place.streetNumber,place.cap,place.city,categoryList);
+     }
+     
+     /*
+      * Visualizza tutti i luoghi pubblici votati
+      */
+      
+     @GET
+     @Path("/publicPlacesVoted")        
+     @Produces("application/xml")
+     public List<PlaceClient> publicPlacesVoted(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid) 
+     {
+    	 log.info("Request to view public places from user " + userid + ", session "+ sessionid);
+         System.out.println("-PlacesResource metodo publicPlacesVoted");             
+         return PlacesManager.getInstance().retrieveAllPublicPlacesVoted(userid);
+     }
+
+     /*
+      * Cancella il voto a un luogo pubblico-categoria
+      */
+     @GET
+     @Path("/deleteVotePublicPlace")        
+     public void deleteVotePublicPlace(@PathParam("username") String userid,@QueryParam("title") String title,@QueryParam("lat") String lat,
+    		  @QueryParam("lng") String lng,@QueryParam("category") String category,
+    		  @CookieParam("sessionid") String sessionid) 
+     {
+    	 log.info("Request to delete private place from user " + userid + ", session "+ sessionid);
+    	 System.out.println("-PlacesResource metodo deletePrivatePlace");
+         PlacesManager.getInstance().deleteVotePublicPlace(userid,title,lat,lng,category);
+     }
+      
+     @GET
+     @Path("/searchPublicPlaceGET")     
+     @Produces("application/xml")
+     public List<PlaceClient> searchPublicPlaceGET(@PathParam("username") String userid, 
+                   @CookieParam("sessionid") String sessionid,
+                   @QueryParam("title") String title, 
+                   @QueryParam("streetAddress") String streetAddress,
+                   @QueryParam("streetNumber") String streetNumber,
+                   @QueryParam("cap") String cap,
+                   @QueryParam("city") String city,
+                   @QueryParam("category") String category)
+     {
+    	 log.info("Request to add public place from user " + userid + 
+                           ", session "+ sessionid);
+         System.out.println("placeResource");
        
-       //PlacesManager.getInstance().addPublicPlace(userid, place.title,place.streetAddress,place.streetNumber,place.cap,place.city);
-   }
-      
-      
-      
-      /*
-       * Visualizza tutti i luoghi pubblici inseriti e votati
-       */
-      
-      @GET
-      @Path("/deletePrivatePlace")        
-      public void deletePrivatePlace(@PathParam("username") String userid,@QueryParam("title") String title,@QueryParam("lat") String lat,@QueryParam("lng") String lng,@CookieParam("sessionid") String sessionid) 
-      {
-                      log.info("Request to delete private place from user " + userid + ", session "+ sessionid);
-                      System.out.println("-PlacesResource metodo deletePrivatePlace");
-                      
-                      PlacesManager.getInstance().deletePrivatePlace(userid,title,lat,lng);
-      }
-      
-      /*
-       * Visualizza tutti i luoghi pubblici inseriti e votati
-       */
-      
-      @GET
-      @Path("/publicPlacesVoted")        
-      @Produces("application/xml")
-      public List<Place> publicPlacesVoted(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid) 
-      {
-                      log.info("Request to view public places from user " + userid + ", session "+ sessionid);
-                      System.out.println("-PlacesResource metodo publicPlacesVoted");
-                      
-                      return PlacesManager.getInstance().retrieveAllPublicPlacesVoted(userid);
-      }
-      
-      /*
-       * Visualizza tutti i luoghi privati inseriti dall'utente
-       */
-      
-      @GET
-      @Path("/privatePlaces")        
-      @Produces("application/xml")
-      public List<Place> privatePlaces(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid) 
-      {
-                      log.info("Request to view private places from user " + userid + ", session "+ sessionid);
-                      System.out.println("-PlacesResource metodo privatePlaces");
-                      
-                      return PlacesManager.getInstance().retrieveAllPrivatePlaces(userid);
-      }
+         //creo la lista di category, dato che mi arriva una stringa con le location separate da una virgola
+   		// List<String> categoryList= new LinkedList<String>();
+   		// String[] words = category.split(",");
+   		// categoryList.addAll(Arrays.asList(words));
+         
+   		 return PlacesManager.getInstance().searchPublicPlace(userid, title,streetAddress,streetNumber,cap,city,category);
+     }   
+     
 }

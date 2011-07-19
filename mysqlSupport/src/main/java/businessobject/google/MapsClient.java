@@ -213,21 +213,24 @@ public class MapsClient extends MapSubscriber {
 		}
 	}
 	
-	public Coordinate covertAddressToCoordinate(String address) {
-		Map<String, String> params = new LinkedHashMap<String, String>();
-		params.put("address", address);
-		params.put("sensor", "false");
-		ResponseC r = sendGeocodingRequest(GOOGLE_GEOCODING, params);
-		
-		System.out.println("Fatto!");
-		
-		
-		Result[] ad= r.getResult();
-		System.out.println(ad[0].geometry.location.getLat() + "," + ad[0].geometry.location.getLng());
+	 public Coordinate covertAddressToCoordinate(String address) {
+         Map<String, String> params = new LinkedHashMap<String, String>();
+         params.put("address", address);
+         params.put("sensor", "false");
+         ResponseC r = sendGeocodingRequest(GOOGLE_GEOCODING, params);
+         
+         System.out.println("Fatto!");
+         
+         if (r.getStatus().equals("ZERO_RESULTS"))
+                         System.out.println("Nessuna corrispondenza in COORDINATE!!!");
+         else{
+                 Result[] ad= r.getResult();
+                 System.out.println(ad[0].geometry.location.getLat() + "," + ad[0].geometry.location.getLng());
+                 return ad[0].geometry.location;
+         }
+         return null;
 
-		return ad[0].geometry.location;
-
-		}
+      }
 	
 private ResponseC sendGeocodingRequest(String url, Map<String, String> params) {
 	
