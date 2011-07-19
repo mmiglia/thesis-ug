@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import valueobject.Hint;
 import valueobject.Place;
+import valueobject.PlaceClient;
 import valueobject.SingleItemLocation;
 import dao.OntologyDatabase;
 import dao.PlacesDatabase;
@@ -27,16 +28,11 @@ public class PlacesManager {
               return InstanceHolder.INSTANCE;
       }
       
-      
+//PRIVATE     
      /**
       * Enter in the database the private place 
-      * @param user username of the user that enter the couple item-location
-      * @param title the title of the private place
-      * @param lat the latitute of the private place to insert
-      * @param lng the longitude of the private place to insert
-      * @return the place
-     */
-     public void addPrivatePlace(String user, String titlePlace,String streetAddressPlace, String streetNumberPlace,String capPlace, String cityPlace) 
+    */
+     public void addPrivatePlace(String user, String titlePlace,String streetAddressPlace, String streetNumberPlace,String capPlace, String cityPlace,List<String> category) 
      {
          
          String title = titlePlace.toLowerCase();
@@ -48,7 +44,45 @@ public class PlacesManager {
          
          System.out.println("placeManager:"+title+" "+streetAddress+" "+streetNumber+" "+cap+""+city);
      
-         PlacesDatabase.istance.addPrivatePlace(user,title,streetAddress,streetNumber,cap,city);
+         PlacesDatabase.istance.addPrivatePlace(user,title,streetAddress,streetNumber,cap,city,category);
+     }
+     
+     /**
+      * retrieve all private places entered by this user
+      *  
+      * @param userid unique UUID of the user
+      * @return list that contains all private places entered by the user
+      */
+     public List<Place> retrieveAllPrivatePlaces(String userid) 
+     {
+             return PlacesDatabase.istance.getAllPrivatePlaces(userid);
+     }
+     
+     /**
+      * delete private place entered by this user
+      */
+     public void deletePrivatePlace(String userid,String title,String lat, String lng) 
+     {
+             PlacesDatabase.istance.deletePrivatePlace(userid, title, lat,  lng);
+     }
+
+//PUBLIC
+     /**
+      * Enter in the database the public place 
+      */
+     public void addPublicPlace(String user, String titlePlace,String streetAddressPlace, String streetNumberPlace,String capPlace, String cityPlace,List<String> category) 
+     {
+         
+         String title = titlePlace.toLowerCase();
+         String streetAddress = streetAddressPlace.toLowerCase();
+         String streetNumber = streetNumberPlace.toLowerCase();
+         String cap = capPlace.toLowerCase();
+         String city = cityPlace.toLowerCase();
+         title.replaceAll(" ", "_");
+         
+         System.out.println("placeManager:"+title+" "+streetAddress+" "+streetNumber+" "+cap+""+city);
+     
+         PlacesDatabase.istance.addPublicPlace(user,title,streetAddress,streetNumber,cap,city,category);
      }
       
       /**
@@ -57,30 +91,25 @@ public class PlacesManager {
        * @param userid unique UUID of the user
        * @return list that contains all public places voted by the user
        */
-      public List<Place> retrieveAllPublicPlacesVoted(String userid) 
+      public List<PlaceClient> retrieveAllPublicPlacesVoted(String userid) 
       {
               return PlacesDatabase.istance.getAllPublicPlacesVoted(userid);
       }
       
       /**
-       * retrieve all private places entered by this user
-       * 
-       * @param userid unique UUID of the user
-       * @return list that contains all private places entered by the user
+       * delete vote for public place-category voted by this user
        */
-      public List<Place> retrieveAllPrivatePlaces(String userid) 
+      public void deleteVotePublicPlace(String userid,String title,String lat, String lng,String category) 
       {
-              return PlacesDatabase.istance.getAllPrivatePlaces(userid);
-      }
-      /**
-       * delete private place entered by this user
-       * 
-       * @param userid unique UUID of the user
-       * @return list that contains all private places entered by the user
-       */
-      public void deletePrivatePlace(String userid,String title,String lat, String lng) 
-      {
-              PlacesDatabase.istance.deletePrivatePlace(userid, title, lat,  lng);
+          PlacesDatabase.istance.deleteVotePublicPlace(userid, title, lat,  lng,category);
       }
       
+      /**
+       * retrieve all public places with certain constraints
+       * @return list that contains all public places that corrispond to the request
+       */
+      public List<PlaceClient> searchPublicPlace(String userid,String title,String streetAddress,String streetNumber,String cap,String city,String category)
+      {
+              return  PlacesDatabase.istance.searchPublicPlace(userid,title,streetAddress,streetNumber,cap,city,category);
+      }
 }
