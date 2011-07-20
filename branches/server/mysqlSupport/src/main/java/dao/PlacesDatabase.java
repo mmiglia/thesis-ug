@@ -13,6 +13,8 @@ import businessobject.DateUtils;
 import businessobject.google.MapsClient;
 
 import valueobject.Coordinate;
+import valueobject.Hint;
+import valueobject.Hint.PhoneNumber;
 import valueobject.Place;
 import valueobject.PlaceClient;
 import valueobject.SingleItemLocation;
@@ -76,18 +78,23 @@ public enum PlacesDatabase {
          dbManager.commitTransaction(conn);
          dbManager.dbDisconnect(conn);
          //aggiungi categoria
+         for (String s:category)
+         {
+       	  addPrivatePlaceCategory(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s);
+         }
          
          return;      
      }
       
-      public static List<Place> getAllPrivatePlaces(final String userID)
+      public static List<PlaceClient> getAllPrivatePlaces(final String userID)
       {
           
-          ArrayList<Place> publicPlacesList=new ArrayList<Place>();
+          ArrayList<PlaceClient> privatePlacesList=new ArrayList<PlaceClient>();
           
           Connection conn= (Connection) dbManager.dbConnect();
                   
-          String selectQuery="Select * from Place" +
+          String selectQuery="Select * from Place_category join Place on Place_category.title=Place.title and " +
+                              "Place_category.lat=Place.lat and Place_category.lng=Place.lng"+
                   " where user='"+ userID +"'and  userGroup=0";
           
           System.out.println(selectQuery);
@@ -106,10 +113,10 @@ public enum PlacesDatabase {
                           String streetNumber = rs.getString("streetNumber");
                           String cap = rs.getString("cap");
                           String city = rs.getString("city");
+                          String category = rs.getString("category");
                           
-                          
-                          publicPlacesList.add(
-                                          new Place(title,lat,lng,streetAddress,streetNumber,cap,city)                                        
+                          privatePlacesList.add(
+                                          new PlaceClient(title,lat,lng,streetAddress,streetNumber,cap,city,category)                                        
                                   );
                   }
           }catch(SQLException sqlE){
@@ -119,7 +126,7 @@ public enum PlacesDatabase {
                   dbManager.dbDisconnect(conn);
           }
           
-          return publicPlacesList;
+          return privatePlacesList;
       }
       
       
@@ -162,6 +169,119 @@ public enum PlacesDatabase {
     	  dbManager.dbDisconnect(conn);
        
     	  return; 
+      }
+      
+      public static void addPrivatePlaceCategory(String userID,String title,double lat,double lng,String category)
+      {
+    	  Connection conn= (Connection) dbManager.dbConnect();
+          
+          //Starting transaction
+          QueryStatus qs=dbManager.startTransaction(conn);
+          
+          if(qs.execError){
+              //TODO decide what to do in this case (transaction not started)
+              log.error(qs.explainError());
+              qs.occourtedErrorException.printStackTrace();
+              System.out.println("Error during transaction starting... Add place-category not done");
+              log.error("Error during transaction starting... Add place-category not done");
+              dbManager.dbDisconnect(conn);
+              return;
+          }    
+           String query="Insert into Place_category" +
+           " (title,lat,lng,category,username) values ('" + title + "','"+ lat + "','" + lng + "','" + 
+               category + "','"+userID+"')";
+          
+          System.out.println(query);
+          qs=dbManager.customQuery(conn, query);
+          
+          if(qs.execError){
+              log.error(qs.explainError());
+              System.out.println("Error during add Place-category .. aborting operation");
+              qs.occourtedErrorException.printStackTrace();
+              
+              //Rolling back
+              dbManager.rollbackTransaction(conn);
+              
+              log.error("Error during add Place-category .. aborting operation");
+              dbManager.dbDisconnect(conn);
+              return;
+          }
+          dbManager.commitTransaction(conn);
+          dbManager.dbDisconnect(conn);
+         
+          return;   
+    	  
+      }
+      
+      public List<Hint> searchPrivatePlacesDB(String userID,float latitude, float longitude, String query)
+      {
+    	  ArrayList<Hint> privatePlacesList=new ArrayList<Hint>();
+          
+          Connection conn= (Connection) dbManager.dbConnect();
+                  
+          String selectQuery="Select * from Place_category join Place on Place_category.title=Place.title and " +
+                              "Place_category.lat=Place.lat and Place_category.lng=Place.lng"+
+                  " where Place.user='"+ userID +"'and  Place.userGroup=0 and Place.title='"+query+"'";
+          
+          System.out.println(selectQuery);
+          
+          
+          QueryStatus qs=dbManager.customSelect(conn, selectQuery);
+          
+          ResultSet rs=(ResultSet)qs.customQueryOutput;
+
+          try{
+                  while(rs.next()){
+                	  	  System.out.println("ho trovato in private");
+                	  	  
+                	  	  String title = rs.getString("title");
+                          String lat = rs.getString("lat");
+                          String lng = rs.getString("lng");
+                          String streetAddress = rs.getString("streetAddress");
+                          String streetNumber = rs.getString("streetNumber");
+                          String cap = rs.getString("cap");
+                          String city = rs.getString("city");
+                        
+                          List<String> addressLinesList = new ArrayList<String>();
+                          addressLinesList.add(streetAddress+","+ streetNumber);
+                          addressLinesList.add(cap+" "+ city);
+                          List<PhoneNumber> phoneNumberList = new ArrayList<PhoneNumber>();
+                          
+                          String ddUrl = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+@"+lat+","+lng+"&saddr="+latitude+","+longitude;
+                          String ddUrlToHere = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+@"+lat+","+lng+"&iwstate1=dir:to";
+                          String ddUrlFromHere = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+@"+lat+","+lng+"&iwstate1=dir:from";
+                          String staticMapUrl="http://maps.google.com/maps/api/staticmap?maptype=roadmap&format=gif&sensor=false&size=150x100&zoom=13&markers="+lat+","+lng;
+                         
+                          privatePlacesList.add(
+                                        		  new Hint(
+                          								title,
+                          								"" ,
+                          								"" , 
+                          								title,
+                          								lat ,
+                          								lng , 
+                          								streetAddress+","+streetNumber ,
+                          								city,
+                          								ddUrl,
+                          								ddUrlToHere , 
+                          								ddUrlFromHere,
+                          								staticMapUrl,
+                          								"local",
+                          								"",
+                          								"",
+                          								phoneNumberList,
+                          								addressLinesList		
+                          							)			
+                                  );
+                  }
+          }catch(SQLException sqlE){
+                  //TODO
+      
+          }finally{        
+                  dbManager.dbDisconnect(conn);
+          }
+          return privatePlacesList;
+    	  
       }
       
 //PUBLIC
@@ -348,12 +468,12 @@ public enum PlacesDatabase {
     	  {    		  
     		  if (whereflag==false) 
     		  {
-    			  selectQuery = selectQuery + " where title='"+title+"' ";
+    			  selectQuery = selectQuery + " where title='"+title.toLowerCase()+"' ";
     			  whereflag = true;
     		  }
     		  else
     		  {
-    			  selectQuery = selectQuery + " and title='"+title+"' ";
+    			  selectQuery = selectQuery + " and title='"+title.toLowerCase()+"' ";
     		  }
     		  
     	  }  
@@ -362,12 +482,12 @@ public enum PlacesDatabase {
     	  {
     		  if (whereflag==false) 
     		  {
-    			  selectQuery = selectQuery + " where streetAddress='"+streetAddress+"' ";
+    			  selectQuery = selectQuery + " where streetAddress='"+streetAddress.toLowerCase()+"' ";
     			  whereflag = true;
     		  }
     		  else
     		  {
-    			  selectQuery = selectQuery + " and streetAddress='"+streetAddress+"' ";
+    			  selectQuery = selectQuery + " and streetAddress='"+streetAddress.toLowerCase()+"' ";
     		  }
     	  }
     			 
@@ -375,12 +495,12 @@ public enum PlacesDatabase {
     	  {
     		  if (whereflag==false) 
     		  {
-    			  selectQuery = selectQuery + " where streetNumber='"+streetNumber+"' ";
+    			  selectQuery = selectQuery + " where streetNumber='"+streetNumber.toLowerCase()+"' ";
     			  whereflag = true;
     		  }
     		  else
     		  {
-    			  selectQuery = selectQuery + " and streetNumber='"+streetNumber+"' ";
+    			  selectQuery = selectQuery + " and streetNumber='"+streetNumber.toLowerCase()+"' ";
     		  }
     	  }
     	
@@ -388,12 +508,12 @@ public enum PlacesDatabase {
     	  {
     		  if (whereflag==false) 
     		  {
-    			  selectQuery = selectQuery + " where cap='"+cap+"' ";
+    			  selectQuery = selectQuery + " where cap='"+cap.toLowerCase()+"' ";
     			  whereflag = true;
     		  }
     		  else
     		  {
-    			  selectQuery = selectQuery + " and cap='"+cap+"' ";
+    			  selectQuery = selectQuery + " and cap='"+cap.toLowerCase()+"' ";
     		  }
     	  }  
     		  
@@ -401,12 +521,12 @@ public enum PlacesDatabase {
     	  {
     		  if (whereflag==false) 
     		  {
-    			  selectQuery = selectQuery + " where city='"+city+"' ";
+    			  selectQuery = selectQuery + " where city='"+city.toLowerCase()+"' ";
     			  whereflag = true;
     		  }
     		  else
     		  {
-    			  selectQuery = selectQuery + " and city='"+city+"' ";
+    			  selectQuery = selectQuery + " and city='"+city.toLowerCase()+"' ";
     		  }
     	  }  
     		
@@ -414,12 +534,12 @@ public enum PlacesDatabase {
     	  {
     		  if (whereflag==false) 
     		  {
-    			  selectQuery = selectQuery + " where category='"+category+"' ";
+    			  selectQuery = selectQuery + " where category='"+category.toLowerCase()+"' ";
     			  whereflag = true;
     		  }
     		  else
     		  {
-    			  selectQuery = selectQuery + " and category='"+category+"' ";
+    			  selectQuery = selectQuery + " and category='"+category.toLowerCase()+"' ";
     		  }
     	  }    
     	
@@ -588,6 +708,99 @@ public enum PlacesDatabase {
           dbManager.dbDisconnect(conn);
          
           return;   
+      }
+      
+      public List<Hint> searchPublicPlacesDB(String userID,float latitude, float longitude, String query)
+      {
+    	  ArrayList<Hint> publicPlacesList=new ArrayList<Hint>();
+          
+          Connection conn= (Connection) dbManager.dbConnect();
+                  
+          String selectQuery="Select * from Place_voted join Place on Place_voted.title=Place.title and " +
+                              "Place_voted.lat=Place.lat and Place_voted.lng=Place.lng"+
+                  " where Place_voted.username='"+ userID +"'and  Place.userGroup=-1 and Place_voted.category='"+query+"'";
+          
+          System.out.println(selectQuery);
+          
+          
+          QueryStatus qs=dbManager.customSelect(conn, selectQuery);
+          
+          ResultSet rs=(ResultSet)qs.customQueryOutput;
+
+          try{
+                  while(rs.next()){
+                	  	  System.out.println("ho trovato in public");
+                	  	  
+                	  	  String title = rs.getString("Place.title");
+                          String lat = rs.getString("Place.lat");
+                          String lng = rs.getString("Place.lng");
+                          String streetAddress = rs.getString("Place.streetAddress");
+                          String streetNumber = rs.getString("Place.streetNumber");
+                          String cap = rs.getString("Place.cap");
+                          String city = rs.getString("Place.city");
+                         
+                          List<String> addressLinesList = new ArrayList<String>();
+                          addressLinesList.add(streetAddress+","+ streetNumber);
+                          addressLinesList.add(cap+" "+ city);
+                          List<PhoneNumber> phoneNumberList = new ArrayList<PhoneNumber>();
+                          
+                          String ddUrl = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+@"+lat+","+lng+"&saddr="+latitude+","+longitude;
+                          
+                          /*
+                           * http://www.google.com/maps?source=uds&daddr=Via+4+Novembre,+6,+Rossano+Veneto,+Veneto+(Supermercato+Geremia+Di+Geremia+Giampietro+%26+C.+S.N.C.)+@45.704687,11.802871&saddr=45.69553,11.830902
+                           */
+                          
+                          String ddUrlToHere = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+@"+lat+","+lng+"&iwstate1=dir:to";
+                          
+                          /*
+                           * http://www.google.com/maps?source=uds&daddr=Via+4+Novembre,+6,+Rossano+Veneto,+Veneto+(Supermercato+Geremia+Di+Geremia+Giampietro+%26+C.+S.N.C.)+@45.704687,11.802871&iwstate1=dir:to
+                           */
+                          
+                          String ddUrlFromHere = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+@"+lat+","+lng+"&iwstate1=dir:from";
+                          
+                          
+                          /*
+                           * <ddUrlFromHere>
+							http://www.google.com/maps?source=uds&saddr=Via+4+Novembre,+6,+Rossano+Veneto,+Veneto+(Supermercato+Geremia+Di+Geremia+Giampietro+%26+C.+S.N.C.)+@45.704687,11.802871&iwstate1=dir:from
+                           */
+                          String staticMapUrl="http://maps.google.com/maps/api/staticmap?maptype=roadmap&format=gif&sensor=false&size=150x100&zoom=13&markers="+lat+","+lng;
+                          
+                          
+                          
+                          
+                          
+                          publicPlacesList.add(
+                                        		  new Hint(
+                          								title,
+                          								"" ,
+                          								"" , 
+                          								title,
+                          								lat ,
+                          								lng , 
+                          								streetAddress+","+streetNumber ,
+                          								city,
+                          								ddUrl,
+                          								ddUrlToHere , 
+                          								ddUrlFromHere,
+                          								staticMapUrl,
+                          								"local",
+                          								"",
+                          								"",
+                          								phoneNumberList,
+                          								addressLinesList		
+                          							)			
+                                  );
+                          System.out.println(publicPlacesList);
+                  }
+          }catch(SQLException sqlE){
+                  //TODO
+      
+          }finally{        
+                  dbManager.dbDisconnect(conn);
+          }
+          System.out.println(publicPlacesList);
+          return publicPlacesList;
+    	  
       }
  
 //CONVERT COORDINATE

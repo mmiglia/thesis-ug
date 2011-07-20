@@ -90,7 +90,14 @@ public class LocationAwareAllThread implements Runnable{
 		for (String query : queryList) 
 		{
 			List<Hint> result1 = new LinkedList<Hint>(); // list of search result IN CACHE
-			result1.addAll(CachingManager.searchLocalBusinessDB(
+			
+			//aggiungo eventuali luoghi privati
+			result1.addAll(PlacesManager.searchPrivatePlacesDB(userid,latitude,longitude,query));
+			//aggiungo eventuali luoghi pubblici votati dall'utente
+			result1.addAll(PlacesManager.searchPublicPlacesDB(userid,latitude,longitude,query));
+			
+			//aggiungo eventuali luoghi presenti nella cache dei risultati di Google
+	    	result1.addAll(CachingManager.searchLocalBusinessDB(
 							latitude, longitude, query,distance));
 			if (distance==0)
 			{	//significa che non ho vincoli sulla distanza, io li pongo a 50 Km
