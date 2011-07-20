@@ -53,7 +53,7 @@ public class PlacesManager {
       * @param userid unique UUID of the user
       * @return list that contains all private places entered by the user
       */
-     public List<Place> retrieveAllPrivatePlaces(String userid) 
+     public List<PlaceClient> retrieveAllPrivatePlaces(String userid) 
      {
              return PlacesDatabase.istance.getAllPrivatePlaces(userid);
      }
@@ -65,7 +65,15 @@ public class PlacesManager {
      {
              PlacesDatabase.istance.deletePrivatePlace(userid, title, lat,  lng);
      }
-
+     
+     /*
+      * Method called by LocationAwareThread for add to the hint list
+      *  private place entered by the user
+      */
+     public static List<Hint> searchPrivatePlacesDB(String userid,float latitude, float longitude,String query)
+     {
+    	 	 return PlacesDatabase.istance.searchPrivatePlacesDB(userid,latitude,longitude,query);
+     }
 //PUBLIC
      /**
       * Enter in the database the public place 
@@ -111,5 +119,15 @@ public class PlacesManager {
       public List<PlaceClient> searchPublicPlace(String userid,String title,String streetAddress,String streetNumber,String cap,String city,String category)
       {
               return  PlacesDatabase.istance.searchPublicPlace(userid,title,streetAddress,streetNumber,cap,city,category);
+      }
+      
+      /*
+       * Method called by LocationAwareThread for add to the hint list
+       *  public place voted by the user
+       */
+      
+      public static List<Hint> searchPublicPlacesDB(String userid,float latitude, float longitude,String query)
+      {
+     	 	 return PlacesDatabase.istance.searchPublicPlacesDB(userid,latitude,longitude,query);
       }
 }

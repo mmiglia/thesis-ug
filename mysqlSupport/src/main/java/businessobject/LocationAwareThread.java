@@ -63,6 +63,7 @@ public class LocationAwareThread implements Runnable{
 			}
 			System.out.println("posso trovarlo in: "+queryList);
 		}
+		
 		/* Anuska
 		 * se non trovo niente nell'ontologia o nel db allora cerco con
 		 * la query ricevuta
@@ -84,6 +85,13 @@ public class LocationAwareThread implements Runnable{
 		for (String query : queryList) 
 		{
 			List<Hint> result1 = new LinkedList<Hint>(); // list of search result IN CACHE
+			
+			//aggiungo eventuali luoghi privati
+			result1.addAll(PlacesManager.searchPrivatePlacesDB(userid,latitude,longitude,query));
+			//aggiungo eventuali luoghi pubblici votati dall'utente
+			result1.addAll(PlacesManager.searchPublicPlacesDB(userid,latitude,longitude,query));
+			
+			//aggiungo eventuali luoghi presenti nella cache dei risultati di Google
 			result1.addAll(CachingManager.searchLocalBusinessDB(
 							latitude, longitude, query,distance));
 			if (distance==0)
@@ -99,7 +107,7 @@ public class LocationAwareThread implements Runnable{
 			}
 			toReturn.addAll(toReturn1);
 		}
-		// se ho trovato qualcosa in cache restituisco al client
+		// se ho trovato qualcosa in luoghi privati,pubblici o cache restituisco al client
 		if (!toReturn.isEmpty())
 		{	System.out.println("ho trovato qualcosa in cache");
 			Thread t=new Thread(this,"InterrogaGoogle");

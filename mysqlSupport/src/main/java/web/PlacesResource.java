@@ -46,7 +46,11 @@ public class PlacesResource {
               log.info("Request to add private place from user " + userid + 
                               ", session "+ sessionid);
              System.out.println("placeResource");
-             List<String> categoryList= new LinkedList<String>();
+             String category="abitazione";
+           //creo la lista di category, dato che mi arriva una stringa con le location separate da una virgola
+       		 List<String> categoryList= new LinkedList<String>();
+       		 String[] words = category.split(",");
+       		 categoryList.addAll(Arrays.asList(words));
              PlacesManager.getInstance().addPrivatePlace(userid, title,streetAddress,streetNumber,cap,city,categoryList);
       }
        
@@ -74,7 +78,7 @@ public class PlacesResource {
      @GET
      @Path("/privatePlaces")        
      @Produces("application/xml")
-     public List<Place> privatePlaces(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid) 
+     public List<PlaceClient> privatePlaces(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid) 
      {
     	 log.info("Request to view private places from user " + userid + ", session "+ sessionid);
          System.out.println("-PlacesResource metodo privatePlaces");
