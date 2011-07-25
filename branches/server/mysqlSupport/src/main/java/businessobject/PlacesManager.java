@@ -77,8 +77,10 @@ public class PlacesManager {
 //PUBLIC
      /**
       * Enter in the database the public place 
+      * @return  0-> ok
+     			 1 -> posto già presente in google
       */
-     public void addPublicPlace(String user, String titlePlace,String streetAddressPlace, String streetNumberPlace,String capPlace, String cityPlace,List<String> category) 
+     public int addPublicPlace(String user, String titlePlace,String streetAddressPlace, String streetNumberPlace,String capPlace, String cityPlace,List<String> category) 
      {
          
          String title = titlePlace.toLowerCase();
@@ -90,7 +92,7 @@ public class PlacesManager {
          
          System.out.println("placeManager:"+title+" "+streetAddress+" "+streetNumber+" "+cap+""+city);
      
-         PlacesDatabase.istance.addPublicPlace(user,title,streetAddress,streetNumber,cap,city,category);
+         return PlacesDatabase.istance.addPublicPlace(user,title,streetAddress,streetNumber,cap,city,category);
      }
       
       /**
