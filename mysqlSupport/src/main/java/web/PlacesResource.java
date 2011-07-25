@@ -100,29 +100,33 @@ public class PlacesResource {
 //PUBLIC  
      
      @GET
-     @Path("/addPublicPlaceGET")        
-     public void addPublicPlaceGET(@PathParam("username") String userid, 
+     @Path("/addPublicPlaceGET")  
+     // return 0-> aggiunto con successo
+     // return 1 -> posto già presente in google
+     // return 2 -> posto già votato dall'utente
+     public int addPublicPlaceGET(@PathParam("username") String userid, 
                    @CookieParam("sessionid") String sessionid,@QueryParam("title") String title, @QueryParam("streetAddress") String streetAddress,@QueryParam("streetNumber") String streetNumber
-                   ,@QueryParam("cap") String cap,@QueryParam("city") String city)
+                   ,@QueryParam("cap") String cap,@QueryParam("city") String city,@QueryParam("category") String category)
      {
     	 log.info("Request to add public place from user " + userid + 
                            ", session "+ sessionid);
          System.out.println("placeResource");
-         String category="bar,enoteca,osteria";
-        
          //creo la lista di category, dato che mi arriva una stringa con le location separate da una virgola
    		 List<String> categoryList= new LinkedList<String>();
    		 String[] words = category.split(",");
    		 categoryList.addAll(Arrays.asList(words));
          
-   		 PlacesManager.getInstance().addPublicPlace(userid, title,streetAddress,streetNumber,cap,city,categoryList);
+   		 return PlacesManager.getInstance().addPublicPlace(userid, title,streetAddress,streetNumber,cap,city,categoryList);
      }
     
     
      @POST
      @Path("/addPublicPlace")    
      @Consumes("application/xml")
-     public void addPublicPlace(@PathParam("username") String userid, 
+     // return 0-> aggiunto con successo
+     // return 1 -> posto già presente in google
+     // return 2 -> posto già votato dall'utente
+     public int addPublicPlace(@PathParam("username") String userid, 
            @CookieParam("sessionid") String sessionid, PlaceClient place)
      {
     	 log.info("Request to add item-location from user " + userid + 
@@ -134,7 +138,7 @@ public class PlacesResource {
     	 String[] words = place.category.split(",");
     	 categoryList.addAll(Arrays.asList(words));
 		
-    	 PlacesManager.getInstance().addPublicPlace(userid, place.title,place.streetAddress,place.streetNumber,place.cap,place.city,categoryList);
+    	 return PlacesManager.getInstance().addPublicPlace(userid, place.title,place.streetAddress,place.streetNumber,place.cap,place.city,categoryList);
      }
      
      /*

@@ -4,12 +4,18 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import businessobject.CachingManager;
 import businessobject.DateUtils;
+import businessobject.HintManager;
+import businessobject.MapManager;
 import businessobject.google.MapsClient;
 
 import valueobject.Coordinate;
@@ -115,9 +121,27 @@ public enum PlacesDatabase {
                           String city = rs.getString("city");
                           String category = rs.getString("category");
                           
+                          //controllo se l'ho già inserito, se si aggiungo
+                          //solo la categoria
+                          Iterator it=privatePlacesList.iterator();
+                          boolean isInsert = false;
+                          while(it.hasNext())
+                          {
+                        	  PlaceClient value=(PlaceClient)it.next();
+                        	  if ( value.title.equals(title) && value.lat.equals(lat) && value.lng.equals(lng))
+                        	  {
+                        		  isInsert = true;
+                        		  value.category = value.category+","+category;
+                        		  break;
+                        	  }
+                          }
+                          //se non è già stato inserito lo inserisco
+                          if (!isInsert)
+                          {
                           privatePlacesList.add(
                                           new PlaceClient(title,lat,lng,streetAddress,streetNumber,cap,city,category)                                        
                                   );
+                          }
                   }
           }catch(SQLException sqlE){
                   //TODO
@@ -285,8 +309,10 @@ public enum PlacesDatabase {
       }
       
 //PUBLIC
-      
-      public static void addPublicPlace( String userID,  String title,  String streetAddress,  String streetNumber,  String cap, String city, List<String> category)
+      // return 0-> ok
+      // return 1 -> posto già presente in google
+
+      public static int addPublicPlace( String userID,  String title,  String streetAddress,  String streetNumber,  String cap, String city, List<String> category)
       {
           
           Connection conn= (Connection) dbManager.dbConnect();
@@ -301,47 +327,91 @@ public enum PlacesDatabase {
               System.out.println("Error during transaction starting... Add public place not done");
               log.error("Error during transaction starting... Add public place not done");
               dbManager.dbDisconnect(conn);
-              return;
+              return 3;
           }    
           
           Coordinate placeCoordinate = convertAddressToCoordinate(streetAddress,streetNumber,cap,city);
           System.out.println("coordinate- lat:"+placeCoordinate.getLat());
           System.out.println("coordinate- lng:"+placeCoordinate.getLng());
+          float latitude = (float)placeCoordinate.getLat();
+          float longitude = (float)placeCoordinate.getLng();
           
-          String query="Insert into Place" +
-           " (title,lat,lng,streetAddress,streetNumber,cap,city,user,userGroup) values ('" + title + "','"+ placeCoordinate.getLat() + "','" + placeCoordinate.getLng() + "','" + 
-               streetAddress + "','" + streetNumber + "','"+ cap+"','"+city + "','"+userID+"',-1)";
-          
-          System.out.println(query);
-          qs=dbManager.customQuery(conn, query);
-          
-          if(qs.execError){
-              log.error(qs.explainError());
-              System.out.println("Error during add public Place .. aborting operation");
-              qs.occourtedErrorException.printStackTrace();
-              
-              //Rolling back
-              dbManager.rollbackTransaction(conn);
-              
-              log.error("Error during add public Place .. aborting operation");
-              dbManager.dbDisconnect(conn);
-              for (String s:category)
-              {
-            	  addPlaceCategory(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s);
-              }
-              return;
-          }
-          for (String s:category)
+          //controllo che non ci sia già il posto in Google
+          List<Hint> toReturn = new LinkedList<Hint>();
+          List<Hint> toReturn2 = new LinkedList<Hint>();
+          int distance = 20; //20 metri dalle coordinate
+          //mando la query a google e mi salvo i dati in cache 
+          //così cmq mal che vada ho popolato la cache 
+          for (String query : category) 
+		  {
+				List<Hint> result2 = new LinkedList<Hint>(); // list of search result IN GOOGLE
+				List<Hint> listToAdd = new LinkedList<Hint>();
+				listToAdd = MapManager.getInstance().searchLocalBusiness(
+						latitude, longitude, query);
+				System.out.println("for string query:"+query);
+				System.out.println("listToAdd:"+listToAdd);
+				CachingManager.cachingListHint(userID, query, latitude, longitude, distance,listToAdd);
+			
+				//filter the result
+				toReturn2 = new HintManager().filterLocation(distance, latitude, longitude, listToAdd);
+				System.out.println("Risultato ricerca in Google filtrato:"+ listToAdd);
+				toReturn.addAll(toReturn2);
+		  }
+          //qui devo controllare che il titolo di mio interesse 
+          //non sia nella lista dei risulati di Google(distanza di Lei...)
+          //intanto controllo semplicemente che il mio indirizzo non ci sia
+          //toReturn
+          Iterator it=toReturn.iterator();
+          boolean isInsert = false;
+          while(it.hasNext())
           {
-        	  addPlaceCategory(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s);
-        	//  votePlace(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s);  
-        	//  votePlaceHistorical(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s); 
+        	  Hint value=(Hint)it.next();
+        	  if ( value.streetAddress.equalsIgnoreCase(streetAddress+", "+streetNumber) && value.city.equalsIgnoreCase(city) )
+        	  {
+        		  isInsert = true;
+        		  System.out.println("Luogo già inserito in Google");
+        		  return 1;
+        	  }
           }
+          
+         //se non è già in google lo inserisco nel mio db
+          
+        	  String query="Insert into Place" +
+        	  "(title,lat,lng,streetAddress,streetNumber,cap,city,user,userGroup) " +
+        	  "values ('" + title + "','"+ placeCoordinate.getLat() + "','" + placeCoordinate.getLng() + "','" + 
+        	  streetAddress + "','" + streetNumber + "','"+ cap+"','"+city + "','"+userID+"',-1)";
+          
+        	  System.out.println(query);
+        	  qs=dbManager.customQuery(conn, query);
+          
+        	  if(qs.execError){
+        		  log.error(qs.explainError());
+        		  System.out.println("Error during add public Place .. aborting operation");
+        		  qs.occourtedErrorException.printStackTrace();
+              
+        		  //Rolling back
+        		  dbManager.rollbackTransaction(conn);
+              
+        		  log.error("Error during add public Place .. aborting operation");
+        		  dbManager.dbDisconnect(conn);
+        		  for (String s:category)
+        		  {
+        			  addPlaceCategory(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s);
+        		  }
+        		  return 0;
+        	  }
+        	  for (String s:category)
+        	  {
+        		  addPlaceCategory(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s);
+        		  //  votePlace(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s);  
+        		  //  votePlaceHistorical(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s); 
+        	  }
         
-          dbManager.commitTransaction(conn);
+        	  dbManager.commitTransaction(conn);
+          
           dbManager.dbDisconnect(conn);
          
-          return;          
+          return 0;          
       }
       
       public static List<PlaceClient> getAllPublicPlacesVoted(final String userID)
@@ -372,9 +442,28 @@ public enum PlacesDatabase {
                               String city = rs.getString("city");
                               String category = rs.getString("category");
                               
+                            //controllo se l'ho già inserito, se si aggiungo
+                              //solo la categoria
+                              Iterator it=publicPlacesList.iterator();
+                              boolean isInsert = false;
+                              while(it.hasNext())
+                              {
+                            	  PlaceClient value=(PlaceClient)it.next();
+                            	  if ( value.title.equals(title) && value.lat.equals(lat) && value.lng.equals(lng))
+                            	  {
+                            		  isInsert = true;
+                            		  value.category = value.category+","+category;
+                            		  break;
+                            	  }
+                              }
+                              //se non è già stato inserito lo inserisco
+                              if (!isInsert)
+                              {
                               publicPlacesList.add(
                                               new PlaceClient(title,lat,lng,streetAddress,streetNumber,cap,city,category)                                        
                                       );
+                              }
+                             
                       }
               }catch(SQLException sqlE){
                       //TODO
