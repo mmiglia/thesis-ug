@@ -101,9 +101,9 @@ public class PlacesResource {
      
      @GET
      @Path("/addPublicPlaceGET")  
-     // return 0-> aggiunto con successo
+     // return 0-> ok
      // return 1 -> posto già presente in google
-     // return 2 -> posto già votato dall'utente
+    
      public int addPublicPlaceGET(@PathParam("username") String userid, 
                    @CookieParam("sessionid") String sessionid,@QueryParam("title") String title, @QueryParam("streetAddress") String streetAddress,@QueryParam("streetNumber") String streetNumber
                    ,@QueryParam("cap") String cap,@QueryParam("city") String city,@QueryParam("category") String category)
@@ -123,13 +123,12 @@ public class PlacesResource {
      @POST
      @Path("/addPublicPlace")    
      @Consumes("application/xml")
-     // return 0-> aggiunto con successo
+     // return 0-> ok
      // return 1 -> posto già presente in google
-     // return 2 -> posto già votato dall'utente
      public int addPublicPlace(@PathParam("username") String userid, 
            @CookieParam("sessionid") String sessionid, PlaceClient place)
      {
-    	 log.info("Request to add item-location from user " + userid + 
+    	 log.info("Request to add public place from user " + userid + 
                ", session "+ sessionid);
     	 log.info("Add"+ place.title + " " + place.lat + " " + place.lng);
      
@@ -193,4 +192,55 @@ public class PlacesResource {
    		 return PlacesManager.getInstance().searchPublicPlace(userid, title,streetAddress,streetNumber,cap,city,category);
      }   
      
-}
+     @GET
+     @Path("/votePublicPlaceGET")  
+     //vota un solo posto
+     public void votePublicPlaceGET(@PathParam("username") String userid, 
+                   @CookieParam("sessionid") String sessionid,@QueryParam("title") String title, @QueryParam("lat") String lat,@QueryParam("lng") String lng
+                   ,@QueryParam("category") String category)
+     {
+    	 log.info("Request to vote public places from user " + userid + 
+                           ", session "+ sessionid);
+         System.out.println("placeResource");
+         //creo la lista di category, dato che mi arriva una stringa con le location separate da una virgola
+   		 List<String> categoryList= new LinkedList<String>();
+   		 String[] words = category.split(",");
+   		 categoryList.addAll(Arrays.asList(words));
+         
+   		 PlacesManager.getInstance().votePublicPlace(userid, title,lat,lng,categoryList);
+     }
+    
+    
+     @POST
+     @Path("/votePublicPlace")    
+     @Consumes("application/xml")
+     //vota un solo posto
+     public void votePublicPlace(@PathParam("username") String userid, 
+           @CookieParam("sessionid") String sessionid, PlaceClient place)
+     {
+    	 log.info("Request to vote public places from user " + userid + 
+               ", session "+ sessionid);
+    	 log.info("Add"+ place.title + " " + place.lat + " " + place.lng);
+     
+    	 //creo la lista di category, dato che mi arriva una stringa con le location separate da una virgola
+    	 List<String> categoryList= new LinkedList<String>();
+    	 String[] words = place.category.split(",");
+    	 categoryList.addAll(Arrays.asList(words));
+		
+    	 PlacesManager.getInstance().votePublicPlace(userid, place.title,place.lat,place.lng,categoryList);
+     }
+     
+     @POST
+     @Path("/votePublicPlace")    
+     @Consumes("application/xml")
+     //vota una lista di posti
+     public void votePublicPlace(@PathParam("username") String userid, 
+           @CookieParam("sessionid") String sessionid,List<PlaceClient> places)
+     {
+    	 log.info("Request to vote public places from user " + userid + 
+               ", session "+ sessionid);
+    	
+    	 PlacesManager.getInstance().votePublicPlaces(userid, places);
+     }
+     
+} 
