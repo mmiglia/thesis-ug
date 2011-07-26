@@ -132,4 +132,21 @@ public class PlacesManager {
       {
      	 	 return PlacesDatabase.istance.searchPublicPlacesDB(userid,latitude,longitude,query);
       }
+      
+      /**
+       * vote a place 
+       */
+      public void votePublicPlace(String user, String title,String lat, String lng,List<String> category) 
+      { 
+    	  PlacesDatabase.istance.votePublicPlace(user,title,lat,lng,category);
+      }
+      
+      /**
+       * vote a list of place 
+       */
+      public void votePublicPlaces(String userid,List<PlaceClient> places)
+      { 
+    	  PlacesDatabase.istance.votePublicPlaces(userid,places);
+      }
+      
 }

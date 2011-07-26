@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -375,43 +376,45 @@ public enum PlacesDatabase {
           }
           
          //se non è già in google lo inserisco nel mio db
+          String latitudeString = ""+placeCoordinate.getLat()+"";
+          String longitudeString = ""+placeCoordinate.getLng()+"";
           
-        	  String query="Insert into Place" +
-        	  "(title,lat,lng,streetAddress,streetNumber,cap,city,user,userGroup) " +
-        	  "values ('" + title + "','"+ placeCoordinate.getLat() + "','" + placeCoordinate.getLng() + "','" + 
-        	  streetAddress + "','" + streetNumber + "','"+ cap+"','"+city + "','"+userID+"',-1)";
+          String query="Insert into Place" +
+          "(title,lat,lng,streetAddress,streetNumber,cap,city,user,userGroup) " +
+          "values ('" + title + "','"+ placeCoordinate.getLat() + "','" + placeCoordinate.getLng() + "','" + 
+          streetAddress + "','" + streetNumber + "','"+ cap+"','"+city + "','"+userID+"',-1)";
           
-        	  System.out.println(query);
-        	  qs=dbManager.customQuery(conn, query);
+          System.out.println(query);
+          qs=dbManager.customQuery(conn, query);
           
-        	  if(qs.execError){
-        		  log.error(qs.explainError());
-        		  System.out.println("Error during add public Place .. aborting operation");
-        		  qs.occourtedErrorException.printStackTrace();
+          if(qs.execError){
+        	  log.error(qs.explainError());
+        	  System.out.println("Error during add public Place .. aborting operation");
+    		  qs.occourtedErrorException.printStackTrace();
               
-        		  //Rolling back
-        		  dbManager.rollbackTransaction(conn);
+    		  //Rolling back
+    		  dbManager.rollbackTransaction(conn);
               
-        		  log.error("Error during add public Place .. aborting operation");
-        		  dbManager.dbDisconnect(conn);
-        		  for (String s:category)
-        		  {
-        			  addPlaceCategory(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s);
-        		  }
-        		  return 0;
-        	  }
-        	  for (String s:category)
-        	  {
-        		  addPlaceCategory(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s);
-        		  //  votePlace(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s);  
-        		  //  votePlaceHistorical(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s); 
-        	  }
+    		  log.error("Error during add public Place .. aborting operation");
+    		  dbManager.dbDisconnect(conn);
+    		  for (String s:category)
+    		  {
+    			  addPlaceCategory(userID,title,latitudeString,longitudeString,s);
+    		  }
+    		  return 0;
+    	  }
+    	  for (String s:category)
+    	  {
+    		  addPlaceCategory(userID,title,latitudeString,longitudeString,s);
+    		  //  votePlace(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s);  
+    		  //  votePlaceHistorical(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s); 
+    	  }
         
-        	  dbManager.commitTransaction(conn);
+    	  dbManager.commitTransaction(conn);
           
-          dbManager.dbDisconnect(conn);
+    	  dbManager.dbDisconnect(conn);
          
-          return 0;          
+    	  return 0;          
       }
       
       public static List<PlaceClient> getAllPublicPlacesVoted(final String userID)
@@ -663,8 +666,34 @@ public enum PlacesDatabase {
   		return placeList;
     	 
       }
+      
+      
+      
+      //voto una lista di posti
+      public static void votePublicPlaces(String userid,List<PlaceClient> places)
+      { 
+    	 
+     	 for (PlaceClient p:places)
+ 		 {
+     		 //creo la lista di category, dato che mi arriva una stringa con le location separate da una virgola
+     		 List<String> categoryList= new LinkedList<String>();
+     		 String[] words = p.category.split(",");
+     		 categoryList.addAll(Arrays.asList(words));
+ 		
+     		 votePublicPlace(userid, p.title,p.lat,p.lng,categoryList);
+ 		 } 
+      }
+      
+    //voto un posto e le sue categorie
+      public static void votePublicPlace(String userID,String title,String lat,String lng,List<String> category)
+      {
+    	  for (String s:category)
+		  {
+    		  votePlace(userID,title,lat,lng,s); 
+		  }  
+      }
      
-      public static void addPlaceCategory(String userID,String title,double lat,double lng,String category)
+      public static void addPlaceCategory(String userID,String title,String lat,String lng,String category)
       {
     	  Connection conn= (Connection) dbManager.dbConnect();
           
@@ -709,7 +738,7 @@ public enum PlacesDatabase {
     	  
       }
 	  
-      public static void votePlace(String userID,String title, double lat, double lng,String category)
+      public static void votePlace(String userID,String title, String lat, String lng,String category)
       {
     	  DateUtils date = new DateUtils();
   		  String insertDate = date.now();
@@ -757,7 +786,7 @@ public enum PlacesDatabase {
           return;   
       }
       
-      public static void votePlaceHistorical(String userID,String title, double lat, double lng,String category,String insertDate)
+      public static void votePlaceHistorical(String userID,String title, String lat, String lng,String category,String insertDate)
       {
     	  Connection conn= (Connection) dbManager.dbConnect();
           
