@@ -41,12 +41,12 @@ public class PlacesResource {
       @Path("/addPrivatePlaceGET")        
       public void addPrivatePlaceGET(@PathParam("username") String userid, 
                       @CookieParam("sessionid") String sessionid,@QueryParam("title") String title, @QueryParam("streetAddress") String streetAddress,@QueryParam("streetNumber") String streetNumber
-                      ,@QueryParam("cap") String cap,@QueryParam("city") String city)
+                      ,@QueryParam("cap") String cap,@QueryParam("city") String city,@QueryParam("category") String category)
       {
               log.info("Request to add private place from user " + userid + 
                               ", session "+ sessionid);
              System.out.println("placeResource");
-             String category="abitazione";
+             
            //creo la lista di category, dato che mi arriva una stringa con le location separate da una virgola
        		 List<String> categoryList= new LinkedList<String>();
        		 String[] words = category.split(",");

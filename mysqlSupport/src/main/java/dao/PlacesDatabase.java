@@ -62,7 +62,7 @@ public enum PlacesDatabase {
          System.out.println("coordinate- lat:"+placeCoordinate.getLat());
          System.out.println("coordinate- lng:"+placeCoordinate.getLng());
          
-         String query="Insert into Place" +
+         String query="Insert into PlacePrivate" +
           " (title,lat,lng,streetAddress,streetNumber,cap,city,user,userGroup) values ('" + title + "','"+ placeCoordinate.getLat() + "','" + placeCoordinate.getLng() + "','" + 
               streetAddress + "','" + streetNumber + "','"+ cap+"','"+city + "','"+userID+"',0)";
          
@@ -79,6 +79,11 @@ public enum PlacesDatabase {
              
              log.error("Error during  Add private place .. aborting operation");
              dbManager.dbDisconnect(conn);
+           //aggiungi categoria
+             for (String s:category)
+             {
+           	  addPrivatePlaceCategory(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s);
+             }
              return;
          }
          
@@ -100,8 +105,8 @@ public enum PlacesDatabase {
           
           Connection conn= (Connection) dbManager.dbConnect();
                   
-          String selectQuery="Select * from Place_category join Place on Place_category.title=Place.title and " +
-                              "Place_category.lat=Place.lat and Place_category.lng=Place.lng"+
+          String selectQuery="Select * from Place_category join PlacePrivate on Place_category.title=PlacePrivate.title and " +
+                              "Place_category.lat=PlacePrivate.lat and Place_category.lng=PlacePrivate.lng"+
                   " where user='"+ userID +"'and  userGroup=0";
           
           System.out.println(selectQuery);
@@ -172,7 +177,7 @@ public enum PlacesDatabase {
     		  return;
     	  }    
     	  
-    	  String deleteQuery="Delete * from Place" +
+    	  String deleteQuery="Delete from PlacePrivate" +
     	  " where user='"+ userID +"'and title='" + title + "' and lat='" + lat +"' and lng='" + lng + "' and userGroup=0";
     	  System.out.println(deleteQuery);
     	  qs=dbManager.customQuery(conn, deleteQuery);
@@ -192,10 +197,50 @@ public enum PlacesDatabase {
        
     	  dbManager.commitTransaction(conn);
     	  dbManager.dbDisconnect(conn);
-       
+    	  deletePlaceCategory(userID,title,lat,lng);
     	  return; 
       }
       
+      public static void deletePlaceCategory(String userID,String title,String lat,String lng)
+      {
+    	  Connection conn= (Connection) dbManager.dbConnect();
+          
+    	  //Starting transaction
+    	  QueryStatus qs=dbManager.startTransaction(conn);
+       
+    	  if(qs.execError){
+    		  //TODO decide what to do in this case (transaction not started)
+    		  log.error(qs.explainError());
+    		  qs.occourtedErrorException.printStackTrace();
+    		  System.out.println("Error during transaction starting... Delete private place category not done");
+    		  log.error("Error during transaction starting... Delete private place category not done");
+    		  dbManager.dbDisconnect(conn);
+    		  return;
+    	  }    
+    	  
+    	  String deleteQuery="Delete from Place_category" +
+    	  " where username='"+ userID +"'and title='" + title + "' and lat='" + lat +"' and lng='" + lng + "'";
+    	  System.out.println(deleteQuery);
+    	  qs=dbManager.customQuery(conn, deleteQuery);
+       
+    	  if(qs.execError){
+    		  log.error(qs.explainError());
+    		  System.out.println("Error during delete private place category .. aborting operation");
+    		  qs.occourtedErrorException.printStackTrace();
+           
+    		  //Rolling back
+    		  dbManager.rollbackTransaction(conn);
+           
+    		  log.error("Error during delete private place category .. aborting operation");
+    		  dbManager.dbDisconnect(conn);
+    		  return;
+    	  }
+       
+    	  dbManager.commitTransaction(conn);
+    	  dbManager.dbDisconnect(conn);
+       
+    	  return;   
+      }
       public static void addPrivatePlaceCategory(String userID,String title,double lat,double lng,String category)
       {
     	  Connection conn= (Connection) dbManager.dbConnect();
@@ -244,9 +289,9 @@ public enum PlacesDatabase {
           
           Connection conn= (Connection) dbManager.dbConnect();
                   
-          String selectQuery="Select * from Place_category join Place on Place_category.title=Place.title and " +
-                              "Place_category.lat=Place.lat and Place_category.lng=Place.lng"+
-                  " where Place.user='"+ userID +"'and  Place.userGroup=0 and Place.title='"+query+"'";
+          String selectQuery="Select * from Place_category join PlacePrivate on Place_category.title=PlacePrivate.title and " +
+                              "Place_category.lat=PlacePrivate.lat and Place_category.lng=PlacePrivate.lng"+
+                  " where PlacePrivate.user='"+ userID +"'and  PlacePrivate.userGroup=0 and PlacePrivate.title='"+query+"'";
           
           System.out.println(selectQuery);
           
