@@ -79,7 +79,11 @@ public class ViewAssertions extends Activity{
 		case CREATE_ASSERTION:
 			
 			intent = new Intent(getApplicationContext(), Create_Assertion_item.class);
+			
+			
 			startActivityForResult(intent,0);
+			
+			
 			finish();
 			break;
 			

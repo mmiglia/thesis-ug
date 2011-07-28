@@ -240,6 +240,18 @@
    <string name="Next">Next</string>
     <string name="navigation_preferences">Navigation Preference</string>
     <string name="selectNavigator">Select the navigator to use to reach the place</string>
+    <string name="newPlace">New Place</string>
+    <string name="updateList">Update List</string>
+    <string name="infoPlaces">Help</string>
+    <string name="search">Search</string>
+    <string name="no_Places">No Places</string>
+  	<string name="txt_name_place">Name place</string>
+    <string name="streetAddress">Streetaddress</string>
+    <string name="streetNumber">Streetnumber</string>
+    <string name="add_place">Add Place</string>
+    <string name="cap">Cap</string>
+    <string name="city">City</string>
+    
     <!-- TEXT TO SPEECH -->
     <string name="no_hints_found_for">No hints found for</string>
     <string name="new_hints_found_for">Found new hints for</string>

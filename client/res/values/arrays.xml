@@ -88,6 +88,15 @@
 		<item>localhost</item>
 	
 	</string-array>
+	
+	<string name="type">Choose a type</string>
+	
+	<string-array name="type_array">
+        <item>Private</item>
+        <item>Public</item>
+        
+    </string-array>
+	
 <string-array name="vibrationModeList"><item>priority</item>
 <item>morse</item>
 <item>none</item>
