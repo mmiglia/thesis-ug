@@ -109,7 +109,7 @@ public class PlacesManager {
       /**
        * delete vote for public place-category voted by this user
        */
-      public void deleteVotePublicPlace(String userid,String title,String lat, String lng,String category) 
+      public void deleteVotePublicPlace(String userid,String title,String lat, String lng,List<String> category) 
       {
           PlacesDatabase.istance.deleteVotePublicPlace(userid, title, lat,  lng,category);
       }
@@ -118,7 +118,7 @@ public class PlacesManager {
        * retrieve all public places with certain constraints
        * @return list that contains all public places that corrispond to the request
        */
-      public List<PlaceClient> searchPublicPlace(String userid,String title,String streetAddress,String streetNumber,String cap,String city,String category)
+      public List<PlaceClient> searchPublicPlace(String userid,String title,String streetAddress,String streetNumber,String cap,String city,List<String> category)
       {
               return  PlacesDatabase.istance.searchPublicPlace(userid,title,streetAddress,streetNumber,cap,city,category);
       }

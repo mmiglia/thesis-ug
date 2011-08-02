@@ -490,7 +490,7 @@ public enum PlacesDatabase {
                               String city = rs.getString("city");
                               String category = rs.getString("category");
                               
-                            //controllo se l'ho già inserito, se si aggiungo
+                              //controllo se l'ho già inserito, se si aggiungo
                               //solo la categoria
                               Iterator it=publicPlacesList.iterator();
                               boolean isInsert = false;
@@ -525,7 +525,7 @@ public enum PlacesDatabase {
       
      
       
-      public static void deleteVotePublicPlace(String userID,String title,String lat, String lng,String category)
+      public static void deleteVotePublicPlace(String userID,String title,String lat, String lng,List<String> category)
       {
     	  Connection conn= (Connection) dbManager.dbConnect();
           
@@ -542,44 +542,46 @@ public enum PlacesDatabase {
     		  return;
     	  }    
     	  //cancello il voto in Place_voted
-    	  String deleteQuery="Delete from Place_voted" +
-    	  " where username='"+ userID +"' and title='" + title + "' and lat='" + lat +"' and lng='" + lng + "' and category='"+category+"'";
-    	  System.out.println(deleteQuery);
-    	  qs=dbManager.customQuery(conn, deleteQuery);
+    	  for (String s:category)
+          {
+    		  String deleteQuery="Delete from Place_voted" +
+    		  " where username='"+ userID +"' and title='" + title + "' and lat='" + lat +"' and lng='" + lng + "' and category='"+s+"'";
+    		  System.out.println(deleteQuery);
+    		  qs=dbManager.customQuery(conn, deleteQuery);
        
-    	  if(qs.execError){
-    		  log.error(qs.explainError());
-    		  System.out.println("Error during delete vote for public place .. aborting operation");
-    		  qs.occourtedErrorException.printStackTrace();
+    		  if(qs.execError){
+    			  log.error(qs.explainError());
+    			  System.out.println("Error during delete vote for public place .. aborting operation");
+    			  qs.occourtedErrorException.printStackTrace();
            
-    		  //Rolling back
-    		  dbManager.rollbackTransaction(conn);
+    			  //Rolling back
+    			  dbManager.rollbackTransaction(conn);
            
-    		  log.error("Error during delete private place .. aborting operation");
-    		  dbManager.dbDisconnect(conn);
-    		  return;
-    	  }
-          //aggiorno lo storico
-    	  String query="Insert into Place_voted_historical" +
-          " (title,lat,lng,category,username,vote) values ('" + title + "','"+ lat + "','" + lng + "','" + 
-              category + "','"+userID+"',2)";
+    			  log.error("Error during delete public place .. aborting operation");
+    			  dbManager.dbDisconnect(conn);
+    			  return;
+    		  }
+    		  //aggiorno lo storico
+    		  String query="Insert into Place_voted_historical" +
+    		  " (title,lat,lng,category,username,vote) values ('" + title + "','"+ lat + "','" + lng + "','" + 
+    		  	s + "','"+userID+"',2)";
          
-         System.out.println(query);
-         qs=dbManager.customQuery(conn, query);
+    		  System.out.println(query);
+    		  qs=dbManager.customQuery(conn, query);
          
-         if(qs.execError){
-             log.error(qs.explainError());
-             System.out.println("Error during adding vote in Place historical .. aborting operation");
-             qs.occourtedErrorException.printStackTrace();
+    		  if(qs.execError){
+    			  log.error(qs.explainError());
+    			  System.out.println("Error during adding delete public vote in Place historical .. aborting operation");
+    			  qs.occourtedErrorException.printStackTrace();
              
-             //Rolling back
-             dbManager.rollbackTransaction(conn);
+    			  //Rolling back
+    			  dbManager.rollbackTransaction(conn);
              
-             log.error("Error during adding vote in Place historical .. aborting operation");
-             dbManager.dbDisconnect(conn);
-             return;
-         }
-    	  
+    			  log.error("Error during adding delete public vote in Place historical .. aborting operation");
+    			  dbManager.dbDisconnect(conn);
+    			  return;
+    		  }
+          }  
     	  dbManager.commitTransaction(conn);
     	  dbManager.dbDisconnect(conn);
        
@@ -588,7 +590,7 @@ public enum PlacesDatabase {
 
       
       
-      public static List<PlaceClient> searchPublicPlace(String userid,String title,String streetAddress,String streetNumber,String cap,String city,String category)
+      public static List<PlaceClient> searchPublicPlace(String userid,String title,String streetAddress,String streetNumber,String cap,String city,List<String> category)
       {
     	  ArrayList<PlaceClient> placeList=new ArrayList<PlaceClient>();
   		
@@ -666,7 +668,7 @@ public enum PlacesDatabase {
     			  selectQuery = selectQuery + " and city='"+city.toLowerCase()+"' ";
     		  }
     	  }  
-    		
+    	/*	
     	  if (!category.equalsIgnoreCase(""))
     	  {
     		  if (whereflag==false) 
@@ -679,7 +681,48 @@ public enum PlacesDatabase {
     			  selectQuery = selectQuery + " and category='"+category.toLowerCase()+"' ";
     		  }
     	  }    
-    	
+    	*/
+    	  if ( !category.isEmpty())
+    	  {
+    		  if (whereflag==false) 
+    		  {
+    			  selectQuery = selectQuery + " where (";
+    			  boolean first= true; //se è il primo della lista
+    			  for (String s : category)
+    			  {
+    				  if (first)
+    				  {
+    					  selectQuery = selectQuery + " category ='"+s.toLowerCase()+"' ";
+    					  first = false;
+    				  }
+    				  else
+    				  {
+    					  selectQuery = selectQuery + " or category ='"+s.toLowerCase()+"' ";
+    				  }
+    			  }
+    			  selectQuery = selectQuery + " ) ";
+    		  }
+    		  else
+    		  {
+    			  selectQuery = selectQuery + " and ( ";
+    			  boolean first= true; //se è il primo della lista
+    			  for (String s : category)
+    			  {
+    				  if (first)
+    				  {
+    					  selectQuery = selectQuery + " category ='"+s.toLowerCase()+"' ";
+    					  first = false;
+    				  }
+    				  else
+    				  {
+    					  selectQuery = selectQuery + " or category ='"+s.toLowerCase()+"' ";
+    				  }
+    			  }
+    			  selectQuery = selectQuery + " ) ";
+    		  }
+    	  }   
+    	  
+    	  
     	  System.out.println(selectQuery);
     	  
     	  QueryStatus qs=dbManager.customSelect(conn, selectQuery);
@@ -688,7 +731,37 @@ public enum PlacesDatabase {
 
   		  try{
   			while(rs.next()){
-  					placeList.add(
+  				String titleQ = rs.getString("title");
+                String latQ = rs.getString("lat");
+                String lngQ = rs.getString("lng");
+                String streetAddressQ = rs.getString("streetAddress");
+                String streetNumberQ = rs.getString("streetNumber");
+                String capQ = rs.getString("cap");
+                String cityQ = rs.getString("city");
+                String categoryQ = rs.getString("category");
+                
+                //controllo se l'ho già inserito, se si aggiungo
+                //solo la categoria
+                Iterator it= placeList.iterator();
+                boolean isInsert = false;
+                while(it.hasNext())
+                {
+              	  PlaceClient value=(PlaceClient)it.next();
+              	  if ( value.title.equals(titleQ) && value.lat.equals(latQ) && value.lng.equals(lngQ))
+              	  {
+              		  isInsert = true;
+              		  value.category = value.category+","+categoryQ;
+              		  break;
+              	  }
+                }
+                //se non è già stato inserito lo inserisco
+                if (!isInsert)
+                {
+                placeList.add(
+                                new PlaceClient(titleQ,latQ,lngQ,streetAddressQ,streetNumberQ,capQ,cityQ,categoryQ)                                        
+                        );
+                }
+  					/*placeList.add(
   						new PlaceClient(
   								rs.getString("Place.title") , 
   								rs.getString("Place.lat") , 
@@ -699,7 +772,7 @@ public enum PlacesDatabase {
   								rs.getString("Place.city") , 
   								rs.getString("Place_category.category") 
   							)					
-  					);
+  					);*/
   			 }
   		  }catch(SQLException sqlE){
   			//TODO
