@@ -429,7 +429,7 @@ public enum OntologyDatabase {
 			//trovo la media del rank di tutti gli utenti
 			double avgRank = avgRank();
 			
-			//trovo il voto negativo
+			//trovo il voto
 			double vote=voteUpToDateItemLocation(item,o);
 			
 			//controllo che il

@@ -89,12 +89,22 @@ public class PlacesResource {
       * Cancella un luogo privato
       */
      @GET
-     @Path("/deletePrivatePlace")        
-     public void deletePrivatePlace(@PathParam("username") String userid,@QueryParam("title") String title,@QueryParam("lat") String lat,@QueryParam("lng") String lng,@CookieParam("sessionid") String sessionid) 
+     @Path("/deletePrivatePlaceGET")        
+     public void deletePrivatePlaceGET(@PathParam("username") String userid,@QueryParam("title") String title,@QueryParam("lat") String lat,@QueryParam("lng") String lng,@CookieParam("sessionid") String sessionid) 
      {
     	 log.info("Request to delete private place from user " + userid + ", session "+ sessionid);
          System.out.println("-PlacesResource metodo deletePrivatePlace");
          PlacesManager.getInstance().deletePrivatePlace(userid,title,lat,lng);
+     }
+     
+     @POST
+     @Path("/deletePrivatePlace")    
+     @Consumes("application/xml")
+     public void deletePrivatePlace(@PathParam("username") String userid,@CookieParam("sessionid") String sessionid,PlaceClient place) 
+     {
+    	 log.info("Request to delete private place from user " + userid + ", session "+ sessionid);
+         System.out.println("-PlacesResource metodo deletePrivatePlace");
+         PlacesManager.getInstance().deletePrivatePlace(userid,place.title,place.lat,place.lng);
      }
     
 //PUBLIC  
@@ -158,20 +168,43 @@ public class PlacesResource {
       * Cancella il voto a un luogo pubblico-categoria
       */
      @GET
-     @Path("/deleteVotePublicPlace")        
-     public void deleteVotePublicPlace(@PathParam("username") String userid,@QueryParam("title") String title,@QueryParam("lat") String lat,
+     @Path("/deleteVotePublicPlaceGET")        
+     public void deleteVotePublicPlaceGET(@PathParam("username") String userid,@QueryParam("title") String title,@QueryParam("lat") String lat,
     		  @QueryParam("lng") String lng,@QueryParam("category") String category,
     		  @CookieParam("sessionid") String sessionid) 
      {
     	 log.info("Request to delete private place from user " + userid + ", session "+ sessionid);
     	 System.out.println("-PlacesResource metodo deletePrivatePlace");
-         PlacesManager.getInstance().deleteVotePublicPlace(userid,title,lat,lng,category);
+    	 
+    	//creo la lista di category, dato che mi arriva una stringa con le location separate da una virgola
+    	 List<String> categoryList= new LinkedList<String>();
+    	 String[] words = category.split(",");
+    	 categoryList.addAll(Arrays.asList(words));
+    	 
+         PlacesManager.getInstance().deleteVotePublicPlace(userid,title,lat,lng,categoryList);
+     }
+     
+     @POST
+     @Path("/deleteVotePublicPlace")      
+     @Consumes("application/xml")
+     public void deleteVotePublicPlace(@PathParam("username") String userid,PlaceClient place,
+    		  @CookieParam("sessionid") String sessionid) 
+     {
+    	 log.info("Request to delete private place from user " + userid + ", session "+ sessionid);
+    	 System.out.println("-PlacesResource metodo deletePrivatePlace");
+    	 
+    	//creo la lista di category, dato che mi arriva una stringa con le location separate da una virgola
+    	 List<String> categoryList= new LinkedList<String>();
+    	 String[] words = place.category.split(",");
+    	 categoryList.addAll(Arrays.asList(words));
+    	 
+         PlacesManager.getInstance().deleteVotePublicPlace(userid,place.title,place.lat,place.lng,categoryList);
      }
       
      @GET
-     @Path("/searchPublicPlaceGET")     
+     @Path("/searchPublicPlace")     
      @Produces("application/xml")
-     public List<PlaceClient> searchPublicPlaceGET(@PathParam("username") String userid, 
+     public List<PlaceClient> searchPublicPlace(@PathParam("username") String userid, 
                    @CookieParam("sessionid") String sessionid,
                    @QueryParam("title") String title, 
                    @QueryParam("streetAddress") String streetAddress,
@@ -185,12 +218,31 @@ public class PlacesResource {
          System.out.println("placeResource");
        
          //creo la lista di category, dato che mi arriva una stringa con le location separate da una virgola
-   		// List<String> categoryList= new LinkedList<String>();
-   		// String[] words = category.split(",");
-   		// categoryList.addAll(Arrays.asList(words));
+   		 List<String> categoryList= new LinkedList<String>();
+   		 String[] words = category.split(",");
+   		 categoryList.addAll(Arrays.asList(words));
          
-   		 return PlacesManager.getInstance().searchPublicPlace(userid, title,streetAddress,streetNumber,cap,city,category);
-     }   
+   		 return PlacesManager.getInstance().searchPublicPlace(userid, title,streetAddress,streetNumber,cap,city,categoryList);
+     } 
+     
+     @POST
+     @Path("/searchPublicPlacePOST")      
+     @Consumes("application/xml")
+     @Produces("application/xml")
+     public List<PlaceClient> searchPublicPlacePOST(@PathParam("username") String userid, 
+                   @CookieParam("sessionid") String sessionid,PlaceClient place)
+     {
+    	 log.info("Request to add public place from user " + userid + 
+                           ", session "+ sessionid);
+         System.out.println("placeResource");
+       
+         //creo la lista di category, dato che mi arriva una stringa con le location separate da una virgola
+   		List<String> categoryList= new LinkedList<String>();
+   		String[] words = place.category.split(",");
+   		categoryList.addAll(Arrays.asList(words));
+         
+   		 return PlacesManager.getInstance().searchPublicPlace(userid, place.title,place.streetAddress,place.streetNumber,place.cap,place.city,categoryList);
+     } 
      
      @GET
      @Path("/votePublicPlaceGET")  
