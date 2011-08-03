@@ -105,8 +105,8 @@ public enum PlacesDatabase {
           
           Connection conn= (Connection) dbManager.dbConnect();
                   
-          String selectQuery="Select * from Place_category join PlacePrivate on Place_category.title=PlacePrivate.title and " +
-                              "Place_category.lat=PlacePrivate.lat and Place_category.lng=PlacePrivate.lng"+
+          String selectQuery="Select * from PlacePrivate_category join PlacePrivate on PlacePrivate_category.title=PlacePrivate.title and " +
+                              "PlacePrivate_category.lat=PlacePrivate.lat and PlacePrivate_category.lng=PlacePrivate.lng"+
                   " where user='"+ userID +"'and  userGroup=0";
           
           System.out.println(selectQuery);
@@ -218,7 +218,7 @@ public enum PlacesDatabase {
     		  return;
     	  }    
     	  
-    	  String deleteQuery="Delete from Place_category" +
+    	  String deleteQuery="Delete from PlacePrivate_category" +
     	  " where username='"+ userID +"'and title='" + title + "' and lat='" + lat +"' and lng='" + lng + "'";
     	  System.out.println(deleteQuery);
     	  qs=dbManager.customQuery(conn, deleteQuery);
@@ -257,7 +257,7 @@ public enum PlacesDatabase {
               dbManager.dbDisconnect(conn);
               return;
           }    
-           String query="Insert into Place_category" +
+           String query="Insert into PlacePrivate_category" +
            " (title,lat,lng,category,username) values ('" + title + "','"+ lat + "','" + lng + "','" + 
                category + "','"+userID+"')";
           
@@ -289,8 +289,8 @@ public enum PlacesDatabase {
           
           Connection conn= (Connection) dbManager.dbConnect();
                   
-          String selectQuery="Select * from Place_category join PlacePrivate on Place_category.title=PlacePrivate.title and " +
-                              "Place_category.lat=PlacePrivate.lat and Place_category.lng=PlacePrivate.lng"+
+          String selectQuery="Select * from PlacePrivate_category join PlacePrivate on PlacePrivate_category.title=PlacePrivate.title and " +
+                              "PlacePrivate_category.lat=PlacePrivate.lat and PlacePrivate_category.lng=PlacePrivate.lng"+
                   " where PlacePrivate.user='"+ userID +"'and  PlacePrivate.userGroup=0 and PlacePrivate.title='"+query+"'";
           
           System.out.println(selectQuery);
@@ -599,7 +599,7 @@ public enum PlacesDatabase {
     	  boolean whereflag = false;
     	  
     	  //creo la query
-    	  String selectQuery = "Select * from Place_category join Place on Place_category.title=Place.title and " +
+    	  String selectQuery = "Select * from PlacePrivate_category join Place on PlacePrivate_category.title=Place.title and " +
                               "Place_category.lat=Place.lat and Place_category.lng=Place.lng";
               
     	  
@@ -686,12 +686,14 @@ public enum PlacesDatabase {
     	  {
     		  if (whereflag==false) 
     		  {
-    			  selectQuery = selectQuery + " where (";
     			  boolean first= true; //se è il primo della lista
     			  for (String s : category)
     			  {
+    				  if (s.equalsIgnoreCase(""))
+        				  continue;
     				  if (first)
     				  {
+    					  selectQuery = selectQuery + " where (";
     					  selectQuery = selectQuery + " category ='"+s.toLowerCase()+"' ";
     					  first = false;
     				  }
@@ -700,16 +702,21 @@ public enum PlacesDatabase {
     					  selectQuery = selectQuery + " or category ='"+s.toLowerCase()+"' ";
     				  }
     			  }
-    			  selectQuery = selectQuery + " ) ";
+    			  if (!first)
+    				  selectQuery = selectQuery + " ) ";
     		  }
     		  else
     		  {
-    			  selectQuery = selectQuery + " and ( ";
+    			  
     			  boolean first= true; //se è il primo della lista
     			  for (String s : category)
     			  {
+        			  if (s.equalsIgnoreCase(""))
+        				  continue;
+        			  	
     				  if (first)
     				  {
+    					  selectQuery = selectQuery + " and ( ";
     					  selectQuery = selectQuery + " category ='"+s.toLowerCase()+"' ";
     					  first = false;
     				  }
@@ -718,8 +725,12 @@ public enum PlacesDatabase {
     					  selectQuery = selectQuery + " or category ='"+s.toLowerCase()+"' ";
     				  }
     			  }
-    			  selectQuery = selectQuery + " ) ";
+    			  if (!first)
+    				  selectQuery = selectQuery + " ) ";
     		  }
+    		  
+    		  
+    		  
     	  }   
     	  
     	  
