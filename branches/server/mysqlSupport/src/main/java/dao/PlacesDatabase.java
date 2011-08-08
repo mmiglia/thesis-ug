@@ -599,7 +599,7 @@ public enum PlacesDatabase {
     	  boolean whereflag = false;
     	  
     	  //creo la query
-    	  String selectQuery = "Select * from PlacePrivate_category join Place on PlacePrivate_category.title=Place.title and " +
+    	  String selectQuery = "Select * from Place_category join Place on Place_category.title=Place.title and " +
                               "Place_category.lat=Place.lat and Place_category.lng=Place.lng";
               
     	  
