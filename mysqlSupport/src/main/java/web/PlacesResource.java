@@ -283,10 +283,10 @@ public class PlacesResource {
      }
      
      @POST
-     @Path("/votePublicPlace")    
+     @Path("/votePublicPlaces")    
      @Consumes("application/xml")
      //vota una lista di posti
-     public void votePublicPlace(@PathParam("username") String userid, 
+     public void votePublicPlaces(@PathParam("username") String userid, 
            @CookieParam("sessionid") String sessionid,List<PlaceClient> places)
      {
     	 log.info("Request to vote public places from user " + userid + 
