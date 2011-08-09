@@ -251,6 +251,20 @@
     <string name="add_place">Add Place</string>
     <string name="cap">Cap</string>
     <string name="city">City</string>
+    <string name="street_number_title">Street Number</string>
+    <string name="street_address_title">Street Address</string>
+    <string name="category_title">Category</string>
+    <string name="delete_place">Delete Place!</string>
+    <string name="lat_lng">Latitude - Longitude</string>
+    <string name="info_private_places_1">-If a place don\'t exist in the list oh hint, then you can add a PRIVATE place</string>
+    <string name="info_private_places_2">-A private place will be visible only for you</string>
+    <string name="info_private_places_3">-If you want to add a place PUBLIC (visible for all), you must go in the public places section</string>
+    <string name="info_public_places_1">-If a place don\'t exist in the list oh hint, then you can add a PRUBLIC place</string>
+    <string name="info_public_places_2">-A public place will be visible to all person</string>
+    <string name="info_public_places_3">-If you want to add a place PRIVATE (visible only for you), you must go in the private places section</string>
+    <string name="info_search_1">-This screen presents all the result that matches your criteria</string>
+    <string name="info_search_2">-You can select a place and voted</string>
+    <string name="info_search_3">-After voting, the place will be available in the search hints!</string>
     
     <!-- TEXT TO SPEECH -->
     <string name="no_hints_found_for">No hints found for</string>

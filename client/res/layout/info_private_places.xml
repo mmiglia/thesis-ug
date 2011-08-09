@@ -27,8 +27,8 @@
     	<TextView
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-        	android:id="@+id/infoAssertions_title_1"
-            android:text="@string/info"
+        	android:id="@+id/info_private_title_1"
+            android:text="Private Places"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:paddingBottom="15dip" 
             android:textColor="#00FF00"
@@ -36,26 +36,27 @@
     	 <TextView
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-        	android:id="@+id/infoAssertions_title_1"
-            android:text="@string/info_assertions_1"
+        	android:id="@+id/info_private_text_1"
+            android:text="@string/info_private_places_1"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:paddingBottom="10dip" />
+            android:paddingBottom="10dip" 
+            android:layout_below="@+id/info_private_title_1"/>
             <TextView
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-        	android:id="@+id/infoAssertions_title_2"
-            android:text="@string/info_assertions_2"
+        	android:id="@+id/info_private_text_2"
+            android:text="@string/info_private_places_2"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:paddingBottom="10dip" 
-            android:layout_below="@+id/infoAssertions_title_1"/>
+            android:layout_below="@+id/info_private_text_1"/>
             <TextView
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-        	android:id="@+id/infoAssertions_title_3"
-            android:text="@string/info_assertions_3"
+        	android:id="@+id/info_private_text_3"
+            android:text="@string/info_private_places_3"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:paddingBottom="10dip" 
-            android:layout_below="@+id/infoAssertions_title_2"/>
+            android:layout_below="@+id/info_private_text_2"/>
 
     </LinearLayout>
     
@@ -65,22 +66,15 @@
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content" 
 		android:orientation="horizontal"
-		android:background="#FFCCCCCC"
-		android:gravity="bottom">
-		<Button 
-			android:id="@+id/goon_button"
-			android:layout_width="fill_parent"
-			android:layout_height="fill_parent" 
-			android:layout_weight="1"
-			android:text="@string/goon" 
-			/>
+		android:background="#FFCCCCCC">
+
 		<Button 
 			android:id="@+id/back_button"
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent" 
 			android:layout_weight="1"
 			android:text="@string/back" 
-			/>
+			android:layout_margin="3dip"/>
 	</LinearLayout>
 
 </TableLayout>

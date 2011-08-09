@@ -514,9 +514,9 @@ public class AssertionsResource {
 			public void run() {
 				String body = AssertionsHandler.formatSingleItemLocation(toAdd);
 
-				ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-		        nameValuePairs.add(new BasicNameValuePair("item",toAdd.item));
-		        nameValuePairs.add(new BasicNameValuePair("location",toAdd.location));
+				//ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		        //nameValuePairs.add(new BasicNameValuePair("item",toAdd.item));
+		        //nameValuePairs.add(new BasicNameValuePair("location",toAdd.location));
 	
 				Log.i(TAG,body);
 				//final boolean result = runHttpAddUserSingleItemLocation(CREATE_ITEM_LOCATION, nameValuePairs, context);

@@ -1,5 +1,7 @@
 package com.thesisug.communication.valueobject;
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 
@@ -8,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * 
  */
 @XmlRootElement
-public class PlaceClient {
+public class PlaceClient  implements Serializable{
 
 	
 	  public String title;

@@ -13,20 +13,21 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.xml.sax.SAXException;
 
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.thesisug.communication.valueobject.PlaceClient;
-import com.thesisug.communication.xmlparser.AssertionsHandler;
 import com.thesisug.communication.xmlparser.PlacesHandler;
 import com.thesisug.ui.Create_new_place;
+import com.thesisug.ui.DetailsPlace;
+import com.thesisug.ui.DetailsPlaceToVote;
+import com.thesisug.ui.ListPlacesFound;
 import com.thesisug.ui.PrivatePlaces;
 import com.thesisug.ui.PublicPlaces;
-import com.thesisug.ui.SelectCategory;
 
 
 public class PlacesResource {
@@ -36,6 +37,14 @@ private static final String TAG = new String("thesisug - PlaceResource");
 	private static final String GET_PRIVATE_PLACES = "/places/privatePlaces";
 	private static final String GET_PUBLIC_PLACES = "/places/publicPlacesVoted";
 	private static final String ADD_PRIVATE_PLACE = "/places/addPrivatePlace";
+	private static final String ADD_PUBLIC_PLACE = "/places/addPublicPlace";
+	private static final String DELETE_PRIVATE_PLACE = "/places/deletePrivatePlace";
+	private static final String DELETE_PUBLIC_PLACE = "/places/deleteVotePublicPlace";
+	private static final String SEARCH_PUBLIC_PLACE = "/places/searchPublicPlace";
+	private static final String VOTE_PLACE = "/places/votePublicPlace";
+	
+	
+	
 	
 	private static List<PlaceClient> runHttpGetPrivatePlaces(final String method,
 			final ArrayList<NameValuePair> params, Context c) {
@@ -110,7 +119,8 @@ private static final String TAG = new String("thesisug - PlaceResource");
 				"UTF-8");
 		AccountUtil util = new AccountUtil();
 		HttpGet request = new HttpGet(NetworkUtilities.SERVER_URI + "/"
-				+ util.getUsername(c) + method + query);
+				+ util.getUsername(c) + method +"?"+ query);
+		Log.i(TAG, NetworkUtilities.SERVER_URI + "/"+ util.getUsername(c) + method +"?"+ query);
 		request.addHeader("Cookie", "sessionid="+util.getToken(c));
 		// send the request to network
 		HttpResponse response = NetworkUtilities.sendRequest(newClient, request);
@@ -124,7 +134,7 @@ private static final String TAG = new String("thesisug - PlaceResource");
 			
 			
 			result = PlacesHandler.parseUserPublicPlaces(response.getEntity().getContent());
-			
+			Log.i(TAG,"List of search place OK!");
 			return result;
 		} catch (IllegalStateException e) {
 			Log.i(TAG, "Illegal State");
@@ -149,6 +159,31 @@ private static final String TAG = new String("thesisug - PlaceResource");
 				String body = PlacesHandler.formatPlaceClient(toAdd);
 				Log.i(TAG,body);
 				final boolean result = runHttpPost(ADD_PRIVATE_PLACE, null,body, context);
+				if (handler == null || context == null) {
+					return;
+				}
+				handler.post(new Runnable() {
+					public void run() {
+						
+							
+							((Create_new_place) context).finishSaveToAdd(result,toAdd);
+							
+							 
+							 
+						}
+				});
+			}
+		};
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
+	
+	public static Thread createPublicPlace(final PlaceClient toAdd, final Handler handler, final Context context) 
+	{
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				String body = PlacesHandler.formatPlaceClient(toAdd);
+				Log.i(TAG,body);
+				final boolean result = runHttpPost(ADD_PUBLIC_PLACE, null,body, context);
 				if (handler == null || context == null) {
 					return;
 				}
@@ -222,6 +257,112 @@ private static final String TAG = new String("thesisug - PlaceResource");
 			}
 		});
 	}
+	
+	public static Thread deletePrivatePlace(final PlaceClient toDelete, final Handler handler, final Context context) {
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				String body = PlacesHandler.formatPlaceClient(toDelete);
+				Log.i(TAG,body);
+				final boolean result =runHttpPost(DELETE_PRIVATE_PLACE, null,body, context);
+				if (handler == null || context == null) {
+					return;
+				}
+				handler.post(new Runnable() {
+					public void run() {
+						Log.i(TAG,"ok DELETE_PRIVATE_PLACE");
+						((DetailsPlace) context).finishSave(result);
+					}
+				});
+			}
+		};
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
+	
+	public static Thread deletePublicPlace(final PlaceClient toDelete, final Handler handler, final Context context) {
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				String body = PlacesHandler.formatPlaceClient(toDelete);
+				Log.i(TAG,body);
+				final boolean result =runHttpPost(DELETE_PUBLIC_PLACE, null,body, context);
+				if (handler == null || context == null) {
+					return;
+				}
+				handler.post(new Runnable() {
+					public void run() {
+						Log.i(TAG,"ok DELETE_PUBLIC_PLACE");
+						((DetailsPlace) context).finishSave(result);
+					}
+				});
+			}
+		};
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
+	
+	public static Thread votePlace(final PlaceClient toVote, final Handler handler, final Context context) 
+	{
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				Log.i(TAG,"INIZIO VOTAZIONE PLACES: " + toVote.title + toVote.lat +" , " +toVote.lng + toVote.category);
+				
+				String body = PlacesHandler.formatPlaceClient(toVote);
+				Log.i(TAG,body);
+				final boolean result = runHttpPost(VOTE_PLACE, null,body, context);
+				
+				if (handler == null || context == null) {
+					return;
+				}
+				handler.post(new Runnable() {
+					public void run() {
+
+							((DetailsPlaceToVote) context).finish(result);
+	 
+						}
+				});
+			}
+		};
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
+	
+	
+	
+	public static Thread searchPublicPlace(final PlaceClient toSearch, final Handler handler, final Context context) {
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				Log.i(TAG, "request public search places for the user");
+				
+				ArrayList<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+		        nameValuePairs.add(new BasicNameValuePair("title",toSearch.title));
+		        nameValuePairs.add(new BasicNameValuePair("streetAddress",toSearch.streetAddress));
+		        nameValuePairs.add(new BasicNameValuePair("streetNumber",toSearch.streetNumber));
+		        nameValuePairs.add(new BasicNameValuePair("cap",toSearch.cap));
+		        nameValuePairs.add(new BasicNameValuePair("city",toSearch.city));
+		        nameValuePairs.add(new BasicNameValuePair("category",toSearch.category));
+
+		        List<PlaceClient> result = runHttpGetPublicPlaces(SEARCH_PUBLIC_PLACE, nameValuePairs, context);	
+		        Log.i(TAG, "request public places for the user 2");
+		        sendResult_searchPublicPlaces(result, handler, context);
+			}
+		};
+		// start group list request
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
+	
+	private static void sendResult_searchPublicPlaces(final List<PlaceClient> result,
+			final Handler handler, final Context context) {
+		if (handler == null || context == null) {
+			return;
+		}
+		Log.i(TAG, "Sending message");
+		handler.post(new Runnable() {
+			public void run() {
+				
+					((ListPlacesFound)context).afterPublicPlacesLoaded(result);
+					
+				
+			}
+		});
+	}
+	
 	
 
 }

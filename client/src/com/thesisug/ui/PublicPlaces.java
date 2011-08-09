@@ -39,6 +39,7 @@ public class PublicPlaces extends Activity{
 	private static Thread downloadPublicPlacesThread;
 	private final static Handler handler = new Handler();
 	private PlaceListAdapter adapter;
+	Intent intent;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -53,7 +54,7 @@ public class PublicPlaces extends Activity{
 		menu.add(0,NEW_PLACES,0,R.string.newPlace).setIcon(R.drawable.user_group_add);
 		menu.add(0,UPDATE_LIST,0,R.string.updateList).setIcon(R.drawable.sync);	
 		menu.add(0,SEARCH,0,R.string.search).setIcon(R.drawable.sync);	
-		menu.add(0,INFO,0,R.string.infoPlaces).setIcon(R.drawable.sync);	
+		menu.add(0,INFO,0,R.string.infoPlaces).setIcon(R.drawable.info);	
 		menu.add(0,BACK,0,R.string.back).setIcon(R.drawable.go_previous_black);
 		return true;
 	}
@@ -75,11 +76,15 @@ public class PublicPlaces extends Activity{
 			break;	
 			
 		case SEARCH:
+			intent = new Intent(getApplicationContext(), SearchPublicPlace.class);
+			startActivityForResult(intent,1);
+			
 			break;	
 			
 			
 		case INFO:
-			
+			intent = new Intent(getApplicationContext(), InfoPublicPlaces.class);
+			startActivity(intent);
 			break;	
 			
 			
@@ -90,6 +95,20 @@ public class PublicPlaces extends Activity{
 		return true;
 	}
 	
+	 protected void onActivityResult(int requestCode, int resultCode,Intent data) {
+         if (requestCode == 1) {
+             if (resultCode == RESULT_OK) {
+                 
+            	 
+					
+             }
+         }
+	 }
+	 
+	 protected void onResume() {
+	        super.onResume();
+	        downloadPublicPlacesThread = PlacesResource.getPublicPlaces(handler, PublicPlaces.this);
+	 }
 	
 	public void afterPublicPlacesLoaded(final List<PlaceClient> placeList){
 		
@@ -117,20 +136,19 @@ public class PublicPlaces extends Activity{
 							long arg3) {
 						
 						
-							//LinkedHashMap item = (LinkedHashMap) (arg0.getItemAtPosition(arg2));
-							//SingleItemLocation itemLocation = (SingleItemLocation) item.get(ITEM_DATA);
-							//Toast.makeText(getBaseContext(), "Details for "+itemLocationList.get(arg2).item, Toast.LENGTH_LONG).show();
-							
-							/*intent = new Intent(getApplicationContext(), Details_assertion_item.class);
-							intent.putExtra("item", itemLocationList.get(arg2).item);
-							intent.putExtra("location", itemLocationList.get(arg2).location);
-							intent.putExtra("username", itemLocationList.get(arg2).username);
-							intent.putExtra("n_views", itemLocationList.get(arg2).n_views);
-							intent.putExtra("n_votes", itemLocationList.get(arg2).n_votes);
-							intent.putExtra("vote", itemLocationList.get(arg2).vote);
-							intent.putExtra("description", itemLocationList.get(arg2).item + " si può trovare in " + itemLocationList.get(arg2).location); 
-							Log.i(TAG,"details_assertion_item:"+ itemLocationList.get(arg2).item + "->" + itemLocationList.get(arg2).location);	
-							startActivityForResult(intent, 0);*/
+						intent = new Intent(getApplicationContext(), DetailsPlace.class);
+						intent.putExtra("title", placeList.get(arg2).title);
+						intent.putExtra("streetAddress", placeList.get(arg2).streetAddress);
+						intent.putExtra("streetNumber", placeList.get(arg2).streetNumber);
+						intent.putExtra("cap", placeList.get(arg2).cap);
+						intent.putExtra("city", placeList.get(arg2).city);
+						intent.putExtra("lat", placeList.get(arg2).lat);
+						intent.putExtra("lng", placeList.get(arg2).lng);
+						intent.putExtra("type", "Public");
+						intent.putExtra("category", placeList.get(arg2).category);
+						//Log.i(TAG,"details_public_place:" + placeList.get(arg2).title);	
+						startActivity(intent);
+				
 					
 					}
 					 
