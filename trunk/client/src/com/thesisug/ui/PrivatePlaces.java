@@ -82,7 +82,8 @@ public class PrivatePlaces extends Activity{
 			break;	
 			
 		case INFO:
-			
+			intent = new Intent(getApplicationContext(), InfoPrivatePlaces.class);
+			startActivity(intent);
 			break;	
 			
 			
@@ -124,6 +125,8 @@ public class PrivatePlaces extends Activity{
 	
 	protected void onResume() {
         super.onResume();
+        Thread downloadPrivatePlacesThread = PlacesResource.getPrivatePlaces(handler, PrivatePlaces.this);
+    	
         //Toast.makeText(PrivatePlaces.this, "--onResumePrivatePlace--", Toast.LENGTH_LONG).show();
         //Thread downloadPrivatePlacesThread = PlacesResource.getPrivatePlaces(handler, PrivatePlaces.this);
         
@@ -193,16 +196,18 @@ public class PrivatePlaces extends Activity{
 					//SingleItemLocation itemLocation = (SingleItemLocation) item.get(ITEM_DATA);
 					//Toast.makeText(getBaseContext(), "Details for "+itemLocationList.get(arg2).item, Toast.LENGTH_LONG).show();
 					
-					/*intent = new Intent(getApplicationContext(), Details_assertion_item.class);
-					intent.putExtra("item", itemLocationList.get(arg2).item);
-					intent.putExtra("location", itemLocationList.get(arg2).location);
-					intent.putExtra("username", itemLocationList.get(arg2).username);
-					intent.putExtra("n_views", itemLocationList.get(arg2).n_views);
-					intent.putExtra("n_votes", itemLocationList.get(arg2).n_votes);
-					intent.putExtra("vote", itemLocationList.get(arg2).vote);
-					intent.putExtra("description", itemLocationList.get(arg2).item + " si può trovare in " + itemLocationList.get(arg2).location); 
-					Log.i(TAG,"details_assertion_item:"+ itemLocationList.get(arg2).item + "->" + itemLocationList.get(arg2).location);	
-					startActivityForResult(intent, 0);*/
+					intent = new Intent(getApplicationContext(), DetailsPlace.class);
+					intent.putExtra("title", placeList.get(arg2).title);
+					intent.putExtra("streetAddress", placeList.get(arg2).streetAddress);
+					intent.putExtra("streetNumber", placeList.get(arg2).streetNumber);
+					intent.putExtra("cap", placeList.get(arg2).cap);
+					intent.putExtra("city", placeList.get(arg2).city);
+					intent.putExtra("lat", placeList.get(arg2).lat);
+					intent.putExtra("lng", placeList.get(arg2).lng);
+					intent.putExtra("type", "Private");
+					intent.putExtra("category", placeList.get(arg2).category);
+					//Log.i(TAG,"details_private_place:" + placeList.get(arg2).title);	
+					startActivity(intent);
 			
 			}
 			 

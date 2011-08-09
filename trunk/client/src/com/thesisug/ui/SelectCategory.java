@@ -67,6 +67,7 @@ public class SelectCategory extends Activity{
 		addPlace.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				
+				Toast.makeText(SelectCategory.this,listCategPlace.toString(),Toast.LENGTH_LONG).show();
 				
 				ListIterator<String> iterator = listCategPlace.listIterator();
 				if (iterator.hasNext())
@@ -76,7 +77,8 @@ public class SelectCategory extends Activity{
 					category = category +  "," + iterator.next().toString() ;
 				}
 				Toast.makeText(SelectCategory.this,"String categoria finale:"+  category,Toast.LENGTH_LONG).show();
-				if (category.equals(""))
+				
+				if (!(category.equals("")))
 				{
 					/*if (type.equals("Private"))
 					{
@@ -195,6 +197,10 @@ public class SelectCategory extends Activity{
 				 
 				 holder.img_category = (ImageView) convertView.findViewById(R.id.img_category);
 				 
+				 holder.checkbox = (CheckBox) convertView.findViewById(R.id.checkbox);
+	
+				 holder.checkbox.setClickable(false);
+				 
 				 if	 (listCategory.get(position).toString().equals("abitazione"))
 				 		holder.img_category.setImageResource(R.drawable.home1);
 				 else if (listCategory.get(position).toString().equals("supermercato"))
@@ -225,6 +231,10 @@ public class SelectCategory extends Activity{
 			 holder.txt_title.setText("'" +  listCategory.get(position).toString() +"'");
 			 
 			 holder.img_category = (ImageView) convertView.findViewById(R.id.img_category);
+			 
+			 holder.checkbox = (CheckBox) convertView.findViewById(R.id.checkbox);
+				
+			 holder.checkbox.setClickable(false);
 			 
 			 if	 (listCategory.get(position).toString().equals("abitazione"))
 			 		holder.img_category.setImageResource(R.drawable.home1);

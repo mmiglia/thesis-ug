@@ -88,7 +88,7 @@ public class Create_new_place extends Activity{
 					
 					name = edit_name_place.getText().toString();
 					streetAddress = edit_streetAddress.getText().toString();
-					streetNumber = edit_streetAddress.getText().toString();
+					streetNumber = edit_streetNumber.getText().toString();
 					cap = edit_cap.getText().toString();
 					city = edit_city.getText().toString();
 					
@@ -114,9 +114,12 @@ public class Create_new_place extends Activity{
 						//startActivityForResult(intent,0);
 						//Toast.makeText(Create_Assertion_item.this, "Parole dai Edittext:" + object + location,Toast.LENGTH_LONG).show();
 						//Toast.makeText(Create_new_place.this, "Chiedo risultati!!!",Toast.LENGTH_LONG).show();
-						PlaceClient newPlace = new PlaceClient(name,streetAddress,streetNumber,cap,city,category);
+						PlaceClient newPlace = new PlaceClient(name,"","",streetAddress,streetNumber,cap,city,category);
 						
-						creationNewPlace = PlacesResource.createPrivatePlace(newPlace, handler, Create_new_place.this);
+						if (spinner.getSelectedItem().toString().equals("Private"))
+							creationNewPlace = PlacesResource.createPrivatePlace(newPlace, handler, Create_new_place.this);
+						else if (spinner.getSelectedItem().toString().equals("Public"))
+							creationNewPlace = PlacesResource.createPublicPlace(newPlace, handler, Create_new_place.this);
 						
 						
 					

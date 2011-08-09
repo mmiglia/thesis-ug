@@ -193,6 +193,27 @@
         <activity android:name=".ui.SelectCategory"
                   android:label="@string/app_name" android:theme="@android:style/Theme">                  
         </activity> 
+         <activity android:name=".ui.DetailsPlace"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+         <activity android:name=".ui.SearchPublicPlace"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+         <activity android:name=".ui.ListPlacesFound"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+         <activity android:name=".ui.InfoPrivatePlaces"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+         <activity android:name=".ui.InfoPublicPlaces"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        <activity android:name=".ui.DetailsPlaceToVote"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+         <activity android:name=".ui.InfoListPlaceFound"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
         
         <meta-data android:name="android.app.searchable"
        				android:resource="@xml/searchable" 

@@ -149,6 +149,14 @@ private static final String TAG = "thesisug - PlacesHandler";
 	            serializer.text(place.title);
 	            serializer.endTag("", "title");
 	            Log.d(TAG, "1");
+	            serializer.startTag("", "lat");
+	            serializer.text(place.lat);
+	            serializer.endTag("", "lat");
+	            
+	            serializer.startTag("", "lng");
+	            serializer.text(place.lng);
+	            serializer.endTag("", "lng");
+	            
 	            serializer.startTag("", "streetAddress");
 	            serializer.text(place.streetAddress);
 	            serializer.endTag("", "streetAddress");
