@@ -58,6 +58,9 @@ public class Create_new_place extends Activity{
 		setContentView(R.layout.create_new_place);
 		
 		
+		intent=getIntent(); // l'intent di questa activity
+		type=intent.getStringExtra("type");
+		
 		edit_name_place = (EditText) findViewById(R.id.edit_name_place);
 		edit_streetAddress = (EditText) findViewById(R.id.edit_streetAddress);
 		edit_streetNumber = (EditText) findViewById(R.id.edit_streetNumber);
@@ -67,12 +70,7 @@ public class Create_new_place extends Activity{
 		btn_add_place = (Button) findViewById(R.id.add_button);
 		btn_back = (Button) findViewById(R.id.back_button);
 		btn_select_cat = (Button) findViewById(R.id.select_cat);
-		/*if (type.equals("Private"))
-		{
-			type="Private";
-		}else if (type.equals("Public")){
-			type="Public";
-	 	}*/
+		
 		
 		spinner = (Spinner) findViewById(R.id.spinner_type);
 		    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -81,6 +79,13 @@ public class Create_new_place extends Activity{
 		    spinner.setAdapter(adapter);
 		    
 		    spinner.setOnItemSelectedListener(new MyOnItemSelectedListener());
+		    
+		    if (type.equals("Private"))
+			{
+				spinner.setSelection(0);
+			}else if (type.equals("Public")){
+				spinner.setSelection(1);
+		 	}
 
 		    btn_add_place.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {

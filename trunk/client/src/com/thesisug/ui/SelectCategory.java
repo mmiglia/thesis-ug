@@ -181,7 +181,7 @@ public class SelectCategory extends Activity{
 				
 			}	
 			
-			Toast.makeText(SelectCategory.this, listCategPlace.toString(),Toast.LENGTH_LONG).show();
+			//Toast.makeText(SelectCategory.this, listCategPlace.toString(),Toast.LENGTH_LONG).show();
 			
 		}
 			
