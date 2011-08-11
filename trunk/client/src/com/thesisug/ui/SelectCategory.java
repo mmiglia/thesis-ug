@@ -67,7 +67,7 @@ public class SelectCategory extends Activity{
 		addPlace.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				
-				Toast.makeText(SelectCategory.this,listCategPlace.toString(),Toast.LENGTH_LONG).show();
+				//Toast.makeText(SelectCategory.this,listCategPlace.toString(),Toast.LENGTH_LONG).show();
 				
 				ListIterator<String> iterator = listCategPlace.listIterator();
 				if (iterator.hasNext())
@@ -76,7 +76,7 @@ public class SelectCategory extends Activity{
 				while (iterator.hasNext()) {
 					category = category +  "," + iterator.next().toString() ;
 				}
-				Toast.makeText(SelectCategory.this,"String categoria finale:"+  category,Toast.LENGTH_LONG).show();
+				//Toast.makeText(SelectCategory.this,"String categoria finale:"+  category,Toast.LENGTH_LONG).show();
 				
 				if (!(category.equals("")))
 				{
@@ -110,7 +110,6 @@ public class SelectCategory extends Activity{
         
         
         listCateg.add(new String("abitazione"));
-        
         listCateg.add(new String("supermercato"));
         listCateg.add("alimentari");
         listCateg.add("bar");
@@ -118,12 +117,38 @@ public class SelectCategory extends Activity{
         listCateg.add("iper");
         listCateg.add("officina");
         listCateg.add("pizzeria");
-        listCateg.add("ristorante");
+        listCateg.add("articoli bambino");
         
+        listCateg.add("abbigliamento");
+        listCateg.add("cinema");
+        listCateg.add("fastfood");
+        listCateg.add("banca");
+        listCateg.add("panetteria");
+        listCateg.add("pasticceria");
+        listCateg.add("scarpe");
+        listCateg.add("parucchiere");
         
-        
-       
-        
+        listCateg.add("teatro");
+        listCateg.add("ufficio");
+        listCateg.add("frutta e verdura");
+        listCateg.add("sport e fitness");
+        listCateg.add("auto e moto");
+        listCateg.add("casa e giardino");
+        listCateg.add("cellulari e telefonia");
+        listCateg.add("giochi e console");
+        listCateg.add("elettrodomestici");
+        listCateg.add("elettronica");
+        listCateg.add("finanza e assicurazioni");
+     
+        listCateg.add("gioielleria");
+        listCateg.add("informatica");
+        listCateg.add("libreria");
+        listCateg.add("biblioteca");
+        listCateg.add("giornalaio");
+        listCateg.add("ottica");
+        listCateg.add("agenzia turistica");
+        listCateg.add("piscina");
+        listCateg.add("centro benessere");
         
         adapter = new CategoryListAdapter(this,listCateg);
 		 
@@ -201,25 +226,56 @@ public class SelectCategory extends Activity{
 	
 				 holder.checkbox.setClickable(false);
 				 
-				 if	 (listCategory.get(position).toString().equals("abitazione"))
+				 
+
+				 /*if	 (listCategory.get(position).toString().equals("abitazione"))
 				 		holder.img_category.setImageResource(R.drawable.home1);
 				 else if (listCategory.get(position).toString().equals("supermercato"))
 				 		holder.img_category.setImageResource(R.drawable.cart_shop);
-				 else if (listCategory.get(position).toString().equals("alimentari"))
-				 		holder.img_category.setImageResource(R.drawable.cart_shop);
+				 else if (listCategory.get(position).toString().equals("abbigliamento"))
+				 		holder.img_category.setImageResource(R.drawable.abbigliamento);
+				 else if (listCategory.get(position).toString().equals("articolibambini"))
+				 		holder.img_category.setImageResource(R.drawable.articolibambini);
+				 else if (listCategory.get(position).toString().equals("bambino"))
+						holder.img_category.setImageResource(R.drawable.bambini);
 				 else if (listCategory.get(position).toString().equals("bar"))
-				 		holder.img_category.setImageResource(R.drawable.cart_shop);
+						holder.img_category.setImageResource(R.drawable.bar);
+				 else if (listCategory.get(position).toString().equals("cinema"))
+						holder.img_category.setImageResource(R.drawable.cinema);
 				 else if (listCategory.get(position).toString().equals("enoteca"))
-				 		holder.img_category.setImageResource(R.drawable.cart_shop);
-				 else if (listCategory.get(position).toString().equals("iper"))
-				 		holder.img_category.setImageResource(R.drawable.cart_shop);
+						holder.img_category.setImageResource(R.drawable.enoteca);
+				 else if (listCategory.get(position).toString().equals("fastfood"))
+						holder.img_category.setImageResource(R.drawable.fastfood);
 				 else if (listCategory.get(position).toString().equals("officina"))
-				 		holder.img_category.setImageResource(R.drawable.cart_shop);
-				 else if (listCategory.get(position).toString().equals("pizzeria"))
-				 		holder.img_category.setImageResource(R.drawable.cart_shop);
+						holder.img_category.setImageResource(R.drawable.officina);
+				 else if (listCategory.get(position).toString().equals("paneteria"))
+						holder.img_category.setImageResource(R.drawable.panetteria);
+				 else if (listCategory.get(position).toString().equals("pasticceria"))
+						holder.img_category.setImageResource(R.drawable.pasticceria);
 				 else if (listCategory.get(position).toString().equals("ristorante"))
-				 		holder.img_category.setImageResource(R.drawable.cart_shop);
-
+						holder.img_category.setImageResource(R.drawable.ristorante);
+				 else if (listCategory.get(position).toString().equals("scarpe"))
+						holder.img_category.setImageResource(R.drawable.scarpe);
+				 else if (listCategory.get(position).toString().equals("teatro"))
+						holder.img_category.setImageResource(R.drawable.teatro);
+				 else if (listCategory.get(position).toString().equals("ufficio"))
+						holder.img_category.setImageResource(R.drawable.ufficio);
+				 else if (listCategory.get(position).toString().equals("cellulari e telefonia"))
+						holder.img_category.setImageResource(R.drawable.cell); 
+				 else if (listCategory.get(position).toString().equals("console e videogiochi"))
+						holder.img_category.setImageResource(R.drawable.games); 
+				 else if (listCategory.get(position).toString().equals("musica"))
+						holder.img_category.setImageResource(R.drawable.music); 
+				 else if (listCategory.get(position).toString().equals("giornalaio"))
+						holder.img_category.setImageResource(R.drawable.book); 
+				 else if (listCategory.get(position).toString().equals("biblioteca"))
+						holder.img_category.setImageResource(R.drawable.book2); 
+				 else if (listCategory.get(position).toString().equals("pizzeria"))
+						holder.img_category.setImageResource(R.drawable.pizza);
+				 else if (listCategory.get(position).toString().equals("alimentari"))
+						holder.img_category.setImageResource(R.drawable.pizza);
+				 */
+				 
 				 convertView.setTag(holder);
 			 
 			 } else {
@@ -236,27 +292,86 @@ public class SelectCategory extends Activity{
 				
 			 holder.checkbox.setClickable(false);
 			 
-			 if	 (listCategory.get(position).toString().equals("abitazione"))
+			 if	 (listCategory.get(position).toString().contains("abitazione"))
 			 		holder.img_category.setImageResource(R.drawable.home1);
-			 else if (listCategory.get(position).toString().equals("supermercato"))
+			 else if (listCategory.get(position).toString().contains("supermercato"))
 			 		holder.img_category.setImageResource(R.drawable.cart_shop);
-			 else if (listCategory.get(position).toString().equals("supermercato"))
-			 		holder.img_category.setImageResource(R.drawable.cart_shop);
-			 else if (listCategory.get(position).toString().equals("alimentari"))
-			 		holder.img_category.setImageResource(R.drawable.cart_shop);
-			 else if (listCategory.get(position).toString().equals("bar"))
-			 		holder.img_category.setImageResource(R.drawable.cart_shop);
-			 else if (listCategory.get(position).toString().equals("enoteca"))
-			 		holder.img_category.setImageResource(R.drawable.cart_shop);
-			 else if (listCategory.get(position).toString().equals("iper"))
-			 		holder.img_category.setImageResource(R.drawable.cart_shop);
-			 else if (listCategory.get(position).toString().equals("officina"))
-			 		holder.img_category.setImageResource(R.drawable.cart_shop);
-			 else if (listCategory.get(position).toString().equals("pizzeria"))
-			 		holder.img_category.setImageResource(R.drawable.cart_shop);
-			 else if (listCategory.get(position).toString().equals("ristorante"))
-			 		holder.img_category.setImageResource(R.drawable.cart_shop);
-
+			 else if (listCategory.get(position).toString().contains("abbigliamento"))
+			 		holder.img_category.setImageResource(R.drawable.abbigliamento);
+			 else if (listCategory.get(position).toString().contains("articoli bambino"))
+					holder.img_category.setImageResource(R.drawable.artbambini);
+			 else if (listCategory.get(position).toString().contains("bar"))
+					holder.img_category.setImageResource(R.drawable.bar);
+			 else if (listCategory.get(position).toString().contains("cinema"))
+					holder.img_category.setImageResource(R.drawable.cinema);
+			 else if (listCategory.get(position).toString().contains("enoteca"))
+					holder.img_category.setImageResource(R.drawable.enoteca);
+			 else if (listCategory.get(position).toString().contains("fastfood"))
+					holder.img_category.setImageResource(R.drawable.fastfood);
+			 else if (listCategory.get(position).toString().contains("officina"))
+					holder.img_category.setImageResource(R.drawable.officina);
+			 else if (listCategory.get(position).toString().contains("panetteria"))
+					holder.img_category.setImageResource(R.drawable.panetteria);
+			 else if (listCategory.get(position).toString().contains("pasticceria"))
+					holder.img_category.setImageResource(R.drawable.pasticceria);
+			 else if (listCategory.get(position).toString().contains("ristorante"))
+					holder.img_category.setImageResource(R.drawable.ristorante);
+			 else if (listCategory.get(position).toString().contains("scarpe"))
+					holder.img_category.setImageResource(R.drawable.scarpe);
+			 else if (listCategory.get(position).toString().contains("teatro"))
+					holder.img_category.setImageResource(R.drawable.teatro);
+			 else if (listCategory.get(position).toString().contains("ufficio"))
+					holder.img_category.setImageResource(R.drawable.ufficio);
+			 else if (listCategory.get(position).toString().contains("cellulari e telefonia"))
+					holder.img_category.setImageResource(R.drawable.cell); 
+			 else if (listCategory.get(position).toString().contains("giochi e console"))
+					holder.img_category.setImageResource(R.drawable.games); 
+			 else if (listCategory.get(position).toString().contains("musica"))
+					holder.img_category.setImageResource(R.drawable.music); 
+			 else if (listCategory.get(position).toString().contains("giornalaio"))
+					holder.img_category.setImageResource(R.drawable.book); 
+			 else if (listCategory.get(position).toString().contains("biblioteca"))
+					holder.img_category.setImageResource(R.drawable.book2); 
+			 else if (listCategory.get(position).toString().contains("pizzeria"))
+					holder.img_category.setImageResource(R.drawable.pizza);
+			 else if (listCategory.get(position).toString().contains("alimentari"))
+					holder.img_category.setImageResource(R.drawable.alim);
+			 else if (listCategory.get(position).toString().contains("iper"))
+					holder.img_category.setImageResource(R.drawable.iper);
+			 else if (listCategory.get(position).toString().contains("auto e moto"))
+					holder.img_category.setImageResource(R.drawable.car);
+			 else if (listCategory.get(position).toString().contains("informatica"))
+					holder.img_category.setImageResource(R.drawable.computer); 
+			 else if (listCategory.get(position).toString().contains("agenzia turistica"))
+					holder.img_category.setImageResource(R.drawable.world); 
+			 else if (listCategory.get(position).toString().contains("frutta e verdura"))
+					holder.img_category.setImageResource(R.drawable.frutta1); 
+			 else if (listCategory.get(position).toString().contains("sport e fitness"))
+					holder.img_category.setImageResource(R.drawable.calcio); 
+			 else if (listCategory.get(position).toString().contains("gioielleria"))
+					holder.img_category.setImageResource(R.drawable.gioielleria); 
+			 else if (listCategory.get(position).toString().contains("casa e giardino"))
+					holder.img_category.setImageResource(R.drawable.garden); 
+			 else if (listCategory.get(position).toString().contains("elettronica"))
+					holder.img_category.setImageResource(R.drawable.elettro); 
+			 else if (listCategory.get(position).toString().contains("libreria"))
+					holder.img_category.setImageResource(R.drawable.libreria); 
+			 else if (listCategory.get(position).toString().contains("piscina"))
+					holder.img_category.setImageResource(R.drawable.piscina); 
+			 else if (listCategory.get(position).toString().contains("ottica"))
+					holder.img_category.setImageResource(R.drawable.ottica);
+			 else if (listCategory.get(position).toString().contains("banca"))
+					holder.img_category.setImageResource(R.drawable.banca);
+			 else if (listCategory.get(position).toString().contains("elettrodomestici"))
+					holder.img_category.setImageResource(R.drawable.elettrodomestici);
+			 else if (listCategory.get(position).toString().contains("parucchiere"))
+					holder.img_category.setImageResource(R.drawable.parucchiere);
+			 else if (listCategory.get(position).toString().contains("finanza e assicurazioni"))
+					holder.img_category.setImageResource(R.drawable.assicurazione);
+			 else if (listCategory.get(position).toString().contains("centro benessere"))
+					holder.img_category.setImageResource(R.drawable.benessere);
+			 
+			 
 			 return convertView;
 		 }
 

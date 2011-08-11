@@ -25,14 +25,14 @@ public class Assertions extends TabActivity{
 
 		    // Initialize a TabSpec for each tab and add it to the TabHost
 		    spec = tabHost.newTabSpec("Item-Location").setIndicator("Item-Location",
-		                      res.getDrawable(R.drawable.ic_tab_assertions_itemlocation))
+		                      res.getDrawable(R.drawable.rock))
 		                  .setContent(intent);
 		    tabHost.addTab(spec);
 
 		    // Do the same for the other tabs
 		    intent = new Intent().setClass(this, ViewAssertions_Action.class);
 		    spec = tabHost.newTabSpec("Action-Location").setIndicator("Action-Location",
-		                      res.getDrawable(R.drawable.ic_tab_assertions_actionlocation))
+		                      res.getDrawable(R.drawable.action))
 		                  .setContent(intent);
 		    tabHost.addTab(spec);
 

@@ -109,7 +109,7 @@ public class ViewAssertions extends Activity{
 		//Toast.makeText(getBaseContext(), itemLocationList.toString(), Toast.LENGTH_LONG).show();
     	
 		if(itemLocationList==null || itemLocationList.size()==0){
-			Toast.makeText(getApplicationContext(), R.string.noAssertions, Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), R.string.noAssertions, Toast.LENGTH_SHORT).show();
 		}
 
 		

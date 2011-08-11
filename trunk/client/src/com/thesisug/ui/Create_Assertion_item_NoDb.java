@@ -48,7 +48,7 @@ public class Create_Assertion_item_NoDb extends Activity{
 		
 		editObject = (EditText) findViewById(R.id.object_edit);
 		editLocation = (EditText) findViewById(R.id.location_edit);
-		editDescription = (EditText) findViewById(R.id.description_edit);
+		//editDescription = (EditText) findViewById(R.id.description_edit);
 
 		save = (Button) findViewById(R.id.save_button);
 		back = (Button) findViewById(R.id.back_button);

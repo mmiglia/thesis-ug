@@ -71,13 +71,13 @@
     	android:paddingLeft="10dip"
     	android:paddingRight="10dip">
     	<TextView    
-        	android:id="@+id/description_text1"
+        	android:id="@+id/description_text"
         	android:layout_width="fill_parent"
         	android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
         	android:text="@string/description"/>
        	<EditText
-        	android:id="@+id/description1"
+        	android:id="@+id/description_edit"
         	android:layout_width="fill_parent"
         	android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"/>

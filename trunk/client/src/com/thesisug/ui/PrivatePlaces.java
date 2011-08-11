@@ -55,7 +55,7 @@ public class PrivatePlaces extends Activity{
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu){
-		menu.add(0,NEW_PLACES,0,R.string.newPlace).setIcon(R.drawable.user_group_add);
+		menu.add(0,NEW_PLACES,0,R.string.newPlace).setIcon(R.drawable.addplaces);
 		menu.add(0,UPDATE_LIST,0,R.string.updateList).setIcon(R.drawable.sync);	
 		menu.add(0,INFO,0,R.string.infoPlaces).setIcon(R.drawable.info);	
 		menu.add(0,BACK,0,R.string.back).setIcon(R.drawable.go_previous_black);
@@ -167,7 +167,7 @@ public class PrivatePlaces extends Activity{
 	
 
 		if(placeList==null || placeList.size()==0){
-			Toast.makeText(getApplicationContext(), R.string.no_Places, Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), R.string.no_Places, Toast.LENGTH_SHORT).show();
 		}
 
 		placeListbackup= placeList;
@@ -246,14 +246,96 @@ public class PrivatePlaces extends Activity{
 				 
 				 holder.img_category = (ImageView) convertView.findViewById(R.id.img_category);
 				 
-				 if	 (placeList.get(position).category.equals("abitazione"))
-				 		holder.img_category.setImageResource(R.drawable.home1);
-				 else if (placeList.get(position).category.equals("supermercato"))
+		
+				 
+				 
+				 if	 (placeList.get(position).category.contains("abitazione"))
+				 		holder.img_category.setImageResource(R.drawable.home1); 
+				 else if (placeList.get(position).category.contains("abbigliamento"))
+				 		holder.img_category.setImageResource(R.drawable.abbigliamento);
+				 else if (placeList.get(position).category.contains("articoli bambino"))
+						holder.img_category.setImageResource(R.drawable.artbambini); 
+				 else if (placeList.get(position).category.contains("cinema"))
+						holder.img_category.setImageResource(R.drawable.cinema);
+				 else if (placeList.get(position).category.contains("enoteca"))
+				 		holder.img_category.setImageResource(R.drawable.enoteca);
+				 else if (placeList.get(position).category.contains("fastfood"))
+						holder.img_category.setImageResource(R.drawable.fastfood);
+				 else if (placeList.get(position).category.contains("officina"))
+						holder.img_category.setImageResource(R.drawable.officina);
+				 else if (placeList.get(position).category.contains("panetteria"))
+						holder.img_category.setImageResource(R.drawable.panetteria);
+				 else if (placeList.get(position).category.contains("pasticceria"))
+						holder.img_category.setImageResource(R.drawable.pasticceria);
+				 else if (placeList.get(position).category.contains("ristorante"))
+						holder.img_category.setImageResource(R.drawable.ristorante);
+				 else if (placeList.get(position).category.contains("scarpe"))
+						holder.img_category.setImageResource(R.drawable.scarpe);
+				 else if (placeList.get(position).category.contains("teatro"))
+						holder.img_category.setImageResource(R.drawable.teatro);
+				 else if (placeList.get(position).category.contains("ufficio"))
+						holder.img_category.setImageResource(R.drawable.ufficio);
+				 else if (placeList.get(position).category.contains("cellulari e telefonia"))
+						holder.img_category.setImageResource(R.drawable.cell); 
+				 else if (placeList.get(position).category.contains("giochi e console"))
+						holder.img_category.setImageResource(R.drawable.games); 
+				 else if (placeList.get(position).category.contains("musica"))
+						holder.img_category.setImageResource(R.drawable.music); 
+				 else if (placeList.get(position).category.contains("giornalaio"))
+						holder.img_category.setImageResource(R.drawable.book); 
+				 else if (placeList.get(position).category.contains("biblioteca"))
+						holder.img_category.setImageResource(R.drawable.book2); 
+				 else if (placeList.get(position).category.contains("pizzeria"))
+						holder.img_category.setImageResource(R.drawable.pizza);
+				 else if (placeList.get(position).category.contains("alimentari"))
+						holder.img_category.setImageResource(R.drawable.alim);
+				 else if (placeList.get(position).category.contains("iper"))
+						holder.img_category.setImageResource(R.drawable.iper);
+				 else if (placeList.get(position).category.contains("auto e moto"))
+						holder.img_category.setImageResource(R.drawable.car);
+				 else if (placeList.get(position).category.contains("informatica"))
+						holder.img_category.setImageResource(R.drawable.computer); 
+				 else if (placeList.get(position).category.contains("agenzia turistica"))
+						holder.img_category.setImageResource(R.drawable.world); 
+				 else if (placeList.get(position).category.contains("frutta e verdura"))
+						holder.img_category.setImageResource(R.drawable.frutta1); 
+				 else if (placeList.get(position).category.contains("sport e fitness"))
+						holder.img_category.setImageResource(R.drawable.calcio); 
+				 else if (placeList.get(position).category.contains("gioielleria"))
+						holder.img_category.setImageResource(R.drawable.gioielleria); 
+				 else if (placeList.get(position).category.contains("casa e giardino"))
+						holder.img_category.setImageResource(R.drawable.garden); 
+				 else if (placeList.get(position).category.contains("gioielleria"))
+						holder.img_category.setImageResource(R.drawable.gioielleria); 
+				 else if (placeList.get(position).category.contains("casa e giardino"))
+						holder.img_category.setImageResource(R.drawable.garden); 
+				 else if (placeList.get(position).category.contains("elettronica"))
+						holder.img_category.setImageResource(R.drawable.elettro); 
+				 else if (placeList.get(position).category.contains("libreria"))
+						holder.img_category.setImageResource(R.drawable.libreria); 
+				 else if (placeList.get(position).category.contains("piscina"))
+						holder.img_category.setImageResource(R.drawable.piscina); 
+				 else if (placeList.get(position).category.contains("ottica"))
+						holder.img_category.setImageResource(R.drawable.ottica);
+				 else if (placeList.get(position).category.contains("banca"))
+						holder.img_category.setImageResource(R.drawable.banca);
+				 else if (placeList.get(position).category.contains("elettrodomestici"))
+						holder.img_category.setImageResource(R.drawable.elettrodomestici);
+				 else if (placeList.get(position).category.contains("parucchiere"))
+						holder.img_category.setImageResource(R.drawable.parucchiere);
+				 else if (placeList.get(position).category.contains("finanza e assicurazioni"))
+						holder.img_category.setImageResource(R.drawable.assicurazione);
+				 else if (placeList.get(position).category.contains("centro benessere"))
+						holder.img_category.setImageResource(R.drawable.benessere);
+				 else if (placeList.get(position).category.contains("bar"))
+						holder.img_category.setImageResource(R.drawable.bar);
+				 else if (placeList.get(position).category.contains("supermercato"))
 				 		holder.img_category.setImageResource(R.drawable.cart_shop);
+				 
 				 
 				 holder.txt_address = (TextView) convertView.findViewById(R.id.txt_address);
 				 
-				 holder.txt_address.setText(placeList.get(position).streetAddress + "," + placeList.get(position).streetNumber + "," + placeList.get(position).city);
+				 holder.txt_address.setText(placeList.get(position).streetAddress + "," + placeList.get(position).streetNumber + " " + placeList.get(position).city);
 				 
 				 
 				 convertView.setTag(holder);
@@ -263,7 +345,7 @@ public class PrivatePlaces extends Activity{
 			 
 			 holder.txt_title.setText("'" +  placeList.get(position).title +"'");
 			
-			 holder.txt_address.setText(placeList.get(position).streetAddress + "," + placeList.get(position).streetNumber + "," + placeList.get(position).city);
+			 holder.txt_address.setText(placeList.get(position).streetAddress + "," + placeList.get(position).streetNumber + " " + placeList.get(position).city);
 			 return convertView;
 		 }
 

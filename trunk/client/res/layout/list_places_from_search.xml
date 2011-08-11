@@ -10,8 +10,11 @@
          android:layout_marginBottom="15dip"
          android:textAppearance="?android:attr/textAppearanceLarge"
          android:focusable="false"
-         android:textColor="#00FF00"
+         android:textColor="#FF4500"
         />    
+         
+        
+    
 
 	<ListView 
 		 		android:id="@+id/publicplacelist" 
