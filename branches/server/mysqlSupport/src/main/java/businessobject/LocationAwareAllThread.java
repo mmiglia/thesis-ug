@@ -115,8 +115,10 @@ public class LocationAwareAllThread implements Runnable{
 		// se ho trovato qualcosa in cache restituisco al client
 		if (!toReturn.isEmpty())
 		{	System.out.println("ho trovato qualcosa in cache");
+			
 			Thread t=new Thread(this,"InterrogaGoogle");
 			t.start();
+		
 			return toReturn;
 		}
 		else

@@ -110,8 +110,10 @@ public class LocationAwareThread implements Runnable{
 		// se ho trovato qualcosa in luoghi privati,pubblici o cache restituisco al client
 		if (!toReturn.isEmpty())
 		{	System.out.println("ho trovato qualcosa in cache");
+		
 			Thread t=new Thread(this,"InterrogaGoogle");
 			t.start();
+		
 			return toReturn;
 		}
 		else

@@ -291,7 +291,7 @@ public enum PlacesDatabase {
                   
           String selectQuery="Select * from PlacePrivate_category join PlacePrivate on PlacePrivate_category.title=PlacePrivate.title and " +
                               "PlacePrivate_category.lat=PlacePrivate.lat and PlacePrivate_category.lng=PlacePrivate.lng"+
-                  " where PlacePrivate.user='"+ userID +"'and  PlacePrivate.userGroup=0 and PlacePrivate.title='"+query+"'";
+                  " where PlacePrivate.user='"+ userID +"'and  PlacePrivate.userGroup=0 and (PlacePrivate.title LIKE '%"+query+"%')";
           
           System.out.println(selectQuery);
           
