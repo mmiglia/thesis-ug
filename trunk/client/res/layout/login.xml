@@ -8,8 +8,8 @@
     	android:layout_height="wrap_content"
     	android:layout_centerHorizontal="true"
 		android:layout_marginTop="5dip"
-        android:paddingBottom="25dip"
-    	android:src="@drawable/icon"/>
+        android:paddingBottom="20dip"
+    	android:src="@drawable/georemiicon"/>
 
 	<TextView    
         android:id="@+id/message"
