@@ -96,7 +96,7 @@ public class ViewAssertions_Action extends Activity{
 	
     	
 		if(actionLocationList==null || actionLocationList.size()==0){
-			Toast.makeText(getApplicationContext(), R.string.noAssertions, Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), R.string.noAssertions, Toast.LENGTH_SHORT).show();
 		}
 
 		

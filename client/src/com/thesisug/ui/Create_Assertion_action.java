@@ -41,7 +41,7 @@ public class Create_Assertion_action extends Activity{
 		
 		editAction = (EditText) findViewById(R.id.action_edit);
 		editLocation = (EditText) findViewById(R.id.location_edit1);
-		editDescription = (EditText) findViewById(R.id.description1);
+		editDescription = (EditText) findViewById(R.id.description_edit);
 
 		save = (Button) findViewById(R.id.save_button1);
 		

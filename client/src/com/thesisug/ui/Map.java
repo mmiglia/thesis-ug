@@ -255,9 +255,9 @@ public class Map extends MapActivity implements LocationListener{
     
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu){
-		menu.add(0,FORCE_HINT_SEARCH,0,R.string.start_hint_search).setIcon(R.drawable.radar);
-		menu.add(0,TODO_LIST,0,R.string.to_do_list).setIcon(R.drawable.todo);
-		menu.add(0,GET_MAP,0,R.string.get_hint_jouney).setIcon(R.drawable.compass);
+		menu.add(0,FORCE_HINT_SEARCH,0,R.string.start_hint_search).setIcon(R.drawable.searchloc);
+		menu.add(0,TODO_LIST,0,R.string.to_do_list).setIcon(R.drawable.taskdo);
+		menu.add(0,GET_MAP,0,R.string.get_hint_jouney).setIcon(R.drawable.goin);
 		menu.add(0,INFO,0,R.string.hint_information).setIcon(R.drawable.info);
 		
 		

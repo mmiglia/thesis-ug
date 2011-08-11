@@ -23,7 +23,8 @@
         	android:id="@+id/txt_title"
             android:text="SEARCH"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:paddingBottom="3dip" />
+            android:paddingBottom="3dip" 
+            android:textColor="#FF4500"/>
 	   
     </LinearLayout>
     

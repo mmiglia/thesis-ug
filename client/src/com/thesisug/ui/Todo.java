@@ -167,7 +167,7 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 		menu.add(0,CREATE_TASK,0,"Create Task").setIcon(R.drawable.task);
 		menu.add(0,VOICE_INPUT,0,"Voice Input").setIcon(R.drawable.voice);
 		menu.add(0,UPDATE_TASK_EVENT,0,"Synchronize").setIcon(R.drawable.sync);
-		menu.add(0,FORCE_HINT_SEARCH,0,"Search for hints").setIcon(R.drawable.radar);
+		menu.add(0,FORCE_HINT_SEARCH,0,"Search for hints").setIcon(R.drawable.radarcol);
 		menu.add(0,MANAGE_GROUPS,0,"Groups").setIcon(R.drawable.user_group);
 		menu.add(0,SYSTEM_STATUS,0,"System status").setIcon(R.drawable.traffic_lights);	
 		menu.add(0,NEW_PLACES,0,"New Places").setIcon(R.drawable.view_assertions);
