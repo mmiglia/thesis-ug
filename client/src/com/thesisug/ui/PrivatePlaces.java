@@ -69,7 +69,7 @@ public class PrivatePlaces extends Activity{
 		case NEW_PLACES:
 			
 			intent = new Intent(getApplicationContext(), Create_new_place.class);
-			intent.putExtra("qual", "private");
+			intent.putExtra("type", "Private");
 			startActivityForResult(intent,0);
 			
 			

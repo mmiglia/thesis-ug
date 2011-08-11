@@ -66,6 +66,7 @@ public class PublicPlaces extends Activity{
 		case NEW_PLACES:
 			
 			intent = new Intent(getApplicationContext(), Create_new_place.class);
+			intent.putExtra("type", "Public");
 			startActivityForResult(intent,0);
 			break;
 			

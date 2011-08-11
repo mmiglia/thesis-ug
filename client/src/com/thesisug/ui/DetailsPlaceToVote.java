@@ -177,7 +177,7 @@ public class DetailsPlaceToVote extends Activity{
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu){
-		menu.add(0,VOTE_PLACE,0,"Vote").setIcon(R.drawable.piu);	
+		menu.add(0,VOTE_PLACE,0,"Vote").setIcon(R.drawable.votee);	
 		menu.add(0,BACK,0,R.string.back).setIcon(R.drawable.go_previous_black);
 		return true;
 	}
@@ -187,11 +187,8 @@ public class DetailsPlaceToVote extends Activity{
 		switch (item.getItemId()) {
 
 		case VOTE_PLACE:
-			if (categoryVoted.equals(""))
-				Toast.makeText(DetailsPlaceToVote.this, "You must select almost a category!",Toast.LENGTH_LONG).show();
-			else
-			{
-				ListIterator<String> iterator= listCateg.listIterator();
+			
+ListIterator<String> iterator= listCateg.listIterator();
 			
 			//crea l'iteratore
 			while (iterator.hasNext()) {
@@ -205,6 +202,12 @@ public class DetailsPlaceToVote extends Activity{
                    int u=categoryVoted.lastIndexOf(",");
                    categoryVoted=categoryVoted.substring(0, u);
                }
+			
+			if (categoryVoted.equals(""))
+				Toast.makeText(DetailsPlaceToVote.this, "You must select almost a category!",Toast.LENGTH_LONG).show();
+			else
+			{
+				
 			
 			PlaceClient place = new PlaceClient(title,lat,lng,streetAddress,streetNumber,cap,city,categoryVoted);
 			//Toast.makeText(DetailsPlaceToVote.this, place.title +place.lat + " , " + place.lng + place.category ,Toast.LENGTH_LONG).show();

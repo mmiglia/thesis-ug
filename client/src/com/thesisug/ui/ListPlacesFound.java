@@ -29,7 +29,7 @@ import com.thesisug.communication.valueobject.PlaceClient;
 public class ListPlacesFound extends Activity{
 	
 	private static final String TAG = "thesisug - ListPlacesFound";
-	private static final int VOTE=0;	
+	private static final int NEWPLACE=0;	
 	
 	private static final int SEARCH=1;
 	
@@ -68,7 +68,7 @@ public class ListPlacesFound extends Activity{
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu){
-		menu.add(0,VOTE,0,R.string.newPlace).setIcon(R.drawable.user_group_add);
+		menu.add(0,NEWPLACE,0,R.string.newPlace).setIcon(R.drawable.addplaces);
 		menu.add(0,SEARCH,0,R.string.search).setIcon(R.drawable.searchle);	
 		menu.add(0,INFO,0,R.string.infoPlaces).setIcon(R.drawable.info);	
 		menu.add(0,BACK,0,R.string.back).setIcon(R.drawable.go_previous_black);
@@ -79,9 +79,11 @@ public class ListPlacesFound extends Activity{
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent intent;
 		switch (item.getItemId()) {
-		case VOTE:
-			
-			
+		case NEWPLACE:
+			intent = new Intent(getApplicationContext(), Create_new_place.class);
+			intent.putExtra("type", "Private");
+			startActivity(intent);
+			finish();
 			break;
 			
 		case SEARCH:

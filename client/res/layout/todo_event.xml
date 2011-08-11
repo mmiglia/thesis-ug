@@ -6,7 +6,7 @@
      android:orientation="vertical"
      android:focusable="false"  
      android:paddingTop="3dip"
-     android:paddingLeft="15dip">  
+     android:paddingLeft="10dip">  
      <TextView  
          android:id="@+id/list_complex_title"  
          android:layout_width="240dip"  
