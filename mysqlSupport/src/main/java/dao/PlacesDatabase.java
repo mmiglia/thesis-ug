@@ -607,12 +607,12 @@ public enum PlacesDatabase {
     	  {    		  
     		  if (whereflag==false) 
     		  {
-    			  selectQuery = selectQuery + " where title='"+title.toLowerCase()+"' ";
+    			  selectQuery = selectQuery + " where (Place.title LIKE '%"+title.toLowerCase()+"%') ";
     			  whereflag = true;
     		  }
     		  else
     		  {
-    			  selectQuery = selectQuery + " and title='"+title.toLowerCase()+"' ";
+    			  selectQuery = selectQuery + " and (Place.title LIKE '%"+title.toLowerCase()+"%') ";
     		  }
     		  
     	  }  
@@ -660,12 +660,12 @@ public enum PlacesDatabase {
     	  {
     		  if (whereflag==false) 
     		  {
-    			  selectQuery = selectQuery + " where city='"+city.toLowerCase()+"' ";
+    			  selectQuery = selectQuery + " where (city LIKE '%"+city.toLowerCase()+"%') ";
     			  whereflag = true;
     		  }
     		  else
     		  {
-    			  selectQuery = selectQuery + " and city='"+city.toLowerCase()+"' ";
+    			  selectQuery = selectQuery + " and (city LIKE '%"+city.toLowerCase()+"%') ";
     		  }
     	  }  
     	/*	
