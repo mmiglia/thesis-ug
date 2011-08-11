@@ -588,8 +588,12 @@ public enum PlacesDatabase {
     	  return;    
       }
 
-      
-      
+      /*
+       * Ritorna la lista di posti pubblici inseriti da altri utenti o 
+       * dall'utente stesso, 
+       * ma non votati da quest'ultimo,
+       * corrispondenti ai criteri di ricerca
+       */
       public static List<PlaceClient> searchPublicPlace(String userid,String title,String streetAddress,String streetNumber,String cap,String city,List<String> category)
       {
     	  ArrayList<PlaceClient> placeList=new ArrayList<PlaceClient>();
@@ -668,20 +672,233 @@ public enum PlacesDatabase {
     			  selectQuery = selectQuery + " and (city LIKE '%"+city.toLowerCase()+"%') ";
     		  }
     	  }  
-    	/*	
-    	  if (!category.equalsIgnoreCase(""))
+    	
+    	  if ( !category.isEmpty())
     	  {
     		  if (whereflag==false) 
     		  {
-    			  selectQuery = selectQuery + " where category='"+category.toLowerCase()+"' ";
+    			  boolean first= true; //se è il primo della lista
+    			  for (String s : category)
+    			  {
+    				  if (s.equalsIgnoreCase(""))
+        				  continue;
+    				  if (first)
+    				  {
+    					  selectQuery = selectQuery + " where (";
+    					  selectQuery = selectQuery + " category ='"+s.toLowerCase()+"' ";
+    					  first = false;
+    				  }
+    				  else
+    				  {
+    					  selectQuery = selectQuery + " or category ='"+s.toLowerCase()+"' ";
+    				  }
+    			  }
+    			  if (!first)
+    				  selectQuery = selectQuery + " ) ";
+    		  }
+    		  else
+    		  {
+    			  
+    			  boolean first= true; //se è il primo della lista
+    			  for (String s : category)
+    			  {
+        			  if (s.equalsIgnoreCase(""))
+        				  continue;
+        			  	
+    				  if (first)
+    				  {
+    					  selectQuery = selectQuery + " and ( ";
+    					  selectQuery = selectQuery + " category ='"+s.toLowerCase()+"' ";
+    					  first = false;
+    				  }
+    				  else
+    				  {
+    					  selectQuery = selectQuery + " or category ='"+s.toLowerCase()+"' ";
+    				  }
+    			  }
+    			  if (!first)
+    				  selectQuery = selectQuery + " ) ";
+    		  }
+    		  
+    		  
+    		  
+    	  }   
+    	  
+    	  
+    	  System.out.println(selectQuery);
+    	  
+    	  QueryStatus qs=dbManager.customSelect(conn, selectQuery);
+  		
+  		  ResultSet rs=(ResultSet)qs.customQueryOutput;
+
+  		  try{
+  			while(rs.next()){
+  				String titleQ = rs.getString("title");
+                String latQ = rs.getString("lat");
+                String lngQ = rs.getString("lng");
+                String streetAddressQ = rs.getString("streetAddress");
+                String streetNumberQ = rs.getString("streetNumber");
+                String capQ = rs.getString("cap");
+                String cityQ = rs.getString("city");
+                String categoryQ = rs.getString("category");
+                
+                placeList.add(
+                        new PlaceClient(titleQ,latQ,lngQ,streetAddressQ,streetNumberQ,capQ,cityQ,categoryQ)                                        
+                );
+                
+  				
+  			 }
+  		  }catch(SQLException sqlE){
+  			//TODO
+  			
+  		  }finally{	
+  			dbManager.dbDisconnect(conn);
+  		  }
+  		ArrayList<PlaceClient> placeListToReturn = new ArrayList<PlaceClient>();
+  		//ritorno solo le cose non votate dall'utente
+  		  for (PlaceClient p: placeList)
+  		  {
+  			  boolean hasAlreadyVoted = publicHasAlreadyVoted(userid,p.title,p.lat,p.lng,p.category);
+  			  if (!hasAlreadyVoted) 
+  			  {
+  				  //controllo se l'ho già inserito, se si aggiungo
+  				  //solo la categoria
+  				  Iterator it= placeListToReturn.iterator();
+  				  boolean isInsert = false;
+  				  while(it.hasNext())
+  				  {
+  					  PlaceClient value=(PlaceClient)it.next();
+  					  if ( value.title.equals(p.title) && value.lat.equals(p.lat) && value.lng.equals(p.lng))
+  					  {
+  						  isInsert = true;
+  						  value.category = value.category+","+p.category;
+  						  break;
+  					  }
+  				  }
+  				  //se non è già stato inserito lo inserisco
+  				  if (!isInsert)
+  				  {
+  					  placeListToReturn.add(
+                              new PlaceClient(p.title,p.lat,p.lng,p.streetAddress,p.streetNumber,p.cap,p.city,p.category)                                        
+  					  );
+  				  }
+  			  }
+  		  }
+  		  
+  		return placeListToReturn;
+    	 
+      }
+     public static boolean publicHasAlreadyVoted(String userID,String title, String lat, String lng, String category)
+     {
+    	 Connection conn= (Connection) dbManager.dbConnect();
+         
+         String selectQuery="Select * from Place_voted where Place_voted.username='"+ userID +"'" +
+         		" and Place_voted.title = '"+title+"' "+
+         		" and Place_voted.lat = '"+lat+"' "+
+         		" and Place_voted.lng = '"+lng+"' "+
+         		" and Place_voted.category = '"+category+"' ";;
+         
+         System.out.println(selectQuery);
+         
+         
+         QueryStatus qs=dbManager.customSelect(conn, selectQuery);
+         
+         ResultSet rs=(ResultSet)qs.customQueryOutput;
+
+         try{
+                 while(rs.next()){
+                        return true;
+                        
+                 }
+         }catch(SQLException sqlE){
+                 //TODO
+     
+         }finally{        
+                 dbManager.dbDisconnect(conn);
+         }
+
+    	 return false;
+     }
+ /*     
+      public static List<PlaceClient> searchPublicPlace(String userid,String title,String streetAddress,String streetNumber,String cap,String city,List<String> category)
+      {
+    	  ArrayList<PlaceClient> placeList=new ArrayList<PlaceClient>();
+  		
+  		  Connection conn= (Connection) dbManager.dbConnect();
+  		
+    	  boolean whereflag = false;
+    	  
+    	  //creo la query
+    	  String selectQuery = "Select * from Place_category join Place on Place_category.title=Place.title and " +
+                              "Place_category.lat=Place.lat and Place_category.lng=Place.lng";
+              
+    	  
+    	  if (!title.equalsIgnoreCase(""))
+    	  {    		  
+    		  if (whereflag==false) 
+    		  {
+    			  selectQuery = selectQuery + " where (Place.title LIKE '%"+title.toLowerCase()+"%') ";
     			  whereflag = true;
     		  }
     		  else
     		  {
-    			  selectQuery = selectQuery + " and category='"+category.toLowerCase()+"' ";
+    			  selectQuery = selectQuery + " and (Place.title LIKE '%"+title.toLowerCase()+"%') ";
     		  }
-    	  }    
-    	*/
+    		  
+    	  }  
+    		  
+    	  if(!streetAddress.equalsIgnoreCase(""))
+    	  {
+    		  if (whereflag==false) 
+    		  {
+    			  selectQuery = selectQuery + " where streetAddress='"+streetAddress.toLowerCase()+"' ";
+    			  whereflag = true;
+    		  }
+    		  else
+    		  {
+    			  selectQuery = selectQuery + " and streetAddress='"+streetAddress.toLowerCase()+"' ";
+    		  }
+    	  }
+    			 
+    	  if (!streetNumber.equalsIgnoreCase(""))  
+    	  {
+    		  if (whereflag==false) 
+    		  {
+    			  selectQuery = selectQuery + " where streetNumber='"+streetNumber.toLowerCase()+"' ";
+    			  whereflag = true;
+    		  }
+    		  else
+    		  {
+    			  selectQuery = selectQuery + " and streetNumber='"+streetNumber.toLowerCase()+"' ";
+    		  }
+    	  }
+    	
+    	  if (!cap.equalsIgnoreCase(""))
+    	  {
+    		  if (whereflag==false) 
+    		  {
+    			  selectQuery = selectQuery + " where cap='"+cap.toLowerCase()+"' ";
+    			  whereflag = true;
+    		  }
+    		  else
+    		  {
+    			  selectQuery = selectQuery + " and cap='"+cap.toLowerCase()+"' ";
+    		  }
+    	  }  
+    		  
+    	  if (!city.equalsIgnoreCase(""))	
+    	  {
+    		  if (whereflag==false) 
+    		  {
+    			  selectQuery = selectQuery + " where (city LIKE '%"+city.toLowerCase()+"%') ";
+    			  whereflag = true;
+    		  }
+    		  else
+    		  {
+    			  selectQuery = selectQuery + " and (city LIKE '%"+city.toLowerCase()+"%') ";
+    		  }
+    	  }  
+    	
     	  if ( !category.isEmpty())
     	  {
     		  if (whereflag==false) 
@@ -772,18 +989,7 @@ public enum PlacesDatabase {
                                 new PlaceClient(titleQ,latQ,lngQ,streetAddressQ,streetNumberQ,capQ,cityQ,categoryQ)                                        
                         );
                 }
-  					/*placeList.add(
-  						new PlaceClient(
-  								rs.getString("Place.title") , 
-  								rs.getString("Place.lat") , 
-  								rs.getString("Place.lng") , 
-  								rs.getString("Place.streetAddress") , 
-  								rs.getString("Place.streetNumber") , 
-  								rs.getString("Place.cap") , 
-  								rs.getString("Place.city") , 
-  								rs.getString("Place_category.category") 
-  							)					
-  					);*/
+  				
   			 }
   		  }catch(SQLException sqlE){
   			//TODO
@@ -796,7 +1002,7 @@ public enum PlacesDatabase {
     	 
       }
       
-      
+  */    
       
       //voto una lista di posti
       public static void votePublicPlaces(String userid,List<PlaceClient> places)
