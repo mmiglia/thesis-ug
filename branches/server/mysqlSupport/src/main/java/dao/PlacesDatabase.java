@@ -316,10 +316,10 @@ public enum PlacesDatabase {
                           addressLinesList.add(streetAddress+","+ streetNumber);
                           addressLinesList.add(cap+" "+ city);
                           List<PhoneNumber> phoneNumberList = new ArrayList<PhoneNumber>();
-                          
-                          String ddUrl = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+@"+lat+","+lng+"&saddr="+latitude+","+longitude;
-                          String ddUrlToHere = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+@"+lat+","+lng+"&iwstate1=dir:to";
-                          String ddUrlFromHere = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+@"+lat+","+lng+"&iwstate1=dir:from";
+                        
+                          String ddUrl = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+("+title.replaceAll(" ","+")+")"+"+@"+lat+","+lng+"&saddr="+latitude+","+longitude;
+                          String ddUrlToHere = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+("+title.replaceAll(" ","+")+")"+"+@"+lat+","+lng+"&iwstate1=dir:to";
+                          String ddUrlFromHere = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+("+title.replaceAll(" ","+")+")"+"+@"+lat+","+lng+"&iwstate1=dir:from";
                           String staticMapUrl="http://maps.google.com/maps/api/staticmap?maptype=roadmap&format=gif&sensor=false&size=150x100&zoom=13&markers="+lat+","+lng;
                          
                           privatePlacesList.add(
@@ -1197,21 +1197,17 @@ public enum PlacesDatabase {
                           addressLinesList.add(cap+" "+ city);
                           List<PhoneNumber> phoneNumberList = new ArrayList<PhoneNumber>();
                           
-                          String ddUrl = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+@"+lat+","+lng+"&saddr="+latitude+","+longitude;
-                          
+                          String ddUrl = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+("+title.replaceAll(" ","+")+")"+"+@"+lat+","+lng+"&saddr="+latitude+","+longitude;
                           /*
                            * http://www.google.com/maps?source=uds&daddr=Via+4+Novembre,+6,+Rossano+Veneto,+Veneto+(Supermercato+Geremia+Di+Geremia+Giampietro+%26+C.+S.N.C.)+@45.704687,11.802871&saddr=45.69553,11.830902
                            */
                           
-                          String ddUrlToHere = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+@"+lat+","+lng+"&iwstate1=dir:to";
-                          
+                          String ddUrlToHere = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+("+title.replaceAll(" ","+")+")"+"+@"+lat+","+lng+"&iwstate1=dir:to";
                           /*
                            * http://www.google.com/maps?source=uds&daddr=Via+4+Novembre,+6,+Rossano+Veneto,+Veneto+(Supermercato+Geremia+Di+Geremia+Giampietro+%26+C.+S.N.C.)+@45.704687,11.802871&iwstate1=dir:to
                            */
                           
-                          String ddUrlFromHere = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+@"+lat+","+lng+"&iwstate1=dir:from";
-                          
-                          
+                          String ddUrlFromHere = "http://www.google.com/maps?source=uds&daddr="+streetAddress.replaceAll(" ", "+")+","+streetNumber+","+city+"+("+title.replaceAll(" ","+")+")"+"+@"+lat+","+lng+"&iwstate1=dir:from"; 
                           /*
                            * <ddUrlFromHere>
 							http://www.google.com/maps?source=uds&saddr=Via+4+Novembre,+6,+Rossano+Veneto,+Veneto+(Supermercato+Geremia+Di+Geremia+Giampietro+%26+C.+S.N.C.)+@45.704687,11.802871&iwstate1=dir:from
