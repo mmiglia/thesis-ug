@@ -225,6 +225,14 @@ public enum CachingDatabase {
 					dbManager.dbDisconnect(conn3);
 				}
 				System.out.println("Ho fatto le select number e address");
+				
+				//cambio ddUrl mettendo le coordinate dell'utente nel
+				//momento in vengono richiesti gli hint
+				String ddUrl = rs.getString("ddUrl");
+				int index = ddUrl.indexOf("&saddr=");
+				ddUrl = ddUrl.substring(0, index+7);
+				ddUrl = ddUrl + +latitude+","+longitude;
+
 				hintList.add(
 						new Hint(
 								rs.getString("title"),
@@ -235,7 +243,7 @@ public enum CachingDatabase {
 								rs.getString("lng") , 
 								rs.getString("streetAddress") ,
 								rs.getString("city"),
-								rs.getString("ddUrl"),
+								ddUrl,
 								rs.getString("ddUrlToHere") , 
 								rs.getString("ddUrlFromHere") ,
 								rs.getString("staticMapUrl"),
