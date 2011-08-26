@@ -61,11 +61,11 @@ public class Create_Assertion_item extends Activity{
 				}else
 				{	
 				Log.i(TAG,"Parole dai Edittext:" + object + location);
-				//Toast.makeText(Create_Assertion_item.this, "Parole dai Edittext:" + object + location,Toast.LENGTH_LONG).show();
 				
 				itemLocation = new SingleItemLocation(object,location);
 				itemLocation.item = object;
 				itemLocation.location= location;
+				
 				
 				Thread creationAssertionItem = AssertionsResource.createItemLocation(itemLocation,
 						handler, Create_Assertion_item.this);
