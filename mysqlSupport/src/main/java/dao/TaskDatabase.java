@@ -249,7 +249,18 @@ public enum TaskDatabase {
 				"location("+userPosition.latitude+
 				"-"+userPosition.longitude+
 				" - start");
+		//Starting transaction
+		QueryStatus qs=dbManager.startTransaction(conn);
 		
+		if(qs.execError){
+			//TODO decide what to do in this case (transaction not started)
+			log.error(qs.explainError());
+			qs.occourtedErrorException.printStackTrace();
+			System.out.println("Error during transaction starting...item-location not added");
+			log.error("Error during transaction starting...item-location not added");
+			dbManager.dbDisconnect(conn);
+			return false;
+		}	
 		String setTaskDoneQuery="Update Task " +
 				" set " +
 				"Done=1," +
@@ -258,18 +269,25 @@ public enum TaskDatabase {
 				"DoneTime=NOW()"+
 				"where id="+taskID;
 		
-		QueryStatus qs=dbManager.customQuery(conn, setTaskDoneQuery);
-		
-		log.info(setTaskDoneQuery);
+		qs=dbManager.customQuery(conn, setTaskDoneQuery);
 		
 		if(qs.execError){
 			log.error(qs.explainError());
 			qs.occourtedErrorException.printStackTrace();
 			log.error("Error during setting task to DONE operation.. aborting operation");
+			
+			//Rolling back
+			dbManager.rollbackTransaction(conn);
+			
+			log.error("Error during setting task to DONE operation.. aborting operation");
+			dbManager.dbDisconnect(conn);
+			
 			dbManager.dbDisconnect(conn);
 			return false;
 		}
 		
+		log.info(setTaskDoneQuery);
+		dbManager.commitTransaction(conn);
 		dbManager.dbDisconnect(conn);
 		log.info("markTaskAsDone - OK");
 		return true;
