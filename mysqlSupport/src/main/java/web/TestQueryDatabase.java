@@ -6,6 +6,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 
 
 import org.slf4j.Logger;
@@ -15,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import dao.GroupDatabase;
 import dao.management.QueryStatus;
 import dao.management.mysql.MySQLDBManager;
+
+import valueobject.Stringa;
 
 /*
  * Classe creata per testare l'inserimento di qualcosa nel database
@@ -48,6 +51,16 @@ public class TestQueryDatabase
 		return true;
 	
 	
+	}
+	
+	@GET
+	@Path("/serverOk")	
+	@Produces("application/xml")
+	public  static Stringa  serverOK(@PathParam("username") String userID)
+	{
+		log.info("Server is ok");
+		Stringa ret = new Stringa("Tomcat is running!!!");
+		return ret;
 	}
 	
 }
