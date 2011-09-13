@@ -17,6 +17,7 @@ import valueobject.Hint;
 import businessobject.LocationAwareAllThread;
 import businessobject.LocationAwareManager;
 import businessobject.LocationAwareThread;
+import businessobject.LocationAwareManagerThreadPool;
 import businessobject.OntologyManager;
 
 
@@ -52,10 +53,13 @@ public class ContextListener {
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Receive ALL context from user " + userid + " from location "
 				+ latitude + ":" + longitude);
-		LocationAwareAllThread locT= new LocationAwareAllThread(userid,  latitude, longitude, distance);	
-		return locT.checkLocationAllThread(userid, latitude, longitude, distance);
+		//LocationAwareAllThread locT= new LocationAwareAllThread(userid,  latitude, longitude, distance);	
+		//return locT.checkLocationAllThread(userid, latitude, longitude, distance);
 		
 		//return LocationAwareManager.checkLocationAll(userid, latitude, longitude, distance);
+	
+		return LocationAwareManagerThreadPool.checkLocationAll(userid, latitude, longitude, distance);
+		
 	}
 
 	/**
@@ -82,10 +86,11 @@ public class ContextListener {
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request single context from user " + userid + " sentence "+sentence+" from location "
 				+ latitude + ":" + longitude);
-		LocationAwareThread locT= new LocationAwareThread(userid, sentence, latitude, longitude, distance);	
-		return locT.checkLocationSingleThread(userid, sentence, latitude, longitude, distance);
+		//LocationAwareThread locT= new LocationAwareThread(userid, sentence, latitude, longitude, distance);	
+		//return locT.checkLocationSingleThread(userid, sentence, latitude, longitude, distance);
 		
 		//return LocationAwareManager.checkLocationSingle(userid, sentence, latitude, longitude, distance);
+		return LocationAwareManagerThreadPool.checkLocationSingle(userid, sentence, latitude, longitude, distance);
 	}	
 	
 	@GET
@@ -146,5 +151,32 @@ public class ContextListener {
 		
 		return LocationAwareManager.checkLocationSingleProva(latitude, longitude, distance);
 	}	
+	
+	//prova threadpool
+	@GET
+	@Path("/singleThreadPool")
+	@Consumes("application/xml")
+	@Produces("application/xml")
+	public List<Hint> checkLocationSingleThreadPool(@QueryParam("q")String sentence, @QueryParam("lat") float latitude, @QueryParam("lon") float longitude, @QueryParam("dist") int distance,
+			@PathParam("username") String userid,
+			@CookieParam("sessionid") String sessionid) {
+		log.info("Request single context from user " + userid + " sentence "+sentence+" from location "
+				+ latitude + ":" + longitude);
+		//LocationAwareThread locT= new LocationAwareThread(userid, sentence, latitude, longitude, distance);	
+		//return locT.checkLocationSingleThread(userid, sentence, latitude, longitude, distance);
+		return LocationAwareManager.checkLocationSingleTP(userid, sentence, latitude, longitude, distance);
+		}	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }
