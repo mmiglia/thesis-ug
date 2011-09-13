@@ -45,7 +45,7 @@ import com.google.gson.GsonBuilder;
  * 
  * 
  */
-public class MapsClient extends MapSubscriber {
+public class MapsClient  extends MapSubscriber {
 	private HttpClient httpClient;
 	private static final String LOCAL_SEARCH_URI = "http://ajax.googleapis.com/ajax/services/search/local";
 	private static final String GOOGLE_GEOCODING = "http://maps.googleapis.com/maps/api/geocode/json";
@@ -203,14 +203,20 @@ public class MapsClient extends MapSubscriber {
 			response = c.execute(request);			
 			int statusCode = response.getStatusLine().getStatusCode();			
 			if (statusCode != HttpStatus.SC_OK) {
+				log.error("unexpected HTTP response status code = "+ statusCode);
 				throw new RuntimeException(
 						"unexpected HTTP response status code = " + statusCode);
 			}
 			entity = response.getEntity();
 			return EntityUtils.toString(entity);
 		} catch (Exception ex) {
+			log.error("Exception= "+ex);
+			//ANuska 10-09-2011 chiudo la connessione in caso di eccezione
+			request.abort();
 			throw new RuntimeException(ex);
+			
 		}
+		
 	}
 	
 	 public Coordinate covertAddressToCoordinate(String address) {
@@ -221,8 +227,11 @@ public class MapsClient extends MapSubscriber {
          
          System.out.println("Fatto!");
          
-         if (r.getStatus().equals("ZERO_RESULTS"))
+         if (r.getStatus().equals("ZERO_RESULTS")){
                          System.out.println("Nessuna corrispondenza in COORDINATE!!!");
+                         log.info("Google result: ZERO RESULT :Nessuna corrispondenza in COORDINATE!!!");
+             			 
+         }
          else{
                  Result[] ad= r.getResult();
                  System.out.println(ad[0].geometry.location.getLat() + "," + ad[0].geometry.location.getLng());
