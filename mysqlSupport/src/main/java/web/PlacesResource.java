@@ -40,7 +40,7 @@ public class PlacesResource {
       @GET
       @Path("/addPrivatePlaceGET")        
       public void addPrivatePlaceGET(@PathParam("username") String userid, 
-                      @CookieParam("sessionid") String sessionid,@QueryParam("title") String title, @QueryParam("streetAddress") String streetAddress,@QueryParam("streetNumber") String streetNumber
+                      @CookieParam("sessionid") String sessionid,@QueryParam("title") String title, @QueryParam("lat") String lat,@QueryParam("lng") String lng,@QueryParam("streetAddress") String streetAddress,@QueryParam("streetNumber") String streetNumber
                       ,@QueryParam("cap") String cap,@QueryParam("city") String city,@QueryParam("category") String category)
       {
               log.info("Request to add private place from user " + userid + 
@@ -51,7 +51,8 @@ public class PlacesResource {
        		 List<String> categoryList= new LinkedList<String>();
        		 String[] words = category.split(",");
        		 categoryList.addAll(Arrays.asList(words));
-             PlacesManager.getInstance().addPrivatePlace(userid, title,streetAddress,streetNumber,cap,city,categoryList);
+       		System.out.println("categoryList:"+categoryList);
+             PlacesManager.getInstance().addPrivatePlace(userid,title,lat,lng,streetAddress,streetNumber,cap,city,categoryList);
       }
        
      @POST
@@ -69,8 +70,10 @@ public class PlacesResource {
  		String[] words = place.category.split(",");
  		categoryList.addAll(Arrays.asList(words));
  		
-        PlacesManager.getInstance().addPrivatePlace(userid, place.title,place.streetAddress,place.streetNumber,place.cap,place.city,categoryList);
+        PlacesManager.getInstance().addPrivatePlace(userid, place.title,place.lat,place.lng,place.streetAddress,place.streetNumber,place.cap,place.city,categoryList);
      }
+     
+     
      
      /*
       * Visualizza tutti i luoghi privati inseriti dall'utente
@@ -115,7 +118,7 @@ public class PlacesResource {
      // return 1 -> posto già presente in google
     
      public int addPublicPlaceGET(@PathParam("username") String userid, 
-                   @CookieParam("sessionid") String sessionid,@QueryParam("title") String title, @QueryParam("streetAddress") String streetAddress,@QueryParam("streetNumber") String streetNumber
+                   @CookieParam("sessionid") String sessionid,@QueryParam("title") String title,@QueryParam("lat") String lat,@QueryParam("lng") String lng, @QueryParam("streetAddress") String streetAddress,@QueryParam("streetNumber") String streetNumber
                    ,@QueryParam("cap") String cap,@QueryParam("city") String city,@QueryParam("category") String category)
      {
     	 log.info("Request to add public place from user " + userid + 
@@ -126,7 +129,7 @@ public class PlacesResource {
    		 String[] words = category.split(",");
    		 categoryList.addAll(Arrays.asList(words));
          
-   		 return PlacesManager.getInstance().addPublicPlace(userid, title,streetAddress,streetNumber,cap,city,categoryList);
+   		 return PlacesManager.getInstance().addPublicPlace(userid, title,lat,lng,streetAddress,streetNumber,cap,city,categoryList);
      }
     
     
@@ -147,7 +150,7 @@ public class PlacesResource {
     	 String[] words = place.category.split(",");
     	 categoryList.addAll(Arrays.asList(words));
 		
-    	 return PlacesManager.getInstance().addPublicPlace(userid, place.title,place.streetAddress,place.streetNumber,place.cap,place.city,categoryList);
+    	 return PlacesManager.getInstance().addPublicPlace(userid, place.title,place.lat, place.lng,place.streetAddress,place.streetNumber,place.cap,place.city,categoryList);
      }
      
      /*

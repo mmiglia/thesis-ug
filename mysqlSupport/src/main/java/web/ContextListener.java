@@ -166,17 +166,6 @@ public class ContextListener {
 		//return locT.checkLocationSingleThread(userid, sentence, latitude, longitude, distance);
 		return LocationAwareManager.checkLocationSingleTP(userid, sentence, latitude, longitude, distance);
 		}	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	
 }
