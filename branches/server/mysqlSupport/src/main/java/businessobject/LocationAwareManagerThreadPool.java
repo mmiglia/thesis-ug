@@ -5,16 +5,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.Hint;
-import valueobject.Item;
 import valueobject.SingleTask;
 import web.AppServletContextListener;
 
@@ -83,28 +78,25 @@ public class LocationAwareManagerThreadPool {
 		List<Hint> toReturn1= new LinkedList<Hint>();
 		List<Hint> toReturn2= new LinkedList<Hint>();
 		
-		
+		List<Hint> result1 = new LinkedList<Hint>(); // list of search result in CACHE and in DB
 		for (String query : queryList) 
 		{
-			List<Hint> result1 = new LinkedList<Hint>(); // list of search result IN CACHE
-			
 			//aggiungo eventuali luoghi privati
 			result1.addAll(PlacesManager.searchPrivatePlacesDB(userid,latitude,longitude,query));
 			//aggiungo eventuali luoghi pubblici votati dall'utente
 			result1.addAll(PlacesManager.searchPublicPlacesDB(userid,latitude,longitude,query));
-			
-			
 			//aggiungo eventuali luoghi presenti nella cache dei risultati di Google
 			result1.addAll(CachingManager.searchLocalBusinessDB(
 							latitude, longitude, query,distance));
-			
-			toReturn1 = new HintManager().filterLocation(distance, latitude, longitude, result1);
-			System.out.println("DISTANCE:"+distance+" Risultato ricerca in cache:"+ toReturn1);
-			log.info("Risultato ricerca in cache for user:"+userid+" distance="+distance);
-		
-			toReturn.addAll(toReturn1);
 		}
 		
+		//filter the result by distance
+		if (!result1.isEmpty())
+		{
+			toReturn.addAll(new HintManager().filterLocation(distance, latitude, longitude, result1));
+		}	
+		
+		//count the number of result that i have found
 		int nRisultati=0 ;
 		for (Hint tr : toReturn )
 		{
@@ -127,7 +119,7 @@ public class LocationAwareManagerThreadPool {
 			//e il raggio è maggiore di x metri, perchè se è inferiore
 			//a x metri è probabile che ci siano pochi hint possibili
 			//così facendo diminuisco le richieste
-			if ((nRisultati < 5) && (dist>1000))
+			if ( ((nRisultati < 5) && (dist>500)) )
 			{	
 				//esegue il thread nel threadPool instanziato all'avvio di Tomcat
 				AppServletContextListener.executeThread(new Runnable()
@@ -139,6 +131,8 @@ public class LocationAwareManagerThreadPool {
 						for (String q : queryListFinal) 
 						{	
 							List<Hint> listToAdd = new LinkedList<Hint>();
+							//creo qui dentro la lista dato che devo salvare i risultati in cache,
+							//e non devo risalvare i risultati dell'iterazione precedente
 							
 							listToAdd = MapManager.getInstance().searchLocalBusiness(
 									latitude, longitude, q);
@@ -157,17 +151,23 @@ public class LocationAwareManagerThreadPool {
 			for (String query : queryList) 
 			{
 				List<Hint> listToAdd = new LinkedList<Hint>();
+				//creo qui dentro la lista dato che devo salvare i risultati in cache,
+				//e non devo risalvare i risultati dell'iterazione precedente
+				
 				listToAdd = MapManager.getInstance().searchLocalBusiness(
 						latitude, longitude, query);
 				System.out.println("for string query:"+query);
 				CachingManager.cachingListHint(userid, query, latitude, longitude, distance,listToAdd);
 				System.out.println("inserito nel db");
 		
-				//filter the result
-				toReturn2 = new HintManager().filterLocation(distance, latitude, longitude, listToAdd);
-				System.out.println("Risultato ricerca in Google:"+ listToAdd);
-				toReturn.addAll(toReturn2);
+				toReturn2.addAll(listToAdd);
 			}
+			
+			//filter the result by distance
+			if (!toReturn2.isEmpty())
+			{
+				toReturn.addAll(new HintManager().filterLocation(distance, latitude, longitude, toReturn2));
+			}	
 			return toReturn;
 		}
 		
@@ -206,10 +206,9 @@ public class LocationAwareManagerThreadPool {
 		List<Hint> toReturn1= new LinkedList<Hint>();
 		List<Hint> toReturn2= new LinkedList<Hint>();
 		
+		List<Hint> result1 = new LinkedList<Hint>(); // list of search result IN CACHE
 		for (String query : queryList) 
 		{
-			List<Hint> result1 = new LinkedList<Hint>(); // list of search result IN CACHE
-			
 			//aggiungo eventuali luoghi privati
 			result1.addAll(PlacesManager.searchPrivatePlacesDB(userid,latitude,longitude,query));
 			//aggiungo eventuali luoghi pubblici votati dall'utente
@@ -218,13 +217,14 @@ public class LocationAwareManagerThreadPool {
 			//aggiungo eventuali luoghi presenti nella cache dei risultati di Google
 	    	result1.addAll(CachingManager.searchLocalBusinessDB(
 							latitude, longitude, query,distance));
-	    
-			toReturn1 = new HintManager().filterLocation(distance, latitude, longitude, result1);
-			System.out.println("DISTANCE:"+distance+" Risultato ricerca in cache:"+ toReturn1);
-			log.info("Risultato ricerca in cache for user:"+userid+" distance="+distance);
-			toReturn.addAll(toReturn1);
-		}
+	   	}
 		
+		//filter the result by distance
+		if (!result1.isEmpty())
+		{
+			toReturn.addAll(new HintManager().filterLocation(distance, latitude, longitude, result1));
+		}
+		//count the number of resulta that i have found
 		int nRisultati=0 ;
 		for (Hint tr : toReturn )
 		{
@@ -236,17 +236,17 @@ public class LocationAwareManagerThreadPool {
 		if (!toReturn.isEmpty())
 		{	System.out.println("ho trovato qualcosa in cache");
 			final List<String> queryListFinal = queryList;
-			//tpe.execute(new Runnable()
 			
 			if (distance==0) 
 				dist = 1000000; //1000 Km
 			else
 				dist = distance;
+			
 			//se ho meno di 5 risultati interrogo Google
 			//e il raggio è maggiore di x metri, perchè se è inferiore
 			//a x metri è probabile che ci siano pochi hint possibili
 			//così facendo diminuisco le richieste
-			if ((nRisultati < 5) && (distance>1000))
+			if ( ((nRisultati < 5) && (dist>500)) )
 			{	
 				//esegue il thread nel threadPool instanziato all'avvio di Tomcat
 				AppServletContextListener.executeThread(new Runnable()
@@ -257,6 +257,9 @@ public class LocationAwareManagerThreadPool {
 						for (String q : queryListFinal) 
 						{	
 							List<Hint> listToAdd = new LinkedList<Hint>();
+							//creo qui dentro la lista dato che devo salvare i risultati in cache,
+							//e non devo risalvare i risultati dell'iterazione precedente
+							
 							listToAdd = MapManager.getInstance().searchLocalBusiness(
 									latitude, longitude, q);
 							System.out.println("for string query:"+q);
@@ -274,17 +277,24 @@ public class LocationAwareManagerThreadPool {
 			for (String query : queryList) 
 			{
 				List<Hint> listToAdd = new LinkedList<Hint>();
+				//creo qui dentro la lista dato che devo salvare i risultati in cache,
+				//e non devo risalvare i risultati dell'iterazione precedente
+				
 				listToAdd = MapManager.getInstance().searchLocalBusiness(
 						latitude, longitude, query);
+				
 				System.out.println("for string query:"+query);
 				CachingManager.cachingListHint(userid, query, latitude, longitude, distance,listToAdd);
 				System.out.println("inserito nel db");
 		
-				//filter the result
-				toReturn2 = new HintManager().filterLocation(distance, latitude, longitude, listToAdd);
-				System.out.println("Risultato ricerca in Google:"+ listToAdd);
-				toReturn.addAll(toReturn2);
+				toReturn2.addAll(listToAdd);
 			}
+			
+			//filter the result by distance
+			if (!toReturn2.isEmpty())
+			{
+				toReturn.addAll(new HintManager().filterLocation(distance, latitude, longitude, toReturn2));
+			}	
 			return toReturn;
 		}
 		

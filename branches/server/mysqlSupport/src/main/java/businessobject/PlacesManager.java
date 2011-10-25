@@ -32,7 +32,7 @@ public class PlacesManager {
      /**
       * Enter in the database the private place 
     */
-     public void addPrivatePlace(String user, String titlePlace,String streetAddressPlace, String streetNumberPlace,String capPlace, String cityPlace,List<String> category) 
+     public void addPrivatePlace(String user,String lat, String lng, String titlePlace,String streetAddressPlace, String streetNumberPlace,String capPlace, String cityPlace,List<String> category) 
      {
          
          String title = titlePlace.toLowerCase();
@@ -44,8 +44,10 @@ public class PlacesManager {
          
          System.out.println("placeManager:"+title+" "+streetAddress+" "+streetNumber+" "+cap+""+city);
      
-         PlacesDatabase.istance.addPrivatePlace(user,title,streetAddress,streetNumber,cap,city,category);
+         PlacesDatabase.istance.addPrivatePlace(user,lat, lng,title,streetAddress,streetNumber,cap,city,category);
      }
+     
+
      
      /**
       * retrieve all private places entered by this user
@@ -80,7 +82,7 @@ public class PlacesManager {
       * @return  0-> ok
      			 1 -> posto già presente in google
       */
-     public int addPublicPlace(String user, String titlePlace,String streetAddressPlace, String streetNumberPlace,String capPlace, String cityPlace,List<String> category) 
+     public int addPublicPlace(String user, String titlePlace,String lat, String lng,String streetAddressPlace, String streetNumberPlace,String capPlace, String cityPlace,List<String> category) 
      {
          
          String title = titlePlace.toLowerCase();
@@ -92,7 +94,7 @@ public class PlacesManager {
          
          System.out.println("placeManager:"+title+" "+streetAddress+" "+streetNumber+" "+cap+""+city);
      
-         return PlacesDatabase.istance.addPublicPlace(user,title,streetAddress,streetNumber,cap,city,category);
+         return PlacesDatabase.istance.addPublicPlace(user,title,lat,lng,streetAddress,streetNumber,cap,city,category);
      }
       
       /**
