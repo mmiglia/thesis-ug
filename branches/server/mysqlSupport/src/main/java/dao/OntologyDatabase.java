@@ -991,7 +991,10 @@ public enum OntologyDatabase {
 			}
 			else //l'utente ha votato negativamente
 			{
-				String rankVoted = userRankVotedItem(user,item,location);
+				//mi trovo il voto negativo per l'item-location
+				double votoNeg = voteNegUpToDateItemLocation(item,location);
+				votoNeg = votoNeg - rank;
+				
 				String updateQuery= "update Item_voted set Vote = 1,Date='"+insertDate+"' where Item ='"+item+"' and Location='"+location+"' and Username='"+user+"'";
 				System.out.println(updateQuery);
 				qs=dbManager.customQuery(conn, updateQuery);
@@ -1025,9 +1028,7 @@ public enum OntologyDatabase {
 					dbManager.dbDisconnect(conn);
 					return null;
 				}
-				//mi trovo il voto negativo per l'item-location
-				double votoNeg = voteNegUpToDateItemLocation(item,location);
-				votoNeg = votoNeg - rank;
+				
 				updateQuery= "update Item_foundIn_Loc set Vote = ("+voto+"),N_votes=(N_votes + 1),N_votes_neg=(N_votes_neg-1),VoteNegative=("+votoNeg+" ) where Item='"+item+"' and Location='"+location+"'";
 				System.out.println(updateQuery);
 				qs=dbManager.customQuery(conn, updateQuery);
@@ -1201,7 +1202,7 @@ public enum OntologyDatabase {
     			}
     			else //l'utente ha votato negativamente per quest'asserzione
     			{
-    				String rankVoted = userRankVotedItem(user,item,o);
+    				//String rankVoted = userRankVotedItem(user,item,o);
     				//Starting transaction
     				QueryStatus qs=dbManager.startTransaction(conn);
     				if(qs.execError){
@@ -1472,7 +1473,7 @@ public enum OntologyDatabase {
     			}
     			else //l'utente ha votato positivamente per quest'asserzione
     			{
-    				String rankVoted = userRankVotedItem(user,item,o);
+    				//String rankVoted = userRankVotedItem(user,item,o);
     				//Starting transaction
     				QueryStatus qs=dbManager.startTransaction(conn);
     				if(qs.execError){
@@ -1820,7 +1821,11 @@ public enum OntologyDatabase {
 			}
 			else //l'utente ha votato negativamente per l'asserzione
 			{
-				String rankVoted = userRankVotedItem(user,item,location);
+				//mi trovo il voto negativo per l'item-location
+				double votoNeg = voteNegUpToDateItemLocation(item,location);
+				votoNeg = votoNeg - rank;
+				
+				//String rankVoted = userRankVotedItem(user,item,location);
 				
 				//Starting transaction
 				QueryStatus qs=dbManager.startTransaction(conn);
@@ -1867,9 +1872,7 @@ public enum OntologyDatabase {
 					dbManager.dbDisconnect(conn);
 					return null;
 				}
-				//mi trovo il voto negativo per l'item-location
-				double votoNeg = voteNegUpToDateItemLocation(item,location);
-				votoNeg = votoNeg - rank;
+				
 				//tolgo il voto negativo e aggiungo quello positivo
 				//non cambio il numero di visualizzazioni
 				updateQuery= "update Item_foundIn_Loc set Vote = ("+voto+"),N_votes=(N_votes + 1),N_votes_neg=(N_votes_neg-1),VoteNegative=("+votoNeg+" )  where Item='"+item+"' and Location='"+location+"'";
@@ -2156,7 +2159,7 @@ public enum OntologyDatabase {
 		
 		dbManager.commitTransaction(conn);
 		dbManager.dbDisconnect(conn);
-		
+		cancellationItem(item,location);
 		return true;
 	}
 	
@@ -2905,7 +2908,10 @@ public enum OntologyDatabase {
 			}
 			else //l'utente ha votato negativamente
 			{
-				String rankVoted = userRankVotedAction(user,action,location);
+				//mi trovo il voto negativo per l'action-location
+				double votoNeg = voteNegUpToDateActionLocation(action,location);
+				votoNeg = votoNeg - rank;
+				
 				String updateQuery= "update Action_voted set Vote = 1,Date='"+insertDate+"' where Action ='"+action+"' and Location='"+location+"' and Username='"+user+"'";
 				System.out.println(updateQuery);
 				qs=dbManager.customQuery(conn, updateQuery);
@@ -2939,9 +2945,7 @@ public enum OntologyDatabase {
 					dbManager.dbDisconnect(conn);
 					return null;
 				}
-				//mi trovo il voto negativo per l'action-location
-				double votoNeg = voteNegUpToDateActionLocation(action,location);
-				votoNeg = votoNeg - rank;
+				
 				updateQuery= "update Action_foundIn_Loc set Vote = ("+voto+"),N_votes=(N_votes + 1),N_votes_neg=(N_votes_neg-1),VoteNegative=("+votoNeg+" ) where Action='"+action+"' and Location='"+location+"'";
 				System.out.println(updateQuery);
 				qs=dbManager.customQuery(conn, updateQuery);
@@ -3115,7 +3119,7 @@ public enum OntologyDatabase {
     			}
     			else //l'utente ha votato negativamente per quest'asserzione
     			{
-    				String rankVoted = userRankVotedAction(user,action,o);
+    				//String rankVoted = userRankVotedAction(user,action,o);
     				//Starting transaction
     				QueryStatus qs=dbManager.startTransaction(conn);
     				if(qs.execError){
@@ -3386,7 +3390,7 @@ public enum OntologyDatabase {
     			}
     			else //l'utente ha votato positivamente per quest'asserzione
     			{
-    				String rankVoted = userRankVotedAction(user,action,o);
+    				//String rankVoted = userRankVotedAction(user,action,o);
     				//Starting transaction
     				QueryStatus qs=dbManager.startTransaction(conn);
     				if(qs.execError){
@@ -3734,7 +3738,9 @@ public enum OntologyDatabase {
 			}
 			else //l'utente ha votato negativamente per l'asserzione
 			{
-				String rankVoted = userRankVotedAction(user,action,location);
+				//mi trovo il voto negativo per l'action-location
+				double votoNeg = voteNegUpToDateActionLocation(action,location);
+				votoNeg = votoNeg - rank;
 				
 				//Starting transaction
 				QueryStatus qs=dbManager.startTransaction(conn);
@@ -3781,9 +3787,7 @@ public enum OntologyDatabase {
 					dbManager.dbDisconnect(conn);
 					return null;
 				}
-				//mi trovo il voto negativo per l'action-location
-				double votoNeg = voteNegUpToDateActionLocation(action,location);
-				votoNeg = votoNeg - rank;
+				
 				//tolgo il voto negativo e aggiungo quello positivo
 				//non cambio il numero di visualizzazioni
 				updateQuery= "update Action_foundIn_Loc set Vote = ("+voto+"),N_votes=(N_votes + 1),N_votes_neg=(N_votes_neg-1),VoteNegative=("+votoNeg+" )  where Action='"+action+"' and Location='"+location+"'";
@@ -4070,7 +4074,7 @@ public enum OntologyDatabase {
 		
 		dbManager.commitTransaction(conn);
 		dbManager.dbDisconnect(conn);
-		
+		cancellationAction(action,location);
 		return true;
 	}
 	
@@ -4129,7 +4133,7 @@ public enum OntologyDatabase {
 		Connection conn= (Connection) dbManager.dbConnect();
 		
 		String selectQuery="select location from Location "+
-				"where title='"+title+"'";
+				"where title='"+title+"' and username='"+user+"'";
 		
 		System.out.println(selectQuery);
 		
