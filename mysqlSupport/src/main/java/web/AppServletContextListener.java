@@ -6,8 +6,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
-import com.sun.corba.se.impl.orbutil.threadpool.TimeoutException;
  
 public class AppServletContextListener implements ServletContextListener{
 	static long n = 1000L;
