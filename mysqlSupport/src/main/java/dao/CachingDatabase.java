@@ -11,10 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import valueobject.Hint;
 import valueobject.Hint.PhoneNumber;
-import businessobject.DateUtils;
 import businessobject.DateUtilsNoTime;
-
-import com.google.gdata.data.DateTime;
 
 import dao.management.QueryStatus;
 import dao.management.mysql.MySQLDBManager;
@@ -59,26 +56,27 @@ public enum CachingDatabase {
 				System.out.println("Error during transaction starting...list<Hint> not added");
 				log.error("Error during transaction starting...list<Hint> not added");
 				dbManager.dbDisconnect(conn);
+				continue;
 			}
 			insertQuery="insert into CachingGoogle (title,url,content,titleNoFormatting," +
 					"lat,lng,streetAddress,city,ddUrl,ddUrlToHere,ddUrlFromHere,staticMapUrl," +
 					"listingType,region,country,insertionDate,sentence,user) values (";
-			insertQuery += "'"+h.title+"',";
-			insertQuery += "'"+h.url+"',";
+			insertQuery += "'"+h.title.replaceAll("'","")+"',";
+			insertQuery += "'"+h.url.replaceAll("'","")+"',";
 			insertQuery += "'"+h.content+"',";
-			insertQuery += "'"+h.titleNoFormatting+"',";
+			insertQuery += "'"+h.titleNoFormatting.replaceAll("'","")+"',";
 			
 			insertQuery += "'"+h.lat+"',";
 			insertQuery += "'"+h.lng+"',";
-			insertQuery += "'"+h.streetAddress+"',";
-			insertQuery += "'"+h.city+"',";
-			insertQuery += "'"+h.ddUrl+"',";
-			insertQuery += "'"+h.ddUrlToHere+"',";
-			insertQuery += "'"+h.ddUrlFromHere+"',";
-			insertQuery += "'"+h.staticMapUrl+"',";
-			insertQuery += "'"+h.listingType+"',";
-			insertQuery += "'"+h.region+"',";
-			insertQuery += "'"+h.country+"',";
+			insertQuery += "'"+h.streetAddress.replaceAll("'","")+"',";
+			insertQuery += "'"+h.city.replaceAll("'","")+"',";
+			insertQuery += "'"+h.ddUrl.replaceAll("'","")+"',";
+			insertQuery += "'"+h.ddUrlToHere.replaceAll("'","")+"',";
+			insertQuery += "'"+h.ddUrlFromHere.replaceAll("'","")+"',";
+			insertQuery += "'"+h.staticMapUrl.replaceAll("'","")+"',";
+			insertQuery += "'"+h.listingType.replaceAll("'","")+"',";
+			insertQuery += "'"+h.region.replaceAll("'","")+"',";
+			insertQuery += "'"+h.country.replaceAll("'","")+"',";
 			insertQuery += "'"+dateNow+"',";
 			insertQuery += "'"+sentence+"',";
 			insertQuery += "'"+user+"')";
@@ -95,6 +93,7 @@ public enum CachingDatabase {
 				
 				log.error("Error during title-lat-lng adding... Assertion not added");
 				//dbManager.dbDisconnect(conn);
+				continue;
 			}
 			dbManager.commitTransaction(conn);
 			
@@ -103,11 +102,11 @@ public enum CachingDatabase {
 				qs=dbManager.startTransaction(conn);
 				insertQuery = "insert into CachingGooglePhoneNumber (title,lat,lng,number,type,insertionDate)";
 				insertQuery += "values( ";
-				insertQuery += "'"+h.title+"',";
+				insertQuery += "'"+h.title.replaceAll("'","")+"',";
 				insertQuery += "'"+h.lat+"',";
 				insertQuery += "'"+h.lng+"',";
 				insertQuery += "'"+p.number+"',";
-				insertQuery += "'"+p.type+"',";
+				insertQuery += "'"+p.type.replaceAll("'","")+"',";
 				insertQuery += "'"+dateNow+"')";
 				
 				qs=dbManager.customQuery(conn, insertQuery);
@@ -131,10 +130,10 @@ public enum CachingDatabase {
 				qs=dbManager.startTransaction(conn);
 				insertQuery = "insert into CachingGoogleAddressLines (title,lat,lng,addressLine,insertionDate)";
 				insertQuery += "values( ";
-				insertQuery += "'"+h.title+"',";
+				insertQuery += "'"+h.title.replaceAll("'","")+"',";
 				insertQuery += "'"+h.lat+"',";
 				insertQuery += "'"+h.lng+"',";
-				insertQuery += "'"+ a +"',";
+				insertQuery += "'"+ a.replaceAll("'","") +"',";
 				insertQuery += "'"+dateNow+"')";
 				
 				qs=dbManager.customQuery(conn, insertQuery);
@@ -198,11 +197,11 @@ public enum CachingDatabase {
 				}catch(SQLException sqlE){
 					//TODO
 					//return null;
-					
+					log.error("SQLException in retrieve phone numbers");
 				}finally{	
-					dbManager.dbDisconnect(conn2);
+					//dbManager.dbDisconnect(conn2);
 				}
-				
+				dbManager.dbDisconnect(conn2);
 				ArrayList<String> addressLinesList=new ArrayList<String>();
 				Connection conn3= (Connection) dbManager.dbConnect();
 				
@@ -221,13 +220,15 @@ public enum CachingDatabase {
 				}catch(SQLException sqlE){
 					//TODO
 					//return null;
+					log.error("SQLException in retrieve address Lines");
 				}finally{	
-					dbManager.dbDisconnect(conn3);
+					//dbManager.dbDisconnect(conn3);
 				}
+				dbManager.dbDisconnect(conn3);
 				System.out.println("Ho fatto le select number e address");
 				
 				//cambio ddUrl mettendo le coordinate dell'utente nel
-				//momento in vengono richiesti gli hint
+				//momento in cui vengono richiesti gli hint
 				String ddUrl = rs.getString("ddUrl");
 				int index = ddUrl.indexOf("&saddr=");
 				ddUrl = ddUrl.substring(0, index+7);
@@ -259,10 +260,12 @@ public enum CachingDatabase {
 			//TODO
 			//return null;
 			System.out.println("Sono nel catch della select principale");
+			log.error("SQLException in retrieve Hint from cache");
 		}finally{	
-			dbManager.dbDisconnect(conn);
+			
 			System.out.println("Sono nel finally della select principale");
 		}
+		dbManager.dbDisconnect(conn);
 		System.out.println("Sto per ritornare hintList");
 		System.out.println(hintList);
 		return hintList;
@@ -282,7 +285,7 @@ public enum CachingDatabase {
 		cachingDeleteCachingGoogle(nowDate);
 		cachingDeleteCachingGoogleAddressLines(nowDate);
 		cachingDeleteCachingGooglePhoneNumber(nowDate);
-		cachingDeleteDateUpdate(nowDate);
+		//cachingDeleteDateUpdate(nowDate);
 	
 	}
 	
