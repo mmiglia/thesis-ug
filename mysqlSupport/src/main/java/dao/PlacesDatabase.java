@@ -8,23 +8,20 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import valueobject.Address;
+import valueobject.Coordinate;
+import valueobject.Hint;
+import valueobject.Hint.PhoneNumber;
+import valueobject.PlaceClient;
 import businessobject.CachingManager;
 import businessobject.DateUtils;
 import businessobject.HintManager;
 import businessobject.MapManager;
 import businessobject.google.MapsClient;
-
-import valueobject.Coordinate;
-import valueobject.Hint;
-import valueobject.Hint.PhoneNumber;
-import valueobject.Place;
-import valueobject.PlaceClient;
-import valueobject.SingleItemLocation;
 import dao.management.QueryStatus;
 import dao.management.mysql.MySQLDBManager;
 
@@ -40,9 +37,19 @@ public enum PlacesDatabase {
       private static final MySQLDBManager dbManager=new MySQLDBManager();
 //PRIVATE
       
-      public static void addPrivatePlace( String userID,  String title,  String streetAddress,  String streetNumber,  String cap, String city,List<String> category )
+      public static void addPrivatePlace( String userID,  String title1,String lat1, String lng1,  String streetAddress1,  String streetNumber1,  String cap1, String city1,List<String> category )
       {
           
+    	  
+    	 String title = title1;
+    	 String lat = lat1;
+    	 String lng = lng1;
+    	 String streetAddress=streetAddress1;
+    	 String streetNumber = streetNumber1;
+    	 String cap=cap1;
+    	 String city = city1;
+    	 
+    	 
          Connection conn= (Connection) dbManager.dbConnect();
          
          //Starting transaction
@@ -58,12 +65,31 @@ public enum PlacesDatabase {
              return;
          }    
          
-         Coordinate placeCoordinate = convertAddressToCoordinate(streetAddress,streetNumber,cap,city);
-         System.out.println("coordinate- lat:"+placeCoordinate.getLat());
-         System.out.println("coordinate- lng:"+placeCoordinate.getLng());
+         Coordinate placeCoordinate = new Coordinate();
+         Address add;
+         
+         if (streetAddress.equals(""))
+         {
+        	 add  = convertCoordinateToAddress(lat,lng);
+        	 streetAddress = add.getStreetAddress();
+        	 streetNumber= add.getStreetNumber();
+        	 cap = add.getCap();
+        	 city = add.getTownHall();
+        	 
+        	 
+         } 
+         else{
+        	placeCoordinate = convertAddressToCoordinate(streetAddress,streetNumber,cap,city);
+         	System.out.println("coordinate- lat:"+placeCoordinate.getLat());
+         	System.out.println("coordinate- lng:"+placeCoordinate.getLng());
+         	
+         	lat = Double.toString(placeCoordinate.getLat());
+         	lng = Double.toString(placeCoordinate.getLng());
+         	
+      	}
          
          String query="Insert into PlacePrivate" +
-          " (title,lat,lng,streetAddress,streetNumber,cap,city,user,userGroup) values ('" + title + "','"+ placeCoordinate.getLat() + "','" + placeCoordinate.getLng() + "','" + 
+          " (title,lat,lng,streetAddress,streetNumber,cap,city,user,userGroup) values ('" + title + "','"+ lat + "','" + lng + "','" + 
               streetAddress + "','" + streetNumber + "','"+ cap+"','"+city + "','"+userID+"',0)";
          
          System.out.println(query);
@@ -82,7 +108,7 @@ public enum PlacesDatabase {
            //aggiungi categoria
              for (String s:category)
              {
-           	  addPrivatePlaceCategory(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s);
+           	  addPrivatePlaceCategory(userID,title,Double.parseDouble(lat),Double.parseDouble(lng),s);
              }
              return;
          }
@@ -92,7 +118,7 @@ public enum PlacesDatabase {
          //aggiungi categoria
          for (String s:category)
          {
-       	  addPrivatePlaceCategory(userID,title,placeCoordinate.getLat(),placeCoordinate.getLng(),s);
+       	  addPrivatePlaceCategory(userID,title,Double.parseDouble(lat),Double.parseDouble(lng),s);
          }
          
          return;      
@@ -343,6 +369,7 @@ public enum PlacesDatabase {
                           								addressLinesList		
                           							)			
                                   );
+                          log.info("Aggiunto luogo privato alla lista di hint:"+title);
                   }
           }catch(SQLException sqlE){
                   //TODO
@@ -358,10 +385,19 @@ public enum PlacesDatabase {
       // return 0-> ok
       // return 1 -> posto già presente in google
 
-      public static int addPublicPlace( String userID,  String title,  String streetAddress,  String streetNumber,  String cap, String city, List<String> category)
+      public static int addPublicPlace( String userID,  String title1, String lat1, String lng1,  String streetAddress1,  String streetNumber1,  String cap1, String city1, List<String> category)
       {
           
-          Connection conn= (Connection) dbManager.dbConnect();
+          
+    	 String title = title1;
+     	 String lat = lat1;
+     	 String lng = lng1;
+     	 String streetAddress=streetAddress1;
+     	 String streetNumber = streetNumber1;
+     	 String cap=cap1;
+     	 String city = city1;
+    	  
+    	  Connection conn= (Connection) dbManager.dbConnect();
           
           //Starting transaction
           QueryStatus qs=dbManager.startTransaction(conn);
@@ -376,11 +412,35 @@ public enum PlacesDatabase {
               return 3;
           }    
           
-          Coordinate placeCoordinate = convertAddressToCoordinate(streetAddress,streetNumber,cap,city);
-          System.out.println("coordinate- lat:"+placeCoordinate.getLat());
-          System.out.println("coordinate- lng:"+placeCoordinate.getLng());
-          float latitude = (float)placeCoordinate.getLat();
-          float longitude = (float)placeCoordinate.getLng();
+          Coordinate placeCoordinate = new Coordinate();
+          Address add;
+          
+          if (streetAddress.equals(""))
+          {
+         	 add  = convertCoordinateToAddress(lat,lng);
+         	 streetAddress = add.getStreetAddress();
+         	 streetNumber= add.getStreetNumber();
+         	 cap = add.getCap();
+         	 city = add.getTownHall();
+         	 
+         	 
+          } 
+          else{
+         	placeCoordinate = convertAddressToCoordinate(streetAddress,streetNumber,cap,city);
+          	System.out.println("coordinate- lat:"+placeCoordinate.getLat());
+          	System.out.println("coordinate- lng:"+placeCoordinate.getLng());
+          	
+          	lat = Double.toString(placeCoordinate.getLat());
+          	lng = Double.toString(placeCoordinate.getLng());
+          	
+       	}
+          
+          
+          //Coordinate placeCoordinate = convertAddressToCoordinate(streetAddress,streetNumber,cap,city);
+          //System.out.println("coordinate- lat:"+placeCoordinate.getLat());
+          //System.out.println("coordinate- lng:"+placeCoordinate.getLng());
+          float latitude = Float.valueOf(lat).floatValue();
+          float longitude = Float.valueOf(lng).floatValue();
           
           //controllo che non ci sia già il posto in Google
           List<Hint> toReturn = new LinkedList<Hint>();
@@ -421,12 +481,14 @@ public enum PlacesDatabase {
           }
           
          //se non è già in google lo inserisco nel mio db
-          String latitudeString = ""+placeCoordinate.getLat()+"";
-          String longitudeString = ""+placeCoordinate.getLng()+"";
+          //String latitudeString = ""+placeCoordinate.getLat()+"";
+          //String longitudeString = ""+placeCoordinate.getLng()+"";
+          String latitudeString = lat;
+          String longitudeString = lng;
           
           String query="Insert into Place" +
           "(title,lat,lng,streetAddress,streetNumber,cap,city,user,userGroup) " +
-          "values ('" + title + "','"+ placeCoordinate.getLat() + "','" + placeCoordinate.getLng() + "','" + 
+          "values ('" + title + "','"+ latitudeString + "','" + longitudeString + "','" + 
           streetAddress + "','" + streetNumber + "','"+ cap+"','"+city + "','"+userID+"',-1)";
           
           System.out.println(query);
@@ -1240,6 +1302,7 @@ public enum PlacesDatabase {
                           							)			
                                   );
                           System.out.println(publicPlacesList);
+                          log.info("Aggiunto luogo pubblico alla lista di hint:"+title);
                   }
           }catch(SQLException sqlE){
                   //TODO
@@ -1265,6 +1328,18 @@ public enum PlacesDatabase {
           System.out.println("placeDatabase- convertAddressToCoordinate, address:"+address);
           MapsClient geocoding = new MapsClient(); // currently there's only google, so we use direct call
             Coordinate c = geocoding.covertAddressToCoordinate(address);
+          //Coordinate c = new Coordinate("12","45");
+          return c;
+          
+      }
+      
+    //CONVERT COORDINATE TO ADDRESS
+      public static final Address convertCoordinateToAddress(String lat,String lng)
+      {
+          
+          System.out.println("placeDatabase- convertCoordinateToAddress, coordinate:"+lat+","+lng);
+          MapsClient geocoding = new MapsClient(); // currently there's only google, so we use direct call
+            Address c = geocoding.covertCoordinateToAddress(lat,lng);
           //Coordinate c = new Coordinate("12","45");
           return c;
           
