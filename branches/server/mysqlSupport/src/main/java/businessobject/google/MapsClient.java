@@ -1,11 +1,8 @@
 package businessobject.google;
 
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
 
@@ -23,15 +20,13 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-import valueobject.AddressList;
+import valueobject.Address;
 import valueobject.Coordinate;
 import valueobject.Hint;
 import valueobject.Result;
 import businessobject.Configuration;
 import businessobject.MapSubscriber;
 import businessobject.google.Response.ResponseData;
-
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -236,6 +231,161 @@ public class MapsClient  extends MapSubscriber {
                  Result[] ad= r.getResult();
                  System.out.println(ad[0].geometry.location.getLat() + "," + ad[0].geometry.location.getLng());
                  return ad[0].geometry.location;
+         }
+         return null;
+
+      }
+	 
+	 public Address covertCoordinateToAddress(String lat,String lng) {
+         
+		 Map<String, String> params = new LinkedHashMap<String, String>();
+        // params.put("latlng", lng +","+lat);
+		 params.put("latlng", lat +","+lng);
+		 params.put("sensor", "false");
+         ResponseC r = sendGeocodingRequest(GOOGLE_GEOCODING, params);
+         
+         System.out.println("Fatto!");
+         
+         if (r.getStatus().equals("ZERO_RESULTS")){
+                         System.out.println("Nessuna corrispondenza in COORDINATE!!!");
+                         log.info("Google result: ZERO RESULT :Nessuna corrispondenza in COORDINATE!!!");
+             			 
+         }
+         else{
+                 Result[] ad= r.getResult();
+                 System.out.println(ad[0].geometry.location.getLat() + "," + ad[0].geometry.location.getLng());
+                 
+                 Address add = new Address();
+                 
+                 //add.setStreetAddress(ad[0].address_components[0].long_name);
+                 //add.setTownHall(ad[0].address_components[1].long_name);
+                 //add.setCity(ad[0].address_components[2].long_name);
+                 //add.setRegion(ad[0].address_components[3].long_name);
+                 //add.setState(ad[0].address_components[4].long_name);
+                 //add.setCap(ad[0].address_components[5].long_name);
+                 
+                 int length = ad[0].address_components.length;
+                 System.out.println("...Inserimento luogo individuato tramite coordinate GPS...");
+                 System.out.println("Numero elementi address_components:" +  length);
+                 int pos=0;
+                 
+                 
+                 while (pos<length)
+                 { 
+                	 
+                	 if (ad[0].address_components[pos].types[0].equals("street_number")){
+                		 add.setStreetNumber((ad[0].address_components[pos].long_name));
+                	 	System.out.println("streetnumber:" +  add.getStreetNumber());}
+                	 
+                	 if (ad[0].address_components[pos].types[0].equals("route")){
+                		 add.setStreetAddress((ad[0].address_components[pos].long_name));
+                	 	System.out.println("streetaddress:" +  add.getStreetAddress());}
+                	 
+                	 if (ad[0].address_components[pos].types[0].equals("locality")){
+                   		 add.setTownHall((ad[0].address_components[pos].long_name));
+                   		 System.out.println("comune:" +  add.getTownHall());}
+                	 
+                	 if (ad[0].address_components[pos].types[0].equals("administrative_area_level_2")){
+                     		add.setCity((ad[0].address_components[pos].long_name));
+                     		System.out.println("città:" +  add.getCity());}	
+                	 
+                	 if (ad[0].address_components[pos].types[0].equals("administrative_area_level_1")){
+                		 add.setRegion((ad[0].address_components[pos].long_name));
+                	 	System.out.println("regione: " +  add.getRegion());}
+                	 
+                	 if (ad[0].address_components[pos].types[0].equals("country")){
+                 	 	add.setState((ad[0].address_components[pos].long_name));
+                 	 	System.out.println("stato:" +  add.getState());}
+                	 
+                	 if (ad[0].address_components[pos].types[0].equals("postal_code")){
+                		 add.setCap((ad[0].address_components[pos].long_name));
+                	 	System.out.println("CAP:" +  add.getCap());}
+                	 
+                	
+                	 
+                 
+                	 pos++;
+                 }
+                 
+         return add; 
+                 
+                 
+           /*      if (pos<length)
+                 { 
+                	 if (ad[0].address_components[0].types[0].equals("street_number")){
+                		 add.setStreetNumber((ad[0].address_components[0].long_name));
+                	 	System.out.println("streetnumber:" +  add.getStreetNumber());}
+                	 else if (ad[0].address_components[0].types[0].equals("route")){
+                		 add.setStreetAddress((ad[0].address_components[0].long_name));
+                	 	System.out.println("streetaddress:" +  add.getStreetAddress());}
+                	 pos++;
+                 }
+                 
+                 if (pos<length)
+                 { 
+                	 if (ad[0].address_components[1].types[0].equals("route")){
+                		 
+                		add.setStreetAddress((ad[0].address_components[1].long_name));
+                		System.out.println("streetaddress:" +  add.getStreetAddress());
+                	 	}
+                	 else if (ad[0].address_components[1].types[0].equals("locality")){
+                		 add.setTownHall((ad[0].address_components[1].long_name));
+                		 System.out.println("comune:" +  add.getTownHall());}
+                 pos++;
+                 }
+                 
+                 if (pos<length)
+                 {
+                 	if (ad[0].address_components[2].types[0].equals("locality")){
+                	 	add.setTownHall((ad[0].address_components[2].long_name));
+                	 	System.out.println("comune:" +  add.getTownHall());}
+                 	else if (ad[0].address_components[2].types[0].equals("administrative_area_level_2")){
+                 		add.setCity((ad[0].address_components[2].long_name));
+                 		System.out.println("città:" +  add.getCity());}
+                 	pos++;
+         		 }
+                 
+                 if (pos<length)
+                 {
+                	 if (ad[0].address_components[3].types[0].equals("administrative_area_level_2")){
+                		 add.setCity((ad[0].address_components[3].long_name));
+                		 System.out.println("città:" +  add.getCity());}
+                	 else if (ad[0].address_components[3].types[0].equals("administrative_area_level_1")){
+                		 add.setRegion((ad[0].address_components[3].long_name));
+                	 	System.out.println("regione: " +  add.getRegion());}
+                	 pos++;
+         		 } 
+                 
+                 if (pos<length)
+                 {
+                	 if (ad[0].address_components[4].types[0].equals("administrative_area_level_1")){
+                		 add.setRegion((ad[0].address_components[4].long_name));
+                	 	System.out.println("regione:" +  add.getRegion());}
+                 	 else if (ad[0].address_components[4].types[0].equals("country")){
+                	 	add.setState((ad[0].address_components[4].long_name));
+                	 	System.out.println("stato:" +  add.getState());}
+                 	 pos++;
+         		 } 
+                 
+                 if (pos<length)
+                 {
+                	 if (ad[0].address_components[5].types[0].equals("country")){
+                		add.setState((ad[0].address_components[5].long_name));
+                		System.out.println("stato:" +  add.getState());}
+                	 else if (ad[0].address_components[5].types[0].equals("postal_code")){
+                		 add.setCap((ad[0].address_components[5].long_name));
+                	 	System.out.println("CAP:" +  add.getCap());}
+                	 pos++;
+         		 } 
+                 
+                 if (pos<length)
+                 {
+                	 if (ad[0].address_components[6].types[0].equals("postal_code")){
+                		 add.setState((ad[0].address_components[6].long_name));
+                		 System.out.println("CAP:" +  add.getCap());}
+                 } */
+                 
+                
          }
          return null;
 

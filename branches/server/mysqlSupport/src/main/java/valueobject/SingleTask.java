@@ -1,19 +1,14 @@
 package valueobject;
 
 import java.util.Calendar;
-import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 import businessobject.Converter;
 
-import com.db4o.activation.ActivationPurpose;
-import com.db4o.activation.Activator;
-import com.db4o.ta.Activatable;
-
 /**
  * This is the basic task object that will be used for communications to client.
- * Fiels are:
+ * Fields are:
  * dueDate,notifyTimeStart,notifyTimeEnd 
  * 
  */
