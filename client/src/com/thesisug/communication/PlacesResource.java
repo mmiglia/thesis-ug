@@ -23,6 +23,7 @@ import android.util.Log;
 import com.thesisug.communication.valueobject.PlaceClient;
 import com.thesisug.communication.xmlparser.PlacesHandler;
 import com.thesisug.ui.Create_new_place;
+import com.thesisug.ui.Create_new_place_gps;
 import com.thesisug.ui.DetailsPlace;
 import com.thesisug.ui.DetailsPlaceToVote;
 import com.thesisug.ui.ListPlacesFound;
@@ -37,7 +38,9 @@ private static final String TAG = new String("thesisug - PlaceResource");
 	private static final String GET_PRIVATE_PLACES = "/places/privatePlaces";
 	private static final String GET_PUBLIC_PLACES = "/places/publicPlacesVoted";
 	private static final String ADD_PRIVATE_PLACE = "/places/addPrivatePlace";
+	private static final String ADD_PRIVATE_PLACE_GPS = "/places/addPrivatePlace";
 	private static final String ADD_PUBLIC_PLACE = "/places/addPublicPlace";
+	private static final String ADD_PUBLIC_PLACE_GPS = "/places/addPublicPlace";
 	private static final String DELETE_PRIVATE_PLACE = "/places/deletePrivatePlace";
 	private static final String DELETE_PUBLIC_PLACE = "/places/deleteVotePublicPlace";
 	private static final String SEARCH_PUBLIC_PLACE = "/places/searchPublicPlace";
@@ -167,6 +170,57 @@ private static final String TAG = new String("thesisug - PlaceResource");
 						
 							
 							((Create_new_place) context).finishSaveToAdd(result,toAdd);
+							
+							 
+							 
+						}
+				});
+			}
+		};
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
+	
+	
+	public static Thread createPrivatePlaceGPS(final PlaceClient toAdd, final Handler handler, final Context context) 
+	{
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				String body = PlacesHandler.formatPlaceClient(toAdd);
+				Log.i(TAG,body);
+				final boolean result = runHttpPost(ADD_PRIVATE_PLACE_GPS, null,body, context);
+				if (handler == null || context == null) {
+					return;
+				}
+				handler.post(new Runnable() {
+					public void run() {
+						
+							
+							((Create_new_place_gps) context).finishSaveToAdd(result,toAdd);
+							
+							 
+							 
+						}
+				});
+			}
+		};
+		return NetworkUtilities.startBackgroundThread(runnable);
+	}
+	
+	public static Thread createPublicPlaceGPS(final PlaceClient toAdd, final Handler handler, final Context context) 
+	{
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				String body = PlacesHandler.formatPlaceClient(toAdd);
+				Log.i(TAG,body);
+				final boolean result = runHttpPost(ADD_PUBLIC_PLACE_GPS, null,body, context);
+				if (handler == null || context == null) {
+					return;
+				}
+				handler.post(new Runnable() {
+					public void run() {
+						
+							
+							((Create_new_place_gps) context).finishSaveToAdd(result,toAdd);
 							
 							 
 							 
