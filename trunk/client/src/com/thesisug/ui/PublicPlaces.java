@@ -2,6 +2,7 @@ package com.thesisug.ui;
 
 import java.util.List;
 
+import com.google.android.maps.GeoPoint;
 import com.thesisug.R;
 import com.thesisug.communication.PlacesResource;
 import com.thesisug.communication.valueobject.PlaceClient;
@@ -10,6 +11,10 @@ import com.thesisug.communication.valueobject.PlaceClient;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -25,21 +30,24 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class PublicPlaces extends Activity{
+public class PublicPlaces extends Activity implements LocationListener{
 	
 	private static final String TAG ="thesisug - PublicPlaces";
 	private static final int NEW_PLACES=0;	
-	private static final int UPDATE_LIST=1;
-	private static final int SEARCH=2;
+	private static final int TAKE_HERE=1;
+	private static final int UPDATE_LIST=2;
+	private static final int SEARCH=3;
 	
-	private static final int INFO=3;
-	private static final int BACK=4;
+	private static final int INFO=4;
+	private static final int BACK=5;
 	
 	private static int currentDialog;	
 	private static Thread downloadPublicPlacesThread;
 	private final static Handler handler = new Handler();
 	private PlaceListAdapter adapter;
 	Intent intent;
+	
+	private LocationManager lm;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -52,6 +60,7 @@ public class PublicPlaces extends Activity{
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu){
 		menu.add(0,NEW_PLACES,0,R.string.newPlace).setIcon(R.drawable.addplaces);
+		menu.add(0,TAKE_HERE,0,R.string.takehere).setIcon(R.drawable.mapgps);
 		menu.add(0,UPDATE_LIST,0,R.string.updateList).setIcon(R.drawable.sync);	
 		menu.add(0,SEARCH,0,R.string.search).setIcon(R.drawable.searchle);	
 		menu.add(0,INFO,0,R.string.infoPlaces).setIcon(R.drawable.info);	
@@ -70,7 +79,35 @@ public class PublicPlaces extends Activity{
 			startActivityForResult(intent,0);
 			break;
 			
-
+		case TAKE_HERE:
+			
+			try
+			{
+			// get the GPS positions
+	        lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+	        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) 0, 0.0f, this);
+	        Criteria criteria = new Criteria();
+			criteria.setAccuracy(Criteria.ACCURACY_FINE);
+			String provider = lm.getBestProvider(criteria, true);
+	        Location gpslocation = lm.getLastKnownLocation(provider);
+			GeoPoint point=new GeoPoint((int)Math.floor (gpslocation.getLatitude()*1e6), (int) Math.floor(gpslocation.getLongitude()*1e6));
+		        	
+			intent = new Intent(getApplicationContext(), Create_new_place_gps.class);
+			String lat = Integer.toString(point.getLatitudeE6());
+			String lng = Integer.toString(point.getLongitudeE6());
+			lat = lat.subSequence(0, lat.length()-6) + "." + lat.subSequence(lat.length()-6, lat.length()-1);
+			lng = lng.subSequence(0, lng.length()-6) + "." + lng.subSequence(lng.length()-6, lng.length()-1);		
+			intent.putExtra("lat", lat);
+			intent.putExtra("lng", lng);
+			intent.putExtra("type", "Public");
+			startActivityForResult(intent,0);
+			} catch (Exception e) {
+				Toast.makeText(getApplicationContext(), "Gps Signal not available!", Toast.LENGTH_SHORT).show();
+			}
+			break;
+			
+			
+			
 		case UPDATE_LIST:
 			downloadPublicPlacesThread = PlacesResource.getPublicPlaces(handler, PublicPlaces.this);
 			adapter.notifyDataSetChanged();
@@ -100,8 +137,8 @@ public class PublicPlaces extends Activity{
          if (requestCode == 1) {
              if (resultCode == RESULT_OK) {
                  
-            	 
-					
+            	 Thread downloadPublicPlacesThread = PlacesResource.getPublicPlaces(handler, PublicPlaces.this);
+             	
              }
          }
 	 }
@@ -110,6 +147,21 @@ public class PublicPlaces extends Activity{
 	        super.onResume();
 	        downloadPublicPlacesThread = PlacesResource.getPublicPlaces(handler, PublicPlaces.this);
 	 }
+	 
+		@Override
+		public void onLocationChanged(Location location) {}
+
+		@Override
+		public void onProviderDisabled(String provider) {
+			
+			Toast.makeText(getApplicationContext(),"Gps Disabled",Toast.LENGTH_SHORT ).show();
+		}
+
+		@Override
+		public void onProviderEnabled(String provider) {}
+
+		@Override
+		public void onStatusChanged(String provider, int status, Bundle extras) {}
 	
 	public void afterPublicPlacesLoaded(final List<PlaceClient> placeList){
 		
@@ -270,6 +322,17 @@ public class PublicPlaces extends Activity{
 								holder.img_category.setImageResource(R.drawable.bar);
 						 else if (placeList.get(position).category.contains("supermercato"))
 						 		holder.img_category.setImageResource(R.drawable.cart_shop);
+						 else if (placeList.get(position).category.contains("farmacia"))
+								holder.img_category.setImageResource(R.drawable.farmacia);
+						 else if (placeList.get(position).category.contains("ospedale"))
+								holder.img_category.setImageResource(R.drawable.ospedale);
+						 else if (placeList.get(position).category.contains("macelleria"))
+								holder.img_category.setImageResource(R.drawable.meat);
+						 else if (placeList.get(position).category.contains("poste"))
+								holder.img_category.setImageResource(R.drawable.poste);
+						 else if (placeList.get(position).category.contains("scuola"))
+								holder.img_category.setImageResource(R.drawable.scuola);
+						 
 						 
 						 
 						 holder.txt_address = (TextView) convertView.findViewById(R.id.txt_address);

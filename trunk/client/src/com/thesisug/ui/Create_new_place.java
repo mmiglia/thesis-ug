@@ -45,7 +45,7 @@ public class Create_new_place extends Activity{
 	String cap;
 	String city;
 	String type;
-	String category;
+	String category="";
 	Thread creationNewPlace;
 	
 	private List<String> listCateg = new ArrayList<String>();

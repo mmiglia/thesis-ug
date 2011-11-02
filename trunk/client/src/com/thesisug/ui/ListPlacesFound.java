@@ -5,6 +5,10 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -21,25 +25,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
+import com.google.android.maps.GeoPoint;
 import com.thesisug.R;
 import com.thesisug.communication.PlacesResource;
 import com.thesisug.communication.valueobject.PlaceClient;
 
 
-public class ListPlacesFound extends Activity{
+public class ListPlacesFound extends Activity implements LocationListener{
 	
 	private static final String TAG = "thesisug - ListPlacesFound";
-	private static final int NEWPLACE=0;	
-	
-	private static final int SEARCH=1;
-	
-	private static final int INFO=2;
-	private static final int BACK=3;
+	private static final int NEWPLACE=0;
+	private static final int TAKE_HERE=1;
+	private static final int SEARCH=2;
+	private static final int INFO=3;
+	private static final int BACK=4;
 	protected final Handler handler = new Handler();
 	ListView l1;
 	Intent intent;
 	private PlaceListAdapter adapter;
 	Thread searchPlace;
+	private LocationManager lm;
 	
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -69,6 +74,7 @@ public class ListPlacesFound extends Activity{
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu){
 		menu.add(0,NEWPLACE,0,R.string.newPlace).setIcon(R.drawable.addplaces);
+		menu.add(0,TAKE_HERE,0,R.string.takehere).setIcon(R.drawable.mapgps);
 		menu.add(0,SEARCH,0,R.string.search).setIcon(R.drawable.searchle);	
 		menu.add(0,INFO,0,R.string.infoPlaces).setIcon(R.drawable.info);	
 		menu.add(0,BACK,0,R.string.back).setIcon(R.drawable.go_previous_black);
@@ -84,6 +90,33 @@ public class ListPlacesFound extends Activity{
 			intent.putExtra("type", "Private");
 			startActivity(intent);
 			finish();
+			break;
+			
+case TAKE_HERE:
+			
+			try
+			{
+			// get the GPS positions
+	        lm = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+	        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) 0, 0.0f, this);
+	        Criteria criteria = new Criteria();
+			criteria.setAccuracy(Criteria.ACCURACY_FINE);
+			String provider = lm.getBestProvider(criteria, true);
+	        Location gpslocation = lm.getLastKnownLocation(provider);
+			GeoPoint point=new GeoPoint((int)Math.floor (gpslocation.getLatitude()*1e6), (int) Math.floor(gpslocation.getLongitude()*1e6));
+		        	
+			intent = new Intent(getApplicationContext(), Create_new_place_gps.class);
+			String lat = Integer.toString(point.getLatitudeE6());
+			String lng = Integer.toString(point.getLongitudeE6());
+			lat = lat.subSequence(0, lat.length()-6) + "." + lat.subSequence(lat.length()-6, lat.length()-1);
+			lng = lng.subSequence(0, lng.length()-6) + "." + lng.subSequence(lng.length()-6, lng.length()-1);		
+			intent.putExtra("lat", lat);
+			intent.putExtra("lng", lng);
+			intent.putExtra("type", "Public");
+			startActivityForResult(intent,0);
+			} catch (Exception e) {
+				Toast.makeText(getApplicationContext(), "Gps Signal not available!", Toast.LENGTH_SHORT).show();
+			}
 			break;
 			
 		case SEARCH:
@@ -105,6 +138,21 @@ public class ListPlacesFound extends Activity{
 		}
 		return true;
 	}
+	
+	@Override
+	public void onLocationChanged(Location location) {}
+
+	@Override
+	public void onProviderDisabled(String provider) {
+		
+		Toast.makeText(getApplicationContext(),"Gps Disabled",Toast.LENGTH_SHORT ).show();
+	}
+
+	@Override
+	public void onProviderEnabled(String provider) {}
+
+	@Override
+	public void onStatusChanged(String provider, int status, Bundle extras) {}
 	
 	public void afterPublicPlacesLoaded(final List<PlaceClient> placeList){
 		
@@ -273,6 +321,16 @@ public class ListPlacesFound extends Activity{
 						holder.img_category.setImageResource(R.drawable.bar);
 				 else if (placeList.get(position).category.contains("supermercato"))
 				 		holder.img_category.setImageResource(R.drawable.cart_shop);
+				 else if (placeList.get(position).toString().contains("farmacia"))
+						holder.img_category.setImageResource(R.drawable.farmacia);
+				 else if (placeList.get(position).toString().contains("ospedale"))
+						holder.img_category.setImageResource(R.drawable.ospedale);
+				 else if (placeList.get(position).toString().contains("macelleria"))
+						holder.img_category.setImageResource(R.drawable.meat);
+				 else if (placeList.get(position).toString().contains("poste"))
+						holder.img_category.setImageResource(R.drawable.poste);
+				 else if (placeList.get(position).toString().contains("scuola"))
+						holder.img_category.setImageResource(R.drawable.scuola);
 				 
 				 holder.txt_address = (TextView) convertView.findViewById(R.id.txt_address);
 				 

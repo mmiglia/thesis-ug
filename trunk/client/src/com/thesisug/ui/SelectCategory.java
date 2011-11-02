@@ -124,12 +124,14 @@ public class SelectCategory extends Activity{
         listCateg.add("fastfood");
         listCateg.add("banca");
         listCateg.add("panetteria");
+        listCateg.add("macelleria");
         listCateg.add("pasticceria");
         listCateg.add("scarpe");
         listCateg.add("parucchiere");
         
         listCateg.add("teatro");
         listCateg.add("ufficio");
+        listCateg.add("poste");
         listCateg.add("frutta e verdura");
         listCateg.add("sport e fitness");
         listCateg.add("auto e moto");
@@ -139,7 +141,9 @@ public class SelectCategory extends Activity{
         listCateg.add("elettrodomestici");
         listCateg.add("elettronica");
         listCateg.add("finanza e assicurazioni");
-     
+        listCateg.add("farmacia");
+        listCateg.add("ospedale");
+        listCateg.add("scuola");
         listCateg.add("gioielleria");
         listCateg.add("informatica");
         listCateg.add("libreria");
@@ -284,7 +288,7 @@ public class SelectCategory extends Activity{
 			 
 			 holder.txt_title = (TextView) convertView.findViewById(R.id.txt_title);
 
-			 holder.txt_title.setText("'" +  listCategory.get(position).toString() +"'");
+			 holder.txt_title.setText(" " +  listCategory.get(position).toString() );
 			 
 			 holder.img_category = (ImageView) convertView.findViewById(R.id.img_category);
 			 
@@ -370,7 +374,16 @@ public class SelectCategory extends Activity{
 					holder.img_category.setImageResource(R.drawable.assicurazione);
 			 else if (listCategory.get(position).toString().contains("centro benessere"))
 					holder.img_category.setImageResource(R.drawable.benessere);
-			 
+			 else if (listCategory.get(position).toString().contains("farmacia"))
+					holder.img_category.setImageResource(R.drawable.farmacia);
+			 else if (listCategory.get(position).toString().contains("ospedale"))
+					holder.img_category.setImageResource(R.drawable.ospedale);
+			 else if (listCategory.get(position).toString().contains("macelleria"))
+					holder.img_category.setImageResource(R.drawable.meat);
+			 else if (listCategory.get(position).toString().contains("poste"))
+					holder.img_category.setImageResource(R.drawable.poste);
+			 else if (listCategory.get(position).toString().contains("scuola"))
+					holder.img_category.setImageResource(R.drawable.scuola);
 			 
 			 return convertView;
 		 }
