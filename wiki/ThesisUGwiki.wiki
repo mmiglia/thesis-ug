@@ -30,8 +30,6 @@ Ogni mobile client, d'altra parte, è responsabile attraverso job relativamente 
 Il server è anche connesso a un provider (correntemente Google) per fornire servizi aggiuntivi nella nostra applicazione, come  
 reperire le mappe e trovare posti di interesse dove poter soddisfare i propri task grazie a Google Maps,ecc.
 
-[[File:SystemDecomposition.png| SystemDecomposition]]
-
 
 =PERSONE CHE HANNO CONTRIBUITO AL PROGETTO=
 '''Prof.Ing. Mauro Migliardi'''
