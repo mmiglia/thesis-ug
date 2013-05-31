@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory android:title="@string/user_preferences">
+		<ListPreference
+			android:title="@string/q_period"
+			android:summary="@string/interval"
+			android:key="queryperiod"
+			android:defaultValue="100"
+			android:entries="@array/period"
+			android:entryValues="@array/periodValue" />
+		<ListPreference
+			android:title="@string/max_distance"
+			android:summary="@string/max_distance_desc"
+			android:key="maxdistance"
+			android:defaultValue="50000"
+			android:entries="@array/distance"
+			android:entryValues="@array/distanceValue" />
+		<ListPreference
+			android:title="@string/parser_lang"
+			android:summary="@string/parser_lang_desc"
+			android:key="parserlang"
+			android:defaultValue="en.lang"
+			android:entries="@array/p_lang"
+			android:entryValues="@array/p_lang_value" />
+			
+		<ListPreference
+			android:title="@string/navigation_preferences"
+			android:summary="@string/selectNavigator"
+			android:key="selected_navigator"
+			android:defaultValue="ListGoogle"
+			android:entries="@array/navig"
+			android:entryValues="@array/navigValue" />
+
+	</PreferenceCategory>
+	<!-- NOTIFICATION -->
+	<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+		android:title="@string/notification_preferences">
+		<CheckBoxPreference
+                        android:title="Sound"
+                        android:defaultValue="false"
+                        android:summary="This preference can be true or false"
+                        android:key="notification_hint_sound"
+                        android:id="@+id/notification_hint_sound" />
+		<!-- <CheckBoxPreference
+                        android:title="Vibrate"
+                        android:defaultValue="false"
+                        android:summary="This preference can be true or false"
+                        android:key="notification_hint_vibrate" /> -->
+        <ListPreference
+			android:title="@string/vibration_preferences"
+			android:summary="@string/set_vibration_summary_default"
+			android:key="notification_hint_vibrate"
+			android:entries="@array/vibrationModeList"
+			android:entryValues="@array/vibrationModeListValue"
+			android:defaultValue="off"
+			android:id="@+id/notification_hint_vibrate" />
+		<CheckBoxPreference
+                        android:title="Speak"
+                        android:defaultValue="false"
+                        android:summary="This preference can be true or false"
+                        android:key="notification_hint_speak"
+                        android:id="@+id/notification_hint_speak" />
+	</PreferenceScreen>
+	
+	
+
+	
+	
+	
+	<!-- ADVANCED: server -->
+	<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+		android:title="@string/advanced_preferences">
+
+		<PreferenceCategory android:title="@string/server_preferences">
+			<ListPreference
+			android:title="@string/server_list_title"
+			android:summary="@string/change_server_summary"
+			android:key="serverURI"
+			android:entries="@array/serverList"
+			android:entryValues="@array/serverListValue" />
+			
+			<EditTextPreference
+            android:summary="Manually change the server location"
+			android:defaultValue="DefaultLocation"
+			android:title="Edit server location"
+			android:key="serverURI_from_text" />
+		 
+		</PreferenceCategory>
+	</PreferenceScreen>
+</PreferenceScreen>

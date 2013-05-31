@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.thesisug"
+      android:versionCode="1"
+      android:versionName="1.0">
+    <uses-permission
+        android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission
+        android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission
+        android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission
+        android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission
+        android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission
+        android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission
+        android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <uses-permission
+        android:name="android.permission.READ_CONTACTS" />
+    <uses-permission
+        android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission
+        android:name="android.permission.READ_SYNC_STATS" />
+    <uses-permission
+        android:name="android.permission.READ_SYNC_SETTINGS" />
+    <uses-permission
+        android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission
+    	android:name="android.permission.VIBRATE" />
+        
+    <application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
+        <service
+            android:name=".authenticator.AuthenticationService"
+            android:exported="true">
+            <intent-filter>
+                <action
+                    android:name="android.accounts.AccountAuthenticator" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accounts.AccountAuthenticator"
+                android:resource="@xml/authenticator" />
+        </service>
+        <service
+            android:name=".synchronizator.SyncService"
+            android:exported="true">
+            <intent-filter>
+                <action
+                    android:name="android.content.SyncAdapter" />
+            </intent-filter>
+            <meta-data
+                android:name="android.content.SyncAdapter"
+                android:resource="@xml/syncadapter" />
+            <meta-data
+                android:name="android.provider.CONTACTS_STRUCTURE"
+                android:resource="@xml/contacts" />
+        </service>
+        <service
+            android:name=".notification.TaskNotification"
+            android:exported="true">
+        </service>
+        <service
+            android:name=".notification.ErrorNotification"
+            android:exported="true">
+        </service>
+        <receiver android:name=".notification.EventNotification" android:process=":remote" />
+    	<activity android:name=".ui.Login"
+                  android:label="@string/app_name" android:theme="@android:style/Theme.Dialog"
+                  android:excludeFromRecents="true" >                 
+        </activity>
+        <activity android:name=".ui.Register"
+                  android:label="@string/app_name" android:theme="@android:style/Theme.Dialog"
+                  android:excludeFromRecents="true" >                         
+        </activity>
+        <activity android:name=".ui.ParentTab"
+                  android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">                  
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.Todo"
+                  android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">                  
+        </activity>
+        <activity android:name=".ui.Map"
+                  android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">                  
+        </activity>
+        <activity android:name=".ui.Input"
+                  android:label="@string/app_name" android:theme="@android:style/Theme.Dialog">                  
+        </activity>
+        <activity android:name=".ui.Preferences"
+                  android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">                  
+        </activity>
+        <activity android:name=".ui.EditGPS"
+                  android:label="@string/app_name" android:theme="@android:style/Theme.NoTitleBar">                  
+            <intent-filter>
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+         <activity android:name=".ui.ShowEvent" android:windowSoftInputMode="stateVisible|adjustPan"
+          			android:label="@string/app_name" android:theme="@style/CustomTitleTheme">                  
+        </activity>
+                 <activity android:name=".ui.ShowTask" android:windowSoftInputMode="stateVisible|adjustPan"
+          			android:label="@string/app_name" android:theme="@style/CustomTitleTheme">                  
+        </activity>
+        <activity android:name=".ui.EditTask"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        <activity android:name=".ui.EditEvent"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        <activity android:name=".ui.HintList"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        <activity android:name=".ui.ManageGroupMenu"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        <activity android:name=".ui.InviteToJoinGroup"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        <activity android:name=".ui.ViewGroupMembers"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        <activity android:name=".ui.SystemStatus"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        <activity android:name=".ui.ViewAssertions"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">
+                  <intent-filter>
+    					<action android:name="android.intent.action.SEARCH" />
+    					<category android:name="android.intent.category.DEFAULT" />
+					</intent-filter>
+		</activity>
+		<activity android:name=".ui.Details_assertion_item"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        
+        <activity android:name=".ui.Details_assertion_action"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        
+        
+        <activity android:name=".ui.Create_Assertion_item"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        
+        <activity android:name=".ui.Create_Assertion_item_NoDb"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        
+        <activity android:name=".ui.Create_Assertion_action"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+      
+       <activity android:name=".ui.Vote_ont_db"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        
+        
+        
+         <activity android:name=".ui.Assertions"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        <activity android:name=".ui.AssertionsInfo"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        <activity android:name=".ui.ViewAssertions_Action"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">
+                  <intent-filter>
+    					<action android:name="android.intent.action.SEARCH" />
+    					<category android:name="android.intent.category.DEFAULT" />
+					</intent-filter>
+		</activity>
+		 <activity android:name=".ui.PlacesTab"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        
+         <activity android:name=".ui.PrivatePlaces"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        
+         <activity android:name=".ui.PublicPlaces"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+		
+  <activity android:name=".ui.Create_new_place"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>       
+        <activity android:name=".ui.SelectCategory"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity> 
+         <activity android:name=".ui.DetailsPlace"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+         <activity android:name=".ui.SearchPublicPlace"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+         <activity android:name=".ui.ListPlacesFound"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+         <activity android:name=".ui.InfoPrivatePlaces"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+         <activity android:name=".ui.InfoPublicPlaces"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        <activity android:name=".ui.DetailsPlaceToVote"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+         <activity android:name=".ui.InfoListPlaceFound"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        <activity android:name=".ui.Create_new_place_gps"
+                  android:label="@string/app_name" android:theme="@android:style/Theme">                  
+        </activity>
+        
+        <meta-data android:name="android.app.searchable"
+       				android:resource="@xml/searchable" 
+       				/>      
+        
+    <uses-library android:name="com.google.android.maps" />
+    
+    <!--WIDGET  -->
+            
+		<receiver android:name=".widget.ExampleAppWidgetProvider" >
+		    <intent-filter>
+		        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+				<action android:name="com.thesisug.widget.ExampleAppWidgetProvider.ACTION_HINT_SEARCH" />
+				<action android:name="com.thesisug.widget.ExampleAppWidgetProvider.ACTION_OPEN_HINT_LIST" />
+				<action android:name="com.thesisug.widget.ExampleAppWidgetProvider.ACTION_NEW_HINT_FOUND" />
+				<action android:name="com.thesisug.widget.ExampleAppWidgetProvider.ACTION_NO_HINT_FOUND" />
+				<action android:name="com.thesisug.widget.ExampleAppWidgetProvider.ACTION_NEXT_TASK" />
+				<action android:name="com.thesisug.widget.ExampleAppWidgetProvider.ACTION_PREV_TASK" />
+				<action android:name="com.thesisug.widget.ExampleAppWidgetProvider.ACTION_NEXT_HINT" />
+				<action android:name="com.thesisug.widget.ExampleAppWidgetProvider.ACTION_PREV_HINT" />								
+		    </intent-filter>
+		    <meta-data android:name="android.appwidget.provider"
+		               android:resource="@xml/example_appwidget_info" />
+		</receiver>
+    
+    </application>
+	<uses-sdk android:minSdkVersion="7" />
+<uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
+</manifest> 

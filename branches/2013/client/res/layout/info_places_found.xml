@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:stretchColumns="1">
+    <ScrollView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1">
+    <TableLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:stretchColumns="1">
+    
+    
+    <LinearLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:padding="10dip">
+    	<ImageView
+		android:id="@+id/machine1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/listplace"
+		android:layout_gravity="center_horizontal"/>
+    	<TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:id="@+id/info_search"
+            android:text="Search Results"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingBottom="15dip" 
+            android:textColor="#00FF00"
+            />
+    	 <TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:id="@+id/info_result_search_text_1"
+            android:text="@string/info_result_places_1"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:paddingBottom="10dip" 
+            android:layout_below="@+id/info_search"/>
+            <TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:id="@+id/info_result_search_text_2"
+            android:text="@string/info_result_places_2"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:paddingBottom="10dip" 
+            android:layout_below="@+id/info_result_search_text_1"/>
+            <TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:id="@+id/info_result_search_text_3"
+            android:text="@string/info_result_places_3"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:paddingBottom="10dip" 
+            android:layout_below="@+id/info_result_search_text_2"/>
+
+    </LinearLayout>
+    
+    </TableLayout>
+</ScrollView>
+	<LinearLayout 
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content" 
+		android:orientation="horizontal"
+		android:background="#FFCCCCCC">
+
+		<Button 
+			android:id="@+id/back_button"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent" 
+			android:layout_weight="1"
+			android:text="@string/back" 
+			android:layout_margin="3dip"/>
+	</LinearLayout>
+
+</TableLayout>
+

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:stretchColumns="1">
+    <ScrollView
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1">
+    <TableLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:stretchColumns="1">
+    <LinearLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:padding="10dip">
+    	 <TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:id="@+id/txt_title"
+            android:text="@string/txt_name_place"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingBottom="3dip" />
+	    <EditText
+        	android:id="@+id/edit_name_place"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+        	android:textAppearance="?android:attr/textAppearanceLarge"
+        	android:maxLines="1"
+        	android:singleLine="true"
+        	android:background="@android:drawable/edit_text"/>
+    </LinearLayout>
+    
+    <View
+        android:layout_height="1dip"
+        android:background="#FF333333" />
+    
+    <LinearLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:padding="10dip">
+    	 <TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:id="@+id/txt_sreetAddress"
+            android:text="@string/streetAddress"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingBottom="3dip" />
+    	    	
+     	 <EditText
+        	android:id="@+id/edit_streetAddress"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+        	android:textAppearance="?android:attr/textAppearanceLarge"
+        	android:maxLines="1"
+        	android:singleLine="true"
+        	android:background="@android:drawable/edit_text"/>
+  </LinearLayout>
+    
+    <View
+        android:layout_height="1dip"
+        android:background="#FF333333" />
+        
+     <LinearLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+    	<TextView    
+        	android:id="@+id/txt_streetNumber"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+        	android:text="@string/streetNumber"/>
+       	<EditText
+        	android:id="@+id/edit_streetNumber"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+    </LinearLayout>
+      <View
+        android:layout_height="1dip"
+        android:background="#FF333333" />
+        
+     <LinearLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+    	<TextView    
+        	android:id="@+id/txt_cap"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+        	android:text="@string/cap"/>
+       	<EditText
+        	android:id="@+id/edit_cap"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            />
+        <TextView    
+        	android:id="@+id/txt_city"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+        	android:text="@string/city"/>
+       	<EditText
+        	android:id="@+id/edit_city"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+    </LinearLayout>
+    
+     <View
+        android:layout_height="1dip"
+        android:background="#FF333333" />
+        
+     <LinearLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+    	
+    </LinearLayout>
+    
+     <View
+        android:layout_height="1dip"
+        android:background="#FF333333" />
+        
+     <LinearLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+    	     
+    	     <Spinner 
+        android:id="@+id/spinner_type"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:prompt="@string/type"/>
+    									
+            
+    </LinearLayout>
+    <View
+        android:layout_height="1dip"
+        android:background="#FF333333" />
+        
+     <LinearLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+    	     
+    	    <Button 
+			android:id="@+id/select_cat"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent" 
+			android:layout_weight="1"
+			android:text="Select category" 
+			android:layout_margin="3dip"/>
+    									
+            
+    </LinearLayout>
+    </TableLayout>
+</ScrollView>
+	<LinearLayout 
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content" 
+		android:orientation="horizontal"
+		android:background="#FFCCCCCC">
+		<Button 
+			android:id="@+id/add_button"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent" 
+			android:layout_weight="1"
+			android:text="@string/add_place" 
+			android:layout_margin="3dip"/>
+		<Button 
+			android:id="@+id/back_button"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent" 
+			android:layout_weight="1"
+			android:text="@string/back" 
+			android:layout_margin="3dip"/>
+	</LinearLayout>
+
+</TableLayout>

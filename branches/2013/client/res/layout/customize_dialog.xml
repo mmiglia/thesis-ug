@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/LinearLayout01"
+	android:layout_height="fill_parent" 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:gravity="center" 
+	android:layout_width="200dip">
+
+
+<TextView android:id="@+id/TextView01" 
+	android:layout_height="wrap_content"
+	android:textColor="#fff" 
+	android:textStyle="bold"
+	android:layout_width="wrap_content" 
+	android:text=" Inserisci locazione:"></TextView>
+ 
+ 
+ <EditText
+        	android:id="@+id/location"
+        	android:layout_width="fill_parent"
+        	android:layout_height="wrap_content"
+        	
+        	android:maxLines="1"
+        	android:layout_margin="7dip" 
+        	android:paddingBottom="3dip" 
+        	android:singleLine="true"
+        	android:background="@android:drawable/edit_text"
+        	android:gravity="center"/>
+
+ <LinearLayout 
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal">
+
+
+<Button android:layout_width="wrap_content"
+	android:layout_height="wrap_content" 
+	android:text="Add location" 
+	android:id="@+id/add_button"
+	android:layout_alignParentRight="true"
+	>
+</Button>
+
+<Button android:layout_width="wrap_content"
+	android:layout_height="wrap_content" 
+	android:text="Cancel" 
+	android:id="@+id/cancel_button"
+	android:layout_toLeftOf="@id/add_button"
+    android:layout_alignTop="@id/add_button"
+	>
+</Button>
+
+
+</LinearLayout>
+</LinearLayout>
+
+

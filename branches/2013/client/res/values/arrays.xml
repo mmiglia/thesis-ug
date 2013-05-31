@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string-array name="distance">
+		<item>50 m</item>
+		<item>100 m</item>
+		<item>150 m</item>
+		<item>200 m</item>
+		<item>250 m</item>
+		<item>300 m</item>
+		<item>500 m</item>
+		<item>1 km</item>
+		<item>10 km</item>
+		<item>50 km</item>
+	</string-array>
+	<string-array name="distanceValue">
+		<item>50</item>
+		<item>100</item>
+		<item>150</item>
+		<item>200</item>
+		<item>250</item>
+		<item>300</item>
+		<item>500</item>
+		<item>1000</item>
+		<item>10000</item>
+		<item>50000</item>
+	</string-array>
+	<string-array name="period">
+		<item>50 m</item>
+		<item>100 m</item>
+		<item>150 m</item>
+		<item>200 m</item>
+		<item>250 m</item>
+		<item>300 m</item>
+		<item>350 m</item>
+		<item>400 m</item>
+		<item>500 m</item>
+		<item>1 km</item>
+		<item>5 km</item>
+		<item>never</item>
+	</string-array>
+	
+	
+	<string-array name="periodValue">
+		<item>50</item>
+		<item>100</item>
+		<item>150</item>
+		<item>200</item>
+		<item>250</item>
+		<item>300</item>
+		<item>350</item>
+		<item>400</item>
+		<item>500</item>
+		<item>1000</item>
+		<item>5000</item>
+		<item>0</item>
+	</string-array>
+	
+	<string-array name="navig">
+		<item>List of directions from Google</item>
+		<item>Navigation turn by turn</item>
+	</string-array>
+	<string-array name="navigValue">
+		<item>ListGoogle</item>
+		<item>Navigator</item>
+	</string-array>
+	
+	<string-array name="p_lang">
+		<item>EN - English</item>
+		<item>IT - Italian</item>
+	</string-array>
+	<string-array name="p_lang_value">
+		<item>en.lang</item>
+		<item>it.lang</item>
+	</string-array>
+	
+	<string-array name="serverList">
+		<item>Padova</item>
+		<item>Unige</item>
+		<item>Localhost</item>
+		<item>Nettuno Mirco</item>
+		<item>localhost</item>
+	</string-array>
+	<string-array name="serverListValue">
+		<item>serverpd.dyndns.org</item>
+		<item>zelda.openlab-dist.org</item>
+		<item>10.0.2.2</item>
+		<item>nettuno.dyndns.org</item>
+		<item>localhost</item>
+	
+	</string-array>
+	
+	<string name="type">Choose a type</string>
+	
+	<string-array name="type_array">
+        <item>Private</item>
+        <item>Public</item>
+        
+    </string-array>
+	
+<string-array name="vibrationModeList"><item>priority</item>
+<item>morse</item>
+<item>none</item>
+</string-array>
+
+
+<string-array name="vibrationModeListValue"><item>priority</item>
+<item>morse</item>
+<item>off</item>
+</string-array>
+</resources>
