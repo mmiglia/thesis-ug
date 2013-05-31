@@ -1,0 +1,491 @@
+<?xml version="1.0"?>
+
+
+<!DOCTYPE Ontology [
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY xml "http://www.w3.org/XML/1998/namespace" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<Ontology xmlns="http://www.w3.org/2002/07/owl#"
+     xml:base="http://www.semanticweb.org/ontologies/2010/3/Ontology1272291875282.owl"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     ontologyIRI="http://www.semanticweb.org/ontologies/2010/3/Ontology1272291875282.owl">
+    <Prefix name="xsd" IRI="http://www.w3.org/2001/XMLSchema#"/>
+    <Prefix name="owl" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="" IRI="http://www.w3.org/2002/07/owl#"/>
+    <Prefix name="rdf" IRI="http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+    <Prefix name="rdfs" IRI="http://www.w3.org/2000/01/rdf-schema#"/>
+    <Declaration>
+        <Class IRI="#Item"/>
+    </Declaration>
+    <Declaration>
+        <Class IRI="#Location"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+    </Declaration>
+    <Declaration>
+        <ObjectProperty IRI="#contains"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#bakery"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#biglietto_pullman"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#biglietto_treno"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#bread"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#campus"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#cereal"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#cereali"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#chocolate"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#cigarette"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#cinema"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#cioccolato"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#coop"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#giornalaio"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#grocery"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#hospital"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#latte"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#mall"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#milk"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#ospedale"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#pane"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#panetteria"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#school"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#scuola"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#sigarette"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#spazzolino"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#stazione"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#stazione_bus"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#stazione_treni"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#supermarket"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#supermercato"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#tabaccheria"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#teatro"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#theater"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#ticket"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#toothbrush"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#train_station"/>
+    </Declaration>
+    <Declaration>
+        <NamedIndividual IRI="#university"/>
+    </Declaration>
+    <EquivalentClasses>
+        <Class IRI="#Item"/>
+        <ObjectIntersectionOf>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="#canBeFoundIn"/>
+                <Class IRI="#Location"/>
+            </ObjectSomeValuesFrom>
+            <ObjectAllValuesFrom>
+                <ObjectProperty IRI="#canBeFoundIn"/>
+                <Class IRI="#Location"/>
+            </ObjectAllValuesFrom>
+        </ObjectIntersectionOf>
+    </EquivalentClasses>
+    <EquivalentClasses>
+        <Class IRI="#Location"/>
+        <ObjectIntersectionOf>
+            <ObjectSomeValuesFrom>
+                <ObjectProperty IRI="#contains"/>
+                <Class IRI="#Item"/>
+            </ObjectSomeValuesFrom>
+            <ObjectAllValuesFrom>
+                <ObjectProperty IRI="#contains"/>
+                <Class IRI="#Item"/>
+            </ObjectAllValuesFrom>
+        </ObjectIntersectionOf>
+    </EquivalentClasses>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#bakery"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#biglietto_pullman"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#biglietto_treno"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#bread"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#campus"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#cereal"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#cereali"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#chocolate"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#cigarette"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#cinema"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#cioccolato"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#coop"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#giornalaio"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#grocery"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#hospital"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#latte"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#mall"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#milk"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#ospedale"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#pane"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#panetteria"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#school"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#scuola"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#sigarette"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#spazzolino"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#stazione"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#stazione_bus"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#stazione_treni"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#supermarket"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#supermercato"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#tabaccheria"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#teatro"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#theater"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#ticket"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Item"/>
+        <NamedIndividual IRI="#toothbrush"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#train_station"/>
+    </ClassAssertion>
+    <ClassAssertion>
+        <Class IRI="#Location"/>
+        <NamedIndividual IRI="#university"/>
+    </ClassAssertion>
+    <SameIndividual>
+        <NamedIndividual IRI="#campus"/>
+    </SameIndividual>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#biglietto_pullman"/>
+        <NamedIndividual IRI="#stazione_bus"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#biglietto_treno"/>
+        <NamedIndividual IRI="#stazione"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#bread"/>
+        <NamedIndividual IRI="#bakery"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#cereal"/>
+        <NamedIndividual IRI="#coop"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#cereal"/>
+        <NamedIndividual IRI="#grocery"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#cereali"/>
+        <NamedIndividual IRI="#coop"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#cereali"/>
+        <NamedIndividual IRI="#supermercato"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#cereali"/>
+        <NamedIndividual IRI="#grocery"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#chocolate"/>
+        <NamedIndividual IRI="#coop"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#chocolate"/>
+        <NamedIndividual IRI="#supermarket"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#cigarette"/>
+        <NamedIndividual IRI="#tabaccheria"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#cioccolato"/>
+        <NamedIndividual IRI="#supermercato"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#cioccolato"/>
+        <NamedIndividual IRI="#coop"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#latte"/>
+        <NamedIndividual IRI="#supermercato"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#contains"/>
+        <NamedIndividual IRI="#mall"/>
+        <NamedIndividual IRI="#toothbrush"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#contains"/>
+        <NamedIndividual IRI="#mall"/>
+        <NamedIndividual IRI="#cigarette"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#milk"/>
+        <NamedIndividual IRI="#coop"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#milk"/>
+        <NamedIndividual IRI="#supermarket"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#pane"/>
+        <NamedIndividual IRI="#panetteria"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#sigarette"/>
+        <NamedIndividual IRI="#tabaccheria"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#spazzolino"/>
+        <NamedIndividual IRI="#supermercato"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#contains"/>
+        <NamedIndividual IRI="#supermarket"/>
+        <NamedIndividual IRI="#cigarette"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#contains"/>
+        <NamedIndividual IRI="#supermarket"/>
+        <NamedIndividual IRI="#milk"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#contains"/>
+        <NamedIndividual IRI="#supermarket"/>
+        <NamedIndividual IRI="#toothbrush"/>
+    </ObjectPropertyAssertion>
+    <ObjectPropertyAssertion>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <NamedIndividual IRI="#ticket"/>
+        <NamedIndividual IRI="#train_station"/>
+    </ObjectPropertyAssertion>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty abbreviatedIRI=":topObjectProperty"/>
+    </SubObjectPropertyOf>
+    <SubObjectPropertyOf>
+        <ObjectProperty IRI="#contains"/>
+        <ObjectProperty abbreviatedIRI=":topObjectProperty"/>
+    </SubObjectPropertyOf>
+    <InverseObjectProperties>
+        <ObjectProperty IRI="#contains"/>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+    </InverseObjectProperties>
+    <AsymmetricObjectProperty>
+        <ObjectProperty IRI="#contains"/>
+    </AsymmetricObjectProperty>
+    <IrreflexiveObjectProperty>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+    </IrreflexiveObjectProperty>
+    <IrreflexiveObjectProperty>
+        <ObjectProperty IRI="#contains"/>
+    </IrreflexiveObjectProperty>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <Class IRI="#Item"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyDomain>
+        <ObjectProperty IRI="#contains"/>
+        <Class IRI="#Location"/>
+    </ObjectPropertyDomain>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#canBeFoundIn"/>
+        <Class IRI="#Location"/>
+    </ObjectPropertyRange>
+    <ObjectPropertyRange>
+        <ObjectProperty IRI="#contains"/>
+        <Class IRI="#Item"/>
+    </ObjectPropertyRange>
+</Ontology>
+
+
+
+<!-- Generated by the OWL API (version 3.1.0.20069) http://owlapi.sourceforge.net -->
+
