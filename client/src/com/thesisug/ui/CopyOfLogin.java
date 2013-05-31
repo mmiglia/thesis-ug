@@ -20,23 +20,17 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.thesisug.R;
-import com.thesisug.communication.GroupResource;
 import com.thesisug.communication.LoginResource;
 import com.thesisug.communication.NetworkUtilities;
-import com.thesisug.communication.valueobject.GroupInviteData;
 import com.thesisug.communication.valueobject.LoginReply;
 
 

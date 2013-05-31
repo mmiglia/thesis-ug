@@ -18,11 +18,9 @@ import org.apache.http.message.BasicNameValuePair;
 import org.xml.sax.SAXException;
 
 import android.content.Context;
-import android.location.Location;
 import android.os.Handler;
 import android.util.Log;
 
-import com.thesisug.communication.valueobject.Reminder.GPSLocation;
 import com.thesisug.communication.valueobject.SingleTask;
 import com.thesisug.communication.xmlparser.SingleTaskHandler;
 import com.thesisug.notification.TaskNotification;
@@ -40,7 +38,8 @@ public class TaskResource {
 	private static final String TASK_DONE="/task/done";
 
 	private static List<SingleTask> runHttpGet(final String method,
-			final ArrayList<NameValuePair> params, Context c) {
+			final ArrayList<NameValuePair> params, Context c) 
+			{
 		List<SingleTask> result = new LinkedList<SingleTask>();
 		DefaultHttpClient newClient = NetworkUtilities.createClient();
 		String query = (params == null) ? "" : URLEncodedUtils.format(params,
@@ -78,7 +77,8 @@ public class TaskResource {
 	}
 
 	private static boolean runHttpGetToMarkTaskAsDone(final String method,
-			final ArrayList<NameValuePair> params, Context c) {
+			final ArrayList<NameValuePair> params, Context c) 
+	{
 		List<SingleTask> result = new LinkedList<SingleTask>();
 		DefaultHttpClient newClient = NetworkUtilities.createClient();
 		String query = (params == null) ? "" : "?"+URLEncodedUtils.format(params,
@@ -120,8 +120,8 @@ public class TaskResource {
 			Log.i(TAG, "Status Code is "+response.getStatusLine().getStatusCode());
 			return HttpResponseStatusCodeValidator.isValidRequest(response.getStatusLine().getStatusCode());
 
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+		} catch (UnsupportedEncodingException e) 
+		{
 			e.printStackTrace();
 			return false;
 		}
@@ -129,8 +129,10 @@ public class TaskResource {
 
 
 	public static Thread createTask(final SingleTask toAdd, final Handler handler, final Context context) {
-		final Runnable runnable = new Runnable() {
-			public void run() {
+		final Runnable runnable = new Runnable() 
+		{
+			public void run() 
+			{
 				String body = SingleTaskHandler.format(toAdd);
 				Log.i(TAG,body);
 				final boolean result = runHttpPost(CREATE_TASK, null, body, context);
@@ -228,7 +230,8 @@ public class TaskResource {
 	 * @return
 	 */
 	public static Thread markTaskAsDone(final Handler handler, final Context context,final String taskID, final double latitute, final double longitude) {
-		final Runnable runnable = new Runnable() {
+		final Runnable runnable = new Runnable() 
+		{
 			public void run() {
 				
 				ArrayList<NameValuePair> params=new ArrayList<NameValuePair>();
@@ -245,12 +248,16 @@ public class TaskResource {
 	}
 	
 	public static Thread getFirstTask(final Handler handler, final Context context) {
-		final Runnable runnable = new Runnable() {
-			public void run() {				
+		final Runnable runnable = new Runnable() 
+		{
+			public void run() 
+			{				
 				List<SingleTask> result = runHttpGet(FIRST_TASKS, null, context);
-				if(result!=null){
+				if(result!=null)
+				{
 
 				}
+				Log.d(TAG,"getFirstTask - sending result.");
 				sendResult(result, handler, context);
 			}
 		};
@@ -259,18 +266,28 @@ public class TaskResource {
 	}
 
 	private static void sendResult(final List<SingleTask> result,
-			final Handler handler, final Context context) {
+			final Handler handler, final Context context) 
+	{
+		Log.d(TAG,"sendResult");
 		if (handler == null || context == null) {
 			return;
 		}
-		handler.post(new Runnable() {
-			public void run() {
-				if (context instanceof Todo){
+		Log.d(TAG,"handler.post");
+		handler.post(new Runnable()  
+		{
+			public void run() 
+			{ 
+				Log.d(TAG,"Runnable");
+				if (context instanceof Todo)
+				{
+					Log.d(TAG,"Calling Todo afterTaskLoaded");
 				 ((Todo)context).afterTaskLoaded(result);
 				}
-				if (context instanceof TaskNotification){
+				if (context instanceof TaskNotification)
+				{
+					Log.d(TAG,"Calling TaskNotification afterTaskLoaded");
 					((TaskNotification)context).afterTaskLoaded(result);
-				}
+				} 
 			}
 		});
 	}

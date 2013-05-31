@@ -2,17 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" 
     android:layout_width="fill_parent" 
     android:layout_height="fill_parent">
-    <com.google.android.maps.MapView 
-        android:id="@+id/mapView"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:enabled="true"
-        android:clickable="true"
-        android:apiKey="0w8oXpEXSCQSdr9iymC_yg6bZ48wTnqQY8wWQ_Q" />
-    <LinearLayout
-    	android:id="@+id/zoomView"
-    	android:layout_width="wrap_content"
-    	android:layout_height="wrap_content"
-    	android:layout_alignBottom="@id/mapView"
-    	android:layout_centerHorizontal="true" />
+<fragment 
+          android:id="@+id/edit_gps"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:name="com.google.android.gms.maps.MapFragment"/>
 </RelativeLayout>

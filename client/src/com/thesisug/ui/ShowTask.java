@@ -3,7 +3,6 @@ package com.thesisug.ui;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -19,16 +18,16 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
+import android.view.WindowManager;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thesisug.R;
 import com.thesisug.communication.TaskResource;
-import com.thesisug.communication.valueobject.Reminder.GPSLocation;
-import com.thesisug.communication.valueobject.SingleTask;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
+import com.thesisug.notification.SnoozeHandler;
+import com.thesisug.tracking.ActionTracker;
 
 public class ShowTask extends Activity{
 	private static final String TAG ="thesisug - ShowTask";
@@ -64,11 +63,14 @@ public class ShowTask extends Activity{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+		//requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		setContentView(R.layout.show_task);
-		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_titlebar);
+		//getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_titlebar);
 		TextView titlebar = (TextView) findViewById(R.id.customtitlebar);
-		titlebar.setText("Task");
+		titlebar.setText(R.string.task);
+		
+		//Hide keyboard
+		this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN); 
 		
 		//get the fields
 		packet = getIntent().getExtras();
@@ -160,7 +162,8 @@ public class ShowTask extends Activity{
 			
 			Thread taskDoneThread = TaskResource.markTaskAsDone(handler, ShowTask.this,
 					packet.getString("taskID"),latitude,longitude);
-			
+			SnoozeHandler.removeSnooze(title.getText().toString());
+			ActionTracker.contentCompleted(Calendar.getInstance().getTime(), title.getText().toString(), getApplicationContext(), 0);
 			
 			break;
 		default:
@@ -223,6 +226,7 @@ public class ShowTask extends Activity{
             .setTitle(R.string.ask_for_deletion_task)
             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
+        			SnoozeHandler.removeSnooze(title.getText().toString());
                 	Thread deleteThread = TaskResource.removeTask(packet.getString("taskID"), handler, ShowTask.this);
                 	showDialog(WAIT_DELETION);
                 }

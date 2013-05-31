@@ -23,7 +23,6 @@ import android.widget.Toast;
 import com.thesisug.R;
 import com.thesisug.communication.AssertionsResource;
 import com.thesisug.communication.valueobject.SingleActionLocation;
-import com.thesisug.communication.valueobject.SingleItemLocation;
 
 public class ViewAssertions_Action extends Activity{
 	

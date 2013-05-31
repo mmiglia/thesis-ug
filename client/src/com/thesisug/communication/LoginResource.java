@@ -11,11 +11,9 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import com.thesisug.Constants;
 import com.thesisug.communication.valueobject.LoginReply;
 import com.thesisug.communication.valueobject.TestConnectionReply;
 import com.thesisug.communication.xmlparser.LoginReplyHandler;
-import com.thesisug.communication.xmlparser.TryConnectionReplyHandler;
 import com.thesisug.ui.Login;
 import com.thesisug.ui.Preferences;
 import com.thesisug.ui.SystemStatus;

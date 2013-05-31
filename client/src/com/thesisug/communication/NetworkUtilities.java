@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
- 
+
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.ProtocolVersion;
@@ -17,24 +17,9 @@ import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.message.BasicStatusLine;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.xml.sax.SAXException;
-
-import sun.util.logging.resources.logging;
-
-import com.thesisug.Constants;
-import com.thesisug.communication.valueobject.LoginReply;
-import com.thesisug.communication.valueobject.RegistrationReply;
-import com.thesisug.communication.valueobject.TestConnectionReply;
-import com.thesisug.communication.valueobject.VersionReply;
-import com.thesisug.communication.xmlparser.RegistrationReplyHandler;
-import com.thesisug.communication.xmlparser.TryConnectionReplyHandler;
-import com.thesisug.communication.xmlparser.VersionReplyHandler;
-import com.thesisug.ui.Login;
-import com.thesisug.ui.Preferences;
-import com.thesisug.ui.SystemStatus;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -42,7 +27,16 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-public class NetworkUtilities {
+import com.thesisug.Constants;
+import com.thesisug.communication.valueobject.TestConnectionReply;
+import com.thesisug.communication.valueobject.VersionReply;
+import com.thesisug.communication.xmlparser.TryConnectionReplyHandler;
+import com.thesisug.communication.xmlparser.VersionReplyHandler;
+import com.thesisug.ui.Preferences;
+import com.thesisug.ui.SystemStatus;
+
+public class NetworkUtilities 
+{
 	private static final String TAG = new String("thesisug - NetworkUtilities");
 	private static final int REGISTRATION_TIMEOUT = 10000;
 	public static final String BASE_TRY_CONNECTION="/tryConn/";
@@ -78,7 +72,8 @@ public class NetworkUtilities {
     		return false;
     }
 	 
-	public static DefaultHttpClient createClient() {
+	public static DefaultHttpClient createClient() 
+	{
 		DefaultHttpClient client = new DefaultHttpClient();
 		final HttpParams params = client.getParams();
 		HttpConnectionParams.setConnectionTimeout(params, REGISTRATION_TIMEOUT);
@@ -89,10 +84,10 @@ public class NetworkUtilities {
 	
 	public static Thread checkVersion(final String serverURI, final String clientVersion, 
 			final Handler handler, final Context context) {
-		final Runnable runnable = new Runnable() {			
+		final Runnable runnable = new Runnable() 
+		{			
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
 				params.add(new BasicNameValuePair("ver", clientVersion));
 				VersionReply result = checkVersionThreadBody(serverURI, params);

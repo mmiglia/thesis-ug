@@ -2,11 +2,6 @@ package com.thesisug.ui;
 
 import java.util.List;
 
-import com.thesisug.R;
-import com.thesisug.communication.GroupResource;
-import com.thesisug.communication.valueobject.GroupData;
-import com.thesisug.communication.valueobject.GroupInviteData;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -19,6 +14,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.thesisug.R;
+import com.thesisug.communication.GroupResource;
+import com.thesisug.communication.valueobject.GroupData;
+import com.thesisug.communication.valueobject.GroupInviteData;
 
 /*
  * This activity is used to invite user to join to the group in witch we are involved.

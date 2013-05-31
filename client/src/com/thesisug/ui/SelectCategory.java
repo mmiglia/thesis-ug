@@ -23,7 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thesisug.R;
-import com.thesisug.communication.PlacesResource;
 import com.thesisug.communication.valueobject.PlaceClient;
 
 public class SelectCategory extends Activity{

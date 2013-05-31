@@ -2,12 +2,6 @@ package com.thesisug.ui;
 
 import java.util.List;
 
-import com.google.android.maps.GeoPoint;
-import com.thesisug.R;
-import com.thesisug.communication.PlacesResource;
-import com.thesisug.communication.valueobject.PlaceClient;
-
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -23,12 +17,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
+
+import com.google.android.maps.GeoPoint;
+import com.thesisug.R;
+import com.thesisug.communication.PlacesResource;
+import com.thesisug.communication.valueobject.PlaceClient;
 
 public class PublicPlaces extends Activity implements LocationListener{
 	

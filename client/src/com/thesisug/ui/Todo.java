@@ -16,7 +16,6 @@ import android.app.Dialog;
 import android.app.ListActivity;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
-import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -28,15 +27,17 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.speech.tts.TextToSpeech.OnUtteranceCompletedListener;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.SimpleAdapter.ViewBinder;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.thesisug.R;
@@ -49,7 +50,9 @@ import com.thesisug.communication.valueobject.SingleTask;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 import com.thesisug.notification.EventNotification;
 import com.thesisug.notification.NotificationDispatcher;
+import com.thesisug.notification.SnoozeHandler;
 import com.thesisug.notification.TaskNotification;
+import com.thesisug.tracking.ActionTracker;
 
 
 public class Todo extends ListActivity implements OnInitListener, OnUtteranceCompletedListener{
@@ -59,15 +62,14 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 	public final static int CREATE_EVENT = 1;
 	public final static int CREATE_TASK = 2;
 	public final static int VOICE_INPUT = 3;
-	public final static int BACK = 4;
-	public final static int UPDATE_TASK_EVENT = 5;
-	public final static int FORCE_HINT_SEARCH=6;
-	public final static int MANAGE_GROUPS=7;
-	public final static int SYSTEM_STATUS=8;
-	public final static int VIEW_ASSERTIONS=9;
-	public final static int NEW_PLACES=10;
 	
-	
+	public final static int UPDATE_TASK_EVENT = 4;
+	public final static int FORCE_HINT_SEARCH=5;
+	public final static int MANAGE_GROUPS=6;
+	public final static int SYSTEM_STATUS=7;
+	public final static int VIEW_ASSERTIONS=8;
+	public final static int NEW_PLACES=9;
+
 	
 	private static Thread downloadEventThread, downloadTaskThread;
 	private static int counter = 0; // counter for task and event thread completion
@@ -88,12 +90,13 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 	
 	private static TextToSpeech mTts;
 	private static int numberOfQueuedUtterances = 0;
-		
+	
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
-		
         accountManager = AccountManager.get(getApplicationContext());
+        
         Log.d(TAG,"Todo_3");
         accounts = accountManager.getAccountsByType(com.thesisug.Constants.ACCOUNT_TYPE);
 
@@ -103,11 +106,14 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
                 0, eventNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         userSettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
-        if (accounts.length == 0) {
+        if (accounts.length == 0) 
+        {
         	Log.d(TAG, "accounts.length");
         	Intent login = new Intent(getApplicationContext(),Login.class);
         	startActivityForResult(login, 0);
-        } else {
+        } 
+        else 
+        {
         	Log.d(TAG, "jumlah ="+accounts.length);
         	SeparatedListAdapter adapter = new SeparatedListAdapter(this);
         	setListAdapter(adapter);
@@ -125,6 +131,8 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
         
 		mTts = new TextToSpeech(getApplicationContext(), this);
 		mTts.setLanguage(Locale.ITALIAN);
+		
+		
 	}
 	
 	
@@ -159,23 +167,72 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 		item.put(ITEM_DATA, reminder);
 		item.put(REMIND_ME, remindme);
 		return item;
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu){
-		menu.add(0,CREATE_EVENT,0,"Create Event").setIcon(R.drawable.event);
-		menu.add(0,CREATE_TASK,0,"Create Task").setIcon(R.drawable.task);
-		menu.add(0,VOICE_INPUT,0,"Voice Input").setIcon(R.drawable.voice);
-		menu.add(0,UPDATE_TASK_EVENT,0,"Synchronize").setIcon(R.drawable.sync);
-		menu.add(0,FORCE_HINT_SEARCH,0,"Search for hints").setIcon(R.drawable.radarcol);
-		menu.add(0,MANAGE_GROUPS,0,"Groups").setIcon(R.drawable.user_group);
-		menu.add(0,SYSTEM_STATUS,0,"System status").setIcon(R.drawable.traffic_lights);	
-		menu.add(0,NEW_PLACES,0,"New Places").setIcon(R.drawable.view_assertions);
-		menu.add(0,VIEW_ASSERTIONS,0,"View Assertions").setIcon(R.drawable.view_assertions);
-		menu.add(0,BACK,0,"EXIT").setIcon(R.drawable.exit);
-		return true;
+	}	
+	
+	/**
+	 * 
+	 * Funcion to use custom layout for actionbar elements.
+	 * Actually unused to follow Android's desing guidelines.
+	 * 
+	 * @author Alberto Servetti
+	 * @param text
+	 * @param resId
+	 * @param itemId
+	 * @param m
+	 */
+	private void addMenuCustomLayout(String text,int resId,int itemId ,Menu m)
+	{
+		final MenuItem item;
+		LayoutInflater inflator = (LayoutInflater) this .getSystemService(getApplicationContext().LAYOUT_INFLATER_SERVICE);
+        View v = inflator.inflate(R.layout.actionbar_item, null);
+		TextView title = (TextView) v.findViewById(R.id.ab_title);
+        title.setText(text);
+        ImageView icon = (ImageView) v.findViewById(R.id.ab_icon);
+        icon.setImageResource(resId);
+        
+        item = m.add(0,itemId,0,text);
+		item.setActionView(v).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM|MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		item.getActionView().setOnClickListener(new OnClickListener() {
+	        @Override
+	        public void onClick(View v) {
+	            onOptionsItemSelected(item);
+	        }
+	    });/*
+		icon.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				onOptionsItemSelected(item);
+				
+				
+			}
+		});
+        title.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				onOptionsItemSelected(item);
+				
+			}
+		});*/
 	}
 	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		menu.add(0,CREATE_EVENT,0,"Create Event").setIcon(R.drawable.event2).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		menu.add(0,CREATE_TASK,0,"Create Task").setIcon(R.drawable.task2).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+	    menu.add(0,VOICE_INPUT,0,"Voice Input").setIcon(R.drawable.voice2).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM|MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		menu.add(0,UPDATE_TASK_EVENT,0,"Synchronize").setIcon(R.drawable.sync).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM|MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+	    menu.add(0,FORCE_HINT_SEARCH,0,"Search for hints").setIcon(R.drawable.radarcol).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM|MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		menu.add(0,MANAGE_GROUPS,0,"Groups").setIcon(R.drawable.user_group).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM|MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		menu.add(0,SYSTEM_STATUS,0,"System status").setIcon(R.drawable.traffic_lights).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM|MenuItem.SHOW_AS_ACTION_WITH_TEXT);	
+		menu.add(0,NEW_PLACES,0,"New Places").setIcon(R.drawable.view_assertions).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM|MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		menu.add(0,VIEW_ASSERTIONS,0,"View Assertions").setIcon(R.drawable.view_assertions).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM|MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		
+		return true;
+	}
+	 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		Intent intent;
@@ -204,7 +261,9 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 			String sentence=(String) getText(R.string.searching_around_here);
 			Todo.speakIt(sentence);
 			boolean _checkMinDistanceInHintSearch=false;
-			TaskNotification.getInstance().startHintSearch(null,_checkMinDistanceInHintSearch);
+			Log.d(TAG,"Going to check hints.");
+			TaskNotification.getInstance().forceLocationFix();
+			ActionTracker.forceHintSearch(Calendar.getInstance().getTime(), TaskNotification.getInstance().getLastKnownLocation(), getApplicationContext());
 			Toast.makeText(getApplicationContext(), R.string.hint_search_started, Toast.LENGTH_SHORT).show();
 			break;
 			
@@ -234,14 +293,14 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 			// goes back and forth between edit-show
 			intent = new Intent(Todo.this, PlacesTab.class);
 			startActivityForResult(intent, 0);
-			break;		
+			break;	
 		default:
+			
 			finish();
 			break;
 		}
 		return true;
 	}
-	
 //	public static void speakIt(String sentence){
 //			
 //	   	//Avvio la sintesi vocale
@@ -301,14 +360,18 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 	}
 
 	@Override
-	protected Dialog onCreateDialog(int id) {
-		if (id == 0) {
+	protected Dialog onCreateDialog(int id) 
+	{
+		if (id == 0) 
+		{
 			final ProgressDialog dialog = new ProgressDialog(this);
 			dialog.setMessage(getText(R.string.retrieving_event));
 			dialog.setIndeterminate(true);
 			dialog.setCancelable(false);
-			dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-				public void onCancel(DialogInterface dialog) {
+			dialog.setOnCancelListener(new DialogInterface.OnCancelListener() 
+			{
+				public void onCancel(DialogInterface dialog) 
+				{
 					Log.i(TAG, "Retrieving data is canceled");
 				}
 			});
@@ -325,68 +388,87 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 	 * Called when user returns after login screen
 	 */
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent intent){
-    	currentDialog=0;
-    	showDialog(currentDialog);
-		accountManager = AccountManager.get(getApplicationContext());
-        accounts = accountManager.getAccountsByType(com.thesisug.Constants.ACCOUNT_TYPE);
-        Log.i(TAG, "Retreived "+accounts.length+ " accounts");
-        //If the user doesn't set any account for the application (e.g. press the back button of the phone)
-        if (accounts.length == 0) {
-        	AlertDialog.Builder registrationDialog=	new AlertDialog.Builder(this);
-        	registrationDialog.setIcon(android.R.drawable.ic_dialog_alert);
-        	registrationDialog.setTitle(R.string.application_quit);
-        	registrationDialog.setMessage(R.string.no_account_set_ask_if_want_to_register);
-        	registrationDialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                	//Start login activity
-                	Intent login = new Intent(getApplicationContext(),Login.class);
-                	startActivityForResult(login, 0);
-                       
-                }
-
-            });
-        	registrationDialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                    //Stop the activity
-                    Todo.this.finish();    
-                }
-
-            });
-        	registrationDialog.show();
-        }else{
-	        username = accounts[0].name;
-			// refresh content from server
-			downloadEventThread = EventResource.getAllEvent(handler, this);
-			downloadTaskThread = TaskResource.getFirstTask(handler, this);
-			Log.i(TAG, "onActivityResult create new thread to download");
-        }
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+	{
+		if(requestCode==0)
+		{
+	    	currentDialog=0;
+	    	showDialog(currentDialog);
+			accountManager = AccountManager.get(getApplicationContext());
+	        accounts = accountManager.getAccountsByType(com.thesisug.Constants.ACCOUNT_TYPE);
+	        Log.i(TAG, "Retreived "+accounts.length+ " accounts");
+	        //If the user doesn't set any account for the application (e.g. press the back button of the phone)
+	        if (accounts.length == 0) 
+	        {
+	        	AlertDialog.Builder registrationDialog=	new AlertDialog.Builder(this);
+	        	registrationDialog.setIcon(android.R.drawable.ic_dialog_alert);
+	        	registrationDialog.setTitle(R.string.application_quit);
+	        	registrationDialog.setMessage(R.string.no_account_set_ask_if_want_to_register);
+	        	registrationDialog.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+	
+	                @Override
+	                public void onClick(DialogInterface dialog, int which) {
+	                	//Start login activity
+	                	Intent login = new Intent(getApplicationContext(),Login.class);
+	                	startActivityForResult(login, 0);
+	                       
+	                }
+	
+	            });
+	        	registrationDialog.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+	
+	                @Override
+	                public void onClick(DialogInterface dialog, int which) {
+	
+	                    //Stop the activity
+	                    Todo.this.finish();    
+	                }
+	
+	            });
+	        	registrationDialog.show();
+	        }else
+	        {
+		        username = accounts[0].name;
+				// refresh content from server
+				downloadEventThread = EventResource.getAllEvent(handler, this);
+				downloadTaskThread = TaskResource.getFirstTask(handler, this);
+				Log.i(TAG, "onActivityResult create new thread to download");
+	        }
+	    }
 	}
 	
 	
-	
+	 
 	public void afterTaskLoaded(List<SingleTask> data){
 		tasks = new LinkedList<LinkedHashMap<String,?>>();
 		Log.d(TAG,"afterTaskLoaded");
-		if (data == null){
+		if (data == null)
+		{
 			tasks.add(createItem (new SingleTask(getText(R.string.error_connect_task).toString(), "", "", "", "", ""), false));
-		}else {	
-			if (data.isEmpty()){
+		}
+		else  
+		{	
+			if (data.isEmpty())
+			{
 				tasks.add(createItem (new SingleTask(getText(R.string.no_task_today).toString(), "", "", "", "", ""), false));	
-			}else {
-				for (SingleTask o : data){
+			}
+			else 
+			{
+				for (SingleTask o : data)
+				{
 					tasks.add(createItem(o, userSettings.getBoolean(o.title, true)));
 				}
+				
 			}
 		}
 		
-		if (dataComplete()){
+		if (dataComplete())
+		{
 			combineResult(); //if events is already loaded too
+			
+			//Check Hints for Tasks
+			//Log.d(TAG,"Going to check hints.");
+			//TaskNotification.getInstance().forceLocationFix();
 		}
 		
 		
@@ -406,51 +488,59 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
             	Log.d(TAG,"Event id in afterEventLoaded: "+o.eventID);
 				// add to the listview
 				event.add(createItem(o, userSettings.getBoolean(o.title, true)));
-				try {
-					cal = (Calendar) new XsDateTimeFormat().parseObject(o.startTime);
-					eventNotificationIntent.putExtra("username", username);
-					eventNotificationIntent.putExtra("session", session);
-					eventNotificationIntent.putExtra("title", o.title);
-					eventNotificationIntent.putExtra("location", o.location);
-					eventNotificationIntent.putExtra("startTime", o.startTime);
-					eventNotificationIntent.putExtra("endTime", o.endTime);
-					eventNotificationIntent.putExtra("priority", o.priority);
-					eventNotificationIntent.putExtra("description", o.description);
-					Log.d(TAG,"eventNotificationIntent.putExtra(eventID="+o.eventID);
-					eventNotificationIntent.putExtra("eventID", o.eventID);
-					eventNotificationIntent.putExtra("reminderID", o.reminderID);
-					eventNotificationIntent.putExtra("longitude", o.gpscoordinate.longitude);
-					eventNotificationIntent.putExtra("latitude", o.gpscoordinate.latitude);
-					alarmIntent = PendingIntent.getBroadcast(Todo.this,
-			                counter++, eventNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-					if (userSettings.getBoolean(o.title, true))	am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), alarmIntent);
-				} catch (ParseException e) {
-					Log.i(TAG, "Error when adding parsing event time to be added to alarm manager");
-					e.printStackTrace();
-				}
+				if(!SnoozeHandler.checkIfTaskIsSnoozed(o.title))
+		    	{
+					try {
+						cal = (Calendar) new XsDateTimeFormat().parseObject(o.startTime);
+						eventNotificationIntent.putExtra("username", username);
+						eventNotificationIntent.putExtra("session", session);
+						eventNotificationIntent.putExtra("title", o.title);
+						eventNotificationIntent.putExtra("location", o.location);
+						eventNotificationIntent.putExtra("startTime", o.startTime);
+						eventNotificationIntent.putExtra("endTime", o.endTime);
+						eventNotificationIntent.putExtra("priority", o.priority);
+						eventNotificationIntent.putExtra("description", o.description);
+						Log.d(TAG,"eventNotificationIntent.putExtra(eventID="+o.eventID);
+						eventNotificationIntent.putExtra("eventID", o.eventID);
+						eventNotificationIntent.putExtra("reminderID", o.reminderID);
+						eventNotificationIntent.putExtra("longitude", o.gpscoordinate.longitude);
+						eventNotificationIntent.putExtra("latitude", o.gpscoordinate.latitude);
+						alarmIntent = PendingIntent.getBroadcast(Todo.this,
+				                counter++, eventNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+						if (userSettings.getBoolean(o.title, true))	am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), alarmIntent);
+					} catch (ParseException e) 
+					{
+						Log.i(TAG, "Error when adding parsing event time to be added to alarm manager");
+						e.printStackTrace();
+					}
+		    	}
 			}
 		}
 		if (dataComplete()) combineResult(); // if tasks is already downloaded too
 	}
 	
-	private synchronized boolean dataComplete(){
+	private synchronized boolean dataComplete()
+	{
 		counter++;
-		if (counter >=2 ){
+		if (counter >=2 )
+		{
 			counter = 0;
 			return true;
-		} else return false;
+		} 
+		else 
+			return false;
 	}
 	
-	public void combineResult(){
+	public void combineResult()
+	{
 		Log.d(TAG, "after data is loaded, dismissed dialog 0");
+		
 		dismissDialog(currentDialog); //disable the progress dialog
 		currentDialog=-1;
 		counter = 0; // reset the counter
 
 		// create our list and custom adapter
 		SeparatedListAdapter adapter = new SeparatedListAdapter(this);		
-		
-		
 
 		//Tasks
 		SimpleAdapter taskAdapter = new SimpleAdapter(this, tasks, R.layout.todo_task,
@@ -465,19 +555,11 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 		adapter.addSection(getText(R.string.event_list_header).toString(), eventAdapter);
 		eventAdapter.setViewBinder(new EventBinder());
 		
-
+		setListAdapter(adapter);		
 		
-		setListAdapter(adapter);
 		
-		/*Check Hints for Tasks
-		boolean _checkMinDistanceInHintSearch=false;
-		TaskNotification.getInstance().startHintSearch(null,_checkMinDistanceInHintSearch);
-		*/
 	}
 	
-		
-	
-
 	class EventBinder implements ViewBinder{
 		@Override
 		public boolean setViewValue(View view, Object data,
@@ -486,7 +568,8 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 				CheckBox temp = (CheckBox) view;
 				temp.setChecked((Boolean)data);
 				return true;
-			} else if (view instanceof TextView) {
+			} else if (view instanceof TextView) 
+			{
 				SingleEvent event = (SingleEvent) data;
 				TextView temp = (TextView) view;
 				if (temp.getId()==R.id.list_complex_title) temp.setText(event.title);
@@ -535,7 +618,8 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 
 
 
-	public synchronized static void speakIt(String sentence) {
+	public synchronized static void speakIt(String sentence) 
+	{
 		//Avvio la sintesi vocale
 		if(userSettings.getBoolean("notification_hint_speak",false) && mTts!=null){
 			HashMap<String,String> optionalParameters = new HashMap<String,String>();

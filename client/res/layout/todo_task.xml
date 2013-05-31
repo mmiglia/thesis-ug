@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<LinearLayout  
+<RelativeLayout  
      xmlns:android="http://schemas.android.com/apk/res/android"  
      android:layout_width="fill_parent"  
-     android:layout_height="wrap_content"  
-     android:orientation="horizontal"  
-     android:paddingLeft="10dip"  
-     android:focusable="false">  
+     android:layout_height="wrap_content"
+     android:orientation="horizontal"
+     android:focusable="false"  
+     android:paddingTop="3dip"
+     android:paddingLeft="10dip"
+     android:background="@color/grey">   
      <TextView  
          android:id="@+id/list_complex_title"  
          android:layout_width="240dip"  
@@ -19,4 +21,4 @@
         android:focusable="false"
         android:layout_alignParentRight="true"
         />     
-</LinearLayout>
+</RelativeLayout>

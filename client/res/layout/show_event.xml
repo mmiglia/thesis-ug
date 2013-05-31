@@ -3,7 +3,10 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:stretchColumns="1">
-
+	<include 
+	layout="@layout/custom_titlebar"
+	>
+		</include>
     <RelativeLayout
     	android:layout_width="fill_parent"
     	android:layout_height="wrap_content"

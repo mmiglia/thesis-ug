@@ -1,29 +1,17 @@
 package com.thesisug.ui;
 
-import java.util.List;
-
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.thesisug.R;
 import com.thesisug.communication.AssertionsResource;
-import com.thesisug.communication.NetworkUtilities;
 import com.thesisug.communication.valueobject.SingleItemLocation;
 
 
@@ -47,7 +35,7 @@ public class Details_assertion_item extends Activity{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		final Bundle packet = getIntent().getExtras();
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		//requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.details_assertion_item);
 		
 		  Intent intent=getIntent(); // l'intent di questa activity

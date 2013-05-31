@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="@string/user_preferences">
+	    <ListPreference
+			android:title="@string/app_mode"
+			android:summary="@string/app_mode_desc"
+			android:key="appmode"
+			android:defaultValue="learning_mode"
+			android:entries="@array/p_mode"
+			android:entryValues="@array/p_mode_value" />
 		<ListPreference
 			android:title="@string/q_period"
 			android:summary="@string/interval"
@@ -12,7 +19,7 @@
 			android:title="@string/max_distance"
 			android:summary="@string/max_distance_desc"
 			android:key="maxdistance"
-			android:defaultValue="50000"
+			android:defaultValue="200"
 			android:entries="@array/distance"
 			android:entryValues="@array/distanceValue" />
 		<ListPreference
@@ -33,7 +40,7 @@
 
 	</PreferenceCategory>
 	<!-- NOTIFICATION -->
-	<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+	<PreferenceScreen 
 		android:title="@string/notification_preferences">
 		<CheckBoxPreference
                         android:title="Sound"
@@ -68,7 +75,7 @@
 	
 	
 	<!-- ADVANCED: server -->
-	<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+	<PreferenceScreen 
 		android:title="@string/advanced_preferences">
 
 		<PreferenceCategory android:title="@string/server_preferences">

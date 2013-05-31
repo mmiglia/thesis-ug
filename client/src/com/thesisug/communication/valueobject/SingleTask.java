@@ -2,7 +2,6 @@ package com.thesisug.communication.valueobject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
 /**
  * This is the basic task object that will be used for communications to client
  */

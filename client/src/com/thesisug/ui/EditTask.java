@@ -10,28 +10,23 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
 
 import com.thesisug.R;
 import com.thesisug.communication.GroupResource;
@@ -40,8 +35,10 @@ import com.thesisug.communication.valueobject.GroupData;
 import com.thesisug.communication.valueobject.SingleTask;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
 import com.thesisug.notification.TaskNotification;
+import com.thesisug.tracking.ActionTracker;
 
-public class EditTask extends Activity {
+public class EditTask extends Activity 
+{
 	private static final String TAG = "thesisug - EditTask";
 	// constants for dialog box choosing
 	private static final int TIMEFROM_DIALOG_ID = 0, DEADLINE_DATE_ID = 1, TIMETO_DIALOG_ID = 2, DEADLINE_TIME_ID = 3, SAVE_DATA_ID = 4, CREATE_DATA_ID = 5, DATE_ERROR_ID=6, ASSERTIONS=8;
@@ -85,6 +82,9 @@ public class EditTask extends Activity {
 		//TODO Eliminare e rimpiazzare con una lista dei gruppi disponibili
 		//groupId=(EditText) findViewById(R.id.task_groupId);
 		spinnerGroupList=(Spinner)findViewById(R.id.spinnerGroupTask);
+		
+		//Hide keyboard
+		this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN); 
 		
 		//Set deadline to tomorrow
 		deadline.add(Calendar.DAY_OF_MONTH, 1);
@@ -189,8 +189,8 @@ public class EditTask extends Activity {
 					break;
 				}
 				//Check Hints for Tasks (maybe after insert or change we can have some hints here around)
-				boolean checkMinDistanceInHintSearch=false;
-				TaskNotification.getInstance().startHintSearch(null,checkMinDistanceInHintSearch);
+				//boolean checkMinDistanceInHintSearch=false;
+				//TaskNotification.getInstance().startHintSearch(null,checkMinDistanceInHintSearch);
 			}
 		});
     	back.setOnClickListener(new View.OnClickListener() {
@@ -220,11 +220,14 @@ public class EditTask extends Activity {
 	}
     
     public void finishSave (boolean result) {
-    	switch (currentDialog){
-    		case EDIT_TASK : dismissDialog(SAVE_DATA_ID); 
+    	switch (currentDialog)
+    	{
+    		case EDIT_TASK : 
+    			dismissDialog(SAVE_DATA_ID); 
     		
     		break;
-    		case CREATE_TASK : dismissDialog(CREATE_DATA_ID);
+    		case CREATE_TASK : 
+    			dismissDialog(CREATE_DATA_ID);
     		
     		break;
     	}
@@ -235,7 +238,8 @@ public class EditTask extends Activity {
     	startActivity(intent1);
     	
 		
-    	if (result) {
+    	if (result) 
+    	{
     		Intent intent = new Intent();
 			intent.putExtra("title", title.getText().toString());
 			intent.putExtra("deadline", new XsDateTimeFormat().format(deadline));
@@ -249,14 +253,16 @@ public class EditTask extends Activity {
 			
 			// segnala che il contenuto è stato correttamente salvato sul server
 			// (distingue fra creazione e modifica)
-			switch (currentDialog) {
-			case EDIT_TASK: Toast.makeText(EditTask.this, R.string.edit_success,
-                    Toast.LENGTH_LONG).show(); 
+			switch (currentDialog) 
+			{
+			case EDIT_TASK: 
+				
+				Toast.makeText(EditTask.this, R.string.edit_success,Toast.LENGTH_LONG).show(); 
 					
 			break;
-			case CREATE_TASK: Toast.makeText(EditTask.this, R.string.create_success,
-                    Toast.LENGTH_LONG).show(); 
-			
+			case CREATE_TASK: 
+					Toast.makeText(EditTask.this, R.string.create_success,Toast.LENGTH_LONG).show(); 
+					ActionTracker.contentAdded(Calendar.getInstance().getTime(), title.getText().toString(), getApplicationContext(),0);
 			break;
 			}
 			
@@ -264,11 +270,16 @@ public class EditTask extends Activity {
 			/*CustomizeDialog customizeDialog = new CustomizeDialog(this, EditTask.this);
 			customizeDialog.show();*/
 		
-		
+			//Check Hints for Tasks (maybe after insert or change we can have some hints here around)
+			Log.d(TAG,"Going to check hints.");
+			TaskNotification.getInstance().forceLocationFix();
+			
 			finish();
 
-			
-    	} else {
+			 
+    	} 
+    	else 
+    	{
     		Toast.makeText(EditTask.this, R.string.saving_error,
                     Toast.LENGTH_LONG).show();
     	}    	

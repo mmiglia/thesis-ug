@@ -12,7 +12,8 @@ public class ErrorNotification extends Service{
 	private final IBinder mBinder = new LocalBinder();
 	
     @Override
-    public void onCreate() {
+    public void onCreate() 
+    {
     	
     	Thread notifyingThread = new Thread(null, mainthread, "ErrorNotificationService");
     }
