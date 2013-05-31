@@ -34,57 +34,57 @@ public class Parser {
 	
 	public boolean startParse(String userid, String text, Language l) {
 		 //step 1: split words/arguments + case markers (DONE)
-//		System.out.println("Testo da parsare: "+text);
-//		System.out.println("Parser - step 1 DONE");
+		System.out.println("Testo da parsare: "+text);
+		System.out.println("Parser - step 1 DONE");
 		 //step 2: pick possible Verbs
 		int index;
 		text = text.toLowerCase();
 		LinkedList<String> words, regex; 
 		LinkedList<VerbArgs> step2result = new LinkedList<VerbArgs>();
 		log.debug("There are "+command.size()+" commands");
-//		System.out.println("Ci sono "+command.size()+" commands");
-//		for (int i=0; i<command.size(); i++) {
-//			System.out.println("command "+i+": "+command.get(i));
-//		}
-//		System.out.println("There are "+command.size()+" commands");
+		System.out.println("Ci sono "+command.size()+" commands");
+		for (int i=0; i<command.size(); i++) {
+			System.out.println("command "+i+": "+command.get(i));
+		}
+		System.out.println("There are "+command.size()+" commands");
 		
 		for (Verb o : command){ // for all commands registered to this parser (i.e. addTask, addEvent)
 			log.debug("Analyse command:"+o.getName()+" "+o.toString());
-//			System.out.println("Analisi comando: "+o.getName()+" - "+o.toString());
+			System.out.println("Analisi comando: "+o.getName()+" - "+o.toString());
 			//System.out.println("Analyse command:"+o.getName()+" "+o.toString());
 			double maxVerbScore =0.0;
 			for (String s : o.getVerbs(l)){ // for every synonyms of the command
-//				System.out.println("#############################################Ciclo for - Verb: "+s);
+				System.out.println("#############################################Ciclo for - Verb: "+s);
 				//get the list of substring of the verb, from 'add task' we have ['add task','add tas','add ta'..etc]
 				regex = getRegex(s);
-//				System.out.println("regex: "+regex);
+				System.out.println("regex: "+regex);
 				
 				double score = regex.size();
-				//System.out.println("Start score:"+score);
+				System.out.println("Start score:"+score);
 				for (String r : regex){ // for every possible regex
 					log.debug("if "+text + " contains " + r);
-//					System.out.println("Espressione regolare: \""+r+"\" - SCORE="+score);
-//					System.out.println("se \""+text+"\" contiene \""+r+"\"");
-//					System.out.println("if "+text + " contains " + r);
+					System.out.println("Espressione regolare: \""+r+"\" - SCORE="+score);
+					System.out.println("se \""+text+"\" contiene \""+r+"\"");
+					System.out.println("if "+text + " contains " + r);
 					if (text.contains(r)){
-//						System.out.println("------------------DENTRO ALL'IF---------------");
-//						System.out.println("Dimensione iniziale step2result:"+step2result.size());
+						System.out.println("------------------DENTRO ALL'IF---------------");
+						System.out.println("Dimensione iniziale step2result:"+step2result.size());
 						score /= regex.size();
-//						System.out.println("IF - Espressione regolare: \""+r+"\" - SCORE="+score);
-//						System.out.println("Score after if:"+score);
-//						System.out.println("Split text con "+r+" e crea nuova LinkedList");
+						System.out.println("IF - Espressione regolare: \""+r+"\" - SCORE="+score);
+						System.out.println("Score after if:"+score);
+						System.out.println("Split text con "+r+" e crea nuova LinkedList");
 						LinkedList<String> args = new LinkedList<String>(Arrays.asList(text.split(r)));
-//							System.out.println("Start args list - 1");
-//							for(String arg : args){
-//								System.out.print(" - \""+arg+"\"");
-//							}
-//							System.out.println("");
-//							System.out.println("End args list - 1");
+							System.out.println("Start args list - 1");
+							for(String arg : args){
+								System.out.print(" - \""+arg+"\"");
+							}
+							System.out.println("");
+							System.out.println("End args list - 1");
 						Iterator<String> argsIterator = args.iterator();
 						//remove empty string
 						while (argsIterator.hasNext()) {
 							if(argsIterator.next().isEmpty()) {
-//								System.out.println("Rimozione elemento da LinkedList args perchè vuoto");
+								System.out.println("Rimozione elemento da LinkedList args perchè vuoto");
 								argsIterator.remove();
 							}
 						}
@@ -94,10 +94,10 @@ public class Parser {
 						for (int i=0; i<args.size(); i++) {
 							str = args.get(i);
 							if (str.substring(0, 1).equals(" ")) {
-//								System.out.println("rimuovo lo spazio all'inizio della stringa: '"+str+"'");
+								System.out.println("rimuovo lo spazio all'inizio della stringa: '"+str+"'");
 								str = str.substring(1, str.length());
 								args.set(i, str);
-//								System.out.println("stringa senza spazio: '"+args.get(i)+"'");
+								System.out.println("stringa senza spazio: '"+args.get(i)+"'");
 							}
 						}
 						boolean find_delim = false;
@@ -106,12 +106,12 @@ public class Parser {
 							for (SemanticRoles rol : roles) {
 								//per ogni delimitatore roles.delimiter controllo che sia presente all'inizio
 								String delim = rol.delimiter;
-//								System.out.println("controllo che il delimitatore '"+delim+"' sia presente all'inizio della frase: '"+args.get(i)+"'");
-//								System.out.println("devo controllare l'inizio della stringa da 0 a "+delim.length());
+								System.out.println("controllo che il delimitatore '"+delim+"' sia presente all'inizio della frase: '"+args.get(i)+"'");
+								System.out.println("devo controllare l'inizio della stringa da 0 a "+delim.length());
 								if (delim.length()<args.get(i).length()) {
-//									System.out.println(args.get(i).substring(0, delim.length())+" = "+delim+"???????");
+									System.out.println(args.get(i).substring(0, delim.length())+" = "+delim+"???????");
 									if (args.get(i).substring(0, delim.length()).equalsIgnoreCase(delim)) {
-//										System.out.println("Trovato il delimitatore: '"+delim+"'");
+										System.out.println("Trovato il delimitatore: '"+delim+"'");
 										find_delim = true;
 										continue findelimiters;
 										// CONTROLLARE SE ESCE DAL CICLO!!!!!!!!!!!!!!!!!!
@@ -127,61 +127,61 @@ public class Parser {
 								str = args.get(i);
 								str = r+" "+str;							
 								args.set(i, str);
-//								System.out.println("+++++++++++++++++++++++ NO DELIMITER -> nuovo args: "+args.get(i));
+								System.out.println("+++++++++++++++++++++++ NO DELIMITER -> nuovo args: "+args.get(i));
 							}
 						}
-//							System.out.println("Start args list - 2");
-//							for(String arg : args){
-//								System.out.println(arg);
-//							}
-//							System.out.println("End args list - 2");
+							System.out.println("Start args list - 2");
+							for(String arg : args){
+								System.out.println(arg);
+							}
+							System.out.println("End args list - 2");
 						step2result.add(new VerbArgs(o, args, score));
 						
-//						System.out.print("++++++Added "+o.getName()+" with args:");
-//						for(String arg : args){
-//							System.out.print(", "+arg);
-//						}
-//						System.out.println("");
-//							for (VerbArgs vea : step2result) {
-//								System.out.print("verbo: "+vea.verb+" - args: ");
-//								for (String str : vea.args) 
-//									System.out.print(str+", ");
-//								System.out.println(" - score: "+vea.score);
-//							}
+						System.out.print("++++++Added "+o.getName()+" with args:");
+						for(String arg : args){
+							System.out.print(", "+arg);
+						}
+						System.out.println("");
+							for (VerbArgs vea : step2result) {
+								System.out.print("verbo: "+vea.verb+" - args: ");
+								for (String str2 : vea.args) 
+								System.out.print(str2+", ");
+								System.out.println(" - score: "+vea.score);
+							}
 						maxVerbScore = (score>maxVerbScore)? score : maxVerbScore;
-//						System.out.println("maxVerbScore= "+maxVerbScore);
+						System.out.println("maxVerbScore= "+maxVerbScore);
 						//System.out.println("Maxscore:"+maxVerbScore);
-//						System.out.println("------------------FINE IF---------------");
+						System.out.println("------------------FINE IF---------------");
 						break; //break loop, get the next synonym
 					}
-//					System.out.println("Dimensione (dopo l'if) step2result="+step2result.size());
+					System.out.println("Dimensione (dopo l'if) step2result="+step2result.size());
 					score-=1;
 				}
 			}
-			//System.out.println("--Final filtering on step2result so that each verb only has one candidate with the best score--");
+			System.out.println("--Final filtering on step2result so that each verb only has one candidate with the best score--");
 			// final filtering on step2result so that each verb only has one candidate
 			// with the best score
 			Iterator<VerbArgs> va = step2result.iterator();
 			while (va.hasNext()) {
 				
 				VerbArgs current = va.next();
-//				System.out.println("Analize:"+current.verb.getName());
+				System.out.println("Analize:"+current.verb.getName());
 				if (current.verb.equals(o) && current.score<maxVerbScore){
-//					System.out.println("***********"+ current.verb.getName()+": "+current.verb.getName()+" equals["+o.getName()+"] removed ("+current.score+"<"+maxVerbScore+")");
+					System.out.println("***********"+ current.verb.getName()+": "+current.verb.getName()+" equals["+o.getName()+"] removed ("+current.score+"<"+maxVerbScore+")");
 					va.remove(); 
 				}
 			}
-			//System.out.println("--Filtering DONE--");
+			System.out.println("--Filtering DONE--");
 		}
 		
-//		System.out.println("<<<<<<<<<<<<Contenuto step2result>>>>>>>>>>>>");
-//		for (VerbArgs vea : step2result) {
-//			System.out.print("verbo: "+vea.verb+" - args: ");
-//			for (String str : vea.args) 
-//				System.out.print("\""+str+"\", ");
-//			System.out.println(" - score: "+vea.score);
-//		}
-//		System.out.println("<<<<<<<<<<<<Contenuto step2result>>>>>>>>>>>>");
+		System.out.println("<<<<<<<<<<<<Contenuto step2result>>>>>>>>>>>>");
+		for (VerbArgs vea : step2result) {
+			System.out.print("verbo: "+vea.verb+" - args: ");
+			for (String str : vea.args) 
+				System.out.print("\""+str+"\", ");
+			System.out.println(" - score: "+vea.score);
+		}
+		System.out.println("<<<<<<<<<<<<Contenuto step2result>>>>>>>>>>>>");
 		
 		//Now, in step2result, for each Verb (command) we got the verb that better match in the input sentence
 		
@@ -190,17 +190,17 @@ public class Parser {
 		 //step 4: group into arguments
 		LinkedList<PossibleParses> step4result = new LinkedList<PossibleParses>();
 		 //Get the delimiters
-		//System.out.println("Step 4 - Start");
+		System.out.println("Step 4 - Start");
 
 		 for (VerbArgs va : step2result){ // for every verb-argument pairs 
 			 int findcount = 0;
 			 LinkedList<Arguments> findarg = new LinkedList<Arguments>();
-//			 System.out.print("Verb:"+va.verb.getName());
-//			 System.out.print(" - args: ");
-//			 for (String s : va.args) {
-//				 System.out.print("'"+s+"', ");
-//			 }
-//			 System.out.println("");
+			 System.out.print("Verb:"+va.verb.getName());
+			 System.out.print(" - args: ");
+			 for (String s : va.args) {
+				 System.out.print("'"+s+"', ");
+			 }
+			 System.out.println("");
 			 
 			 
 			 for (Arguments arg : va.verb.getArguments()){ 
@@ -209,28 +209,28 @@ public class Parser {
 				 // per AddTask gli argomenti sono COSA e QUANDO, per AddEvent sono COSA e QUANDO
 				 // COSA -> OBJECT - QUANDO -> TIME
 				 
-//				 System.out.println("Argument for '"+va.verb.getName()+"': noun="+arg.noun.toString()+" role="+arg.role);
+				 System.out.println("Argument for '"+va.verb.getName()+"': noun="+arg.noun.toString()+" role="+arg.role);
 				 
 				 ListIterator<String> vaIterator = va.args.listIterator();
 				 				 
 				 while (vaIterator.hasNext()){ // for every possible argument string in this pair
 					 // per ognuno degli argomenti estratti allo step2 per un determinato comando
 					 String vargs = vaIterator.next();
-//					 System.out.println("STEP2 vargs="+vargs);					 
+					 System.out.println("STEP2 vargs="+vargs);					 
 					 
 					 possibleArgument:
 					 for (SemanticRoles sr : roles){ // find the delimiter
 						 // per tutti i tipi di delimitatore (OBJECT, GOAL, SOURCE, LOCATION, TIME)
-//						 System.out.println("If "+arg.role+"=="+sr.role);
+						 System.out.println("If "+arg.role+"=="+sr.role);
 						 if (arg.role == sr.role){
-//							 System.out.print("if !hasDelimiter("+vargs+","+sr.delimiter+")->");
+							 System.out.print("if !hasDelimiter("+vargs+","+sr.delimiter+")->");
 							 if (!hasDelimiter(vargs,sr.delimiter)) {
 								 System.out.println("CONTINUE");
 								 continue;
 							 }
 							 else {
-//								 System.out.println("ELSE");
-//								 System.out.println("Else: extractArgument("+vargs+","+ sr.delimiter+")");
+								 System.out.println("ELSE");
+								 System.out.println("Else: extractArgument("+vargs+","+ sr.delimiter+")");
 								 ExtractArgumentReturn extractResult = extractArgument(vargs, sr.delimiter);
 								 //Remove current element (the one actually in vargs)
 								 vaIterator.remove();
@@ -238,13 +238,13 @@ public class Parser {
 								 if (!extractResult.remainder.isEmpty()) {
 									 // add a possible remainder (another
 									 vaIterator.add(extractResult.remainder);
-//									 System.out.println("Added:"+extractResult.remainder);
-//									 System.out.println("extractResult.realargument="+extractResult.realargument);
+									 System.out.println("Added:"+extractResult.remainder);
+									 System.out.println("extractResult.realargument="+extractResult.realargument);
 								 }
 								 Arguments toSave = new Arguments(arg.role, arg.noun);
-//								 System.out.println("Arguments toSave: arg.role="+arg.role.name()+" arg.noun="+arg.noun.toString());
+								 System.out.println("Arguments toSave: arg.role="+arg.role.name()+" arg.noun="+arg.noun.toString());
 								 toSave.setContent(extractResult.realargument);
-//								 System.out.println("Arguments toSave: content="+extractResult.realargument);
+								 System.out.println("Arguments toSave: content="+extractResult.realargument);
 								 findarg.add(toSave); // link to reference
 								 findcount++;
 								 
@@ -255,64 +255,64 @@ public class Parser {
 					 }
 				 }
 			 }
-//			 System.out.println("--INIZIO Process degli elementi che non ho ancora catalogato, " +
-//			 		"li classifico come oggetti con ruolo OBJECT (quindi elementi generici, " +
-//			 		"che non mi servono a capire)--");
+			 System.out.println("--INIZIO Process degli elementi che non ho ancora catalogato, " +
+			 		"li classifico come oggetti con ruolo OBJECT (quindi elementi generici, " +
+			 		"che non mi servono a capire)--");
 			 if (va.args.size()>0){
 				 for (String s:va.args){
-					 //System.out.println(">>>>>>>>>>>>>>>>Stringa in va.args:"+s);
+					 System.out.println(">>>>>>>>>>>>>>>>Stringa in va.args:"+s);
 					 
 					 Arguments toSave = new Arguments(SemanticRoles.RoleType.OBJECT, new ArbitraryObject());
 					 
 					 toSave.setContent(s);
 					 findarg.add(toSave);
-//					 System.out.println("Added to findarg: object with RoleType:OBJECT and content="+s);
+					 System.out.println("Added to findarg: object with RoleType:OBJECT and content="+s);
 					 findcount++;
 				 }
 			 }
-//			 System.out.println("--FINE Process degli elementi che non ho ancora catalogato--");
+			 System.out.println("--FINE Process degli elementi che non ho ancora catalogato--");
 			 
-//			 for (Arguments elemento : findarg) {
-//				 System.out.println("Elemento: noun:'"+elemento.noun+"' role:'"+elemento.role+"' content:'"+elemento.content+"'");
-//			 }
+			 for (Arguments elemento : findarg) {
+				 System.out.println("Elemento: noun:'"+elemento.noun+"' role:'"+elemento.role+"' content:'"+elemento.content+"'");
+			 }
 			 
 			 double score = va.score;
-//			 System.out.println("va.score:"+va.score);
+			 System.out.println("va.score:"+va.score);
 			 
-//			 System.out.println("va.verb.getArguments():");
-//			 for(Arguments arg: va.verb.getArguments()){
-//				 System.out.println("va.verb.name:'"+va.verb.getName()+"' arg.role:'"+arg.role+"' arg.noun:'"+arg.noun+"'");				 
-//			 }
-//			 System.out.println("filled if findcount >="+va.verb.getArguments().size());
+			 System.out.println("va.verb.getArguments():");
+			 for(Arguments arg: va.verb.getArguments()){
+				 System.out.println("va.verb.name:'"+va.verb.getName()+"' arg.role:'"+arg.role+"' arg.noun:'"+arg.noun+"'");				 
+			 }
+			 System.out.println("filled if findcount >="+va.verb.getArguments().size());
 			 
 			 boolean filled = findcount >= va.verb.getArguments().size(); // this verb is complete with arguments
-//			 System.out.println("filled:"+filled);
+			 System.out.println("filled:"+filled);
 			 //If filled we give one more point to score
 			 score += (filled)? 1:0;
-//			 System.out.print("oggetto PossibleParses con: '"+va.verb.getName()+"',");
-//			 for (Arguments elemento : findarg) {
-//				 System.out.print(" <<"+elemento.noun+", "+elemento.role+", "+elemento.content+">>, ");
-//			 }
-//			 System.out.println(filled+", "+score);
+			 System.out.print("oggetto PossibleParses con: '"+va.verb.getName()+"',");
+			 for (Arguments elemento : findarg) {
+				 System.out.print(" <<"+elemento.noun+", "+elemento.role+", "+elemento.content+">>, ");
+			 }
+			 System.out.println(filled+", "+score);
 			 step4result.add(new PossibleParses(va.verb, findarg, filled, score));
 		 }
 		 // END STEP 4
-//		 System.out.println("Fine step 4");
+		 System.out.println("Fine step 4");
 		 
-		 //System.out.println("In step4result ci sono "+ step4result.size()+" elementi");
+		 System.out.println("In step4result ci sono "+ step4result.size()+" elementi");
 		 double maxscore = 1.5;// this is the threshold
 		 PossibleParses bestresult = null;
-		 //System.out.println("We get the PossibleParses that is complete with the max score, if there is not a complete one, we return null");
+		 System.out.println("We get the PossibleParses that is complete with the max score, if there is not a complete one, we return null");
 		 for (PossibleParses p : step4result){
 			 if (!p.complete) 
 				 continue;
-			 //System.out.println(p.verb+" complete:"+p.complete+" score:"+p.score);
+			 System.out.println(p.verb+" complete:"+p.complete+" score:"+p.score);
 			 if (p.score > maxscore) {
 				 bestresult = p; 
 				 maxscore=p.score;
 			 }
 		 }
-//		 System.out.println("bestresult +++++++++++");
+		 System.out.println("bestresult +++++++++++");
 		 if (bestresult == null){
 			 log.info("Parser could not understand user input");
 			 System.out.println("Parser could not understand user input");
@@ -321,12 +321,12 @@ public class Parser {
 		 else {
 			 log.info("Parser successfully parsed user input");
 			 System.out.println("Parser successfully parsed user input");
-//			 System.out.print("PARSER: verbo:"+bestresult.verb+" userid:"+userid+" argomenti:");
-//			 for (Arguments ciccio : bestresult.args) {
-//				 System.out.println("Noun:"+ciccio.noun.toString()+" Content:"+ciccio.content+" Role:"+ciccio.role.toString());
-//			 }
-//			 System.out.println("");
-//			 System.out.println("Richiamo la funzione execute");
+			 System.out.print("PARSER: verbo:"+bestresult.verb+" userid:"+userid+" argomenti:");
+			 for (Arguments ciccio : bestresult.args) {
+				 System.out.println("Noun:"+ciccio.noun.toString()+" Content:"+ciccio.content+" Role:"+ciccio.role.toString());
+			 }
+			 System.out.println("");
+			 System.out.println("Richiamo la funzione execute");
 			 return bestresult.verb.execute(userid, bestresult.args);
 		 }
 		

@@ -79,11 +79,13 @@ public class TaskManager extends Publisher<TaskSubscriber> implements TaskInterf
 		Calendar now = Calendar.getInstance();
 		Calendar compare;
 		Iterator<SingleTask> iterator = result.iterator();
-		while (iterator.hasNext()){
+		while (iterator.hasNext())
+		{
 			SingleTask o = iterator.next();
 			compare = Converter.toJavaDate(o.dueDate);
 			// delete if task's deadline is already passed
-			if(now.after(compare)) iterator.remove();			
+			if(now.after(compare)) 
+				iterator.remove();			
 		}
 		log.debug("Found "+result.size() + " tasks for user that have a dueDate<deadline" );
 		Collections.sort(result); // sort based on compareTo method

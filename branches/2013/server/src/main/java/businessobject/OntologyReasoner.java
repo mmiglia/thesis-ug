@@ -38,8 +38,8 @@ public class OntologyReasoner {
 	
 	//private final static String ONTOLOGY_FILE = "http://gronksoft.altervista.org/HintsOntology.owl";
 	//private final static String ONTOLOGY_FILE = "http://localhost/HintsOntologyNew.owl";
-	private final static String ONTOLOGY_FILE = "/var/www/HintsOntologyNew.owl";
-	
+	//private final static String ONTOLOGY_FILE = "/var/www/HintsOntologyNew.owl";
+	private final static String ONTOLOGY_FILE = "/home/thesisug/workspace2/ephemere/src/main/resources/HintsOntology.owl";
 	//private final static String ONTOLOGY_FILE = "http://gronksoft.altervista.org/HintsOntology.owl";
 	//private final static String ONTOLOGY_FILE = "http://nettuno.dyndns.org/HintsOntology.owl";
 	
@@ -96,8 +96,13 @@ public class OntologyReasoner {
 			hermit.classifyObjectProperties();
 			NodeSet<OWLNamedIndividual> inferredlocation = hermit
 					.getObjectPropertyValues(item, location);
+			if(inferredlocation.isEmpty())
+				log.info("inferredlocation empty.");
 			Set<OWLNamedIndividual> locationvalues = inferredlocation
 					.getFlattened();
+			log.info("HermiT results :" + Integer.toString(locationvalues.size()));
+			
+			
 			List<String> result = new LinkedList<String>();			
 			for (OWLNamedIndividual o : locationvalues) {				
 				result.add(o.toStringID().replace('_', ' ').replaceFirst(base + "#", ""));

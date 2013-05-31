@@ -397,7 +397,6 @@ public enum CachingDatabase {
 		}
 		dbManager.commitTransaction(conn);
 		dbManager.dbDisconnect(conn);
-		
 	}
 	
 	public void cachingDeleteDateUpdate(String nowDate)
@@ -406,7 +405,8 @@ public enum CachingDatabase {
 		//Starting transaction
 		QueryStatus qs=dbManager.startTransaction(conn);
 		
-		if(qs.execError){
+		if(qs.execError)
+		{
 			//TODO decide what to do in this case (transaction not started)
 			log.error(qs.explainError());
 			qs.occourtedErrorException.printStackTrace();
