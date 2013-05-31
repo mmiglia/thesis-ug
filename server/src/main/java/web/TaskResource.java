@@ -23,7 +23,8 @@ import businessobject.TaskManager;
  * This class uses mainly method of TaskManager class
  */
 @Path("/{username}/task")
-public class TaskResource {
+public class TaskResource 
+{
 	private static Logger log = LoggerFactory.getLogger(TaskResource.class);
 
 	/**

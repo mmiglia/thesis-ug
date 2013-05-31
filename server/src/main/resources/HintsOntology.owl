@@ -28,7 +28,7 @@
         <Class IRI="#Location"/>
     </Declaration>
     <Declaration>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
     </Declaration>
     <Declaration>
         <ObjectProperty IRI="#contains"/>
@@ -217,11 +217,11 @@
         <Class IRI="#Item"/>
         <ObjectIntersectionOf>
             <ObjectSomeValuesFrom>
-                <ObjectProperty IRI="#canBeFoundIn"/>
+                <ObjectProperty IRI="#CanBeFoundIn"/>
                 <Class IRI="#Location"/>
             </ObjectSomeValuesFrom>
             <ObjectAllValuesFrom>
-                <ObjectProperty IRI="#canBeFoundIn"/>
+                <ObjectProperty IRI="#CanBeFoundIn"/>
                 <Class IRI="#Location"/>
             </ObjectAllValuesFrom>
         </ObjectIntersectionOf>
@@ -483,92 +483,92 @@
         <NamedIndividual IRI="#campus"/>
     </SameIndividual>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#benzina"/>
         <NamedIndividual IRI="#carburanti"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#biglietto_pullman"/>
         <NamedIndividual IRI="#stazione_bus"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#biglietto_spettacolo"/>
         <NamedIndividual IRI="#teatro"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#biglietto_spettacolo"/>
         <NamedIndividual IRI="#ticketone"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#biglietto_treno"/>
         <NamedIndividual IRI="#stazione"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#bread"/>
         <NamedIndividual IRI="#bakery"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#cereal"/>
         <NamedIndividual IRI="#coop"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#cereal"/>
         <NamedIndividual IRI="#grocery"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#cereali"/>
         <NamedIndividual IRI="#coop"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#cereali"/>
         <NamedIndividual IRI="#supermercato"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#cereali"/>
         <NamedIndividual IRI="#grocery"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#chocolate"/>
         <NamedIndividual IRI="#coop"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#chocolate"/>
         <NamedIndividual IRI="#supermarket"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#cigarette"/>
         <NamedIndividual IRI="#tabaccheria"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#cioccolato"/>
         <NamedIndividual IRI="#supermercato"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#cioccolato"/>
         <NamedIndividual IRI="#coop"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#giornale"/>
         <NamedIndividual IRI="#edicola"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#latte"/>
         <NamedIndividual IRI="#supermercato"/>
     </ObjectPropertyAssertion>
@@ -583,102 +583,102 @@
         <NamedIndividual IRI="#cigarette"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#milk"/>
         <NamedIndividual IRI="#coop"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#milk"/>
         <NamedIndividual IRI="#supermarket"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#monumento"/>
         <NamedIndividual IRI="#casa_di_colombo"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#monumento"/>
         <NamedIndividual IRI="#Piazza_indipendenza"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#negozio"/>
         <NamedIndividual IRI="#ricordi_mediastore"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#negozio"/>
         <NamedIndividual IRI="#Bang_&amp;_Olufsen"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#olio"/>
         <NamedIndividual IRI="#autoricambi"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#olio"/>
         <NamedIndividual IRI="#carburanti"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#olio_motore"/>
         <NamedIndividual IRI="#autoricambi"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#olio_motore"/>
         <NamedIndividual IRI="#carburanti"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#pane"/>
         <NamedIndividual IRI="#panificio"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#pane"/>
         <NamedIndividual IRI="#panetteria"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#pane"/>
         <NamedIndividual IRI="#supermercato"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#poste"/>
         <NamedIndividual IRI="#ufficio_postale"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#ristorante"/>
         <NamedIndividual IRI="#trattoria_toni_del_spin"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#ristorante"/>
         <NamedIndividual IRI="#Ostaja_Vincenzo"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#sigarette"/>
         <NamedIndividual IRI="#tabaccheria"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#spazzolino"/>
         <NamedIndividual IRI="#supermercato"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#spettacolo"/>
         <NamedIndividual IRI="#ticketone"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#spettacolo"/>
         <NamedIndividual IRI="#teatro"/>
     </ObjectPropertyAssertion>
@@ -698,12 +698,12 @@
         <NamedIndividual IRI="#toothbrush"/>
     </ObjectPropertyAssertion>
     <ObjectPropertyAssertion>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <NamedIndividual IRI="#ticket"/>
         <NamedIndividual IRI="#train_station"/>
     </ObjectPropertyAssertion>
     <SubObjectPropertyOf>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <ObjectProperty abbreviatedIRI=":topObjectProperty"/>
     </SubObjectPropertyOf>
     <SubObjectPropertyOf>
@@ -712,19 +712,19 @@
     </SubObjectPropertyOf>
     <InverseObjectProperties>
         <ObjectProperty IRI="#contains"/>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
     </InverseObjectProperties>
     <AsymmetricObjectProperty>
         <ObjectProperty IRI="#contains"/>
     </AsymmetricObjectProperty>
     <IrreflexiveObjectProperty>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
     </IrreflexiveObjectProperty>
     <IrreflexiveObjectProperty>
         <ObjectProperty IRI="#contains"/>
     </IrreflexiveObjectProperty>
     <ObjectPropertyDomain>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <Class IRI="#Item"/>
     </ObjectPropertyDomain>
     <ObjectPropertyDomain>
@@ -732,7 +732,7 @@
         <Class IRI="#Location"/>
     </ObjectPropertyDomain>
     <ObjectPropertyRange>
-        <ObjectProperty IRI="#canBeFoundIn"/>
+        <ObjectProperty IRI="#CanBeFoundIn"/>
         <Class IRI="#Location"/>
     </ObjectPropertyRange>
     <ObjectPropertyRange>

@@ -49,6 +49,7 @@ public class HintManager {
 			iterator.remove();
 		}
 		log.info("Filtered hints result distance from "+counter+" results to "+solution.size());
+		System.out.println("Filtered hints result distance from "+counter+" results to "+solution.size());
 		return solution;
 	}
 
