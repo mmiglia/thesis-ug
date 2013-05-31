@@ -3,15 +3,9 @@ package com.thesisug.communication.valueobject;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlRootElement;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import com.thesisug.communication.valueobject.Hint.PhoneNumber;
 
 
 public class Item implements Parcelable{

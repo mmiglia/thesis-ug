@@ -1,26 +1,5 @@
 package com.thesisug.ui;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.thesisug.R;
-import com.thesisug.communication.AssertionsResource;
-import com.thesisug.communication.valueobject.SingleItemLocation;
-
-import android.app.Activity;
-import android.app.Dialog;
-import android.content.Context;
-import android.os.Handler;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 
 public class CustomizeDialog /*extends Dialog implements OnClickListener */{

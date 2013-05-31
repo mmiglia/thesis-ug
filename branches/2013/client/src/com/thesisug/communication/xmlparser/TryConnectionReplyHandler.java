@@ -10,8 +10,6 @@ import android.sax.RootElement;
 import android.util.Log;
 import android.util.Xml;
 
-import com.thesisug.Constants;
-import com.thesisug.communication.valueobject.LoginReply;
 import com.thesisug.communication.valueobject.TestConnectionReply;
 
 public class TryConnectionReplyHandler {

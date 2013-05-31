@@ -1,117 +1,264 @@
 package com.thesisug.notification;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.app.Service;
-
-
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore.Audio;
 import android.util.Log;
-import android.widget.RemoteViews;
-import android.widget.Toast;
 
 import com.thesisug.R;
+import com.thesisug.caching.Area;
+import com.thesisug.caching.CachingDbManager;
 import com.thesisug.communication.ContextResource;
 import com.thesisug.communication.TaskResource;
 import com.thesisug.communication.valueobject.Hint;
 import com.thesisug.communication.valueobject.SingleTask;
+import com.thesisug.location.ActivityRecognitionRemover;
+import com.thesisug.location.ActivityRecognitionRequester;
+import com.thesisug.location.CustomLocationManager;
+import com.thesisug.location.GpsRequest;
+import com.thesisug.location.WifiRequest;
+import com.thesisug.tracking.ActionTracker;
+import com.thesisug.ui.EditGPS;
 import com.thesisug.ui.HintList;
+import com.thesisug.ui.NotificationSnooze;
 import com.thesisug.ui.Todo;
 import com.thesisug.ui.accessibility.Morse;
 import com.thesisug.widget.ExampleAppWidgetProvider;
-
-
-import java.lang.Math.*;
+//import android.content.Context;
+//import android.net.Uri;
+//import android.provider.MediaStore.Audio;
+//import java.util.Random;
+//import java.lang.Math.*;
 
 /**
  * This class use also OnSharedPreferenceChangeListener to catch if the queryDistance preference is changed
  * @author jaxer
  *
- */
+ */ 
 public class TaskNotification extends Service implements LocationListener,OnSharedPreferenceChangeListener{
 	private static final String TAG = "thesisug - TaskNotificationService";
 	
 	 // variable which controls the notification thread 
     private static ConditionVariable condvar, downloadlock;
     private static Object stopThreadObject = new Object();
+    private static Object hintsFoundSync = new Object();
     private Thread downloadTaskThread;
     private List<SingleTask> tasks;
-    private Handler handler=new Handler();
-    private static LocationManager lm;
-    private NotificationManager notificationManager;
+    private static Handler handler=new Handler();
+    //private static LocationManager lm;
+    private static NotificationManager notificationManager;
     private static SharedPreferences userSettings;
     public static Location userLocation, lastPosition;
-    private RemoteViews contentView;
-    private double lastdelayquery, delayzerovelocity;
+    //private RemoteViews contentView;
+    //private double lastdelayquery, delayzerovelocity;
     private float minUpdateDistance=0;
-    String locationProvider;
     private static Criteria criteria;
-    private static boolean canChangeLocation=true;
-    private static boolean checkMinDistance=true;
+   
+    
+    //private static boolean canChangeLocation=true;
+    //private static boolean checkMinDistance=true;
     
     //Used to prevent that userLocation became null before it has used form the notificationThread
     private static Object userLocationChangeLock=new Object();
     
     private static int PAUSE=10000;
     
-	private static class InstanceHolder {
-		private static final TaskNotification INSTANCE = new TaskNotification();
+    private static Calendar calendar;
+   
+    private static boolean runningThread;
+    private Thread notifyingThread;
+    private static int hintsFound = 0;
+    private static CustomLocationManager customLocationManager;
+	private static final int LOCATIONCHANGED = 0;
+	private static final int PROVIDERENABLED = 1;
+	private static final int PROVIDERDISABLED = 2;
+	private static final int STATUSCHANGED = 3;
+	private static Context context;
+	private static class InstanceHolder 
+	{ 
+		private static TaskNotification INSTANCE ;
 	}
 	
-	public static TaskNotification getInstance() {
+	public static TaskNotification getInstance() 
+	{
+		if(InstanceHolder.INSTANCE == null)
+		{
+			Log.d(TAG,"Instance null");
+			InstanceHolder.INSTANCE = new TaskNotification();
+		}
+		else
+			Log.d(TAG,"Instance not null");
 		return InstanceHolder.INSTANCE;
+		
 	}
-    
-    
-    
     /**
      * This method call the requestLocationUpdates of the LocationManager for the GPS_PROVIDER and the NETWORK_PROVIDER
      * every time it get the minDistance value from the user settings so it has to be called whenever these settings change
      */
-    public void registerToGetLocationUpdates(){
+	/*
+    public void registerToGetLocationUpdates()
+    {
     	Log.d(TAG, "QueryPeriod update registering for location udpates..");
-    	minUpdateDistance = Float.parseFloat(userSettings.getString("queryperiod", "100")); 
+    	/*minUpdateDistance = Float.parseFloat(userSettings.getString("queryperiod", "100")); 
     	
     	if(lm==null && !getLocationService()){
     		Log.e(TAG,"Cannot execute registerToGetLocationUpdates because LocationManager is null");
     		return;
     	}
-    	lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) 0, minUpdateDistance, this.getInstance());    	
-    	lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, (long) 0, minUpdateDistance, this.getInstance());
+    	
+    	customLocationManager.requestLocationUpdates();
+    	//lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) 0, minUpdateDistance, TaskNotification.getInstance());    	
+    	//if(lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+    	//	lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, (long) 0, minUpdateDistance, TaskNotification.getInstance());
     	Log.d(TAG, "QueryPeriod update registered!");
-    }
-    
-    /*
-     * This function is used for each change of the location provider status to get the bestone between
+    }    */
+	
+	 @Override
+	    public void onCreate() 
+	    {
+	    	Log.d(TAG, "Creation of TaskNotification");
+	    	//contentView = new RemoteViews(getPackageName(), R.layout.notification);
+	    	context = getApplicationContext();
+	    	InstanceHolder.INSTANCE = this;
+
+			SnoozeHandler.Init(this);
+	    	notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+	    	
+	    	//lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+	    	
+	    	//Log.d(TAG,"lm="+lm);
+	   	
+	    	userSettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+
+	    	userSettings.registerOnSharedPreferenceChangeListener(this);
+	    	customLocationManager = new CustomLocationManager("-TaskNotification",TaskNotification.getInstance(),userSettings,getApplicationContext());
+	    	//registerToGetLocationUpdates();
+	    	
+	    	//lm1.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) 0, 0.0f, new GPSListener1());
+	    	notifyingThread = new Thread(null, mainthread, "NotifyingService");
+	    	//Thread gpsNotificatorThread = new Thread(null, gpsthread, "NotifyingGPSChange");
+	        condvar = new ConditionVariable(false);
+	        downloadlock = new ConditionVariable(false);
+	        Log.d(TAG, "All condvar created");
+	        //Setting criteria to choose the locationProvider
+	        criteria = new Criteria();
+	    	criteria.setAccuracy(Criteria.ACCURACY_FINE);
+	    	runningThread = true;
+	        notifyingThread.start();
+	        Log.i(TAG, "notifyingThread started with id:"+notifyingThread.getId());
+	        //gpsNotificatorThread.start();
+	        //Log.i(TAG, "gpsNotificatorThread has id:"+gpsNotificatorThread.getId());
+	        
+	        calendar = Calendar.getInstance();
+	        CachingDbManager.Init(TaskNotification.this);
+
+	       
+	    } 
+	 	
+	    @Override
+	    public int onStartCommand(Intent intent, int flags, int startId) 
+	    {
+	        // We want this service to continue running until it is explicitly
+	        // stopped, so return sticky.
+	    	Log.i(TAG, "Task Notification service is started");
+	        return START_STICKY;
+	    }
+	    
+	    @Override
+	    public void onDestroy() 
+	    {
+	    	Log.i(TAG, "Task Notification service is stopped");
+	        // Stop the thread from generating further notifications
+	        condvar.open();
+	        runningThread = false;
+	       
+	        synchronized(stopThreadObject)
+	        {
+	        	stopThreadObject.notify();
+	        }
+	        
+	        customLocationManager.onDestroy();
+	       /* activityRecognitionRemover.removeUpdates(activityRecognitionRequester.getRequestPendingIntent());
+	        activityRecognitionRequester.getRequestPendingIntent().cancel();*/
+	        // Tell the user we stopped.
+	        //Toast.makeText(this, R.string.task_notification_stopped, Toast.LENGTH_SHORT).show();
+	    }
+	
+    /**
+     * This function is used for each change of the location provider status to get the best one between
      * all active providers 
      */
-    private boolean updateProviderAndPosition(String reason,Location newLocation){
-    	synchronized(userLocationChangeLock){
+	
+	private boolean updatePosition(Location newLocation)
+	{
+		Log.i(TAG,"updatePosition " + Thread.currentThread().getId());
+    	
+    	synchronized(userLocationChangeLock)
+    	{
+    		Log.d(TAG,"Unlocked.");
 	    	//New location already provided?
-	    	if(newLocation!=null){
+	    	if(newLocation!=null)
+	    	{
+	    		
+	    		lastPosition=userLocation;
+	    		userLocation=newLocation;
+	    		return true;
+	    	}
+    	
+		
+			//Getting last known location
+			userLocation = customLocationManager.getLastKnownPosition();
+			if(userLocation==null)
+			{
+				return false;
+			}
+		}
+		
+		return true;
+    	
+	}
+	//With new approach of CustomLocationManager this method is never called.
+    private boolean updateProviderAndPosition(String reason,Location newLocation)
+    {
+    	Log.i(TAG,"updateProviderAndPosition");
+    	
+    	synchronized(userLocationChangeLock)
+    	{
+    		Log.d(TAG,"Unlocked.");
+	    	//New location already provided?
+	    	if(newLocation!=null)
+	    	{
+	    		
 	    		lastPosition=userLocation;
 	    		userLocation=newLocation;
 	    		return true;
@@ -120,21 +267,29 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	
 		//Change provider if there's one active
     	Log.d(TAG,"UpdatingProviderAndPosition because:"+reason);
-    	
+    	/*
     	if(lm==null && !getLocationService()){
     		Log.e(TAG,"Cannot execute registerToGetLocationUpdates because LocationManager and LocationService are null");
     		return false;
     	}
+    	*/
+    	/*
+    	//if(customLocationManager.checkLocationProviderNotNull())
+    	if(!customLocationManager.updateProvider())
+    		return false;
 		locationProvider=lm.getBestProvider(criteria,true);
 		if(locationProvider==null ){
 			notifyNoLocationProvider();
 			return false;
 		}
-		
-		synchronized(userLocationChangeLock){
+		*/
+		synchronized(userLocationChangeLock)
+		{
 			//Getting last known location
-			userLocation = lm.getLastKnownLocation(locationProvider);		
-			if(userLocation==null){
+			//userLocation = lm.getLastKnownLocation(locationProvider);	
+			customLocationManager.getLastKnownPosition();
+			if(userLocation==null)
+			{
 				return false;
 			}
 		}
@@ -145,63 +300,14 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     
     /*
      * Try to get a new Location service
-     */
-    private boolean getLocationService(){
+    
+    private boolean getLocationService()
+    {
     	lm = (LocationManager) getSystemService(LOCATION_SERVICE);
     	return lm!=null?true:false;
     }
-    
-    @Override
-    public void onCreate() {
-    	Log.d(TAG, "Creation of TaskNotification");
-    	contentView = new RemoteViews(getPackageName(), R.layout.notification);
-    	notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-    	lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-    	
-       Log.d(TAG,"lm="+lm);
-   	
-    	userSettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-
-    	userSettings.registerOnSharedPreferenceChangeListener(this);
-    	
-    	registerToGetLocationUpdates();
-    	
-    	//lm1.requestLocationUpdates(LocationManager.GPS_PROVIDER, (long) 0, 0.0f, new GPSListener1());
-    	Thread notifyingThread = new Thread(null, mainthread, "NotifyingService");
-    	//Thread gpsNotificatorThread = new Thread(null, gpsthread, "NotifyingGPSChange");
-        condvar = new ConditionVariable(false);
-
-        downloadlock = new ConditionVariable(false);
-        Log.d(TAG, "All condvar created");
-        //Setting criteria to choose the locationProvider
-        criteria = new Criteria();
-    	criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        
-        notifyingThread.start();
-        Log.i(TAG, "notifyingThread started with id:"+notifyingThread.getId());
-        //gpsNotificatorThread.start();
-        //Log.i(TAG, "gpsNotificatorThread has id:"+gpsNotificatorThread.getId());
-    }
-    
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        // We want this service to continue running until it is explicitly
-        // stopped, so return sticky.
-    	Log.i(TAG, "Task Notification service is started");
-        return START_STICKY;
-    }
-    
-    @Override
-    public void onDestroy() {
-    	Log.i(TAG, "Task Notification service is stopped");
-        // Stop the thread from generating further notifications
-        condvar.open();
-        synchronized(stopThreadObject){
-        	stopThreadObject.notify();
-        }
-        // Tell the user we stopped.
-        Toast.makeText(this, R.string.task_notification_stopped, Toast.LENGTH_SHORT).show();
-    }
+     */
+   
     
     /*	//TODO Maybe deprecated
     private Runnable gpsthread = new Runnable() {
@@ -283,112 +389,142 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	}
     }
     
-    private Runnable mainthread = new Runnable() {
-        public void run() {
-        	while (true){
+    private Runnable mainthread = new Runnable() 
+    {
+        public void run() 
+        {
+        	while (runningThread)
+        	{
         		// get preference on query period, return default 5 min if not set
         		//int delay = Integer.parseInt(usersettings.getString("queryperiod", "300")) * 1000;
         		minUpdateDistance = Integer.parseInt(userSettings.getString("queryperiod", "100"));
-        		if(minUpdateDistance==0){
-        			try {
+        		if(minUpdateDistance==0)
+        		{
+        			try 
+        			{
         				Log.i(TAG, "No notification required (minUpdateDistance="+minUpdateDistance+") sleeping for "+PAUSE+" milliseconds");
 						Thread.sleep(PAUSE);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
+					} 
+        			catch (InterruptedException e) 
+        			{
 						e.printStackTrace();
 					}
         		}
-        		//Log.i(TAG, "mainthread - distance query is "+delay+" mt");
-        		Log.d(TAG, "mainthread is going to block on "+stopThreadObject.hashCode());
-        		//condvargps.block();
-        		try {
-        			synchronized(stopThreadObject){
+				//Log.i(TAG, "mainthread - distance query is "+delay+" mt");
+	    		Log.d(TAG, "mainthread is going to block on "+stopThreadObject.hashCode());
+	    		//condvargps.block();
+	    		try 
+	    		{
+	    			synchronized(stopThreadObject)
+	    			{
 						stopThreadObject.wait();
-        			}
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+	    			}
+				} 
+	    		catch (InterruptedException e) 
+				{
 					e.printStackTrace();
 				}
-        		Log.d(TAG, "Starting hint search after unlock of the thread");
-        		
-        		//if (condvargps.block(delay)) break;
-        		// get preference on distance, return default 0 (dont filter distance) if not set
-        		int maxDistance = Integer.parseInt(userSettings.getString("maxdistance", "0"));
-        		Log.d(TAG, "minUpdateDistance="+minUpdateDistance);
-        		List<Thread> threads = new LinkedList<Thread>();
-
-        		synchronized(userLocationChangeLock){
-	        		if (userLocation == null){
+	    		
+	    		if(!runningThread)
+	    		{
+	    			Log.d(TAG, "Mainthread stopping.");
+	    			return;
+	    		}
+	    		Log.d(TAG, "Starting hint search after unlock of the thread");
+	    		
+	    		//if (condvargps.block(delay)) break;
+	    		// get preference on distance, return default 0 (dont filter distance) if not set
+	    		int maxDistance = (int)customLocationManager.GetMaxHintDistance();
+	    		Log.d(TAG, "minUpdateDistance="+customLocationManager.GetMinUpdateDistance());
+	    		
+	    		List<Thread> threads = new LinkedList<Thread>();
+	    		Log.i(TAG,"TaskNotification thread blocking.");
+	    		synchronized(userLocationChangeLock)
+	    		{
+	    			Log.i(TAG,"TaskNotification thread unlocked.");
+	        		if (userLocation == null)
+	        		{
 	        			Log.d(TAG, "userLocation == null -> going to sleep again");	
 	        			continue;
 	        		}
 	        		
 	        		Log.d(TAG, "We got a location!"+userLocation.getLatitude()+"-"+userLocation.getLongitude());
 	        		
-	        		
 	        		Log.e(TAG,"No check if actual real distance is more than minDistance");
-	        		/*
-	        		 * If distance between current position and lastPosition is<minDistance =>continue
-	        		 * this can happend when there's a change of the location provider or between two cells
-	        		 * and the user has choose the network as location provider
-	        		 */
-	        		/*if(checkMinDistance){
-		        		Log.d(TAG, "Checking actDistance>minDistance");
-		        		double actDistance=calculateDistance(userLocation,lastPosition);
-		        		if(actDistance<(double)minDistance){
-		        			Log.d(TAG, "distance between current position and lastPosition ("+actDistance+") < minDistance ("+minDistance+"), do not change lastPosition and going to sleep again");
-		        			canChangeLocation=false;
-		        			continue;	
-		        		}else{
-		        			canChangeLocation=true;
-		        		}
-	        		}else{
-	        			Log.d(TAG,"No checkMinDistance required");
-	        			canChangeLocation=true;
-	        		}
-	        		 */
-	        		
-	        		double actDistance=calculateDistance(userLocation,lastPosition);
-	        		//Todo.speakIt("Distance:"+actDistance);
-	        		Log.d(TAG,"Distance:"+actDistance); 
-	        		 
+	        
 	        		//asynchronous operation to download thread
-	        		Log.d(TAG,"Retreiving first tasks..");
+	        		Log.d(TAG,"Retreiving first tasks.." + Thread.currentThread().getId());
 	        		downloadTaskThread = TaskResource.getFirstTask(handler, TaskNotification.this);
-	        		
-	        		
+	        			        		
 	        		//block execution to make it synchronous
+	        		Log.d(TAG,"Blocking execution to make it synchronous.");
 	        		downloadlock.block();
 	        		Log.d(TAG,"Going to do checkLocationSingle for each task START");
-	        		if(tasks==null){
-	        			Log.d(TAG,"No task retreived, going to sleep againg");
+	        		downloadlock.close();
+	        		if(tasks==null) 
+	        		{
+	        			Log.d(TAG,"Error retrieving tasks, going to sleep again");
 	        			continue;
-	        		}else{
+	        		}
+	        		if(tasks.size()==0)
+	        		{ 
+	        			//customLocationManager.setHints(0);
+	        			Log.d(TAG,"No task retreived, going to sleep again");
+	        			customLocationManager.NoTasks();
+	        			continue;
+	        		} 
+	        		else
+	        		{ 
 	        			Log.d(TAG,"Retreived "+tasks.size()+" task, checking location..");
 	        		}
-	        		for (SingleTask o : tasks){
+	        		for (SingleTask o : tasks)
+	        		{
+	        			//check if task has been snoozed
+	        			if(SnoozeHandler.checkIfTaskIsSnoozed(o.title))
+	        				continue;
 	        			// if user has chose not to be reminded for this task
-	        			if (!userSettings.getBoolean(o.title, true)) continue; 
+	        			if (!userSettings.getBoolean(o.title, true)) 
+	        				continue; 
 	        			// dispatch thread to get hints
-	        			Log.d(TAG,"Check location for "+o.title);
-						threads.add(ContextResource.checkLocationSingle(o.title, o.priority,
-								new Float(userLocation.getLatitude()),
-								new Float(userLocation.getLongitude()),
-								maxDistance, handler, TaskNotification.this));					
+	        			
+	        			int hintsDistance = maxDistance;
+	        			Log.d(TAG,Integer.toString(hintsDistance));
+	        			if(!customLocationManager.isAccuracyOk())
+	        			{
+	        				
+	        				hintsDistance+=(int)userLocation.getAccuracy();
+	        			}
+	        			Log.d(TAG,"Check location for "+o.title +" at distance "+hintsDistance);
+    					threads.add(ContextResource.checkLocationSingle(o.title, o.priority,
+						Float.valueOf(Double.toString(userLocation.getLatitude())),
+						Float.valueOf(Double.toString(userLocation.getLongitude())),
+						hintsDistance, handler, TaskNotification.this));
+	        		
+						customLocationManager.NewTaskHintsSearch();
 					}
 	        		Log.d(TAG,"Going to do checkLocationSingle for each task DONE");
-        		}
-        		
-        	}
+	    		}
+        	
+	    		
+			}
         }
-    };
+    }; 
     
-    public void afterTaskLoaded (List<SingleTask> result){
+    public void afterTaskLoaded (List<SingleTask> result)
+    {
+    	Log.d(TAG,"afterTaskLoaded");
     	tasks = result;
+    	if(tasks != null)
+    	{
+    		Log.d(TAG,"tasks: "+tasks.size());
+    	}
+    	else
+    		Log.d(TAG,"tasks null");
     	downloadlock.open();
     }
     
-    public void notifyNoLocationProvider(){
+    public void notifyNoLocationProvider()
+    {
     	Log.d(TAG,"notifyNoLocationProvider start"); 	
     	String message="no location provider";
     	Log.d(TAG,message);
@@ -399,42 +535,246 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	notificationManager.notify(message.hashCode(), notificationNoProvider);
     	 */
     }
+    public void afterHintsAcquiredCacheUpdate(Area area,String sentence,List<Hint> result, int priority) 
+    {
+		Log.i(TAG,"afterHintsAcquiredCacheUpdate");
+		if(result==null)
+		{
+			Log.e(TAG,"Update failed for area: lat "+area.lat+" lng "+area.lng +" radius "+area.rad+" .");
+		}
+		else
+		{
+			Log.d(TAG,"Going to update area: lat "+area.lat+" lng "+area.lng +" radius "+area.rad+" for "+ sentence +" .");
+			CachingDbManager.updateArea(area,sentence,result);
+		}
+		
+		
+	}
+    public void afterHintsAcquiredFromCache(String sentence, List<Hint> result, int priority)
+    {
+    	Log.i(TAG,"afterHintsAcquiredFromCache");
+    	customLocationManager.TaskHintsSearchFinished(sentence,result,priority);
+    	
+    	synchronized(hintsFoundSync)
+    	{
+    		hintsFound += result.size();
+    		
+    	}
+    	
+    	//If last search for hints returned 
+    	if(!customLocationManager.MoreHintsSearch())
+    	{
+    		Log.d(TAG,"Last task checked.");
+    		customLocationManager.SetHints(hintsFound);
+    		hintsFound = 0;
+	    	customLocationManager.EvaluateAccuracy();
+    	}
+    }
     
-    public void afterHintsAcquired (String sentence, List<Hint> result, int priority){
-    	if (result.isEmpty()) {
+    public void afterHintsAcquired (String sentence, List<Hint> result, int priority)
+    {
+    	Log.i(TAG,"afterHintsAcquired");
+    	customLocationManager.TaskHintsSearchFinished(sentence,result,priority);
+    	if(result!=null)
+    	{
+	    	synchronized(hintsFoundSync)
+	    	{
+	    		hintsFound += result.size();
+	    		CachingDbManager.insertHints(sentence, result);
+	    		
+	    	}
+    	}
+    	//If last search for hints returned 
+    	if(!customLocationManager.MoreHintsSearch())
+    	{
+    		Log.d(TAG,"Last task checked.");
+    		customLocationManager.SetHints(hintsFound);
+    		hintsFound = 0;
+	    	customLocationManager.EvaluateAccuracy();
+    	}
+    
+    }
+    /**
+     * Notify hints for a task.
+     * @param sentence	Title of the task
+     * @param result	List of hints for the task.
+     * @param priority	Priority of the task.
+     * @param context	Application context.
+     */
+    public void notifyHints(String sentence,List<Hint> result, int priority)
+    {
+    	if (result.isEmpty()) 
+    	{
     		Log.i(TAG, "No hints for task : "+sentence);
         	//Voice notification
-    		if(userSettings.getBoolean("notification_hint_speak",false)){
-    			Todo.speakIt((String) getText(R.string.no_hints_found_for)+sentence);
+    		if(userSettings.getBoolean("notification_hint_speak",false))
+    		{
+    			Todo.speakIt((String) context.getText(R.string.no_hints_found_for)+sentence);
     			sendDataToWidget(result,sentence);
     		}
     		return; // immediately return if there is no result
-    	} else {
-    		Log.i(TAG, "Received "+result.size()+ " hints for task : "+sentence);
-    	}
+    	} 
     	
-    	String message = getText(R.string.capable)+" "+sentence+" "+getText(R.string.around_location);
-    	Notification newnotification = new Notification(R.drawable.icon, message, System.currentTimeMillis());
-    	Intent notificationIntent = new Intent(getApplicationContext(), HintList.class);
+    	Log.i(TAG, "Received "+result.size()+ " hints for task : "+sentence);
+    		    	
+    	String message = context.getText(R.string.capable)+" "+" "+context.getText(R.string.around_location);
+    	/**
+    	 * The Notification.Builder has been added 
+    	 * to make it easier to construct Notifications.
+    	 * @author Alberto Servetti 11/04/2013
+    	 */
+    	//Notification newnotification = new Notification(R.drawable.icon, message, System.currentTimeMillis());
+    	int requestID = (int) System.currentTimeMillis();
+    	
+    	Intent intent = new Intent(context,NotificationSnooze.class);
+    	intent.putParcelableArrayListExtra("hints", new ArrayList<Hint>(result));
+    	intent.putExtra("tasktitle", sentence);
+    	intent.putExtra("type","Task");
+    	intent.putExtra("dismiss", false);
+    	intent.putExtra("snooze", false);
+    	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+    	PendingIntent pendingIntent = PendingIntent.getActivity(context, requestID + 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
+    	
+    	Intent dismissNotificationIntent = new Intent(context,NotificationSnooze.class);
+    	dismissNotificationIntent.putExtra("tasktitle", sentence);
+    	dismissNotificationIntent.putExtra("type","Task");
+    	dismissNotificationIntent.putExtra("dismiss", true);
+    	dismissNotificationIntent.putExtra("snooze", false);
+    	dismissNotificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+    	PendingIntent dismissNotificationPendingIntent = PendingIntent.getActivity(context, requestID +1, dismissNotificationIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+    	
+    	Intent showHintsIntent = new Intent(context, HintList.class);
+    	
+    	showHintsIntent.putParcelableArrayListExtra("hints", new ArrayList<Hint>(result));
+    	showHintsIntent.putExtra("tasktitle", sentence);
+    	showHintsIntent.putExtra("type","Task");
+    	showHintsIntent.putExtra("dismiss", false);
+    	showHintsIntent.putExtra("snooze", false);
+    	showHintsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    	PendingIntent showHints = PendingIntent.getActivity(context, requestID +2, showHintsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    	
+    	Intent snoozeHintsIntent = new Intent(context,NotificationSnooze.class);
+    	snoozeHintsIntent.putExtra("dismiss", false);
+    	snoozeHintsIntent.putExtra("type","Task");
+    	snoozeHintsIntent.putExtra("snooze", true);
+    	snoozeHintsIntent.putExtra("tasktitle", sentence);
+    	showHintsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    	PendingIntent snoozeHints = PendingIntent.getActivity(context, requestID +3, snoozeHintsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+    	
+    	Notification newnotification =
+    			new Notification.Builder(context)
+    			.setSmallIcon(R.drawable.icon)
+    			.setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.task2))
+    			.setContentText(message)
+    			.setContentTitle(sentence)
+    			.setContentIntent(pendingIntent)
+    			.addAction(R.drawable.ok, context.getText(R.string.show_hints), showHints)
+    			.addAction(R.drawable.no,context.getText(R.string.dismiss_hints),dismissNotificationPendingIntent)
+    			.addAction(R.drawable.snooze,context.getText(R.string.snooze_set),snoozeHints)
+    			.setWhen(System.currentTimeMillis()).build()
+    			;
+    	/*
+    	Intent notificationIntent = new Intent(context, HintList.class);
     	notificationIntent.putParcelableArrayListExtra("hints", new ArrayList<Hint>(result));
     	notificationIntent.putExtra("tasktitle", sentence);
     	notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    	PendingIntent contentIntent = PendingIntent.getActivity(TaskNotification.this, sentence.hashCode(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-    	contentView.setTextViewText(R.id.notification_title, getText(R.string.want_to)+" "+sentence+" "+getText(R.string.now)+" ?");
-    	contentView.setTextViewText(R.id.notification_content, getText(R.string.click_hint));
-    	newnotification.contentView = contentView;
+    	
+    	PendingIntent contentIntent = PendingIntent.getActivity(context, sentence.hashCode(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
     	newnotification.contentIntent = contentIntent;
-
-    	//sendDataToWidget(result,sentence);
+*/
+    	newnotification=addNotificationAlertMethod(context,newnotification,sentence,priority);
+    	//For some reason sometimes notificationManager gets null
+    	if (notificationManager == null)
+    	    	notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+    	NotificationDispatcher.dispatch(sentence, newnotification, notificationManager,userSettings.getString("notification_hint_vibrate", "off"), context);
     	
-    	newnotification=addNotificationAlertMethod(newnotification,sentence,priority);
+    	ActionTracker.notificationSent(Calendar.getInstance().getTime(), sentence, context, 0);
     	
-    	//notificationManager.notify(sentence.hashCode(), newnotification);
-    	NotificationDispatcher.dispatch(sentence, newnotification, notificationManager,userSettings
-    			.getString("notification_hint_vibrate", "off"), getApplicationContext());
-
     }
-    
+    /**
+     * Inform customLocationManager that user answered to wifi activation request.
+     */
+    public void wifiRequestAnswered()
+    {
+    	customLocationManager.UnlockEvaluateThreadWifi();
+    }
+    /**
+     * Inform customLocationManager that user answered to gps activation request.
+     */
+    public void gpsRequestAnswered()
+    {
+    	customLocationManager.UnlockEvaluateThreadGps();
+    }
+    /**
+     * Sends a notification asking user to activate Wifi.
+     * @param context	Application context
+     */
+    public void sendWifiNotification(final Context context) 
+    {
+    	Intent answer = new Intent(context,WifiRequest.class);
+    	answer.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+    	PendingIntent notificationClick = PendingIntent.getActivity(context, 2, answer, PendingIntent.FLAG_CANCEL_CURRENT);
+    	
+    	PendingIntent positiveAnswer = PendingIntent.getActivity(context, 0, answer.putExtra("answer", "ok"),  PendingIntent.FLAG_CANCEL_CURRENT);
+    	PendingIntent negativeAnswer = PendingIntent.getActivity(context, 1, answer.putExtra("answer", "no"), PendingIntent. FLAG_CANCEL_CURRENT);
+    	
+    	Notification newnotification =
+    			new Notification.Builder(context)
+    			.setSmallIcon(R.drawable.icon)
+    			.setContentTitle(context.getText(R.string.app_name))
+    			.setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.wifi))
+    			.setContentText("Wifi needed. Enable?")
+    			.setWhen(System.currentTimeMillis())
+    			.setContentIntent(notificationClick)
+    			.addAction(R.drawable.ok, "Ok", positiveAnswer)
+    			.addAction(R.drawable.no,"No",negativeAnswer)
+    			.setAutoCancel(true)
+    			.build()
+  
+    			;
+    	
+    	newnotification=addNotificationAlertMethod(context,newnotification,"prova",5);
+    	//For some reason sometimes notificationManager gets null
+    	if (notificationManager == null)
+    	    	notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+    	NotificationDispatcher.dispatch("wifi", newnotification, notificationManager,userSettings.getString("notification_hint_vibrate", "off"), context);
+    }
+    /**
+     * Sends a notification asking user to activate Gps.
+     * @param context	Application context
+     */
+    public void sendGpsNotification(final Context context) 
+    {
+    	Intent answer = new Intent(context,GpsRequest.class);
+    	
+
+    	PendingIntent notificationClick = PendingIntent.getActivity(context, 2, answer, PendingIntent.FLAG_CANCEL_CURRENT);
+    	
+    	PendingIntent positiveAnswer = PendingIntent.getActivity(context, 0, answer.putExtra("answer", "ok"),  PendingIntent.FLAG_CANCEL_CURRENT);
+    	PendingIntent negativeAnswer = PendingIntent.getActivity(context, 1, answer.putExtra("answer", "no"), PendingIntent. FLAG_CANCEL_CURRENT);
+    	
+    	Notification newnotification =
+    			new Notification.Builder(context)
+    			.setSmallIcon(R.drawable.icon)
+    			.setContentTitle(context.getText(R.string.app_name))
+    			.setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.gps))
+    			.setContentText("Gps needed. Enable?")
+    			.setContentIntent(notificationClick)
+    			.setWhen(System.currentTimeMillis())
+    			.addAction(R.drawable.ok, "Ok", positiveAnswer)
+    			.addAction(R.drawable.no,"No",negativeAnswer)
+    			.setAutoCancel(true)
+    			.build()
+    			;
+    	
+    	newnotification=addNotificationAlertMethod(context,newnotification,"prova",5);
+    	//For some reason sometimes notificationManager gets null
+    	if (notificationManager == null)
+    	    	notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+    	NotificationDispatcher.dispatch("gps", newnotification, notificationManager,userSettings
+    			.getString("notification_hint_vibrate", "off"), context); 
+    }
     /**
      * Add vibration and sound to the notification, manage also speaking, everything according to user settings
      * @param newNotification
@@ -442,7 +782,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
      * @param priority
      * @return THE SAME object passed in newNotification parameter
      */
-    private Notification addNotificationAlertMethod(Notification newNotification,String sentence,int priority){
+    private Notification addNotificationAlertMethod(Context context,Notification newNotification,String sentence,int priority){
     	//Adding sound
     	Log.d(TAG, "Sound:"+userSettings.getBoolean("notification_hint_sound",false));
     	if(userSettings.getBoolean("notification_hint_sound",false)){
@@ -453,7 +793,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	//Log.d(TAG, "Vibration:"+userSettings.getBoolean("notification_hint_vibrate",false));
     	Log.d(TAG, "Vibration" + userSettings.getString("notification_hint_vibrate", "off"));
     	//if(userSettings.getBoolean("notification_hint_vibrate",false)){
-    	Resources res = getResources();
+    	//Resources res = context.getResources();
     	if(userSettings.getString("notification_hint_vibrate", "off").equals("priority")){
     		//newnotification.defaults |= Notification.DEFAULT_VIBRATE;
 
@@ -518,14 +858,17 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	    }
 	        PendingIntent widgetIntent = PendingIntent.getBroadcast(TaskNotification.this, 0, foundNewHintIntent,   PendingIntent.FLAG_ONE_SHOT);
     	Log.d(TAG, "WidgetIntent created!");
-    	try {
+    	try 
+    	{
 			widgetIntent.send();
-		} catch (CanceledException e) {
-			// TODO Auto-generated catch block
+		} 
+    	catch (CanceledException e) 
+    	{
 			e.printStackTrace();
 		}
     	Log.d(TAG, "WidgetIntent sent!");
     }
+   
     
     @Override
 	public IBinder onBind(Intent intent) {
@@ -534,49 +877,88 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 
 	private final IBinder mBinder = new LocalBinder();
 	
-	public class LocalBinder extends Binder {
-        public TaskNotification getService() {
+	public class LocalBinder extends Binder 
+	{
+        public TaskNotification getService() 
+        {
             return TaskNotification.this;
         }
     }
 	
-
-
-	/*
+	/**
+	 * Forces customLocationManager to obtain a new fix immediatly
+	 */
+	
+	public void forceLocationFix()
+	{
+		customLocationManager.forceLocationFix();
+	}
+	/**
 	 * This method get all the change of the location according to the setup made by the requestLocationUpdate method
 	 * that set the minDistance to be informed of the location change 
 	 */
-	
-	@Override
-	public void onLocationChanged(Location location) {
-		Log.d(TAG, "Location changed to "+location.getLatitude()+" -- "+location.getLongitude());
-		//condvargps.open();
-		boolean _checkMinDistance=true;
-		startHintSearch(location,_checkMinDistance);
-		Log.d(TAG, "Mainthread waked up");
-	}
-
-	public void startHintSearch(Location newLocation,Boolean checkMinDistance){
-		updateProviderAndPosition("startHintSearch",newLocation);
-
-		synchronized(stopThreadObject){
+	public void startHintSearch(Location newLocation,Boolean checkMinDistance)
+	{
+		//customLocationManager.setHints(0);
+		
+		
+		//updateProviderAndPosition("startHintSearch",newLocation);
+		
+		updatePosition(newLocation);
+		 
+		Log.d(TAG,"Going to wake mainthread.");
+		synchronized(stopThreadObject)
+		{
 			stopThreadObject.notify();
 		}
 	}
-
+	
+	@Override
+	public void onLocationChanged(Location location) 
+	{
+		
+			Log.d(TAG,"onLocationChanged");
+			if(customLocationManager.isBetterThanPrevious(location))
+			{
+				Log.d(TAG, "Location changed to "+location.getLatitude()+" -- "+location.getLongitude());
+				//condvargps.open();
+				startHintSearch(location,true);	
+			}
+			else
+				Log.d(TAG,"Location did not change!");
+		
+	}
     
 	@Override
-	public void onProviderDisabled(String provider) {
-		updateProviderAndPosition("onProviderDisabled:"+provider,null);		
+	//With new approach of CustomLocationManager this method is never called.
+	public void onProviderDisabled(String provider) 
+	{
+		Log.i(TAG,"onProviderDisabled");
+		
+		customLocationManager.providerDisabled(provider);
+		
+		updateProviderAndPosition("onProviderDisabled:"+provider,null);	
 	}
 
 	@Override
-	public void onProviderEnabled(String provider) {
+	//With new approach of CustomLocationManager this method is never called.
+	public void onProviderEnabled(String provider) 
+	{
+		Log.i(TAG,"onProviderEnabled");
+		
+		customLocationManager.providerEnabled(provider);
+		
 		updateProviderAndPosition("onProviderEnabled:"+provider,null);
 	}
 
 	@Override
-	public void onStatusChanged(String provider, int status, Bundle extras) {}
+	//With new approach of CustomLocationManager this method is never called.
+	public void onStatusChanged(String provider, int status, Bundle extras) 
+	{
+		Log.i(TAG,"onStatusChanged: " + provider);	
+		
+		customLocationManager.statusChanged(provider, status, extras);
+	}
 
 
 
@@ -584,12 +966,24 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	public void onSharedPreferenceChanged(SharedPreferences arg0, String key) {
 		/**
 		 * Query period updated
-		 */
+		 
 		if(key.equals("queryperiod")){
 			Log.d(TAG,"Got query period updated, registering..");
+			
 			registerToGetLocationUpdates();
 			Log.d(TAG," done!");
 		}
-		
+		*/
+		customLocationManager.onSharedPreferenceChanged(arg0, key);
 	}
+	/**
+	 * Obtain last known position.
+	 * 
+	 * @return 		Last known position from customLocationManager.
+	 */
+	public Location getLastKnownLocation()
+	{
+		return customLocationManager.getLastKnownPosition();
+	}
+	
 }

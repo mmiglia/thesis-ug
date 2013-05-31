@@ -16,15 +16,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.xml.sax.SAXException;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
 import com.thesisug.communication.valueobject.SingleEvent;
 import com.thesisug.communication.xmlparser.SingleEventHandler;
-import com.thesisug.authenticator.Authenticator;
 import com.thesisug.ui.EditEvent;
 import com.thesisug.ui.ShowEvent;
 import com.thesisug.ui.Todo;

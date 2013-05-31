@@ -1,26 +1,18 @@
 package com.thesisug.ui;
 
-import com.thesisug.R;
-import com.thesisug.communication.AccountUtil;
-import com.thesisug.communication.TaskResource;
-import com.thesisug.communication.valueobject.SingleItemLocation;
-import com.thesisug.communication.valueobject.SingleTask;
-import com.thesisug.communication.xmlparser.XsDateTimeFormat;
-import android.util.Log;
-import android.accounts.AccountManager;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.thesisug.R;
 import com.thesisug.communication.AssertionsResource;
+import com.thesisug.communication.valueobject.SingleItemLocation;
 
 public class Create_Assertion_item_NoDb extends Activity{
 	

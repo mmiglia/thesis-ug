@@ -16,17 +16,12 @@
 
 package com.thesisug.synchronizator;
 
-import java.io.IOException;
 import java.util.Date;
 
 import org.apache.http.ParseException;
-import org.apache.http.auth.AuthenticationException;
-import org.json.JSONException;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.accounts.AuthenticatorException;
-import android.accounts.OperationCanceledException;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;

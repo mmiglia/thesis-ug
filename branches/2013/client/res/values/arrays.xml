@@ -39,7 +39,30 @@
 		<item>never</item>
 	</string-array>
 	
+	<string-array name="snooze">
+	    <item>5 min</item>
+	    <item>10 min</item>
+	    <item>15 min</item>
+	    <item>30 min</item>
+	    <item>1 h</item>
+	    <item>2 h</item>
+	    <item>5 h</item>
+	    <item>10 h</item>
+	    <item>24 h</item>
 	
+	</string-array>
+	<string-array name="snoozeValue">
+	    <item>5</item>
+	    <item>10</item>
+	    <item>15</item>
+	    <item>30</item>
+	    <item>60</item>
+	    <item>120</item>
+	    <item>300</item>
+	    <item>600</item>
+	    <item>1440</item>
+	</string-array>
+	    
 	<string-array name="periodValue">
 		<item>50</item>
 		<item>100</item>
@@ -72,21 +95,21 @@
 		<item>en.lang</item>
 		<item>it.lang</item>
 	</string-array>
-	
+	<string-array name="p_mode">
+	    <item>Learning Mode</item>
+	    <item>Battery Recovery Mode</item>
+	</string-array>
+	<string-array name="p_mode_value">
+	    <item>learning_mode</item>
+	    <item>battery_rec_mode</item>
+	</string-array>
 	<string-array name="serverList">
-		<item>Padova</item>
-		<item>Unige</item>
+		<item>Servetti</item>
 		<item>Localhost</item>
-		<item>Nettuno Mirco</item>
-		<item>localhost</item>
 	</string-array>
 	<string-array name="serverListValue">
-		<item>serverpd.dyndns.org</item>
-		<item>zelda.openlab-dist.org</item>
+		<item>93.50.79.234</item>
 		<item>10.0.2.2</item>
-		<item>nettuno.dyndns.org</item>
-		<item>localhost</item>
-	
 	</string-array>
 	
 	<string name="type">Choose a type</string>

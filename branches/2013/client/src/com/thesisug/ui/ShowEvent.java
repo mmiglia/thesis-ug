@@ -14,7 +14,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
+import android.view.WindowManager;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +22,8 @@ import android.widget.Toast;
 import com.thesisug.R;
 import com.thesisug.communication.EventResource;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
+import com.thesisug.notification.SnoozeHandler;
+import com.thesisug.tracking.ActionTracker;
 
 public class ShowEvent extends Activity{
 	private static final String TAG ="thesisug - ShowEvent";
@@ -41,11 +43,14 @@ public class ShowEvent extends Activity{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
+		//requestWindowFeature(Window.FEATURE_CUSTOM_TITLE);
 		setContentView(R.layout.show_event);
-		getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_titlebar);
+		//getWindow().setFeatureInt(Window.FEATURE_CUSTOM_TITLE, R.layout.custom_titlebar);
 		TextView titlebar = (TextView) findViewById(R.id.customtitlebar);
-		titlebar.setText("Event");
+		titlebar.setText(R.string.event);
+		
+		//Hide keyboard
+		this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN); 
 		
 		//get the fields
 		packet = getIntent().getExtras();
@@ -65,6 +70,9 @@ public class ShowEvent extends Activity{
 		description.setText(packet.getString("description"));
 		latitude = packet.getFloat("latitude");
 		longitude = packet.getFloat("longitude");
+		
+		if(packet.getString("notification")!=null && packet.getString("notification").equals("true"))
+			ActionTracker.notificationViewed(Calendar.getInstance().getTime(), packet.getString("title"), getApplicationContext(), 1);
 		try {
 			from = (Calendar) xs_DateTime.parseObject(packet.getString("startTime"));
 			to = (Calendar) xs_DateTime.parseObject(packet.getString("endTime"));
@@ -107,6 +115,7 @@ public class ShowEvent extends Activity{
 			break;			
 		case DELETE:
 			showDialog(ASK_CONFIRMATION);
+			ActionTracker.contentCompleted(Calendar.getInstance().getTime(), title.getText().toString(), getApplicationContext(), 1);
 			break;
 		default:
 			finish();
@@ -147,6 +156,7 @@ public class ShowEvent extends Activity{
             .setTitle(R.string.ask_for_deletion_event)
             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
+                	SnoozeHandler.removeSnooze(title.getText().toString());
                 	Thread deleteThread = EventResource.removeEvent(packet.getString("eventID"), handler, ShowEvent.this);
                 	showDialog(WAIT_DELETION);
                 }

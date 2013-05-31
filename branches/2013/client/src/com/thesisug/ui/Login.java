@@ -25,7 +25,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.sun.corba.se.impl.orbutil.closure.Constant;
 import com.thesisug.Constants;
 import com.thesisug.R;
 import com.thesisug.communication.LoginResource;

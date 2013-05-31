@@ -1,13 +1,13 @@
 package com.thesisug.ui;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 import android.app.ListActivity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -18,8 +18,11 @@ import android.widget.Toast;
 import com.thesisug.R;
 import com.thesisug.communication.valueobject.Hint;
 import com.thesisug.communication.valueobject.Hint.PhoneNumber;
+import com.thesisug.notification.TaskNotification;
+import com.thesisug.tracking.ActionTracker;
 
-public class HintList extends ListActivity {
+public class HintList extends ListActivity 
+{
 	public final static String TAG = "thesisug - HintListActivity";
 	public final static String HINT_TITLE = "data";
 	public final static String HINT_ADDRESS = "address";
@@ -27,7 +30,8 @@ public class HintList extends ListActivity {
 	private static ArrayList<Hint> hintlist;
 	private static String tasktitle="";
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	public void onCreate(Bundle savedInstanceState) 
+	{
 		super.onCreate(savedInstanceState);
 		List<LinkedHashMap<String,?>> hints = new LinkedList<LinkedHashMap<String,?>>();
 		hintlist = getIntent().getExtras().getParcelableArrayList("hints");
@@ -46,6 +50,7 @@ public class HintList extends ListActivity {
        	adapter.addSection(getText(R.string.capable)+" "+getIntent().getExtras().getString("tasktitle")+" in", hintAdapter);
        	setListAdapter(adapter);
        	}
+       	ActionTracker.notificationViewed(Calendar.getInstance().getTime(), tasktitle, getApplicationContext(), 1);
 	}
 	
 	private LinkedHashMap<String,?> createItem(Hint currenthint) {
@@ -78,17 +83,29 @@ public class HintList extends ListActivity {
 		Log.i(TAG, "item staticMapUrl:"+selectedHint.staticMapUrl);
 		
 		//Show only this in mapView
-		Intent intentShowInMap = new Intent(HintList.this, Map.class);
+		Intent intentShowInMap = new Intent(HintList.this, ParentTab.class);
+		intentShowInMap.putExtra("maptab",1);
 		intentShowInMap.putExtra("hintlist",hintlist);
 		intentShowInMap.putExtra("selectedPos",position);
 		intentShowInMap.putExtra("tasktitle",tasktitle);
+		intentShowInMap.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		//startActivityForResult(intentShowInMap, 0);
+		startActivity(intentShowInMap);
+		ArrayList<String> unchosen = new ArrayList<String>(); 
+		for(Hint h: hintlist)
+		{
+			if(!h.titleNoFormatting.equals(selectedHint.titleNoFormatting))
+				unchosen.add(h.titleNoFormatting);
+		}
+		ActionTracker.hintChosen(Calendar.getInstance().getTime(),TaskNotification.getInstance().getLastKnownLocation(), tasktitle, selectedHint.titleNoFormatting,unchosen, getApplicationContext());
 		
-		startActivityForResult(intentShowInMap, 0);
-		
+		super.finish();
+		finish();
 		//View path in browser
 		//Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse(selectedHint.ddUrl));
 		//startActivity(browserIntent);
 
 		
 	}
+	
 }

@@ -1,5 +1,9 @@
 package com.thesisug.ui;
 
+import java.util.Calendar;
+
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -9,39 +13,21 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import android.accounts.Account;
-import android.accounts.AccountAuthenticatorActivity;
-import android.accounts.AccountAuthenticatorResponse;
-import android.accounts.AccountManager;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.os.Bundle;
-import android.os.Handler;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thesisug.Constants;
 import com.thesisug.R;
-import com.thesisug.communication.LoginResource;
+import com.thesisug.caching.CachingDbManager;
 import com.thesisug.communication.NetworkUtilities;
-import com.thesisug.communication.valueobject.LoginReply;
-
 import com.thesisug.communication.valueobject.TestConnectionReply;
 import com.thesisug.notification.TaskNotification;
+import com.thesisug.tracking.ActionTracker;
 
 
 
@@ -55,11 +41,11 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	public String navigator;
 	private static int currentDialog=0;
 	private static SharedPreferences userSettings;
-	
+	private static final int UPDATE_CACHE = 0;
 	private String regExCorrectURL="^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}$";
 	
 	private Button updateServerListBtn=null;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -299,4 +285,24 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 		settingsEditor.commit();
 		Log.v(TAG, "leaving setQuiet");
     }
+    @Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+    	menu.add(0,UPDATE_CACHE,0,R.string.update_cache_button).setIcon(R.drawable.refresh).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) 
+	{
+		switch (item.getItemId()) 
+		{
+		case UPDATE_CACHE:
+			
+			Log.d(TAG,"Going to update cache hints.");
+			CachingDbManager.startCacheUpdate();
+			break;
+		}
+		return true;
+	}
 }

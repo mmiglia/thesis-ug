@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+<xs:annotation>
+	<xs:documentation>
+	Schema defining events tracking xml documents. V 1.0.
+	</xs:documentation>
+</xs:annotation>
+<xs:element name="events" >
+	<xs:annotation>
+		<xs:documentation>
+			List of tracked events.
+		</xs:documentation>
+	</xs:annotation>
+	<xs:complexType >
+	<xs:sequence>
+		<xs:element name="creationdate" type="xs:date">
+		<xs:annotation>
+				<xs:documentation>
+					Creation data of tracking file.
+			   	</xs:documentation>
+		   	</xs:annotation>
+		</xs:element>
+		<xs:element name="creationtime" type="xs:time">
+		<xs:annotation>
+				<xs:documentation>
+					Creation time of tracking file.
+			   	</xs:documentation>
+		   	</xs:annotation>
+		</xs:element>
+		<xs:element name="event" minOccurs="0" maxOccurs="unbounded">
+			<xs:annotation>
+				<xs:documentation>
+					This element describes a generic event.
+			   	</xs:documentation>
+		   	</xs:annotation>
+		   	<xs:complexType>
+		   	<xs:sequence>
+		   		<xs:element name="eventtype" type="xs:string" minOccurs="1" maxOccurs="1">
+			   	<xs:annotation>
+					<xs:documentation>
+						Type of event tracked.
+				   	</xs:documentation>
+			   	</xs:annotation>
+		   		</xs:element>
+		   		<xs:element name="date" type="xs:date" minOccurs="1" maxOccurs="1">
+			   	<xs:annotation>
+					<xs:documentation>
+						Date of event tracked.
+				   	</xs:documentation>
+			   	</xs:annotation>
+		   		</xs:element>
+		   		<xs:element name="time" type="xs:time" minOccurs="1" maxOccurs="1">
+			   	<xs:annotation>
+					<xs:documentation>
+						Time of event tracked.
+				   	</xs:documentation>
+			   	</xs:annotation>
+		   		</xs:element>
+		   		<xs:element name="infos" minOccurs="1" maxOccurs="1">
+			   	<xs:annotation>
+					<xs:documentation>
+						Additional infos for every type of event.
+				   	</xs:documentation>
+			   	</xs:annotation>
+		   		<xs:complexType>
+		   		<xs:sequence>
+		   			<xs:element name="type" type="xs:string" minOccurs="0" maxOccurs="1">
+		   				<xs:annotation>
+							<xs:documentation>
+								Task or event.
+				   			</xs:documentation>
+			   			</xs:annotation>
+		   			</xs:element>
+		   			<xs:element name="title" type="xs:string" minOccurs="0" maxOccurs="1">
+		   				<xs:annotation>
+							<xs:documentation>
+								Title of task/event.
+				   			</xs:documentation>
+			   			</xs:annotation>
+		   			</xs:element>
+		   			<xs:element name="location" minOccurs="0" maxOccurs="1">
+			   			<xs:annotation>
+							<xs:documentation>
+								Position of user when event occurs.
+				   			</xs:documentation>
+			   			</xs:annotation>
+			   			<xs:complexType>
+			   				<xs:attribute name="latitude" type="xs:string" use="required" />
+			   				<xs:attribute name="longitude" type="xs:string" use="required" />
+			   				<xs:attribute name="accuracy" type="xs:string" use="required" />
+			   			</xs:complexType>
+		   			</xs:element>
+		   			<xs:element name="chosenhint" type="xs:string" minOccurs="0" maxOccurs="1">
+		   				<xs:annotation>
+							<xs:documentation>
+								Title of chosen hint.
+				   			</xs:documentation>
+			   			</xs:annotation>
+		   			</xs:element>
+		   			<xs:element name="unchosenhints" minOccurs="0" maxOccurs="1">
+			   			<xs:complexType>
+			   			<xs:sequence>
+			   			<xs:element name="title" type="xs:string" minOccurs="0" maxOccurs="unbounded">
+			   			<xs:annotation>
+						<xs:documentation>
+								Title of unchosen hint.
+				   		</xs:documentation>
+			   			</xs:annotation>
+			   			</xs:element>
+			   			</xs:sequence></xs:complexType>
+		   			</xs:element>
+		   			<xs:element name="requestresponse" minOccurs="0" maxOccurs="1">
+		   			<xs:annotation>
+							<xs:documentation>
+								Title of chosen hint.
+				   			</xs:documentation>
+			   			</xs:annotation>
+		   			</xs:element>
+		   			<xs:element name="snoozevalue" minOccurs="0" maxOccurs="1">
+		   			<xs:annotation>
+							<xs:documentation>
+								Value of snooze time delay.
+				   			</xs:documentation>
+			   			</xs:annotation>
+		   			</xs:element>
+		   		</xs:sequence>
+		   		</xs:complexType>
+		   	</xs:element>
+		   	</xs:sequence>
+		</xs:complexType>
+		</xs:element>
+	</xs:sequence>
+	</xs:complexType>
+</xs:element>
+</xs:schema>

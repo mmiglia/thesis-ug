@@ -5,12 +5,12 @@ import java.io.InputStream;
 
 import org.xml.sax.SAXException;
 
-import com.thesisug.communication.valueobject.VersionReply;
-
 import android.sax.EndTextElementListener;
 import android.sax.RootElement;
 import android.util.Log;
 import android.util.Xml;
+
+import com.thesisug.communication.valueobject.VersionReply;
 
 public class VersionReplyHandler {
 private static final String TAG = "thesisug - Version Reply Handler";

@@ -1,7 +1,5 @@
 package com.thesisug.communication.valueobject;
 
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 /* 28-5-2011

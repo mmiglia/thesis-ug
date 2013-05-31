@@ -1,6 +1,5 @@
 package com.thesisug.communication.valueobject;
 
-import java.util.UUID;
 
 /**
  * This is the basic event object that will be used for communication

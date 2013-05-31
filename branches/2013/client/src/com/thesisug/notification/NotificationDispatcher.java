@@ -3,27 +3,27 @@ package com.thesisug.notification;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.thesisug.R;
-import com.thesisug.notification.TaskNotification.LocalBinder;
-import com.thesisug.ui.Preferences;
-import com.thesisug.ui.Todo;
-import com.thesisug.ui.accessibility.ShakeListener;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.hardware.SensorManager;
-import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
+
+import com.thesisug.R;
+import com.thesisug.ui.Preferences;
+import com.thesisug.ui.Todo;
+import com.thesisug.ui.accessibility.ShakeListener;
+//import android.os.Binder;
+//import android.content.SharedPreferences.Editor;
+//import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+//import com.thesisug.notification.TaskNotification.LocalBinder;
+//import android.widget.Toast;
 /**
  * This class handles notification forwarding to the notification manager
  * such that morse notifications, when active, are given their time to
@@ -31,7 +31,7 @@ import android.widget.Toast;
  * it.
  * @author lorenzo
  *
- */
+ */ 
 public class NotificationDispatcher extends Service {
 	// inessential forwarded notification counter
 	private static int notificationsSoFar = 0;
@@ -49,7 +49,7 @@ public class NotificationDispatcher extends Service {
 	private static boolean initialized = false;
 	private static PowerManager.WakeLock wakeLock;
 	private static final long PROGRAMMER_DEFINED_SLEEP_TIME = 3000L;
-	
+	private static boolean runningThread;
 	/**
 	 * initializes NotificationDispatcher's private fields in
 	 * case it had not been done yet.
@@ -87,12 +87,22 @@ public class NotificationDispatcher extends Service {
 		});
 		shakeListener.shutDown();
 		PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+		/**
+		 * FULL_WAKE_LOCK was deprecated in API level 17. 
+		 * Most applications should use FLAG_KEEP_SCREEN_ON 
+		 * instead of this type of wake lock, 
+		 * as it will be correctly managed by the platform 
+		 * as the user moves between applications 
+		 * and doesn't require a special permission.
+		 * @author Alberto Servetti 11/04/2013
+		 */
 		wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, TAG);
+		runningThread=true;
 		// define the code for the dispatcher thread
 		Runnable dispatcherTask = new Runnable(){
 			public void run() {
 				// forever
-				while (true) {
+				while (runningThread) {
 					shakeListener.shutDown();
 					if (wakeLock.isHeld()) {
 						wakeLock.release();
@@ -102,11 +112,11 @@ public class NotificationDispatcher extends Service {
 					try {
 						n = queue.take();
 					} catch (InterruptedException e) {
-						Log.v(TAG, "Dispatcher thread was interrupted while blocked on empty queue");
+						Log.i(TAG, "Dispatcher thread was interrupted while blocked on empty queue");
 					}
 					// forward it to the notification manager
 					if (n != null) {
-						Log.v(TAG, "Presa la notifica " + n.sentence + ", la inoltro");
+						Log.i(TAG, "Presa la notifica " + n.sentence + ", la inoltro");
 						
 						int notificationId = n.sentence.hashCode();
 						latestForwardedNotification = notificationId;
@@ -119,15 +129,16 @@ public class NotificationDispatcher extends Service {
 							shakeListener.activate();
 						}
 						notificationManager.notify(notificationId, n.notification);
-						Log.v(TAG, n.sentence + " no. "+ ++notificationsSoFar +" inoltrata, dormo per " + n.duration);
+						Log.i(TAG, n.sentence + " no. "+ ++notificationsSoFar +" inoltrata, dormo per " + n.duration);
 						// sleep until the morse vibration pattern finished
 						try {
 							Thread.sleep(n.duration);
 						} catch (InterruptedException e) {
-							Log.v(TAG, "Dispatcher thread was interrupted while waiting for notification to end");
+							Log.i(TAG, "Dispatcher thread was interrupted while waiting for notification to end");
 						}
 					}
 				}
+				Log.i(TAG,"Dispatcher thread stopped");
 			}
 		};
 		// start the dispatcher thread
@@ -146,9 +157,9 @@ public class NotificationDispatcher extends Service {
 	public static void dispatch(String sentence, Notification newNotification, NotificationManager nm, String vibration, Context context) {
 		// if DispatcherManager had not been initialized yet, do it
 		if (notificationManager == null || queue == null) {
-			Log.v(TAG, "Dispatcher is uninitialized");
+			Log.i(TAG, "Dispatcher is uninitialized");
 			init(nm, context);
-			Log.v(TAG, "Dispatcher was successfully initialized");
+			Log.i(TAG, "Dispatcher was successfully initialized");
 		}
 		if (vibration.equals("morse")) {
 			if (userSettings.getBoolean("notification_hint_speak", false)) {
@@ -162,8 +173,16 @@ public class NotificationDispatcher extends Service {
 		} else if (userSettings.getBoolean("notification_hint_sound", false)) {
 			forwardSoundOnlyNotification(newNotification, sentence);
 		} else {
+			if(notificationManager == null)
+			{
+				Log.e(TAG,"notificationManager null");
+			}
+			if(nm==null)
+			{
+				Log.e(TAG,"Passed notificationManager null");
+			}
 			notificationManager.notify(sentence.hashCode(), newNotification);
-		}
+		} 
 		/*
 		// if morse notifications are disabled simply forward notification to notification manager
 		boolean vibratingYes = vibration.equals("morse") || vibration.equals("priority");
@@ -237,13 +256,13 @@ public class NotificationDispatcher extends Service {
 		// compute the duration of vibrating pattern
 		long duration = computeVibratePatternDuration(newNotification.vibrate);
 		// and enqueue notification
-		Log.v(TAG, "Trying to enqueue notification");
+		Log.i(TAG, "Trying to enqueue notification");
 		try {
 			queue.put(new NotificationContainer(newNotification, sentence, duration));
 		} catch (InterruptedException e) {
-			Log.v(TAG, "Dispatcher interrupted while waiting for free space to enqueue a new notification");
+			Log.i(TAG, "Dispatcher interrupted while waiting for free space to enqueue a new notification");
 		}
-		Log.v(TAG, "Notification enqueued");
+		Log.i(TAG, "Notification enqueued");
 		
 	}
 
@@ -292,7 +311,10 @@ public class NotificationDispatcher extends Service {
 		}
 		
 	}
-
+	public static void deleteNotification(int id)
+	{
+		notificationManager.cancel(id);
+	}
 	@Override
 	public IBinder onBind(Intent intent) {
 		// we do not need a IBinder interface
@@ -307,5 +329,9 @@ public class NotificationDispatcher extends Service {
         return START_STICKY;
     }
 	
-
+	@Override
+    public void onDestroy() 
+    {
+		runningThread=false;
+    }
 }

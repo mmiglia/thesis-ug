@@ -19,7 +19,6 @@ import android.util.Xml;
 import com.thesisug.communication.valueobject.GroupData;
 import com.thesisug.communication.valueobject.GroupInviteData;
 import com.thesisug.communication.valueobject.GroupMember;
-import com.thesisug.communication.valueobject.SingleTask;
 
 public class GroupHandler {
 private static final String TAG = "thesisug - GroupHandler";

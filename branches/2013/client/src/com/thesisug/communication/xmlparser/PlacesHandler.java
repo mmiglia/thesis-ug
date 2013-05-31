@@ -17,8 +17,6 @@ import android.util.Log;
 import android.util.Xml;
 
 import com.thesisug.communication.valueobject.PlaceClient;
-import com.thesisug.communication.valueobject.SingleActionLocation;
-import com.thesisug.communication.valueobject.SingleItemLocation;
 
 public class PlacesHandler {
 

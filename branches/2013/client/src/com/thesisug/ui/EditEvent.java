@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -27,6 +28,7 @@ import com.thesisug.R;
 import com.thesisug.communication.EventResource;
 import com.thesisug.communication.valueobject.SingleEvent;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
+import com.thesisug.tracking.ActionTracker;
 
 public class EditEvent extends Activity {
 	private static final String TAG = "thesisug - EditEvent";
@@ -53,6 +55,9 @@ public class EditEvent extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.edit_event);
 		
+		//Hide keyboard
+				this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN); 
+						
 		//Set deadline to tomorrow
 		to.add(Calendar.DAY_OF_MONTH, 1);
 		
@@ -179,10 +184,13 @@ public class EditEvent extends Activity {
 			// segnala che il contenuto è stato correttamente salvato sul server
 			// (distingue fra creazione e modifica)
 			switch (currentDialog) {
-			case EDIT_EVENT: Toast.makeText(EditEvent.this, R.string.edit_success,
-                    Toast.LENGTH_LONG).show(); break;
-			case CREATE_EVENT: Toast.makeText(EditEvent.this, R.string.create_success,
-                    Toast.LENGTH_LONG).show(); break;
+			case EDIT_EVENT: 
+				Toast.makeText(EditEvent.this, R.string.edit_success,Toast.LENGTH_LONG).show(); 
+				break;
+			case CREATE_EVENT: 
+				Toast.makeText(EditEvent.this, R.string.create_success,Toast.LENGTH_LONG).show(); 
+				ActionTracker.contentAdded(Calendar.getInstance().getTime(), title.getText().toString(), getApplicationContext(),1);
+				break;
 			}
 			finish();
     	} else {

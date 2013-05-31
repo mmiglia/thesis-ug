@@ -2,8 +2,6 @@ package com.thesisug.ui;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Criteria;
 import android.location.Location;
@@ -15,11 +13,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.thesisug.Constants;
 import com.thesisug.R;
-import com.thesisug.communication.LoginResource;
 import com.thesisug.communication.NetworkUtilities;
 import com.thesisug.communication.valueobject.TestConnectionReply;
 
@@ -97,7 +93,7 @@ public class SystemStatus extends Activity {
 		menu.add(0,UPDATE_STATUS,0,"Update").setIcon(R.drawable.sync);
 		menu.add(0,FIX_LOCATION_PROBLEM,0,"Select location provider").setIcon(R.drawable.sync);
 		menu.add(0,CHANGE_SERVER,0,"Change server").setIcon(R.drawable.sync);
-		menu.add(0,BACK,0,"BACK").setIcon(R.drawable.exit);
+		menu.add(0,BACK,0,"Back").setIcon(R.drawable.exit);
 		return true;
 	}
 	
