@@ -286,6 +286,7 @@
     <string name="app_mode">Running mode.</string>
     <string name="app_mode_desc">Choose between learning mode and battery recovery mode.</string>
 	<string name="update_cache_button">Update cache</string>
+	<string name="delete_cache_button">Delete cache</string>
     <!-- TRACKING -->
 
     <string name="title_activity_wifi_request">Wifi Request</string>

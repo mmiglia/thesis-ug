@@ -42,6 +42,7 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	private static int currentDialog=0;
 	private static SharedPreferences userSettings;
 	private static final int UPDATE_CACHE = 0;
+	private static final int DELETE_CACHE = 1;
 	private String regExCorrectURL="^([a-zA-Z0-9]([a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,6}$";
 	
 	private Button updateServerListBtn=null;
@@ -289,7 +290,8 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
     	menu.add(0,UPDATE_CACHE,0,R.string.update_cache_button).setIcon(R.drawable.refresh).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
-		return true;
+    	menu.add(0,DELETE_CACHE,0,R.string.delete_cache_button).setIcon(R.drawable.trash).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+    	return true;
 	}
 	
 	@Override
@@ -301,6 +303,10 @@ public class Preferences extends PreferenceActivity implements OnSharedPreferenc
 			
 			Log.d(TAG,"Going to update cache hints.");
 			CachingDbManager.startCacheUpdate();
+			break;
+		case DELETE_CACHE:
+			Log.d(TAG,"Going to delete cache .");
+			CachingDbManager.cleanCache();
 			break;
 		}
 		return true;

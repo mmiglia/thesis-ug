@@ -1,5 +1,6 @@
 package com.thesisug.caching;
 
+import java.io.File;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,11 +24,30 @@ import android.os.Handler;
 import android.util.Log;
 
 /**
+ * NOTA:
+ * La gestione delle aree in cache è diversificata per tipologia di task.
+ * Le ragioni per cui si è scelto questo tipo di approccio sono fondamentalmente due, una in chiave 
+ * attuale ed una in prospettiva futura.
+ * Questo approccio sembra più efficiente in termini di dimensione della cache. Definendo una singola 
+ * area per tutte le tipologie di task, questa deve essere sempre aggiornata per ciascuna delle 
+ * tipologie che contiene. Quindi, al momento di estendere l'area (per una sovrapposizione o perché 
+ * l'utente vuole ampliare la distanza massima degli hint), sarebbe necessario interrogare il server 
+ * per la nuova area su tutte le tipologie di task ricercate fino a quel momento, ma non è detto che i 
+ * task ricercati precedentemente interessino ancora all'utente. Allora si andrebbero a salvare in cache 
+ * hint a cui l'utente non è più interessato, precludendo spazio a future memorizzazioni di hint rilevanti.
+ * Inoltre, in                    un futuro in cui si implementasse il servizio di ricerca con distanza proporzionale alla 
+ * priorita' del task ed alla vicinanza della sua deadline il fatto di avere cache diversificate 
+ * verrebbe utile.
+ * 
+ */
+
+/**
  * This class manages db creation, update and connections.
  * 
  * @author Alberto Servetti
  *
  */
+
 public class CachingDb extends SQLiteOpenHelper
 {
 	private static final String TAG = "thesisug - CachingDb";
@@ -37,10 +57,10 @@ public class CachingDb extends SQLiteOpenHelper
 	public static final int AREA_OUT = 1;
 	public static final int AREA_OVERLAY = 2;
 	private static Handler handler = new Handler();
-	private Context context;
-	private static Date creationDate;
+	private static Context context;
 	//Starting version is 1
 	private static final int SCHEMA_VERSION = 1;
+	private static final int DBMAXSIZE = 524288000; //500 MB
 	
 	/**
 	 * Create a helper object to create, open, and/or manage a database.
@@ -51,8 +71,7 @@ public class CachingDb extends SQLiteOpenHelper
 	{
 		super(context, DATABASE_NAME, null, SCHEMA_VERSION);
 		Log.i(TAG,"new CachingDbHelper");
-		creationDate = Calendar.getInstance().getTime();
-		this.context=context;
+		CachingDb.context=context;
 	}
 	
 	@Override
@@ -60,24 +79,7 @@ public class CachingDb extends SQLiteOpenHelper
 	{
 		Log.i(TAG,"new SQLite Database");
 		
-		String createTable =
-				"CREATE TABLE IF NOT EXISTS LocalHintCachingDelete (" +
-				"deleteDate date NOT NULL," +
-				"PRIMARY KEY(deleteDate))";
-		
-		db.execSQL(createTable);
-		
-		ContentValues container = new ContentValues();
-		container.put("deleteDate",dateFormat.format(creationDate));
-		
-		if(db.insert("LocalHintCachingDelete", null, container)==-1)
-		{
-			Log.e(TAG,"Failed inserting in LocalHintCachingDelete");
-		}
-		
-		Log.d(TAG,"LocalHintCachingDelete table created");
-		
-		createTable = 
+		String createTable = 
 				"CREATE TABLE IF NOT EXISTS {0} ( " +		
 				"{1} varchar(100) NOT NULL," +
 				"{2} varchar(20) NOT NULL," +
@@ -183,8 +185,9 @@ public class CachingDb extends SQLiteOpenHelper
 	 * @param sentence		Sentence describing task.
 	 * @return				An Area object which contains result of search.
 	 */
-	public Area checkArea(Area areaToCheck, String sentence)
+	public Area checkArea(Area areaToCheck, String sentence,SQLiteDatabase db)
 	{
+		
 		//TODO
 		Log.i(TAG,"Going to check areas for " + sentence+".");
 		Log.d(TAG,"areaToCheck:");
@@ -193,7 +196,7 @@ public class CachingDb extends SQLiteOpenHelper
 		Log.d(TAG,"rad:" + areaToCheck.rad);
 		Cursor queryResult;
 		
-		SQLiteDatabase db = getReadableDatabase();
+		
 		//Query database for areas containing hints for the same task
 		//Equivalent to SELECT * FROM TABLE_NAME WHERE SENTENCE = sentence;
 		queryResult = db.query
@@ -212,8 +215,10 @@ public class CachingDb extends SQLiteOpenHelper
 			//If there are no areas for this sentence, query server on the starting area
 		    Log.d(TAG,"No area present in Cache for "+ sentence +".");
 		    Area area = new Area(areaToCheck.lat,areaToCheck.lng,areaToCheck.rad,AREA_OUT);
-		    insertAreaEntry(area,sentence);
-		    return area;
+		    if(insertAreaEntry(area,sentence,false,db))		    
+		    	return area;
+		    else
+		    	return null;
 		}
 		Log.d(TAG,"There are areas already in cache for "+sentence+".");
 		ArrayList<Area> toDelete = new ArrayList<Area>();
@@ -247,7 +252,7 @@ public class CachingDb extends SQLiteOpenHelper
 						if(areaToCheck.rad<(rad-distance[0]))
 						{
 
-							db.close();
+							//db.close();
 							queryResult.close();
 							Log.d(TAG, "Search area is nested in existing area.");
 							//If search area's radius is less than stored area's radius minus distance,
@@ -262,18 +267,18 @@ public class CachingDb extends SQLiteOpenHelper
 							if(areaToCheck.rad<(rad+distance[0]))
 							{
 
-								db.close();
+								//db.close();
 								queryResult.close();
 								Log.d(TAG, "Search area is overlayed with existing area.");
 								//If search area's radius is less than stored area's radius plus distance,
 								//areas are overlayed, so return their union.
-								return getAreaUnion(new Area(lat,lng,rad),areaToCheck,distance[0],sentence);
+								return getAreaUnion(new Area(lat,lng,rad),areaToCheck,distance[0],sentence,db);
 							}
 							
 							else
 							{
 
-								db.close();
+								//db.close();
 								queryResult.close();
 								Log.d(TAG, "Existing area is nested in search area.");
 								//If search area's radius is more or equal than stored area's radius plus distance,
@@ -295,18 +300,18 @@ public class CachingDb extends SQLiteOpenHelper
 							if(areaToCheck.rad<(rad+distance[0]))
 							{
 
-								db.close();
+								//db.close();
 								queryResult.close();
 
 								Log.d(TAG, "Search area is overlayed with existing area.");
 								//If search area's radius is less than stored area's radius plus distance,
 								//areas are overlayed, so return their union.
-								return getAreaUnion(new Area(lat,lng,rad),areaToCheck,distance[0],sentence);
+								return getAreaUnion(new Area(lat,lng,rad),areaToCheck,distance[0],sentence,db);
 							}
 							else
 							{
 
-								db.close();
+								//db.close();
 								queryResult.close();
 
 								Log.d(TAG, "Existing area is nested in search area.");
@@ -322,20 +327,24 @@ public class CachingDb extends SQLiteOpenHelper
 		}
 		while(queryResult.moveToNext());
 
-		db.close();
 		queryResult.close();
-		db = getWritableDatabase();
+		
 		if(toDelete.size()>0)
 		{	
+			startTransaction(db);
 			for(Area area:toDelete)
 			{
-				deleteAreaEntry(area, sentence,db);
+				if(!deleteAreaEntry(area, sentence,db))
+					return null;
 			}	
+			commitTransaction(db);
 		}
-		db.close();
+		
 		Area area = new Area(areaToCheck.lat,areaToCheck.lng,areaToCheck.rad,AREA_OUT);
-		insertAreaEntry(area,sentence);
-		return area;
+		if(insertAreaEntry(area,sentence,false,db))
+			return area;
+		else
+			return null;
 		
 	}
 	
@@ -349,7 +358,7 @@ public class CachingDb extends SQLiteOpenHelper
 	 * @param sentence		Sentence describing areas' task. 
 	 * @return				Union of areas.
 	 */
-	private Area getAreaUnion(Area storedArea, Area areaToCheck, float distance,String sentence) 
+	private Area getAreaUnion(Area storedArea, Area areaToCheck, float distance,String sentence,SQLiteDatabase db) 
 	{
 		Log.i(TAG,"getAreaUnion");
 		Area union = null;
@@ -368,20 +377,19 @@ public class CachingDb extends SQLiteOpenHelper
 		}
 		//Check union area for two reason: the union could overlay or neste other areas.
 		//In any case this call to checkArea will delete storedArea because is nested.
-		return checkArea(union,sentence);
+		return checkArea(union,sentence,db);
 	}
 	/**
 	 * Insert new area in cached areas.
 	 * @param areaToInsert		Area to insert in database.
 	 * @param sentence			Sentence describing task searched in this area.
 	 */
-	private void insertAreaEntry(Area areaToInsert,String sentence)
+	private boolean insertAreaEntry(Area areaToInsert,String sentence,boolean transaction,SQLiteDatabase db)
 	{
 		Log.i(TAG,"insertArea for " + sentence +".");
 		Log.d(TAG,"lat " + areaToInsert.lat);
 		Log.d(TAG,"lng " + areaToInsert.lng);
 		Log.d(TAG,"radius " + areaToInsert.rad);
-		SQLiteDatabase db = getWritableDatabase();
 		/*
 		//Before inserting area, checks if already present
 		String whereClause = LocalHintCachingAreas.CENTRELAT + " = ? AND "+LocalHintCachingAreas.CENTRELNG +" = ? AND "+LocalHintCachingAreas.RADIUS + " = ? AND " + LocalHintCachingAreas.SENTENCE + " = ? ";
@@ -406,19 +414,34 @@ public class CachingDb extends SQLiteOpenHelper
 		
 
 		if(db.insert(LocalHintCachingAreas.TABLE_NAME, null, container)==-1)
+		{
 			Log.e(TAG,"Error inserting LocalHintCaching.");
+			if(transaction)
+				rollbackTransaction(db);
+			return false;
+		}
 		else
-			Log.d(TAG,"Area successfully inserted for " + sentence +".");			
-		return;
+		{
+			Log.d(TAG,"Area successfully inserted for " + sentence +".");
+			return true;
+		}
+		
 	}
-	
-	public boolean cleanArea(Area areaToClean,String sentence,SQLiteDatabase db )
+	/**
+	 * Delete from cache an Area.
+	 * 
+	 * @param areaToClean	Area to be deleted.
+	 * @param sentence
+	 * @param db
+	 * @return
+	 */
+	public boolean deleteArea(Area areaToDelete,String sentence,SQLiteDatabase db )
 	{
 		Log.i(TAG,"Going to clean an area for " + sentence +".");
-		Log.d(TAG,"Area to clean = lat: "+ areaToClean.lat + " lng: " + areaToClean.lng + " rad: " + areaToClean.rad + ".");
+		Log.d(TAG,"Area to clean = lat: "+ areaToDelete.lat + " lng: " + areaToDelete.lng + " rad: " + areaToDelete.rad + ".");
 		//SQLiteDatabase db = getWritableDatabase();
 		String whereClause = LocalHintCachingAreas.CENTRELAT + " = ? AND "+LocalHintCachingAreas.CENTRELNG +" = ? AND "+LocalHintCachingAreas.RADIUS + " = ? AND " + LocalHintCachingAreas.SENTENCE + " = ? ";
-		Cursor c =db.query(LocalHintCachingAreas.TABLE_NAME, LocalHintCachingAreas.COLUMNS, whereClause, new String[]{Float.toString(areaToClean.lat),Float.toString(areaToClean.lng), Float.toString(areaToClean.rad), sentence}, null, null, LocalHintCachingAreas.SENTENCE);
+		Cursor c =db.query(LocalHintCachingAreas.TABLE_NAME, LocalHintCachingAreas.COLUMNS, whereClause, new String[]{Float.toString(areaToDelete.lat),Float.toString(areaToDelete.lng), Float.toString(areaToDelete.rad), sentence}, null, null, LocalHintCachingAreas.SENTENCE);
 		if (!(c.moveToFirst()) || c.getCount() ==0)
 		{
 		    Log.e(TAG,"Area not present.");
@@ -429,14 +452,12 @@ public class CachingDb extends SQLiteOpenHelper
 			
 			Log.d(TAG,"Area present.");
 			//startTransaction(db);
-			if(!deleteAreaEntry(areaToClean,sentence,db))
+			if(!deleteAreaEntry(areaToDelete,sentence,db))
 			{
-				rollbackTransaction(db);
 				return false;
 			}
-			if(!deleteHintsInArea(areaToClean,sentence,db))
+			if(!deleteHintsInArea(areaToDelete,sentence,db))
 			{
-				rollbackTransaction(db);
 				return false;
 			}
 			Log.d(TAG,"Area successfully cleaned.");
@@ -460,6 +481,7 @@ public class CachingDb extends SQLiteOpenHelper
 		if(deleted==0)
 		{
 			Log.e(TAG,"Error in deleting area from " + LocalHintCachingAreas.TABLE_NAME +" table.");
+			rollbackTransaction(db);
 			return false;
 		}
 		else
@@ -483,11 +505,11 @@ public class CachingDb extends SQLiteOpenHelper
 	private boolean deleteHintsInArea(Area areaToClean, String sentence,SQLiteDatabase db) 
 	{
 		List<Hint> hintsToDelete =
-		searchLocalBuisnessInCache(sentence,areaToClean.lat, areaToClean.lng,areaToClean.rad);
+		searchLocalBuisnessInCache(sentence,areaToClean.lat, areaToClean.lng,areaToClean.rad,db);
 		if(hintsToDelete.size()==0)
 		{
 			Log.e(TAG,"No hints for "+sentence + "in this area.");
-			return false;
+			return true;
 		}
 		return deleteHints(hintsToDelete,sentence,db);
 	}
@@ -503,6 +525,7 @@ public class CachingDb extends SQLiteOpenHelper
 			if(deletedRows==0)
 			{
 				Log.e(TAG,"Hint not present in LocalHintCaching!");
+				rollbackTransaction(db);
 				return false;
 			}
 			deletedHints+=deletedRows;
@@ -517,6 +540,7 @@ public class CachingDb extends SQLiteOpenHelper
 				if(deletedRows==0)
 				{
 					Log.e(TAG,"Address line not present in LocalHintCaching!");
+					rollbackTransaction(db);
 					return false;
 				}
 				deletedAddressRows+=deletedRows;
@@ -531,6 +555,7 @@ public class CachingDb extends SQLiteOpenHelper
 				if(deletedRows==0)
 				{
 					Log.e(TAG,"Phone number not present in LocalHintCaching!");
+					rollbackTransaction(db);
 					return false;
 				}
 				deletedPhoneRows+=deletedRows;
@@ -693,75 +718,82 @@ public class CachingDb extends SQLiteOpenHelper
 	 * 
 	 * @return	True if clean succeeds, false otherwise.
 	 */
-	private boolean cachingClean()
+	public boolean cachingClean(SQLiteDatabase db)
 	{
-		String today = dateFormat.format(Calendar.getInstance().getTime());
-		Log.i(TAG,"cachingClean is going to delete all records antecendent " + today +". ");
-		cachingCleanLocalHintCaching();
-		cachingCleanLocalHintCachingAddressLines();
-		cachingCleanLocalHintCachingPhoneNumber();
-		setNewDeleteDate(today);
+		Log.i(TAG,"cachingClean is going to delete all records. ");
+		
+		
+		cachingCleanLocalHintAreas(db);
+		cachingCleanLocalHintCaching(db);
+		cachingCleanLocalHintCachingAddressLines(db);
+		cachingCleanLocalHintCachingPhoneNumber(db);
+	
+		//db.close();
 		
 		return true;
 	}
 	/**
+	 * Clean Areas table. 
+	 * 
+	 */
+	private  void cachingCleanLocalHintAreas(SQLiteDatabase db) 
+	{
+		Log.i(TAG,"cachingCleanLocalHintAreas.");
+
+		//String whereClause = LocalHintCaching.INSERTIONDATE + "  <  date('now') ";
+		
+		int deletedRows = db.delete(LocalHintCachingAreas.TABLE_NAME, null, null);
+		
+		Log.d(TAG,"Deleted "+ deletedRows + " from " + LocalHintCachingAreas.TABLE_NAME);
+		
+	}
+
+	/**
 	 * Clean cache values in LocalHintCaching table.
 	 * 
-	 * @param today	String format of actual day.
 	 */
-	private void cachingCleanLocalHintCaching() 
+	private  void cachingCleanLocalHintCaching(SQLiteDatabase db) 
 	{
 		Log.i(TAG,"cachingCleanLocalHintCaching.");
 
-		SQLiteDatabase db = getWritableDatabase();
-		
 		//String whereClause = LocalHintCaching.INSERTIONDATE + "  <  date('now') ";
 		
 		int deletedRows = db.delete(LocalHintCaching.TABLE_NAME, null, null);
 		
 		Log.d(TAG,"Deleted "+ deletedRows + " from " + LocalHintCaching.TABLE_NAME);
 		
-		db.close();
 		
 	}
 	/**
 	 * Clean old cache values in LocalHintCachingPhoneNumber table.
 	 * 
-	 * @param today	String format of actual day.
 	 */
-	private void cachingCleanLocalHintCachingPhoneNumber() 
+	private void cachingCleanLocalHintCachingPhoneNumber(SQLiteDatabase db) 
 	{
 		Log.i(TAG,"cachingCleanLocalHintCachingPhoneNumber.");
 		
-		SQLiteDatabase db = getWritableDatabase();
-	
-		String whereClause = LocalHintCachingPhoneNumber.INSERTIONDATE + "  <  date('now') ";
+		//String whereClause = LocalHintCachingPhoneNumber.INSERTIONDATE + "  <  date('now') ";
 		
-		int deletedRows = db.delete(LocalHintCachingPhoneNumber.TABLE_NAME, whereClause, null);
+		int deletedRows = db.delete(LocalHintCachingPhoneNumber.TABLE_NAME, null, null);
 		
 		Log.d(TAG,"Deleted "+ deletedRows + " from " + LocalHintCachingPhoneNumber.TABLE_NAME);
 		
-		db.close();
 		
 	}
 	/**
 	 * Clean old cache values in LocalHintCachingAddressLines table.
 	 * 
-	 * @param today	String format of actual day.
 	 */
-	private void cachingCleanLocalHintCachingAddressLines() 
+	private void cachingCleanLocalHintCachingAddressLines(SQLiteDatabase db) 
 	{
 		Log.i(TAG,"cachingCleanLocalHintCachingAddressLines.");
 
-		SQLiteDatabase db = getWritableDatabase();
+		//String whereClause = LocalHintCachingAddressLines.INSERTIONDATE + "  < date('now') ";
 		
-		String whereClause = LocalHintCachingAddressLines.INSERTIONDATE + "  < date('now') ";
-		
-		int deletedRows = db.delete(LocalHintCachingAddressLines.TABLE_NAME, whereClause, null);
+		int deletedRows = db.delete(LocalHintCachingAddressLines.TABLE_NAME, null, null);
 		
 		Log.d(TAG,"Deleted "+ deletedRows + " from " + LocalHintCachingAddressLines.TABLE_NAME);
 		
-		db.close();
 	}
 	/**
 	 * Search for local hints records in cache.
@@ -772,16 +804,14 @@ public class CachingDb extends SQLiteOpenHelper
 	 * @param distance	max distance for hints.
 	 * @return	a list of local hints for the task.
 	 */
-	public List<Hint> searchLocalBuisnessInCache(String sentence,float latitude, float longitude,float distance)
+	public List<Hint> searchLocalBuisnessInCache(String sentence,float latitude, float longitude,float distance,SQLiteDatabase db)
 	{
 		Log.i(TAG,"Searching local hints for " + sentence + " in local cache.");
 		//ArrayList where hints will be saved
 		List<Hint> hintList=new ArrayList<Hint>();
 		//SQLLite queries return a Cursors object
 		Cursor queryResult;
-		
-		SQLiteDatabase db = getReadableDatabase();
-		
+				
 		//Equivalent to SELECT * FROM TABLE_NAME WHERE SENTENCE = sentence;
 		queryResult = db.query
 				(
@@ -900,7 +930,15 @@ public class CachingDb extends SQLiteOpenHelper
 		
 		return hintList;
 	}
-
+	/**
+	 * Filter hints by distance from user position.
+	 * 
+	 * @param result	Hints to be filtered.
+	 * @param distance	Max distance allowed between user and hint.
+	 * @param latitude	Latitude of user.
+	 * @param longitude	Longitude of user.
+	 * @return	List of hints after filtering.
+	 */
 	private List<Hint> filterResultsByDistance(Cursor result, float distance, float latitude, float longitude)
 	{
 		Log.i(TAG,"filterResultsByDistance.");
@@ -964,12 +1002,11 @@ public class CachingDb extends SQLiteOpenHelper
 	/**
 	 * Start cache update for each area.
 	 */
-	public void startCacheUpdate()
+	public static void startCacheUpdate(SQLiteDatabase db)
 	{
 		Log.i(TAG,"updateCache");
 		Cursor queryResult;
 		
-		SQLiteDatabase db = getReadableDatabase();
 		queryResult = db.query(LocalHintCachingAreas.TABLE_NAME, LocalHintCachingAreas.COLUMNS, null, null, null, null, null);
 		if (!(queryResult.moveToFirst()) || queryResult.getCount() == 0)
 		{
@@ -985,7 +1022,7 @@ public class CachingDb extends SQLiteOpenHelper
 			ContextResource.updateCache(sentence, 0, area.lat, area.lng, area.rad, handler, context);
 			
 		}while(queryResult.moveToNext());
-		db.close();
+		//db.close();
 	}
 	/**
 	 * Update a specific area.
@@ -994,10 +1031,9 @@ public class CachingDb extends SQLiteOpenHelper
 	 * @param sentence	Sentence describing task to be updated.
 	 * @param update	List of new hints to insert in cache for the area.
 	 */
-	public void updateArea(Area area,String sentence, List<Hint> update) 
+	public void updateArea(Area area,String sentence, List<Hint> update,SQLiteDatabase db) 
 	{
 		Log.i(TAG,"updateArea");
-		SQLiteDatabase db = getWritableDatabase();
 		startTransaction(db);
 		if(deleteHintsInArea(area, sentence,db))
 		{
@@ -1012,13 +1048,19 @@ public class CachingDb extends SQLiteOpenHelper
 				}
 			}
 			else
-				Log.e(TAG,"Failed to insert hints");
+				Log.e(TAG,"Failed to insert hints.");
 		}
 		else
 			Log.e(TAG,"Failed to clean area.");
 		
 	}
-	
+	/**
+	 * Update LASTUPDATE field for an Area in LocalHintCachingAreas table.
+	 * @param area		Area to be updated.
+	 * @param sentence	Sentence describing hints in the area.
+	 * 
+	 * @return	True if succeeds, false otherwise.
+	 */
 	public boolean updateAreaLastUpdate(Area area, String sentence,SQLiteDatabase db)
 	{
 		Log.i(TAG,"updateAreaLastUpdate");
@@ -1032,78 +1074,24 @@ public class CachingDb extends SQLiteOpenHelper
 		}
 		return true;
 	}
-	/**
-	 * Checks if cache has been already cleaned today.
-	 * 
-	 * @return true if cache has been cleaned, false otherwise.
-	 */
 	
-	private boolean cacheAlreadyCleanedToday()
+	@Override
+	public  void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) 
 	{
-		Log.i(TAG,"cacheAlreadyCleanedToday");
-		SQLiteDatabase db = getReadableDatabase();
-		boolean ret = true;
-		Cursor deleteResult = db.query("LocalHintCachingDelete", null, "deleteDate = date('now')", null, null, null, null, null);
-		if (!(deleteResult.moveToFirst()) || deleteResult.getCount() == 0)
-		{
-			Log.d(TAG,"Cache must be cleaned.");
-			ret = false;
-		}
-		else 
-			Log.d(TAG,"Cache already cleaned today.");
-		db.close();
-		return ret;
+		
+		
 	}
 	/**
-	 * Set new cache delete date.
+	 * Try to reduce db size deleting some unnecessary entries.
 	 * 
-	 * @param newDate	
+	 * @param actualArea	Actual area of interest for hints.
+	 * 
 	 */
-	private void setNewDeleteDate(String newDate)
-	{
-		SQLiteDatabase db = getWritableDatabase();
-		startTransaction(db);
-		if(db.delete("LocalHintCachingDelete", null,null)==1)
-		{
-			Log.d(TAG,"Old delete date cleaned.");
-			ContentValues content = new ContentValues();
-			content.put("deleteDate",newDate);
-			if(db.insert("LocalHintCachingDelete", null, content)!=-1)
-			{
-				Log.d(TAG,"New date correctly inserted.");
-				commitTransaction(db);
-			}
-			else
-			{
-				Log.e(TAG,"Error in inserting new date.");
-				rollbackTransaction(db);
-			}
-		}
-		else
-		{
-			Log.e(TAG,"Error in deleting old date.");
-			rollbackTransaction(db);
-		}
-		db.close();
-	}
-	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) 
-	{
-		
-		
-	}
-
-	public void downsizeDb(SQLiteDatabase db) 
+	public void downsizeDb(Area actualArea, SQLiteDatabase db) 
 	{
 		Log.i(TAG,"downSizeDb");
 		
-		
-		
-		
-	}
-
-	private List<Area> getAllAreas(SQLiteDatabase db)
-	{
+		//Get all areas.
 		Cursor queryResult;
 		queryResult = db.query
 				(
@@ -1111,7 +1099,7 @@ public class CachingDb extends SQLiteOpenHelper
 				LocalHintCachingAreas.COLUMNS, 
 				null,
 				null, 
-				LocalHintCaching.SENTENCE, 
+				null, 
 				null, 
 				null, 
 				null
@@ -1120,12 +1108,210 @@ public class CachingDb extends SQLiteOpenHelper
 		if(!queryResult.moveToFirst() || queryResult.getCount() == 0)
 		{
 			Log.e(TAG,"No areas in db! Clean all hints.");
-			cachingCleanLocalHintCaching();
-			return null;
+			cachingClean(db);
 		}
-		List<Area> allAreas = new ArrayList<Area>();
 		
-		return null;
+		Log.d(TAG,"There are "+ queryResult.getCount() + " areas.");
+		//Try to delete far (and unnecessary at the moment) areas.
+		int deletedAreas = 0;
+		Log.d(TAG,"Trying to delete unnecessary areas.");
+		do
+		{
+			String sentence = queryResult.getString(0);
+			float areaLat = queryResult.getFloat(1);
+			float areaLon = queryResult.getFloat(2);
+			float areaRad = queryResult.getFloat(3); 
+			double distance = calculateDistance(areaLat,areaLon,actualArea.lat,actualArea.lng);
+			Log.d(TAG,"Distance from area: "  + distance);
+			if(distance>areaRad+actualArea.rad)
+			{
+				Log.d(TAG,"Found an unnecessary area.");
+				Area areaToDelete = new Area(areaLat,areaLon,areaRad);
+				//This area is not overlayed with my actual area
+				startTransaction(db);
+				if(deleteAreaEntry(areaToDelete, sentence,db))
+				{
+					Log.d(TAG,"Area entry deleted.");
+					if(deleteHintsInArea(areaToDelete,sentence,db))
+					{
+						Log.d(TAG,"Area hints deleted.");
+						commitTransaction(db);
+						deletedAreas++;
+					}
+					else
+						Log.e(TAG,"Failed to delete area hints.");
+				}
+				else
+					Log.e(TAG,"Failed to delete area entry.");
+			}
+			
+			
+		}while(queryResult.moveToNext());
+		
+		Log.d(TAG,"Deleted " + deletedAreas + " unnecessary areas.");
+		
+		int resizedAreas = 0;
+		//Size is always too big?
+		if(!dbNeedsDownsize(db))
+		{
+			Log.d(TAG,"Size is still too big. Resizing areas.");
+			//Try to resize the areas in which actual search area is nested
+			queryResult = db.query
+					(
+					LocalHintCachingAreas.TABLE_NAME,
+					LocalHintCachingAreas.COLUMNS, 
+					null,
+					null, 
+					null, 
+					null, 
+					null, 
+					null
+					);
+			
+			if(!queryResult.moveToFirst() || queryResult.getCount() == 0)
+			{
+				Log.e(TAG,"No areas in db! Clean all hints.");
+				cachingClean(db);
+			}
+			
+			do
+			{
+				String sentence = queryResult.getString(0);
+				float areaLat = queryResult.getFloat(1);
+				float areaLon = queryResult.getFloat(2);
+				float areaRad = queryResult.getFloat(3); 
+				double distance = calculateDistance(areaLat,areaLon,actualArea.lat,actualArea.lng);
+				//
+				if(distance+actualArea.rad<areaRad)
+				{
+					Log.d(TAG,"Found an area.");
+					Area areaToResize = new Area(areaLat,areaLon,areaRad);
+					//This area is not overlayed with my actual area
+					float resizedRadius = areaRad * 3/4;
+					//Check if resizing radius does not affect actual search area
+					if(distance+actualArea.rad<resizedRadius)
+					{
+						//Resized radius is ok
+						Log.d(TAG,"Proceeding with resizing.Old radius: "+ areaRad +" New radius: "+ resizedRadius +".");
+						startTransaction(db);
+						if(updateAreaSize(areaToResize,resizedRadius,sentence,db))
+						{
+							Log.d(TAG,"Area hints deleted.");
+							if(updateAreaHintsNewRadius(areaToResize,resizedRadius,sentence,db))
+							{
+								Log.d(TAG,"Area resized.");
+								commitTransaction(db);
+								resizedAreas++;
+							}
+							else
+							{
+								Log.e(TAG,"Failed to insert new resized area entry.");
+								
+							}
+						}
+						else
+							Log.e(TAG,"Failed to resize area.");
+					}
+					Log.d(TAG,"Radius can't be resized.");
+				}
+				
+				
+			}while(queryResult.moveToNext());
+			
+
+			Log.d(TAG,"Resized " + resizedAreas + " areas.");
+		}	
+		
+		queryResult.close();
 	}
+	/**
+	 * Update radius in LocalHintCachingAreas for an Area that has been resized.
+	 * 
+	 * @param areaToResize	Area that has been resized.
+	 * @param newRadius		New radius for this area.
+	 * @param sentence		Sentence describing hints in this area.
+	 * 
+	 * @return True if succeeds, false otherwise.
+	 */
+	private boolean updateAreaSize(Area areaToResize, float newRadius,String sentence,SQLiteDatabase db)
+	{
+		Log.i(TAG,"updateAreaSize");
+		ContentValues updatedContent = new ContentValues();
+		updatedContent.put(LocalHintCachingAreas.RADIUS,Float.toString(newRadius));
+		String whereClause = LocalHintCachingAreas.CENTRELAT + " = ? AND "+LocalHintCachingAreas.CENTRELNG +" = ? AND "+LocalHintCachingAreas.RADIUS + " = ? AND " + LocalHintCachingAreas.SENTENCE + " = ? ";
+		if(db.update(LocalHintCachingAreas.TABLE_NAME, updatedContent,whereClause, new String[]{Float.toString(areaToResize.lat),Float.toString(areaToResize.lng), Float.toString(areaToResize.rad), sentence})==0)
+		{
+			rollbackTransaction(db);
+			return false;
+		}
+		return true;
+	}
+	/**
+	 * Delete hints which are not included in new resized area.
+	 * 
+	 * @param areaToUpdate	Area that has been resized.
+	 * @param newRadius		New radius of the area.
+	 * @param sentence		Sentence describing hints in the area.
+	 * 
+	 * @return True if succeeds, false otherwise.
+	 */
+	private boolean updateAreaHintsNewRadius(Area areaToUpdate, float newRadius, String sentence, SQLiteDatabase db)
+	{
+		//Obtain hints with old radius area.
+		List<Hint> hintsOldArea =
+				searchLocalBuisnessInCache(sentence,areaToUpdate.lat, areaToUpdate.lng,areaToUpdate.rad,db);
+		//Obtain hints with new radius area.
+		List<Hint> hintsNewArea =
+				searchLocalBuisnessInCache(sentence,areaToUpdate.lat, areaToUpdate.lng,newRadius,db);
+		
+		if(hintsOldArea == null || hintsNewArea == null)
+		{
+			Log.e(TAG,"Hints null error!");
+			rollbackTransaction(db);
+		}
+		List<Hint> hintsToDelete = new ArrayList<Hint>();
+		//Delete hints which are in old radius area and not in new radius area.
+		for(Hint hint:hintsOldArea)
+		{
+			if(!hintsNewArea.contains(hint))
+				hintsToDelete.add(hint);
+		}
+		if(hintsToDelete.size()==0)
+		{
+			Log.e(TAG,"No hints to delete.");
+			return true;
+		}
+		return deleteHints(hintsToDelete,sentence,db);
+	}
+	/**
+	 * Check if database's size is higher than limit.
+	 * 
+	 * @return	True if database needs to be resized, false otherwise.
+	 */
+	public boolean dbNeedsDownsize(SQLiteDatabase db)
+	{
+		long dbSize = new File(db.getPath()).length();
+		Log.d(TAG,"Database size: " + humanReadableByteCount(dbSize,true));
+		return dbSize>DBMAXSIZE;
+		
+		
+	}
+	
+	
+	/**
+	 * Transform bytes in a readable string.
+	 * 
+	 * @return String describing bytes.
+	 */
+	public static String humanReadableByteCount(long bytes, boolean si) 
+	{
+	    int unit = si ? 1000 : 1024;
+	    if (bytes < unit) return bytes + " B";
+	    int exp = (int) (Math.log(bytes) / Math.log(unit));
+	    String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
+	    return String.format(Locale.getDefault(),"%.1f %sB", bytes / Math.pow(unit, exp), pre);
+	}
+
+	
 	
 }

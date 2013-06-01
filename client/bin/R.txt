@@ -598,7 +598,7 @@ int string Next 0x7f070101
 int string November 0x7f07006a
 int string October 0x7f070069
 int string September 0x7f070068
-int string action_settings 0x7f070132
+int string action_settings 0x7f070133
 int string action_title 0x7f0700fd
 int string activity_title 0x7f070046
 int string add_location 0x7f070100
@@ -679,6 +679,7 @@ int string current_server 0x7f0700db
 int string date 0x7f070048
 int string date_wrong 0x7f07005b
 int string deadline 0x7f070052
+int string delete_cache_button 0x7f070131
 int string delete_event 0x7f070071
 int string delete_place 0x7f070112
 int string delete_task 0x7f070073
@@ -689,7 +690,7 @@ int string deletion_error 0x7f070082
 int string deletion_success 0x7f070083
 int string delting_from_group 0x7f0700d6
 int string description 0x7f07005d
-int string dismiss_hints 0x7f07013a
+int string dismiss_hints 0x7f07013b
 int string edit_event 0x7f070070
 int string edit_success 0x7f070080
 int string edit_task 0x7f070072
@@ -725,7 +726,7 @@ int string group_member_username_title 0x7f0700d2
 int string group_members_list_title 0x7f0700d4
 int string group_name 0x7f070097
 int string have_appointment 0x7f070054
-int string hello_world 0x7f070133
+int string hello_world 0x7f070134
 int string hint_information 0x7f0700ea
 int string hint_search_started 0x7f0700d9
 int string info 0x7f0700fc
@@ -794,7 +795,7 @@ int string no_selected_hint 0x7f0700e5
 int string no_task_today 0x7f070041
 int string no_trial_login 0x7f070037
 int string notification 0x7f070053
-int string notification_dialog_message 0x7f070138
+int string notification_dialog_message 0x7f070139
 int string notification_preferences 0x7f0700e4
 int string notification_time_wrong 0x7f07005c
 int string notify_no_location_provider_found 0x7f0700c2
@@ -835,7 +836,7 @@ int string server_ver 0x7f0700c5
 int string set_vibration_summary_customized 0x7f07012c
 int string set_vibration_summary_default 0x7f07012a
 int string settings_description 0x7f0700f1
-int string show_hints 0x7f070139
+int string show_hints 0x7f07013a
 int string si_può_trovare 0x7f0700ef
 int string sign_in_button 0x7f070019
 int string sign_in_failed_both 0x7f070021
@@ -843,11 +844,11 @@ int string sign_in_failed_password 0x7f070022
 int string sign_in_new_account 0x7f07001e
 int string sign_in_no_password 0x7f070020
 int string sign_in_no_username 0x7f07001f
-int string snooze_10 0x7f070135
-int string snooze_30 0x7f070136
-int string snooze_choice 0x7f07013c
-int string snooze_hints 0x7f07013b
-int string snooze_set 0x7f070137
+int string snooze_10 0x7f070136
+int string snooze_30 0x7f070137
+int string snooze_choice 0x7f07013d
+int string snooze_hints 0x7f07013c
+int string snooze_set 0x7f070138
 int string speak_button 0x7f070044
 int string start_date 0x7f07004a
 int string start_hint_search 0x7f0700e8
@@ -867,8 +868,8 @@ int string task_notification_started 0x7f070055
 int string task_notification_stopped 0x7f070056
 int string thereAreGroupForUser 0x7f07009d
 int string time 0x7f070049
-int string title_activity_gps_request 0x7f070134
-int string title_activity_wifi_request 0x7f070131
+int string title_activity_gps_request 0x7f070135
+int string title_activity_wifi_request 0x7f070132
 int string title_my_assertions_item 0x7f0700fe
 int string title_new_place_gps 0x7f070122
 int string title_other_assertions_item 0x7f0700ff

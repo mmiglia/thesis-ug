@@ -580,7 +580,9 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	    	synchronized(hintsFoundSync)
 	    	{
 	    		hintsFound += result.size();
-	    		CachingDbManager.insertHints(sentence, result);
+	    		
+	    		if(result.size()>0)//Avoid calls to Db if there are no hints to insert
+	    			CachingDbManager.insertHints(new Area((float)userLocation.getLatitude(),(float)userLocation.getLongitude(),customLocationManager.GetMaxHintDistance()),sentence, result);
 	    		
 	    	}
     	}
