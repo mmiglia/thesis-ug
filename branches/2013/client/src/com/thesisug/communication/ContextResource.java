@@ -106,26 +106,29 @@ public class ContextResource{
 				
 				Area area = CachingDbManager.checkArea(new Area(lat,lon,distance),sentence);
 				
-				
-				switch(area.checkResult)
+				if(area!=null)
 				{
-				case CachingDb.AREA_IN:
-					result = CachingDbManager.searchLocalBuisnessInCache(sentence, lat, lon, distance);
-					sendResultSingleHint(result, sentence, priority, handler, context,true);
-					break;
-				case CachingDb.AREA_OUT:
-					//If cache doesn't contain records query server
-					Log.d(TAG,Integer.toString((int)Math.ceil(area.rad)));
-					ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
-					params.add(new BasicNameValuePair("q", sentence));
-					params.add(new BasicNameValuePair("lat", ""+area.lat));
-					params.add(new BasicNameValuePair("lon", ""+area.lng));
-					params.add(new BasicNameValuePair("dist", ""+(int)Math.ceil(area.rad)));
-					result = runHttpGet(LOCATION_SINGLE, params, context);
-					sendResultSingleHint(result, sentence, priority, handler, context,false);
-					break;
+					switch(area.checkResult)
+					{
+						case CachingDb.AREA_IN:
+							result = CachingDbManager.searchLocalBuisnessInCache(sentence, lat, lon, distance);
+							sendResultSingleHint(result, sentence, priority, handler, context,true);
+							break;
+						case CachingDb.AREA_OUT:
+							//If cache doesn't contain records query server
+							Log.d(TAG,Integer.toString((int)Math.ceil(area.rad)));
+							ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+							params.add(new BasicNameValuePair("q", sentence));
+							params.add(new BasicNameValuePair("lat", ""+area.lat));
+							params.add(new BasicNameValuePair("lon", ""+area.lng));
+							params.add(new BasicNameValuePair("dist", ""+(int)Math.ceil(area.rad)));
+							result = runHttpGet(LOCATION_SINGLE, params, context);
+							sendResultSingleHint(result, sentence, priority, handler, context,false);
+							break;
+					}
 				}
-				
+				else
+					Log.e(TAG,"checkArea error!");
 				/*
 				Log.d(TAG,"Checking hints in cache for " + sentence +".");
 				//First check for results in local cache

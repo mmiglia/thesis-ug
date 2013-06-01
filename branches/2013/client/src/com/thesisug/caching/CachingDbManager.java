@@ -13,15 +13,17 @@ public class CachingDbManager
 {
 	private static final String TAG = "thesisug - CachingDbManager";
 	private static CachingDb cachingDb;
-	private static final int FIVEHUNDREDMEGA = 524288000;
+	//private static SQLiteDatabase db;
+	private static Context context;
 	
 	public static void Init(Context c)
 	{
 		cachingDb = new CachingDb(c);
+		context = c;
 	}
 	
 	
-	public static boolean insertHints(String sentence, List<Hint> hints)
+	public static boolean insertHints(Area actualArea,String sentence, List<Hint> hints)
 	{
 		Log.i(TAG,"insertHints");
 		boolean ret;
@@ -31,42 +33,49 @@ public class CachingDbManager
 		if(ret)
 		{
 			cachingDb.commitTransaction(db);
-			long dbSize = new File(db.getPath()).length();
-			Log.d(TAG,"Database size after insert: " + dbSize);
-			if(dbSize>FIVEHUNDREDMEGA)
+			if(!dbNeedsDownsize(db))
 			{
 				Log.d(TAG,"Database is too big, need resize.");
-				cachingDb.downsizeDb(db);
+				cachingDb.downsizeDb(actualArea,db);
 			}
+			else
+				Log.d(TAG,"Size is ok.");
 		}
-		db.close();
+		//db.close();
 		return ret;
 	}
 	
 	public static List<Hint> searchLocalBuisnessInCache(String sentence,float latitude, float longitude,int distance)
 	{
 		Log.i(TAG,"searchLocalBuisnessInCache");
-		return cachingDb.searchLocalBuisnessInCache(sentence, latitude, longitude, distance);
+
+		SQLiteDatabase db = cachingDb.getWritableDatabase();
+		List<Hint> ret = cachingDb.searchLocalBuisnessInCache(sentence, latitude, longitude, distance,db);
+		//db.close();
+		return ret;
 	}
 	
 	public static Area checkArea(Area areaToCheck,String sentence)
 	{
 		Log.i(TAG,"checkArea");
-		return cachingDb.checkArea(areaToCheck, sentence);
+		SQLiteDatabase db = cachingDb.getReadableDatabase();
+		Area ret = cachingDb.checkArea(areaToCheck, sentence,db);
+		//db.close();
+		return ret;
 	}
 	
-	public static boolean cleanArea(Area areaToClean,String sentence)
+	public static boolean deleteArea(Area areaToClean,String sentence)
 	{
 		Log.i(TAG,"cleanArea");
 		boolean ret;
 		SQLiteDatabase db = cachingDb.getWritableDatabase();
 		cachingDb.startTransaction(db);
-		ret=cachingDb.cleanArea(areaToClean, sentence,db);
+		ret=cachingDb.deleteArea(areaToClean, sentence,db);
 		if(ret)
 		{
 			cachingDb.commitTransaction(db);
 		}
-		db.close();
+		//db.close();
 		return ret;
 		
 	}
@@ -74,12 +83,32 @@ public class CachingDbManager
 	public static void startCacheUpdate()
 	{
 		Log.i(TAG,"updateCache");
-		cachingDb.startCacheUpdate();
+		SQLiteDatabase db = cachingDb.getWritableDatabase();
+		CachingDb.startCacheUpdate(db);
+		//db.close();
 	}
 	
 	public static void updateArea(Area area,String sentence,List<Hint> update)
 	{
 		Log.i(TAG,"updateArea");
-		cachingDb.updateArea(area,sentence,update);
+
+		SQLiteDatabase db = cachingDb.getWritableDatabase();
+		cachingDb.updateArea(area,sentence,update,db);
+		//db.close();
+	}
+	
+	public static void cleanCache()
+	{
+		Log.i(TAG,"cleanCache");
+
+		SQLiteDatabase db = cachingDb.getWritableDatabase();
+		cachingDb.cachingClean(db);
+		//db.close();
+	}
+	
+	public static boolean dbNeedsDownsize(SQLiteDatabase db)
+	{
+		Log.i(TAG,"dbNeedsDownsize");
+		return cachingDb.dbNeedsDownsize(db);
 	}
 }
