@@ -714,7 +714,7 @@ public class CachingDb extends SQLiteOpenHelper
 		return true;
 	}
 	/**
-	 * Clean old cache records.
+	 * Clean all cache records.
 	 * 
 	 * @return	True if clean succeeds, false otherwise.
 	 */
@@ -1221,6 +1221,13 @@ public class CachingDb extends SQLiteOpenHelper
 
 			Log.d(TAG,"Resized " + resizedAreas + " areas.");
 		}	
+		
+		//Size is always too big?
+		if(!dbNeedsDownsize(db))
+		{
+			Log.d(TAG,"Cache still to big. Clean everything.");
+			cachingClean(db);
+		}
 		
 		queryResult.close();
 	}
