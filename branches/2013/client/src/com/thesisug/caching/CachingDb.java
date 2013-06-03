@@ -1110,6 +1110,7 @@ public class CachingDb extends SQLiteOpenHelper
 		{
 			Log.e(TAG,"No areas in db! Clean all hints.");
 			cachingClean(db);
+			return;
 		}
 		
 		Log.d(TAG,"There are "+ queryResult.getCount() + " areas.");

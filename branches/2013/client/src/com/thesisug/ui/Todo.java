@@ -505,6 +505,7 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 						eventNotificationIntent.putExtra("reminderID", o.reminderID);
 						eventNotificationIntent.putExtra("longitude", o.gpscoordinate.longitude);
 						eventNotificationIntent.putExtra("latitude", o.gpscoordinate.latitude);
+						
 						alarmIntent = PendingIntent.getBroadcast(Todo.this,
 				                counter++, eventNotificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 						if (userSettings.getBoolean(o.title, true))	am.set(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), alarmIntent);

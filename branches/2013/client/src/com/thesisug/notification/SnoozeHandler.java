@@ -6,10 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Locale;
 
 import com.thesisug.tracking.ActionTracker;
 
@@ -193,6 +195,19 @@ public class SnoozeHandler
 	 		calInstance.setTime(date);
 	 		calInstance.add(Calendar.MINUTE, delay);
 	 		return calInstance.getTime();
+	     }
+	     
+	     /**
+	      * Returns delayed data formatted as dd/mm/yyyy HH:mm:ss.
+	      * @param date		Starting date.
+	      * @param delay		Delay to add in minutes.
+	      * @return			New delayed Date.
+	      */
+	     public static String getStringFormattedDelayedDate(String sentence)
+	     {
+	    	SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ITALY);;
+	     	
+	 		return dateFormat.format(snoozedNotifications.get(sentence));
 	     }
 	     /**
 	      * Dismiss snooze setting for a task.

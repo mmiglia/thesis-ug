@@ -115,6 +115,38 @@
     	android:paddingLeft="10dip"
     	android:paddingRight="10dip">
         <TextView
+        	android:id="@+id/snooze_text"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+            android:text="@string/snooze"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:padding="3dip" />
+        <ImageView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:src="@drawable/snooze"
+        	android:layout_marginTop="15dip"
+			android:layout_alignParentRight="true"/>
+        <TextView
+        	android:id="@+id/snooze_end"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+			android:layout_below="@id/snooze_text"
+        	android:textAppearance="?android:attr/textAppearanceSmall"
+            android:paddingTop="3dip" 
+            android:paddingLeft="3dip"/>
+        
+    </RelativeLayout>
+    <View
+        android:layout_height="1dip"
+        android:background="#FF333333" />
+        
+    <RelativeLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+        <TextView
         	android:id="@+id/priority_text"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
