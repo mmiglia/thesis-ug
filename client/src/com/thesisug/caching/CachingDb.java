@@ -61,6 +61,7 @@ public class CachingDb extends SQLiteOpenHelper
 	//Starting version is 1
 	private static final int SCHEMA_VERSION = 1;
 	private static final int DBMAXSIZE = 524288000; //500 MB
+	private static final float RESIZEFACTOR = 17/20;
 	
 	/**
 	 * Create a helper object to create, open, and/or manage a database.
@@ -235,7 +236,7 @@ public class CachingDb extends SQLiteOpenHelper
 			float rad = queryResult.getFloat(3);
 			Log.d(TAG,"rad:" + rad);
 			float[] distance = new float[1];
-			//Distance between centre of the area I've to search and the existing area for the same task.
+			//Distance between centre of the area I've to search and the actual area for the same task.
 			Location.distanceBetween(lat, lng, areaToCheck.lat, areaToCheck.lng, distance);
 			if(distance[0]>=0)
 			{
@@ -1187,9 +1188,9 @@ public class CachingDb extends SQLiteOpenHelper
 					Log.d(TAG,"Found an area.");
 					Area areaToResize = new Area(areaLat,areaLon,areaRad);
 					//This area is not overlayed with my actual area
-					float resizedRadius = areaRad * 3/4;
+					float resizedRadius = areaRad * RESIZEFACTOR;
 					//Check if resizing radius does not affect actual search area
-					if(distance+actualArea.rad<resizedRadius)
+					while((distance+actualArea.rad<resizedRadius) && dbNeedsDownsize(db) )
 					{
 						//Resized radius is ok
 						Log.d(TAG,"Proceeding with resizing.Old radius: "+ areaRad +" New radius: "+ resizedRadius +".");
@@ -1208,11 +1209,12 @@ public class CachingDb extends SQLiteOpenHelper
 								Log.e(TAG,"Failed to insert new resized area entry.");
 								
 							}
+							resizedRadius = resizedRadius * RESIZEFACTOR;
 						}
 						else
 							Log.e(TAG,"Failed to resize area.");
 					}
-					Log.d(TAG,"Radius can't be resized.");
+					Log.d(TAG,"Radius can't be resized anymore for this area.");
 				}
 				
 				
