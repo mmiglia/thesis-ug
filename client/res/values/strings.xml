@@ -117,7 +117,7 @@
     <string name="parsing_error">Humm .. so sorry, we couldn\u0027t understand or execute your command</string>
     <string name="user_preferences">User Preferences</string>
     <string name="q_period">Query Period</string>
-    <string name="interval">Interval to ask server for hints</string>
+    <string name="interval">Interval to ask for hints</string>
     <string name="max_distance">Maximum distance</string>
     <string name="max_distance_desc">Allow notification if location distance from me is below the value</string>
     <string name="parser_lang">Parser Language</string>
