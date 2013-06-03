@@ -63,6 +63,7 @@
     <string name="priority">Priority</string>
     <string name="deadline">Deadline</string>
     <string name="notification">Allow Notification</string>
+    <string name="snooze">Snooze Time</string>
     <string name="have_appointment">Appointment due! </string>
     <string name="task_notification_started">Task Notification Service is started</string>
     <string name="task_notification_stopped">Task Notification Service is stopped</string>
@@ -95,6 +96,7 @@
     <string name="delete_event">Delete Event</string>
     <string name="edit_task">Edit Task</string>
     <string name="delete_task">Delete Task</string>
+    <string name="delete_snooze">Cancel Snooze</string>
     <string name="save">Save</string>
     <string name="back">Back</string>
     <string name="saving">Saving content in server \u2026</string>

@@ -33,10 +33,11 @@ public class ShowEvent extends Activity{
 	private static final int EDIT = 1;
 	private static final int DELETE = 2;
 	private static final int BACK = 3;
+	private static final int DELETESNOOZE = 4;
 	private Bundle packet;
-	private TextView title, location, fromtext, totext, priority_value, description;
+	private TextView title, location, fromtext, totext, priority_value, description,snooze;
 	private RatingBar priority;
-	private Calendar from, to;
+	private Calendar from, to,snoozetime;
 	private float latitude, longitude;
 	private static final XsDateTimeFormat xs_DateTime = new XsDateTimeFormat();
 	private final Handler handler = new Handler();
@@ -60,6 +61,7 @@ public class ShowEvent extends Activity{
 		fromtext = (TextView) findViewById(R.id.event_from); 
 		totext = (TextView) findViewById(R.id.event_to); 
 		priority_value = (TextView) findViewById(R.id.priority_value);
+		snooze =(TextView) findViewById(R.id.snooze_end);
 		description = (TextView) findViewById(R.id.event_description);
 		priority = (RatingBar) findViewById(R.id.priority_bar);
 		
@@ -75,6 +77,14 @@ public class ShowEvent extends Activity{
 		if(packet.getString("notification")!=null && packet.getString("notification").equals("true"))
 			ActionTracker.notificationViewed(Calendar.getInstance().getTime(), packet.getString("title"), getApplicationContext(), 1);
 		try {
+			if(SnoozeHandler.checkIfTaskIsSnoozed(title.getText().toString()))
+			{
+				snooze.setText("Snoozed until: "+SnoozeHandler.getStringFormattedDelayedDate(title.getText().toString())+".");
+			}
+			else
+			{
+				snooze.setText("This event is not snoozed.");
+			}
 			from = (Calendar) xs_DateTime.parseObject(packet.getString("startTime"));
 			to = (Calendar) xs_DateTime.parseObject(packet.getString("endTime"));
 			fromtext.setText(getText(R.string.from)+" : "+ printCalendar(from));
@@ -88,6 +98,7 @@ public class ShowEvent extends Activity{
 	public boolean onCreateOptionsMenu(Menu menu){
 		menu.add(0,EDIT,0,getText(R.string.edit_event)).setIcon(R.drawable.edit);
 		menu.add(0,DELETE,0,getText(R.string.delete_event)).setIcon(R.drawable.trash);
+		menu.add(0,DELETESNOOZE,0,getText(R.string.delete_snooze)).setIcon(R.drawable.trash);
 		menu.add(0,BACK,0,getText(R.string.back)).setIcon(R.drawable.back);
 		return true;
 	}
@@ -118,6 +129,10 @@ public class ShowEvent extends Activity{
 			showDialog(ASK_CONFIRMATION);
 			ActionTracker.contentCompleted(Calendar.getInstance().getTime(), title.getText().toString(), getApplicationContext(), 1);
 			break;
+		case DELETESNOOZE:
+			SnoozeHandler.removeSnooze(title.getText().toString());
+			snooze.setText("This event is not snoozed.");
+			break;			
 		default:
 			finish();
 			break;

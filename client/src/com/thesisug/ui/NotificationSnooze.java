@@ -19,6 +19,7 @@ import android.app.PendingIntent.CanceledException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -43,7 +44,22 @@ public void onCreate(Bundle savedInstanceState)
 	Log.i(TAG,"onCreate");
 	context = this;
 	packet = getIntent().getExtras();
-	final AlertDialog.Builder snoozeListBuilder = new AlertDialog.Builder(this);
+	AlertDialog.Builder temp = new AlertDialog.Builder(this);
+	temp.setOnCancelListener(new OnCancelListener() 
+	{
+           public void onCancel(DialogInterface dialog) 
+           {
+               finish();
+           }
+	});
+	temp.setOnDismissListener(new OnDismissListener()
+	{
+           public void onDismiss(DialogInterface dialog) 
+           {
+               finish();
+           }
+	});
+	final AlertDialog.Builder snoozeListBuilder=temp;
 	//Check if user clicked on dismiss button
 	if(packet!=null)
 	{
@@ -103,6 +119,13 @@ public void onCreate(Bundle savedInstanceState)
 	                finish();
 	            }
 	        });
+			builder.setOnDismissListener(new OnDismissListener()
+			{
+		           public void onDismiss(DialogInterface dialog) 
+		           {
+		               finish();
+		           }
+	       });
 			builder.setMessage(getText(R.string.notification_dialog_message)).setTitle(packet.getString("tasktitle"));
 			builder.setPositiveButton(R.string.show_hints, new DialogInterface.OnClickListener() 
 			{
@@ -176,8 +199,8 @@ public void onCreate(Bundle savedInstanceState)
 	   		               }      
 
 	   		           });
-
 		               AlertDialog snoozeListDialog = snoozeListBuilder.create();
+		               
 		               snoozeListDialog.show();    
 	
 		           }

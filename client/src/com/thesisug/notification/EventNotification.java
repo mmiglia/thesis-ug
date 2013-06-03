@@ -53,7 +53,7 @@ public class EventNotification extends BroadcastReceiver
     	
     	Intent dismissNotificationIntent = new Intent(context,NotificationSnooze.class);
     	dismissNotificationIntent.putExtra("tasktitle", sentence);
-    	intent.putExtra("type","Event");
+    	dismissNotificationIntent.putExtra("type","Event");
     	dismissNotificationIntent.putExtra("dismiss", true);
     	dismissNotificationIntent.putExtra("snooze", false);
     	dismissNotificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
@@ -68,7 +68,7 @@ public class EventNotification extends BroadcastReceiver
     	Intent snoozeHintsIntent = new Intent(context,NotificationSnooze.class);
     	snoozeHintsIntent.putExtra("dismiss", false);
     	snoozeHintsIntent.putExtra("snooze", true);
-    	intent.putExtra("type","Event");
+    	snoozeHintsIntent.putExtra("type","Event");
     	snoozeHintsIntent.putExtra("tasktitle", sentence);
     	snoozeHintsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     	PendingIntent snoozeHints = PendingIntent.getActivity(context, requestID + sentence.hashCode() + 3, snoozeHintsIntent, PendingIntent.FLAG_UPDATE_CURRENT);

@@ -43,12 +43,13 @@ public class ShowTask extends Activity{
 	private static final int DELETE = 2;
 	private static final int BACK = 3;
 	private static final int DONE=4;
+	private static final int DELETESNOOZE = 5;
 	
 	
 	private Bundle packet;
-	private TextView title, priority_value, description, deadline, notifystart, notifyend;
+	private TextView title, priority_value, description, deadline,snooze, notifystart, notifyend;
 	private RatingBar priority;
-	private Calendar deadlinecal, nstart, nend;
+	private Calendar deadlinecal, nstart, nend,snoozetime;
 	private double latitude, longitude;
 	private static final XsDateTimeFormat xs_DateTime = new XsDateTimeFormat();
 	private final Handler handler = new Handler();
@@ -81,6 +82,7 @@ public class ShowTask extends Activity{
 		notifyend = (TextView) findViewById(R.id.notify_end); 
 		priority_value = (TextView) findViewById(R.id.priority_value);
 		description = (TextView) findViewById(R.id.task_description);
+		snooze =(TextView) findViewById(R.id.snooze_end);
 		priority = (RatingBar) findViewById(R.id.priority_bar);
 		
 		//set fields value
@@ -90,7 +92,18 @@ public class ShowTask extends Activity{
 		description.setText(packet.getString("description"));
 		latitude = packet.getFloat("latitude");
 		longitude = packet.getFloat("longitude");
-		try {
+		
+		
+		try 
+		{
+			if(SnoozeHandler.checkIfTaskIsSnoozed(title.getText().toString()))
+			{
+				snooze.setText("Snoozed until: "+SnoozeHandler.getStringFormattedDelayedDate(title.getText().toString())+".");
+			}
+			else
+			{
+				snooze.setText("This task is not snoozed.");
+			}
 			deadlinecal = (Calendar) new XsDateTimeFormat().parseObject(packet.getString("deadline"));
 			nstart = (Calendar) new XsDateTimeFormat(false,true).parseObject(packet.getString("notifystart"));
 			nend = (Calendar) new XsDateTimeFormat(false,true).parseObject(packet.getString("notifyend"));
@@ -115,6 +128,7 @@ public class ShowTask extends Activity{
 		menu.add(0,EDIT,0,getText(R.string.edit_task)).setIcon(R.drawable.edit);
 		menu.add(0,DONE,0,getText(R.string.mark_task_as_done)).setIcon(R.drawable.done);
 		menu.add(0,DELETE,0,getText(R.string.delete_task)).setIcon(R.drawable.trash);
+		menu.add(0,DELETESNOOZE,0,getText(R.string.delete_snooze)).setIcon(R.drawable.trash);
 		menu.add(0,BACK,0,getText(R.string.back)).setIcon(R.drawable.back);
 		return true;
 	}
@@ -145,6 +159,10 @@ public class ShowTask extends Activity{
 			break;			
 		case DELETE:
 			showDialog(ASK_CONFIRMATION);
+			break;
+		case DELETESNOOZE:
+			SnoozeHandler.removeSnooze(title.getText().toString());
+			snooze.setText("This task is not snoozed.");
 			break;
 		case DONE:
 			showDialog(SET_TASK_DONE);
