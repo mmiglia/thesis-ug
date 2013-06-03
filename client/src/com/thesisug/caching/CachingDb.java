@@ -35,7 +35,7 @@ import android.util.Log;
  * per la nuova area su tutte le tipologie di task ricercate fino a quel momento, ma non è detto che i 
  * task ricercati precedentemente interessino ancora all'utente. Allora si andrebbero a salvare in cache 
  * hint a cui l'utente non è più interessato, precludendo spazio a future memorizzazioni di hint rilevanti.
- * Inoltre, in                    un futuro in cui si implementasse il servizio di ricerca con distanza proporzionale alla 
+ * Inoltre, in un futuro in cui si implementasse il servizio di ricerca con distanza proporzionale alla 
  * priorita' del task ed alla vicinanza della sua deadline il fatto di avere cache diversificate 
  * verrebbe utile.
  * 

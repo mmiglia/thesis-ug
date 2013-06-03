@@ -555,11 +555,16 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	Log.i(TAG,"afterHintsAcquiredFromCache");
     	customLocationManager.TaskHintsSearchFinished(sentence,result,priority);
     	
-    	synchronized(hintsFoundSync)
+    	if(result==null)
     	{
-    		hintsFound += result.size();
-    		
+    		Log.e(TAG,"No results.");
     	}
+    	else
+	    	synchronized(hintsFoundSync)
+	    	{
+	    		hintsFound += result.size();
+	    		
+	    	}
     	
     	//If last search for hints returned 
     	if(!customLocationManager.MoreHintsSearch())
@@ -605,94 +610,96 @@ public class TaskNotification extends Service implements LocationListener,OnShar
      */
     public void notifyHints(String sentence,List<Hint> result, int priority)
     {
-    	if (result.isEmpty()) 
+    	if(result!=null)
     	{
-    		Log.i(TAG, "No hints for task : "+sentence);
-        	//Voice notification
-    		if(userSettings.getBoolean("notification_hint_speak",false))
-    		{
-    			Todo.speakIt((String) context.getText(R.string.no_hints_found_for)+sentence);
-    			sendDataToWidget(result,sentence);
-    		}
-    		return; // immediately return if there is no result
-    	} 
-    	
-    	Log.i(TAG, "Received "+result.size()+ " hints for task : "+sentence);
-    		    	
-    	String message = context.getText(R.string.capable)+" "+" "+context.getText(R.string.around_location);
-    	/**
-    	 * The Notification.Builder has been added 
-    	 * to make it easier to construct Notifications.
-    	 * @author Alberto Servetti 11/04/2013
-    	 */
-    	//Notification newnotification = new Notification(R.drawable.icon, message, System.currentTimeMillis());
-    	int requestID = (int) System.currentTimeMillis();
-    	
-    	Intent intent = new Intent(context,NotificationSnooze.class);
-    	intent.putParcelableArrayListExtra("hints", new ArrayList<Hint>(result));
-    	intent.putExtra("tasktitle", sentence);
-    	intent.putExtra("type","Task");
-    	intent.putExtra("dismiss", false);
-    	intent.putExtra("snooze", false);
-    	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-    	PendingIntent pendingIntent = PendingIntent.getActivity(context, requestID + 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
-    	
-    	Intent dismissNotificationIntent = new Intent(context,NotificationSnooze.class);
-    	dismissNotificationIntent.putExtra("tasktitle", sentence);
-    	dismissNotificationIntent.putExtra("type","Task");
-    	dismissNotificationIntent.putExtra("dismiss", true);
-    	dismissNotificationIntent.putExtra("snooze", false);
-    	dismissNotificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-    	PendingIntent dismissNotificationPendingIntent = PendingIntent.getActivity(context, requestID +1, dismissNotificationIntent,PendingIntent.FLAG_UPDATE_CURRENT);
-    	
-    	Intent showHintsIntent = new Intent(context, HintList.class);
-    	
-    	showHintsIntent.putParcelableArrayListExtra("hints", new ArrayList<Hint>(result));
-    	showHintsIntent.putExtra("tasktitle", sentence);
-    	showHintsIntent.putExtra("type","Task");
-    	showHintsIntent.putExtra("dismiss", false);
-    	showHintsIntent.putExtra("snooze", false);
-    	showHintsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    	PendingIntent showHints = PendingIntent.getActivity(context, requestID +2, showHintsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-    	
-    	Intent snoozeHintsIntent = new Intent(context,NotificationSnooze.class);
-    	snoozeHintsIntent.putExtra("dismiss", false);
-    	snoozeHintsIntent.putExtra("type","Task");
-    	snoozeHintsIntent.putExtra("snooze", true);
-    	snoozeHintsIntent.putExtra("tasktitle", sentence);
-    	showHintsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    	PendingIntent snoozeHints = PendingIntent.getActivity(context, requestID +3, snoozeHintsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-    	
-    	Notification newnotification =
-    			new Notification.Builder(context)
-    			.setSmallIcon(R.drawable.icon)
-    			.setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.task2))
-    			.setContentText(message)
-    			.setContentTitle(sentence)
-    			.setContentIntent(pendingIntent)
-    			.addAction(R.drawable.ok, context.getText(R.string.show_hints), showHints)
-    			.addAction(R.drawable.no,context.getText(R.string.dismiss_hints),dismissNotificationPendingIntent)
-    			.addAction(R.drawable.snooze,context.getText(R.string.snooze_set),snoozeHints)
-    			.setWhen(System.currentTimeMillis()).build()
-    			;
-    	/*
-    	Intent notificationIntent = new Intent(context, HintList.class);
-    	notificationIntent.putParcelableArrayListExtra("hints", new ArrayList<Hint>(result));
-    	notificationIntent.putExtra("tasktitle", sentence);
-    	notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    	
-    	PendingIntent contentIntent = PendingIntent.getActivity(context, sentence.hashCode(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-    	newnotification.contentIntent = contentIntent;
-*/
-    	newnotification=addNotificationAlertMethod(context,newnotification,sentence,priority);
-    	//For some reason sometimes notificationManager gets null
-    	if (notificationManager == null)
-    	    	notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-    	NotificationDispatcher.dispatch(sentence, newnotification, notificationManager,userSettings.getString("notification_hint_vibrate", "off"), context);
-    	
-    	ActionTracker.notificationSent(Calendar.getInstance().getTime(), sentence, context, 0);
-    	
+	    	if (result.isEmpty()) 
+	    	{
+	    		Log.i(TAG, "No hints for task : "+sentence);
+	        	//Voice notification
+	    		if(userSettings.getBoolean("notification_hint_speak",false))
+	    		{
+	    			Todo.speakIt((String) context.getText(R.string.no_hints_found_for)+sentence);
+	    			sendDataToWidget(result,sentence);
+	    		}
+	    		return; // immediately return if there is no result
+	    	} 
+	    	
+	    	Log.i(TAG, "Received "+result.size()+ " hints for task : "+sentence);
+	    		    	
+	    	String message = context.getText(R.string.capable)+" "+" "+context.getText(R.string.around_location);
+	    	/**
+	    	 * The Notification.Builder has been added 
+	    	 * to make it easier to construct Notifications.
+	    	 * @author Alberto Servetti 11/04/2013
+	    	 */
+	    	//Notification newnotification = new Notification(R.drawable.icon, message, System.currentTimeMillis());
+	    	int requestID = (int) System.currentTimeMillis();
+	    	
+	    	Intent intent = new Intent(context,NotificationSnooze.class);
+	    	intent.putParcelableArrayListExtra("hints", new ArrayList<Hint>(result));
+	    	intent.putExtra("tasktitle", sentence);
+	    	intent.putExtra("type","Task");
+	    	intent.putExtra("dismiss", false);
+	    	intent.putExtra("snooze", false);
+	    	intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+	    	PendingIntent pendingIntent = PendingIntent.getActivity(context, requestID + 0, intent,PendingIntent.FLAG_UPDATE_CURRENT);
+	    	
+	    	Intent dismissNotificationIntent = new Intent(context,NotificationSnooze.class);
+	    	dismissNotificationIntent.putExtra("tasktitle", sentence);
+	    	dismissNotificationIntent.putExtra("type","Task");
+	    	dismissNotificationIntent.putExtra("dismiss", true);
+	    	dismissNotificationIntent.putExtra("snooze", false);
+	    	dismissNotificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+	    	PendingIntent dismissNotificationPendingIntent = PendingIntent.getActivity(context, requestID +1, dismissNotificationIntent,PendingIntent.FLAG_UPDATE_CURRENT);
+	    	
+	    	Intent showHintsIntent = new Intent(context, HintList.class);
+	    	
+	    	showHintsIntent.putParcelableArrayListExtra("hints", new ArrayList<Hint>(result));
+	    	showHintsIntent.putExtra("tasktitle", sentence);
+	    	showHintsIntent.putExtra("type","Task");
+	    	showHintsIntent.putExtra("dismiss", false);
+	    	showHintsIntent.putExtra("snooze", false);
+	    	showHintsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	    	PendingIntent showHints = PendingIntent.getActivity(context, requestID +2, showHintsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+	    	
+	    	Intent snoozeHintsIntent = new Intent(context,NotificationSnooze.class);
+	    	snoozeHintsIntent.putExtra("dismiss", false);
+	    	snoozeHintsIntent.putExtra("type","Task");
+	    	snoozeHintsIntent.putExtra("snooze", true);
+	    	snoozeHintsIntent.putExtra("tasktitle", sentence);
+	    	showHintsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	    	PendingIntent snoozeHints = PendingIntent.getActivity(context, requestID +3, snoozeHintsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+	    	
+	    	Notification newnotification =
+	    			new Notification.Builder(context)
+	    			.setSmallIcon(R.drawable.icon)
+	    			.setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.task2))
+	    			.setContentText(message)
+	    			.setContentTitle(sentence)
+	    			.setContentIntent(pendingIntent)
+	    			.addAction(R.drawable.ok, context.getText(R.string.show_hints), showHints)
+	    			.addAction(R.drawable.no,context.getText(R.string.dismiss_hints),dismissNotificationPendingIntent)
+	    			.addAction(R.drawable.snooze,context.getText(R.string.snooze_set),snoozeHints)
+	    			.setWhen(System.currentTimeMillis()).build()
+	    			;
+	    	/*
+	    	Intent notificationIntent = new Intent(context, HintList.class);
+	    	notificationIntent.putParcelableArrayListExtra("hints", new ArrayList<Hint>(result));
+	    	notificationIntent.putExtra("tasktitle", sentence);
+	    	notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	    	
+	    	PendingIntent contentIntent = PendingIntent.getActivity(context, sentence.hashCode(), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+	
+	    	newnotification.contentIntent = contentIntent;
+	    	 */
+	    	newnotification=addNotificationAlertMethod(context,newnotification,sentence,priority);
+	    	//For some reason sometimes notificationManager gets null
+	    	if (notificationManager == null)
+	    	    	notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+	    	NotificationDispatcher.dispatch(sentence, newnotification, notificationManager,userSettings.getString("notification_hint_vibrate", "off"), context);
+	    	
+	    	ActionTracker.notificationSent(Calendar.getInstance().getTime(), sentence, context, 0);
+    	}
     }
     /**
      * Inform customLocationManager that user answered to wifi activation request.
@@ -920,14 +927,14 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	{
 		
 			Log.d(TAG,"onLocationChanged");
-			if(customLocationManager.isBetterThanPrevious(location))
+			if(customLocationManager.checkForHints(location))
 			{
 				Log.d(TAG, "Location changed to "+location.getLatitude()+" -- "+location.getLongitude());
 				//condvargps.open();
 				startHintSearch(location,true);	
 			}
 			else
-				Log.d(TAG,"Location did not change!");
+				Log.d(TAG,"No hints check needed!");
 		
 	}
     

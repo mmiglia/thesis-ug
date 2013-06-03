@@ -1,6 +1,5 @@
 package com.thesisug.caching;
 
-import java.io.File;
 import java.util.List;
 
 import android.content.Context;
@@ -14,12 +13,10 @@ public class CachingDbManager
 	private static final String TAG = "thesisug - CachingDbManager";
 	private static CachingDb cachingDb;
 	//private static SQLiteDatabase db;
-	private static Context context;
 	
 	public static void Init(Context c)
 	{
 		cachingDb = new CachingDb(c);
-		context = c;
 	}
 	
 	

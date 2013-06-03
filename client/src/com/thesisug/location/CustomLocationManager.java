@@ -17,7 +17,6 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Toast;
 import com.thesisug.R;
@@ -35,7 +34,7 @@ import com.thesisug.tracking.GpxBuilder;
  */
 public class CustomLocationManager 
 {
-	private static String TAG = "thesisug - CustomLocationManager";
+	private static final String TAG = "thesisug - CustomLocationManager";
 	private static LocationListener locationListener;
 	private static LocationManager locationManager;
 	private static Criteria criteria;
@@ -65,7 +64,6 @@ public class CustomLocationManager
 	private static boolean wifiAlreadyAsked;
 	private static boolean gpsAlreadyAsked;
 	private static boolean waitingForWifiAnswer;
-	private static int wifiInaccurateFixes;
 	private static WifiManager wifiManager;
 	private static int taskHintSearching;
 	private static Thread evaluateThread;
@@ -74,6 +72,7 @@ public class CustomLocationManager
 	//Time values
 	@SuppressWarnings("unused")
 	private static final long FIVESEC = 1000 * 5;
+	@SuppressWarnings("unused")
 	private static final long TENSEC = 1000 * 10;
 	private static final long HALFMIN = 1000 * 30;
 	private static final long ONEMIN = 1000 * 60;
@@ -84,6 +83,8 @@ public class CustomLocationManager
 	private static final long FIFTMINS = 1000 * 60 * 15;
 	@SuppressWarnings("unused")
 	private static final long HALFHOUR = 1000 * 60 * 30;
+	private static final float SMOOTHING = (float)1.75;
+	private static final long WALKINGSPEED = 1;
 	private static ConditionVariable evaluateThreadStop;
 	private static Object wifiLock;
 	private static Object gpsLock;
@@ -107,10 +108,17 @@ public class CustomLocationManager
 	private static final int PROVIDERENABLED = 1;
 	private static final int PROVIDERDISABLED = 2;
 	private static final int STATUSCHANGED = 3;
-		
+	private static final int STATE_STARTING = 0;
+	private static final int STATE_STANDING = 1;
+	private static final int STATE_MOVING = 2;
+	private static int userState;
+	private static int wifiInaccurateFixes;
+	private static float[] speedSamples;
+	private static float actualSpeed;
+	
 	public CustomLocationManager(String owner,LocationListener listener,SharedPreferences settings,Context context)
 	{
-		TAG+=owner;
+		
 		Log.i(TAG,"New CustomLocationManager."); 
 		locationListener=listener;
 		usersettings = settings;
@@ -357,13 +365,17 @@ public class CustomLocationManager
 		wifiLock = new Object();
 		gpsLock = new Object();
 		evaluateThreadStop = new ConditionVariable(false);
-		
 		pendingHints = new ArrayList<pendingHint>();
 		isAccuracyOk=false;
 		RequestLocationUpdates("Init");
-		wifiInaccurateFixes=0;
+		speedSamples = new float[]{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};//-1 means that sample is not valid
+		actualSpeed = -1;
+		userState = STATE_STARTING;
+		wifiInaccurateFixes = 0;
+		
 		evaluateThread = new Thread(null, thread, "EvaluateAccuracyService");
 		evaluateThread.start();
+		
 		
 	}
 	
@@ -431,7 +443,9 @@ public class CustomLocationManager
 	{
 		Log.d(TAG,"Increasing minUpdateTime.");
 		
-		setMinUpdateTime(minUpdateTime+HALFMIN);
+		minUpdateTime += HALFMIN;
+		if (minUpdateTime>FIVEMINS)
+			minUpdateTime=FIVEMINS;
 	}
 	
 	/**
@@ -474,7 +488,7 @@ public class CustomLocationManager
 		else
 		{
 			min = HALFMIN/2;
-			max = FIVEMINS;
+			max = ONEMIN;
 		}
 		
 		minUpdateTime=newMinUpdateTime;
@@ -639,11 +653,85 @@ public class CustomLocationManager
 		else return location1.getProvider().equals(location2.getProvider());
 	}
 	/**
+	 * Get the number of avaiable samples.
+	 * 
+	 * @return	Number of avaiable samples.
+	 */
+	private int avaiableSpeedSamples()
+	{
+		for(int i = 0; i<speedSamples.length;i++)
+			if(speedSamples[i]==-1)
+				return i;
+		return speedSamples.length;
+	}
+	/**
+	 * Store a new speed sample.
+	 * 
+	 * @param speed		New speed sample to store.
+	 */
+	private void addSpeedSample(float speed) 
+	{
+		int avaiableSamples = avaiableSpeedSamples();
+		
+		if(avaiableSamples < speedSamples.length-1)
+			speedSamples[avaiableSamples] = speed;
+		else
+		{
+			for(int i = 0; i < speedSamples.length -1 ; i++)
+				speedSamples[i] = speedSamples[i+1];
+			speedSamples[speedSamples.length-1] = speed;
+		}
+		
+	}
+	/**
+	 * Filtering some noisy speed samples.
+	 * @param input					Vector containing speed samples.
+	 * @param samplesConsidered		Number of speed samples to consider (from most recent backward).
+	 * @param smoothing				Factor of filtering.
+	 * @return						Filtered value.
+	 */
+	private float lowPassFilter( float[] input, int samplesConsidered, float smoothing )
+	{ 
+		float value = input[0]; // start with the first input 
+		for(int i = input.length - samplesConsidered ; i< input.length; i++)
+			{ 
+				float currentValue = input[i]; 
+				value += (currentValue - value) / smoothing;  
+			} 
+		return value;
+	}
+	/**
+	 * Get max speed sample between stored samples.
+	 * @param speedSamples			Vector containing stored samples (from most recent backward).
+	 * @param samplesConsidered		Number of samples to consider.
+	 * @return
+	 */
+	private float getMaxSpeedSample(float[] speedSamples, int samplesConsidered) 
+	{
+		float max = 0;
+		for(int i = 0; i < speedSamples.length; i++)
+		{
+			if(speedSamples[i]>max)
+				max=speedSamples[i];
+		}
+		return max;
+	}
+	/**
+	 * Return module value of a number.
+	 * @param a		Number to obtain mudule value.
+	 * @return		Module of a.
+	 */
+	private float modulo ( float a )
+	{
+		 return a>0? a: -a;
+	}
+	
+	/**
 	 * Check if new location is acceptable.
 	 * @param location	New location fix to check.
 	 * @return			True if new location is acceptable, false if it is not.
 	 */
-	public boolean isBetterThanPrevious(Location location)
+	public boolean checkForHints(Location location)
 	{
 		//TODO
 		Log.i(TAG,"isBetterThanPrevious");
@@ -731,7 +819,7 @@ public class CustomLocationManager
 			//Check if new location is distant enough from last one
 			//I also check !isSignificantlyMoreAccurate and !isSignificantlyLessAccurate
 			//because it makes no sense to compare distance when accuracies are highly different.
-			if(!isDistantEnough && (!isSignificantlyMoreAccurate || !isSignificantlyLessAccurate))
+			/*if(!isDistantEnough && (!isSignificantlyMoreAccurate || !isSignificantlyLessAccurate))
 		    {
 				Log.d(TAG,"Location is very close to previous");
 				standingTime += minUpdateTime; 
@@ -760,40 +848,136 @@ public class CustomLocationManager
 			   	}
 		    	userPosition = location;
 			}
-			float speed = getSpeed(location, distanceFromLastPosition, timeDelta);//Speed of user movement
-
-			Log.d(TAG,"Checking if new location is distant enough for a new update.");
+			*/
+			//Speed of user last movement
+			float speed = getSpeed(location, distanceFromLastPosition, timeDelta);
+			//Memorize sample
+			addSpeedSample(speed);
+			
+			switch(userState)   
+			{
+			case STATE_STARTING:
+				//This is the state when the app starts for the first time.
+				//Wait up to 10 speed fixes to understand if user is moving or standing. 
+				Log.d(TAG,"State: STARTING.");
+			    if(avaiableSpeedSamples() == 10)
+			    {
+			    	Log.d(TAG,"10 samples avaiable.");
+			    	//Filter speed to clean some noise
+			    	float filteredSpeed = lowPassFilter(speedSamples,10,SMOOTHING);
+			    	Log.d(TAG,"Filtered speed: "+filteredSpeed * 1000+".");
+			    	if(filteredSpeed * 1000 > WALKINGSPEED )//user is moving
+			    	{
+			    		//If user is moving I update minUpdate time.
+			    		
+			    		userState = STATE_MOVING;
+			    		
+						setMinUpdateTime((int)((minUpdateDistance)/filteredSpeed));
+						actualSpeed = filteredSpeed;
+						Log.d(TAG,"Next location fix in: " + Long.toString(minUpdateTime/1000));
+						handler.removeCallbacks(requestUpdates);
+						RemoveUpdates();
+						handler.postDelayed(requestUpdates, minUpdateTime);
+			    	}
+			    	else
+			    	{
+			    		//If user is standing I continue to request fixes with same rate.
+			    		actualSpeed = 0;
+			    		userState = STATE_STANDING;
+			    	}
+			    }
+			    break;
+			case STATE_MOVING:
+				//If user is moving I consider last 5 fixes to understand if he is still moving
+				//Or he stopped.
+				Log.d(TAG,"State: MOVING.");
+				if(avaiableSpeedSamples() >= 5)
+				{
+					if(standingTime > FIVEMINS)
+				   	{
+						Log.d(TAG,"User is no more standing.");
+				   		standingTime = 0;
+				   	}
+					//Filter speed samples to clean some noise
+					float filteredSpeed = lowPassFilter(speedSamples,5,SMOOTHING);
+					Log.d(TAG,"Filtered speed: "+filteredSpeed *1000 +".");
+					if(filteredSpeed * 1000> WALKINGSPEED)//User is moving
+					{
+						if(modulo(filteredSpeed - actualSpeed)>2/1000)
+							//I change update time only if speed delta is significant
+							//To avoid to remove and re-request updates any time 
+							//(that is probably every time).
+						{
+							setMinUpdateTime((int)((minUpdateDistance-distanceFromLastCheck)/filteredSpeed));//How long to exit from minUpdateDistance area at this speed?
+							actualSpeed = filteredSpeed;
+							Log.d(TAG,"Next location fix in: " + Long.toString(minUpdateTime/1000));
+							handler.removeCallbacks(requestUpdates);
+							RemoveUpdates();
+							handler.postDelayed(requestUpdates, minUpdateTime);
+						}
+					}
+					else
+					{
+						actualSpeed = 0;
+						userState = STATE_STANDING;
+					}
+				}
+				break;
+			case STATE_STANDING:
+				//If user is standing check last 5 samples to understand If user starts moving
+				//again or continues standing.
+				Log.d(TAG,"State: STANDING.");
+				if(avaiableSpeedSamples() >= 5)
+				{
+					//Filter speed samples to clean some noise.
+					float filteredSpeed = lowPassFilter(speedSamples,5,SMOOTHING);
+					Log.d(TAG,"Filtered speed: "+filteredSpeed * 1000 +".");
+					if(filteredSpeed * 1000 > WALKINGSPEED)//User moves again
+					{
+						userState = STATE_MOVING;
+						setMinUpdateTime((int)((minUpdateDistance-distanceFromLastCheck)/filteredSpeed));//How long to exit from minUpdateDistance area at this speed?
+						actualSpeed = filteredSpeed;
+						Log.d(TAG,"Next location fix in: " + Long.toString(minUpdateTime/1000));
+						handler.removeCallbacks(requestUpdates);
+						RemoveUpdates();
+						handler.postDelayed(requestUpdates, minUpdateTime);						
+					}
+					else
+					{
+						//If user is not moving, and stands for a while, low fix rate.
+						actualSpeed = 0;
+						standingTime += minUpdateTime; 
+						//If user is in the same place for more than 10 mins, probably he is standing there
+						if(standingTime > TENMINS)
+						{
+							Log.d(TAG,"User is standing.");
+							handler.removeCallbacks(requestUpdates);
+							RemoveUpdates();
+							increaseMinUpdateTime();
+							handler.postDelayed(requestUpdates,minUpdateTime);
+							
+					    }
+					}
+				}
+				break;
+			} 
+			SendBroadcast(LOCATIONCHANGED, location, location.getProvider(),0,null);
+			userPosition = location;
+			Log.d(TAG,"Checking if new location is distant enough for a new hints search.");
 			if(!isDistantEnoughForUpdate && (!isSignificantlyMoreAccurate || !isSignificantlyLessAccurate) )
 			{
 
 			    Log.d(TAG,"New location is not distant enough for a new update.");
 			    
-	    		
-				if(speed>0)															
-				{
-					setMinUpdateTime((int)((minUpdateDistance-distanceFromLastCheck)/speed));//How long to exit from minUpdateDistance area at this speed?
-				}
-				Log.d(TAG,"Next location fix in: " + Long.toString(minUpdateTime/1000));
-				handler.removeCallbacks(requestUpdates);
-				RemoveUpdates();
-				handler.postDelayed(requestUpdates, minUpdateTime);
-				//If distance is not enough, I update Map but don't search for new hints
-			    SendBroadcast(LOCATIONCHANGED, location, location.getProvider(),0,null);
 			    return false;
 			   
 			    
 			 }
 
 		 	Log.d(TAG,"Location is distant enough for a new update!");
-		   	
-			if(speed>0)															
-			{
-				location.setSpeed(speed);
-			}
+		   
 			lastCheckedFix=location;
 			return true;
-			
-			
 			
 		}
 		else
@@ -804,6 +988,7 @@ public class CustomLocationManager
 		}
 	}
 	
+
 	/**
 	 * Unused
 	 */
@@ -1073,10 +1258,12 @@ public class CustomLocationManager
 	    						{
 	    							
 	    							Log.d(TAG,"Have wifi connection!");
-	    							//wifiInaccurateFixes++;
-	    							//if(wifiInaccurateFixes < 5)
-	    							//If there are wifi networks I don't need GPS
-	    							continue;
+	    							wifiInaccurateFixes++;
+	    							if(wifiInaccurateFixes < 3)
+	    								//If there are wifi networks I don't need GPS
+	    								continue;
+	    							else
+	    								wifiInaccurateFixes = 0;
 	    							
 	    						}
 		    					
@@ -1134,7 +1321,7 @@ public class CustomLocationManager
 							Log.d(TAG,"Neither Wifi nor Gps enabled!");
 							for(pendingHint p : pendingHints)
 		    				{
-		    					TaskNotification.getInstance().notifyHints(p.title, p.result, p.priority);
+								TaskNotification.getInstance().notifyHints(p.title, p.result, p.priority);
 		    				}
 		    				pendingHints.clear();
 		    				SendBroadcast(LOCATIONCHANGED, lastCheckedFix, lastCheckedFix.getProvider(),0,null);
@@ -1158,13 +1345,13 @@ public class CustomLocationManager
 		    			}
 
 		    			pendingHints.clear();
-	    				if(lastCheckedFix.getSpeed()>0)
+	    				/*if(lastCheckedFix.getSpeed()>0)
 	    				{
 	    					setMinUpdateTime((int)(minUpdateDistance/lastCheckedFix.getSpeed()));
 	    					Log.d(TAG, "minUpdateTime: " + minUpdateTime/100);
 	    					handler.removeCallbacks(requestUpdates);
 	    					handler.postDelayed(requestUpdates,minUpdateTime);
-	    				}
+	    				}*/
 	    				
 	    			}
 	    		}

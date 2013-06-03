@@ -102,7 +102,7 @@ public class ContextResource{
 				//No -> la metto in cache
 				//Sovrapposto -> dammi area che le ingloba e la cacho tutta
 
-				List<Hint> result;
+				List<Hint> result = new ArrayList<Hint>();
 				
 				Area area = CachingDbManager.checkArea(new Area(lat,lon,distance),sentence);
 				
