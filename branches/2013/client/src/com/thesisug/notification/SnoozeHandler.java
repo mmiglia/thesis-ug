@@ -17,8 +17,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.location.LocationManager;
-import android.net.wifi.WifiManager;
 import android.util.Log;
 
 /**
@@ -46,7 +44,7 @@ public class SnoozeHandler
 		        	if(snoozedNotifications != null)
 		        	{
 		        		Log.d(TAG,"Saving snoozedNotifications");;
-		        		File file = new File(context.getDir("data", context.MODE_PRIVATE), "snoozedNotifications");    
+		        		File file = new File(context.getDir("data", Context.MODE_PRIVATE), "snoozedNotifications");    
 		        		ObjectOutputStream outputStream;
 		        		try 
 		        		{
@@ -85,7 +83,7 @@ public class SnoozeHandler
 	     @SuppressWarnings("unchecked")
 		private static boolean checkIfSnoozedFileIsPresent()
 	     {
-	    	 File file = new File(context.getDir("data", context.MODE_PRIVATE), "snoozedNotifications");
+	    	 File file = new File(context.getDir("data", Context.MODE_PRIVATE), "snoozedNotifications");
 	    	 if(file.length()>0)
 	    	 {
 	    		 Log.d(TAG,"File already exists, copying values.");
@@ -211,6 +209,11 @@ public class SnoozeHandler
 	 	    		snoozedNotifications.remove(sentence);
 	 	    	}
 	     	}
+	     }
+	     
+	     public static void unregister()
+	     {
+	    	 context.unregisterReceiver(saveSnoozedNotifications);
 	     }
 	     
 }

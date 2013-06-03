@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.thesisug.R;
 import com.thesisug.communication.EventResource;
 import com.thesisug.communication.xmlparser.XsDateTimeFormat;
+import com.thesisug.notification.NotificationDispatcher;
 import com.thesisug.notification.SnoozeHandler;
 import com.thesisug.tracking.ActionTracker;
 
@@ -156,7 +157,7 @@ public class ShowEvent extends Activity{
             .setTitle(R.string.ask_for_deletion_event)
             .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                	SnoozeHandler.removeSnooze(title.getText().toString());
+                	
                 	Thread deleteThread = EventResource.removeEvent(packet.getString("eventID"), handler, ShowEvent.this);
                 	showDialog(WAIT_DELETION);
                 }
@@ -187,6 +188,9 @@ public class ShowEvent extends Activity{
 			// comunica che la cancellazione è avvenuta con successo
 			Toast.makeText(ShowEvent.this, R.string.deletion_success,
 	                Toast.LENGTH_LONG).show();
+			//Delete eventual snooze and notification corresponding to this event
+			SnoozeHandler.removeSnooze(title.getText().toString());
+			NotificationDispatcher.deleteNotification(title.getText().hashCode());
 			finish();
 		}
 	}
