@@ -198,7 +198,27 @@ public class Map extends Activity
 	        				hintToShow=hintlistToShow.size();
 	        			}
 	        			selectedHint=hintlistToShow.get(hintToShow-1);
-	        			highlightThisHint(selectedHint);
+	        			//clear previous hints
+	    	        	mMap.clear();
+	    	        	
+	    	        	//redraw user marker
+	    	        	mrk = mMap.addMarker(new MarkerOptions().position(new LatLng(userLocation.getLatitude(),userLocation.getLongitude())).title("This is you!").snippet("Don't you like this marker?").icon(BitmapDescriptorFactory.fromResource(R.drawable.man)).anchor((float)0.5,(float)0.5));
+	    	        	//Add circle representing the error
+	    		        // Instantiates a new CircleOptions object and defines the center and radius
+	    		        accuracyCircleOptions = new CircleOptions()
+	    		        .center(new LatLng(userLocation.getLatitude(),userLocation.getLongitude()))
+	    		        .radius(userLocation.getAccuracy())
+	    		        //Fill color of the circle
+	    	            // 0x represents, this is an hexadecimal code
+	    	            // 55 represents percentage of transparency. For 100% transparency, specify 00.
+	    	            // For 0% transparency ( ie, opaque ) , specify ff
+	    	            // The remaining 6 characters(FF0000) specify the fill color (red)
+	    		        .fillColor(0x50FF0000)
+	    		        .strokeColor(Color.RED)
+	    		        .strokeWidth(1);
+	    		        accuracyCircle = mMap.addCircle(accuracyCircleOptions);
+	    		        
+	    		        showHints(hintlistToShow);
 	        			
 	        		}
 	        		else
@@ -223,7 +243,27 @@ public class Map extends Activity
 	        				hintToShow=1;
 	        			}
 	        			selectedHint=hintlistToShow.get(hintToShow-1);
-	        			highlightThisHint(selectedHint);
+	        			//clear previous hints
+	    	        	mMap.clear();
+	    	        	
+	    	        	//redraw user marker
+	    	        	mrk = mMap.addMarker(new MarkerOptions().position(new LatLng(userLocation.getLatitude(),userLocation.getLongitude())).title("This is you!").snippet("Don't you like this marker?").icon(BitmapDescriptorFactory.fromResource(R.drawable.man)).anchor((float)0.5,(float)0.5));
+	    	        	//Add circle representing the error
+	    		        // Instantiates a new CircleOptions object and defines the center and radius
+	    		        accuracyCircleOptions = new CircleOptions()
+	    		        .center(new LatLng(userLocation.getLatitude(),userLocation.getLongitude()))
+	    		        .radius(userLocation.getAccuracy())
+	    		        //Fill color of the circle
+	    	            // 0x represents, this is an hexadecimal code
+	    	            // 55 represents percentage of transparency. For 100% transparency, specify 00.
+	    	            // For 0% transparency ( ie, opaque ) , specify ff
+	    	            // The remaining 6 characters(FF0000) specify the fill color (red)
+	    		        .fillColor(0x50FF0000)
+	    		        .strokeColor(Color.RED)
+	    		        .strokeWidth(1);
+	    		        accuracyCircle = mMap.addCircle(accuracyCircleOptions);
+	    		        
+	    		        showHints(hintlistToShow);
 	        		}else
 	        		{
 	        			Toast.makeText(getApplicationContext(), "No hint to show",Toast.LENGTH_SHORT).show();
@@ -325,11 +365,11 @@ public class Map extends Activity
 		LatLng placePoint = new LatLng(Double.parseDouble(selHint.lat),Double.parseDouble(selHint.lng));
 		txtHint.setText(selHint.titleNoFormatting);
 		//Add a marker to selected Hint point and shows marker infos
-    	Marker thisHint = mMap.addMarker(new MarkerOptions().position(placePoint).title(selHint.titleNoFormatting).snippet(selHint.streetAddress).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_normal_2)));
+		Marker thisHint = mMap.addMarker(new MarkerOptions().position(placePoint).title(selHint.titleNoFormatting).snippet(selHint.streetAddress).icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_highlight)));
     	thisHint.showInfoWindow();
     	//Moves camera to hint geopoint
     	mMap.moveCamera(CameraUpdateFactory.newLatLng(placePoint));
-    	Toast.makeText(getApplicationContext(),selectedHint.titleNoFormatting,Toast.LENGTH_SHORT).show();
+    	//Toast.makeText(getApplicationContext(),selectedHint.titleNoFormatting,Toast.LENGTH_SHORT).show();
     	
 	}
 	
