@@ -216,10 +216,7 @@ public class CachingDb extends SQLiteOpenHelper
 			//If there are no areas for this sentence, query server on the starting area
 		    Log.d(TAG,"No area present in Cache for "+ sentence +".");
 		    Area area = new Area(areaToCheck.lat,areaToCheck.lng,areaToCheck.rad,AREA_OUT);
-		    if(insertAreaEntry(area,sentence,false,db))		    
-		    	return area;
-		    else
-		    	return null;
+		    return area;
 		}
 		Log.d(TAG,"There are areas already in cache for "+sentence+".");
 		ArrayList<Area> toDelete = new ArrayList<Area>();
@@ -342,10 +339,8 @@ public class CachingDb extends SQLiteOpenHelper
 		}
 		
 		Area area = new Area(areaToCheck.lat,areaToCheck.lng,areaToCheck.rad,AREA_OUT);
-		if(insertAreaEntry(area,sentence,false,db))
-			return area;
-		else
-			return null;
+		return area;
+	
 		
 	}
 	
@@ -385,7 +380,7 @@ public class CachingDb extends SQLiteOpenHelper
 	 * @param areaToInsert		Area to insert in database.
 	 * @param sentence			Sentence describing task searched in this area.
 	 */
-	private boolean insertAreaEntry(Area areaToInsert,String sentence,boolean transaction,SQLiteDatabase db)
+	public boolean insertAreaEntry(Area areaToInsert,String sentence,boolean transaction,SQLiteDatabase db)
 	{
 		Log.i(TAG,"insertArea for " + sentence +".");
 		Log.d(TAG,"lat " + areaToInsert.lat);
@@ -608,7 +603,7 @@ public class CachingDb extends SQLiteOpenHelper
 			Log.d(TAG,"Inserting hint: " + h.titleNoFormatting);
 			
 			//Before inserting hint, checks if already present
-			Cursor c =db.query(LocalHintCaching.TABLE_NAME, LocalHintCaching.COLUMNS, LocalHintCaching.TITLE +" = '"+h.title+"' AND "+LocalHintCaching.LAT+" ='"+h.lat+"' AND "+LocalHintCaching.LNG +" ='"+h.lng+"' AND "+ LocalHintCaching.SENTENCE+ " ='"+sentence+"'", null, null, null, LocalHintCaching.TITLE);
+			Cursor c =db.query(LocalHintCaching.TABLE_NAME, LocalHintCaching.COLUMNS, LocalHintCaching.TITLE +" = '"+h.title.replace("'", "''")+"' AND "+LocalHintCaching.LAT+" ='"+h.lat+"' AND "+LocalHintCaching.LNG +" ='"+h.lng+"' AND "+ LocalHintCaching.SENTENCE+ " ='"+sentence+"'", null, null, null, LocalHintCaching.TITLE);
 			if (!(c.moveToFirst()) || c.getCount() ==0)
 			{
 			    Log.d(TAG,"Hint not present.");
@@ -621,7 +616,8 @@ public class CachingDb extends SQLiteOpenHelper
 			}
 			c.close();
 			ContentValues container = new ContentValues();
-			container.put(LocalHintCaching.TITLE, h.title);
+			String aphostropheCorrection = h.title.replace("'", "''");
+			container.put(LocalHintCaching.TITLE, aphostropheCorrection);
 			container.put(LocalHintCaching.URL, h.url);
 			container.put(LocalHintCaching.CONTENT, h.content);
 			container.put(LocalHintCaching.TITLENOFORMATTING, h.titleNoFormatting);
@@ -650,7 +646,7 @@ public class CachingDb extends SQLiteOpenHelper
 			Log.d(TAG,h.addressLines.size() + " addresses.");
 			for(String addressLine: h.addressLines)
 			{
-				Cursor temp =db.query(LocalHintCachingAddressLines.TABLE_NAME, LocalHintCachingAddressLines.COLUMNS, LocalHintCachingAddressLines.TITLE +" = '"+h.title+"' AND "+LocalHintCachingAddressLines.LAT+" ='"+h.lat+"' AND "+LocalHintCachingAddressLines.LNG +" ='"+h.lng+"' AND "+ LocalHintCachingAddressLines.ADDRESSLINE+ " ='"+addressLine+"'", null, null, null, LocalHintCaching.TITLE);
+				Cursor temp =db.query(LocalHintCachingAddressLines.TABLE_NAME, LocalHintCachingAddressLines.COLUMNS, LocalHintCachingAddressLines.TITLE +" = '"+h.title.replace("'", "''")+"' AND "+LocalHintCachingAddressLines.LAT+" ='"+h.lat+"' AND "+LocalHintCachingAddressLines.LNG +" ='"+h.lng+"' AND "+ LocalHintCachingAddressLines.ADDRESSLINE+ " ='"+addressLine.replace("'", "''")+"'", null, null, null, LocalHintCaching.TITLE);
 				if (!(temp.moveToFirst()) || temp.getCount() ==0)
 				{
 				    Log.d(TAG,"Address not present.");
@@ -663,9 +659,11 @@ public class CachingDb extends SQLiteOpenHelper
 				}
 				temp.close();
 				container.clear();
-				container.put(LocalHintCachingAddressLines.TITLE, h.title);
+				aphostropheCorrection = h.title.replace("'", "''");
+				container.put(LocalHintCachingAddressLines.TITLE, aphostropheCorrection);
 				container.put(LocalHintCachingAddressLines.LAT, h.lat);
 				container.put(LocalHintCachingAddressLines.LNG, h.lng);
+				aphostropheCorrection = addressLine.replace("'", "''");
 				container.put(LocalHintCachingAddressLines.ADDRESSLINE,addressLine);
 				container.put(LocalHintCachingAddressLines.INSERTIONDATE, dateFormat.format(Calendar.getInstance().getTime()));
 				
@@ -680,7 +678,7 @@ public class CachingDb extends SQLiteOpenHelper
 			Log.d(TAG,h.phoneNumbers.size() + " phone numbers.");
 			for(PhoneNumber phoneNumber : h.phoneNumbers)
 			{
-				Cursor temp =db.query(LocalHintCachingPhoneNumber.TABLE_NAME, LocalHintCachingPhoneNumber.COLUMNS, LocalHintCachingPhoneNumber.TITLE +" = '"+h.title+"' AND "+LocalHintCachingPhoneNumber.LAT+" ='"+h.lat+"' AND "+LocalHintCachingPhoneNumber.LNG +" ='"+h.lng+"' AND "+ LocalHintCachingPhoneNumber.NUMBER+ " ='"+phoneNumber.number+"'", null, null, null, LocalHintCaching.TITLE);
+				Cursor temp =db.query(LocalHintCachingPhoneNumber.TABLE_NAME, LocalHintCachingPhoneNumber.COLUMNS, LocalHintCachingPhoneNumber.TITLE +" = '"+h.title.replace("'", "''")+"' AND "+LocalHintCachingPhoneNumber.LAT+" ='"+h.lat+"' AND "+LocalHintCachingPhoneNumber.LNG +" ='"+h.lng+"' AND "+ LocalHintCachingPhoneNumber.NUMBER+ " ='"+phoneNumber.number+"'", null, null, null, LocalHintCaching.TITLE);
 				if (!(temp.moveToFirst()) || temp.getCount() ==0)
 				{
 				    Log.d(TAG,"Phone number not present.");
@@ -692,7 +690,8 @@ public class CachingDb extends SQLiteOpenHelper
 					continue;
 				}
 				container.clear();
-				container.put(LocalHintCachingPhoneNumber.TITLE, h.title);
+				aphostropheCorrection = h.title.replace("'", "''");
+				container.put(LocalHintCachingPhoneNumber.TITLE, aphostropheCorrection);
 				container.put(LocalHintCachingPhoneNumber.LAT, h.lat);
 				container.put(LocalHintCachingPhoneNumber.LNG, h.lng);
 				container.put(LocalHintCachingPhoneNumber.NUMBER,phoneNumber.number);
@@ -1154,7 +1153,7 @@ public class CachingDb extends SQLiteOpenHelper
 		
 		int resizedAreas = 0;
 		//Size is always too big?
-		if(!dbNeedsDownsize(db))
+		if(dbNeedsDownsize(db))
 		{
 			Log.d(TAG,"Size is still too big. Resizing areas.");
 			//Try to resize the areas in which actual search area is nested
@@ -1226,7 +1225,7 @@ public class CachingDb extends SQLiteOpenHelper
 		}	
 		
 		//Size is always too big?
-		if(!dbNeedsDownsize(db))
+		if(dbNeedsDownsize(db))
 		{
 			Log.d(TAG,"Cache still to big. Clean everything.");
 			cachingClean(db);

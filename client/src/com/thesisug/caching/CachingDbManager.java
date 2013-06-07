@@ -26,11 +26,17 @@ public class CachingDbManager
 		boolean ret;
 		SQLiteDatabase db = cachingDb.getWritableDatabase();
 		cachingDb.startTransaction(db);
+		if(!cachingDb.insertAreaEntry(actualArea,sentence,false,db))
+		{
+			Log.e(TAG,"Failed to insert new area entry.");
+			return false;
+		}	
+			
 		ret=cachingDb.insertHints(sentence, hints,db);
 		if(ret)
 		{
 			cachingDb.commitTransaction(db);
-			if(!dbNeedsDownsize(db))
+			if(dbNeedsDownsize(db))
 			{
 				Log.d(TAG,"Database is too big, need resize.");
 				cachingDb.downsizeDb(actualArea,db);
@@ -38,6 +44,8 @@ public class CachingDbManager
 			else
 				Log.d(TAG,"Size is ok.");
 		}
+		else
+			Log.e(TAG,"Failed to insert new hints.");
 		//db.close();
 		return ret;
 	}
