@@ -88,6 +88,7 @@ public class HintList extends ListActivity
 		intentShowInMap.putExtra("hintlist",hintlist);
 		intentShowInMap.putExtra("selectedPos",position);
 		intentShowInMap.putExtra("tasktitle",tasktitle);
+		intentShowInMap.putExtra("time", Calendar.getInstance().getTime().toString());
 		intentShowInMap.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		//startActivityForResult(intentShowInMap, 0);
 		startActivity(intentShowInMap);
