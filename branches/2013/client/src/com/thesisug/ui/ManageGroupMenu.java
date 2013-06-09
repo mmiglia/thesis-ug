@@ -74,10 +74,10 @@ public class ManageGroupMenu extends Activity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu){
-		menu.add(0,UPDATE_JOIN_TO_GROUP_REQUEST,0,R.string.updateJoinRequest).setIcon(R.drawable.sync);
-		menu.add(0,CREATE_GROUP_MENU,0,R.string.createGroup).setIcon(R.drawable.user_group);
-		menu.add(0,INVITE_JOIN_GROUP,0,R.string.inviteToGroup).setIcon(R.drawable.user_group_add);
-		menu.add(0,VIEW_GROUP_MEMBER,0,R.string.view_group_member).setIcon(R.drawable.user_group);
+		menu.add(0,UPDATE_JOIN_TO_GROUP_REQUEST,0,R.string.updateJoinRequest).setIcon(R.drawable.sync).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM|MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		menu.add(0,CREATE_GROUP_MENU,0,R.string.createGroup).setIcon(R.drawable.user_group).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM|MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		menu.add(0,INVITE_JOIN_GROUP,0,R.string.inviteToGroup).setIcon(R.drawable.user_group_add).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM|MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		menu.add(0,VIEW_GROUP_MEMBER,0,R.string.view_group_member).setIcon(R.drawable.user_group).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM|MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 			
 		menu.add(0,BACK,0,R.string.back).setIcon(R.drawable.go_previous_black);
 		return true;

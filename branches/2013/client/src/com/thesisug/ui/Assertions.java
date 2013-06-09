@@ -1,9 +1,12 @@
 package com.thesisug.ui;
 
+import android.app.Activity;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TabHost;
 
 import com.thesisug.R;
@@ -42,6 +45,23 @@ public class Assertions extends TabActivity{
 			
 	}	
 	
-
+	//this method create a different menu depending on wich tab is selected
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		Activity thisActivity = this.getCurrentActivity();
+		
+		boolean ret = thisActivity.onCreateOptionsMenu(menu);
+		return ret;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) 
+	{
+		Activity thisActivity = this.getCurrentActivity();
+		
+		boolean ret = thisActivity.onOptionsItemSelected(item);
+		return ret;
+	}
 
 }

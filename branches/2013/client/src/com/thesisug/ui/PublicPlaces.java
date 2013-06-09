@@ -57,18 +57,20 @@ public class PublicPlaces extends Activity implements LocationListener{
 	}
 	
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu){
-		menu.add(0,NEW_PLACES,0,R.string.newPlace).setIcon(R.drawable.addplaces);
-		menu.add(0,TAKE_HERE,0,R.string.takehere).setIcon(R.drawable.mapgps);
-		menu.add(0,UPDATE_LIST,0,R.string.updateList).setIcon(R.drawable.sync);	
-		menu.add(0,SEARCH,0,R.string.search).setIcon(R.drawable.searchle);	
-		menu.add(0,INFO,0,R.string.infoPlaces).setIcon(R.drawable.info);	
-		menu.add(0,BACK,0,R.string.back).setIcon(R.drawable.go_previous_black);
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		menu.add(0,NEW_PLACES,0,R.string.newPlace).setIcon(R.drawable.addplaces).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		menu.add(0,TAKE_HERE,0,R.string.takehere).setIcon(R.drawable.mapgps).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		menu.add(0,UPDATE_LIST,0,R.string.updateList).setIcon(R.drawable.sync).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);	
+		menu.add(0,SEARCH,0,R.string.search).setIcon(R.drawable.searchle).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);	
+		menu.add(0,INFO,0,R.string.infoPlaces).setIcon(R.drawable.info).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);	
+		menu.add(0,BACK,0,R.string.back).setIcon(R.drawable.go_previous_black).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 		return true;
 	}
 	
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onOptionsItemSelected(MenuItem item) 
+	{
 		Intent intent;
 		switch (item.getItemId()) {
 		case NEW_PLACES:
