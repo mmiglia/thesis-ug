@@ -11,7 +11,8 @@ import android.os.Parcelable;
 /**
  * This class represents the location hints that will be sent to client
  */
-public class Hint implements Parcelable {
+public class Hint implements Parcelable 
+{
 	public String title;
 	public String url;
 	public String content;
@@ -29,6 +30,7 @@ public class Hint implements Parcelable {
 	public String country;
 	public List<PhoneNumber> phoneNumbers;
 	public List<String> addressLines;
+	public String searchRadius;//Radius of the search area that gave this hint
 
 	public Hint(){
 		phoneNumbers = new LinkedList<PhoneNumber>();
@@ -40,7 +42,8 @@ public class Hint implements Parcelable {
 		return build(this);
 	}
 
-	private static String build(Object obj) {
+	private static String build(Object obj) 
+	{
 		StringBuilder builder = new StringBuilder();
 
 		if (obj != null) {
@@ -128,6 +131,7 @@ public class Hint implements Parcelable {
 		for (String address : addressLines){
 			newcopy.addressLines.add(new String(address));
 		}
+		newcopy.searchRadius=searchRadius;
 		return newcopy;
 	}
 
@@ -160,6 +164,7 @@ public class Hint implements Parcelable {
 		}
 		out.writeInt(addressLines.size());
 		for (String s : addressLines) out.writeString (s);
+		out.writeString(searchRadius);
 	}
 	private void readFromParcel(Parcel in) {
 		title = in.readString();
@@ -186,6 +191,7 @@ public class Hint implements Parcelable {
 		} 
 		count = in.readInt();
 		for (int i=0; i<count; i++)	addressLines.add(in.readString());
+		searchRadius=in.readString();
     }
 
 	private Hint(Parcel in){

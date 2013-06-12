@@ -25,9 +25,10 @@ import com.thesisug.communication.xmlparser.HintHandler;
 import com.thesisug.notification.TaskNotification;
 
 
-public class ContextResource{
+public class ContextResource
+{
 	private static final String TAG = new String("thesisug - ContextResource");
-	private static final String LOCATION_ALL = "/location/all";
+	//private static final String LOCATION_ALL = "/location/all";
 	private static final String LOCATION_SINGLE = "/location/single";
 		
 	private static List<Hint> runHttpGet(final String method,
@@ -48,7 +49,13 @@ public class ContextResource{
 			Log.e(TAG, "Cannot connect to server with code "+ response.getStatusLine().getStatusCode());
 			return null;
 		}
+		else
+		{
+			Log.d(TAG,"Valid response.");
+		}
 		try { // parsing XML message
+			if(response.getEntity()==null)
+				return null;
 			result = HintHandler.parse(response.getEntity().getContent());
 			return result;
 		} catch (IllegalStateException e) {
@@ -112,7 +119,7 @@ public class ContextResource{
 					{
 						case CachingDb.AREA_IN:
 							result = CachingDbManager.searchLocalBuisnessInCache(sentence, lat, lon, distance);
-							sendResultSingleHint(result, sentence, priority, handler, context,true);
+							sendResultSingleHint(result, sentence, priority, handler, context,null,true);
 							break;
 						case CachingDb.AREA_OUT:
 							//If cache doesn't contain records query server
@@ -123,7 +130,15 @@ public class ContextResource{
 							params.add(new BasicNameValuePair("lon", ""+area.lng));
 							params.add(new BasicNameValuePair("dist", ""+(int)Math.ceil(area.rad)));
 							result = runHttpGet(LOCATION_SINGLE, params, context);
-							sendResultSingleHint(result, sentence, priority, handler, context,false);
+							//If area is resized respect my request, there is a dummy hint at the end of the list
+							if(result.get(result.size()-1).title.equals("maxHintDistance"))
+							{
+								Log.d(TAG,"Area is restricted.");
+								area.rad=Float.parseFloat(result.get(result.size()-1).searchRadius);
+								result.remove(result.size()-1);
+								
+							}
+							sendResultSingleHint(result, sentence, priority, handler, context,area,false);
 							break;
 					}
 				}
@@ -199,7 +214,7 @@ public class ContextResource{
 	}
 	*/
 	private static void sendResultSingleHint(final List<Hint> result, final String sentence, final int priority,
-			final Handler handler, final Context context, final boolean fromCache) 
+			final Handler handler, final Context context, final Area area, final boolean fromCache) 
 	{
 		if (handler == null || context == null) 
 		{
@@ -220,7 +235,7 @@ public class ContextResource{
 					else
 					{
 						Log.d(TAG,"Executing  TaskNotification.afterHintsAcquired");
-						((TaskNotification) context).afterHintsAcquired(sentence, result,priority);
+						((TaskNotification) context).afterHintsAcquired(sentence, result,area,priority);
 					}
 					
 				}
