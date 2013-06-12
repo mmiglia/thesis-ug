@@ -727,7 +727,8 @@ public class CustomLocationManager
 	}
 	
 	/**
-	 * Check if new location is acceptable.
+	 * Check if hints have to be checked.
+	 * 
 	 * @param location	New location fix to check.
 	 * @return			True if new location is acceptable, false if it is not.
 	 */
@@ -764,15 +765,6 @@ public class CustomLocationManager
 			long timeDelta = ((location.getElapsedRealtimeNanos() - userPosition.getElapsedRealtimeNanos()))/1000000; //Nanoseconds to milliseconds
 			//boolean isSignificantlyNewer = timeDelta >= minUpdateTime/1000-5; //Accept an error of 5 seconds
 			Log.d(TAG,"timeDelta: "+timeDelta/1000);
-			/*Log.d(TAG,"Checking if new location is significantly newer. MinUpdateTime: " + minUpdateTime/1000);
-			if(!isSignificantlyNewer)
-			{ 
-				Log.d(TAG,"New location is not significantly newer.");
-		
-				return false;
-			}
-			Log.d(TAG, "New location is significantly newer.");
-		    */
 			
 		    //Check if accuracy of new location is adequate.
 		    Log.d(TAG, "Checking new location accuracy.");
@@ -814,156 +806,19 @@ public class CustomLocationManager
 	    	Log.d(TAG,"Distance from last check: "+ distanceFromLastCheck +".");
 	    	Log.d(TAG,"Distance from last position: "+ distanceFromLastPosition +".");
 	    	boolean isDistantEnoughForUpdate = distanceFromLastCheck >= minUpdateDistance-15;
-	    	boolean isDistantEnough = distanceFromLastPosition >= 15;
-			Log.d(TAG,"Checking if new location is distant enough.");
-			//Check if new location is distant enough from last one
-			//I also check !isSignificantlyMoreAccurate and !isSignificantlyLessAccurate
-			//because it makes no sense to compare distance when accuracies are highly different.
-			/*if(!isDistantEnough && (!isSignificantlyMoreAccurate || !isSignificantlyLessAccurate))
-		    {
-				Log.d(TAG,"Location is very close to previous");
-				standingTime += minUpdateTime; 
-				//If user is in the same place for more than 10 mins, probably he is standing there
-				if(standingTime > TENMINS)
-				{
-					Log.d(TAG,"User is standing.");
-					handler.removeCallbacks(requestUpdates);
-					RemoveUpdates();
-					increaseMinUpdateTime();
-					handler.postDelayed(requestUpdates,minUpdateTime);
-					
-			    }
-				userPosition.setElapsedRealtimeNanos(location.getElapsedRealtimeNanos());
-				return false;
-		    }
-			else
-			{
-		    	Log.d(TAG,"Location is not very close to previous.");
-		    	
-		    	if(standingTime > FIVEMINS)
-			   	{
-					Log.d(TAG,"User is no more standing.");
-			   		standingTime = 0;
-					ResetMinUpdateTime();
-			   	}
-		    	userPosition = location;
-			}
-			*/
+	    	Log.d(TAG,"Checking if new location is distant enough.");
 			//Speed of user last movement
 			float speed = getSpeed(location, distanceFromLastPosition, timeDelta);
 			//Memorize sample
 			addSpeedSample(speed);
-			
-			switch(userState)   
-			{
-			case STATE_STARTING:
-				//This is the state when the app starts for the first time.
-				//Wait up to 10 speed fixes to understand if user is moving or standing. 
-				Log.d(TAG,"State: STARTING.");
-			    if(avaiableSpeedSamples() == 10)
-			    {
-			    	Log.d(TAG,"10 samples avaiable.");
-			    	//Filter speed to clean some noise
-			    	float filteredSpeed = lowPassFilter(speedSamples,10,SMOOTHING);
-			    	Log.d(TAG,"Filtered speed: "+filteredSpeed * 1000+".");
-			    	if(filteredSpeed * 1000 > WALKINGSPEED )//user is moving
-			    	{
-			    		//If user is moving I update minUpdate time.
-			    		
-			    		userState = STATE_MOVING;
-			    		
-						setMinUpdateTime((int)((minUpdateDistance)/filteredSpeed));
-						actualSpeed = filteredSpeed;
-						Log.d(TAG,"Next location fix in: " + Long.toString(minUpdateTime/1000));
-						handler.removeCallbacks(requestUpdates);
-						RemoveUpdates();
-						handler.postDelayed(requestUpdates, minUpdateTime);
-			    	}
-			    	else
-			    	{
-			    		//If user is standing I continue to request fixes with same rate.
-			    		actualSpeed = 0;
-			    		userState = STATE_STANDING;
-			    	}
-			    }
-			    break;
-			case STATE_MOVING:
-				//If user is moving I consider last 5 fixes to understand if he is still moving
-				//Or he stopped.
-				Log.d(TAG,"State: MOVING.");
-				if(avaiableSpeedSamples() >= 5)
-				{
-					if(standingTime > FIVEMINS)
-				   	{
-						Log.d(TAG,"User is no more standing.");
-				   		standingTime = 0;
-				   	}
-					//Filter speed samples to clean some noise
-					float filteredSpeed = lowPassFilter(speedSamples,5,SMOOTHING);
-					Log.d(TAG,"Filtered speed: "+filteredSpeed *1000 +".");
-					if(filteredSpeed * 1000> WALKINGSPEED)//User is moving
-					{
-						if(modulo(filteredSpeed - actualSpeed)>2/1000)
-							//I change update time only if speed delta is significant
-							//To avoid to remove and re-request updates any time 
-							//(that is probably every time).
-						{
-							setMinUpdateTime((int)((minUpdateDistance-distanceFromLastCheck)/filteredSpeed));//How long to exit from minUpdateDistance area at this speed?
-							actualSpeed = filteredSpeed;
-							Log.d(TAG,"Next location fix in: " + Long.toString(minUpdateTime/1000));
-							handler.removeCallbacks(requestUpdates);
-							RemoveUpdates();
-							handler.postDelayed(requestUpdates, minUpdateTime);
-						}
-					}
-					else
-					{
-						actualSpeed = 0;
-						userState = STATE_STANDING;
-					}
-				}
-				break;
-			case STATE_STANDING:
-				//If user is standing check last 5 samples to understand If user starts moving
-				//again or continues standing.
-				Log.d(TAG,"State: STANDING.");
-				if(avaiableSpeedSamples() >= 5)
-				{
-					//Filter speed samples to clean some noise.
-					float filteredSpeed = lowPassFilter(speedSamples,5,SMOOTHING);
-					Log.d(TAG,"Filtered speed: "+filteredSpeed * 1000 +".");
-					if(filteredSpeed * 1000 > WALKINGSPEED)//User moves again
-					{
-						userState = STATE_MOVING;
-						setMinUpdateTime((int)((minUpdateDistance-distanceFromLastCheck)/filteredSpeed));//How long to exit from minUpdateDistance area at this speed?
-						actualSpeed = filteredSpeed;
-						Log.d(TAG,"Next location fix in: " + Long.toString(minUpdateTime/1000));
-						handler.removeCallbacks(requestUpdates);
-						RemoveUpdates();
-						handler.postDelayed(requestUpdates, minUpdateTime);						
-					}
-					else
-					{
-						//If user is not moving, and stands for a while, low fix rate.
-						actualSpeed = 0;
-						standingTime += minUpdateTime; 
-						//If user is in the same place for more than 10 mins, probably he is standing there
-						if(standingTime > TENMINS)
-						{
-							Log.d(TAG,"User is standing.");
-							handler.removeCallbacks(requestUpdates);
-							RemoveUpdates();
-							increaseMinUpdateTime();
-							handler.postDelayed(requestUpdates,minUpdateTime);
-							
-					    }
-					}
-				}
-				break;
-			} 
+			//Set time for next fix
+			setNextFixTime(distanceFromLastCheck);
+			//Send broadcast message with new fix
 			SendBroadcast(LOCATIONCHANGED, location, location.getProvider(),0,null);
+			//Update user position
 			userPosition = location;
 			Log.d(TAG,"Checking if new location is distant enough for a new hints search.");
+			//Check if new location is distant enough for new hints search
 			if(!isDistantEnoughForUpdate && (!isSignificantlyMoreAccurate || !isSignificantlyLessAccurate) )
 			{
 
@@ -975,7 +830,7 @@ public class CustomLocationManager
 			 }
 
 		 	Log.d(TAG,"Location is distant enough for a new update!");
-		   
+		    //Update last fix
 			lastCheckedFix=location;
 			return true;
 			
@@ -987,8 +842,121 @@ public class CustomLocationManager
 			return true;
 		}
 	}
-	
-
+	/**
+	 * Find minUpdateTime based on the state of user movement.
+	 * 
+	 * @param distanceFromLastCheck	distance between last fix.
+	 */
+	private void setNextFixTime(float distanceFromLastCheck)
+	{
+		switch(userState)   
+		{
+		case STATE_STARTING:
+			//This is the state when the app starts for the first time.
+			//Wait up to 10 speed fixes to understand if user is moving or standing. 
+			Log.d(TAG,"State: STARTING.");
+		    if(avaiableSpeedSamples() == 10)
+		    {
+		    	Log.d(TAG,"10 samples avaiable.");
+		    	//Filter speed to clean some noise
+		    	float filteredSpeed = lowPassFilter(speedSamples,10,SMOOTHING);
+		    	Log.d(TAG,"Filtered speed: "+filteredSpeed * 1000+".");
+		    	if(filteredSpeed * 1000 > WALKINGSPEED )//user is moving
+		    	{
+		    		//If user is moving I update minUpdate time.
+		    		
+		    		userState = STATE_MOVING;
+		    		
+					setMinUpdateTime((int)((minUpdateDistance)/filteredSpeed));
+					actualSpeed = filteredSpeed;
+					Log.d(TAG,"Next location fix in: " + Long.toString(minUpdateTime/1000));
+					handler.removeCallbacks(requestUpdates);
+					RemoveUpdates();
+					handler.postDelayed(requestUpdates, minUpdateTime);
+		    	}
+		    	else
+		    	{
+		    		//If user is standing I continue to request fixes with same rate.
+		    		actualSpeed = 0;
+		    		userState = STATE_STANDING;
+		    	}
+		    }
+		    break;
+		case STATE_MOVING:
+			//If user is moving I consider last 5 fixes to understand if he is still moving
+			//Or he stopped.
+			Log.d(TAG,"State: MOVING.");
+			if(avaiableSpeedSamples() >= 5)
+			{
+				if(standingTime > FIVEMINS)
+			   	{
+					Log.d(TAG,"User is no more standing.");
+			   		standingTime = 0;
+			   	}
+				//Filter speed samples to clean some noise
+				float filteredSpeed = lowPassFilter(speedSamples,5,SMOOTHING);
+				Log.d(TAG,"Filtered speed: "+filteredSpeed *1000 +".");
+				if(filteredSpeed * 1000> WALKINGSPEED)//User is moving
+				{
+					if(modulo(filteredSpeed - actualSpeed)>2/1000)
+						//I change update time only if speed delta is significant
+						//To avoid to remove and re-request updates any time 
+						//(that is probably every time).
+					{
+						setMinUpdateTime((int)((minUpdateDistance-distanceFromLastCheck)/filteredSpeed));//How long to exit from minUpdateDistance area at this speed?
+						actualSpeed = filteredSpeed;
+						Log.d(TAG,"Next location fix in: " + Long.toString(minUpdateTime/1000));
+						handler.removeCallbacks(requestUpdates);
+						RemoveUpdates();
+						handler.postDelayed(requestUpdates, minUpdateTime);
+					}
+				}
+				else
+				{
+					actualSpeed = 0;
+					userState = STATE_STANDING;
+				}
+			}
+			break;
+		case STATE_STANDING:
+			//If user is standing check last 5 samples to understand If user starts moving
+			//again or continues standing.
+			Log.d(TAG,"State: STANDING.");
+			if(avaiableSpeedSamples() >= 5)
+			{
+				//Filter speed samples to clean some noise.
+				float filteredSpeed = lowPassFilter(speedSamples,5,SMOOTHING);
+				Log.d(TAG,"Filtered speed: "+filteredSpeed * 1000 +".");
+				if(filteredSpeed * 1000 > WALKINGSPEED)//User moves again
+				{
+					userState = STATE_MOVING;
+					setMinUpdateTime((int)((minUpdateDistance-distanceFromLastCheck)/filteredSpeed));//How long to exit from minUpdateDistance area at this speed?
+					actualSpeed = filteredSpeed;
+					Log.d(TAG,"Next location fix in: " + Long.toString(minUpdateTime/1000));
+					handler.removeCallbacks(requestUpdates);
+					RemoveUpdates();
+					handler.postDelayed(requestUpdates, minUpdateTime);						
+				}
+				else
+				{
+					//If user is not moving, and stands for a while, low fix rate.
+					actualSpeed = 0;
+					standingTime += minUpdateTime; 
+					//If user is in the same place for more than 10 mins, probably he is standing there
+					if(standingTime > TENMINS)
+					{
+						Log.d(TAG,"User is standing.");
+						handler.removeCallbacks(requestUpdates);
+						RemoveUpdates();
+						increaseMinUpdateTime();
+						handler.postDelayed(requestUpdates,minUpdateTime);
+						
+				    }
+				}
+			}
+			break;
+		} 
+	}
 	/**
 	 * Unused
 	 */
@@ -1148,7 +1116,7 @@ public class CustomLocationManager
 	 */
 	public float GetMaxHintDistance()
 	{
-		return maxHintDistance;
+		return maxHintDistance+userPosition.getAccuracy();
 	}
 	/**
 	 * Thread that implements hierarchical localization
