@@ -129,6 +129,11 @@ private static final String TAG = "thesisug - Hint Handler";
                 current.addressLines.add(new String(body));
             }
         });
+		hint.getChild("searchRadius").setEndTextElementListener(new EndTextElementListener(){
+            public void end(String body) {
+                current.searchRadius=body;
+            }
+        });
         Log.i(TAG, "parsing Hints XML message");
         Xml.parse(toParse, Xml.Encoding.UTF_8, root.getContentHandler());
         Log.i(TAG, "parsing Hints XML message COMPLETE, " +combine.size()+" element found");
