@@ -576,7 +576,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	}
     }
     
-    public void afterHintsAcquired (String sentence, List<Hint> result, int priority)
+    public void afterHintsAcquired (String sentence, List<Hint> result,Area area, int priority)
     {
     	Log.i(TAG,"afterHintsAcquired");
     	customLocationManager.TaskHintsSearchFinished(sentence,result,priority);
@@ -586,8 +586,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	    	{
 	    		hintsFound += result.size();
 	    		
-	    		if(result.size()>0)//Avoid calls to Db if there are no hints to insert
-	    			CachingDbManager.insertHints(new Area((float)userLocation.getLatitude(),(float)userLocation.getLongitude(),customLocationManager.GetMaxHintDistance()),sentence, result);
+	    		CachingDbManager.insertHints(area,sentence, result);
 	    		
 	    	}
     	}
