@@ -444,8 +444,8 @@ public class CustomLocationManager
 		Log.d(TAG,"Increasing minUpdateTime.");
 		
 		minUpdateTime += HALFMIN;
-		if (minUpdateTime>FIVEMINS)
-			minUpdateTime=FIVEMINS;
+		if (minUpdateTime>TENMINS)
+			minUpdateTime=TENMINS;
 	}
 	
 	/**
@@ -888,11 +888,9 @@ public class CustomLocationManager
 			Log.d(TAG,"State: MOVING.");
 			if(avaiableSpeedSamples() >= 5)
 			{
-				if(standingTime > FIVEMINS)
-			   	{
-					Log.d(TAG,"User is no more standing.");
-			   		standingTime = 0;
-			   	}
+				Log.d(TAG,"User is no more standing.");
+				standingTime = 0;
+			   	
 				//Filter speed samples to clean some noise
 				float filteredSpeed = lowPassFilter(speedSamples,5,SMOOTHING);
 				Log.d(TAG,"Filtered speed: "+filteredSpeed *1000 +".");
@@ -903,7 +901,16 @@ public class CustomLocationManager
 						//To avoid to remove and re-request updates any time 
 						//(that is probably every time).
 					{
-						setMinUpdateTime((int)((minUpdateDistance-distanceFromLastCheck)/filteredSpeed));//How long to exit from minUpdateDistance area at this speed?
+						int distance;
+						//Calculate remaining distance for next check
+						if(distanceFromLastCheck >= minUpdateDistance)
+						{
+							double n = Math.floor(distanceFromLastCheck/minUpdateDistance);
+							distance = (int) (minUpdateDistance-(distanceFromLastCheck- n * minUpdateDistance));
+						}
+						else 
+							distance = (int) (minUpdateDistance-distanceFromLastCheck);
+						setMinUpdateTime((long) (distance/filteredSpeed));//How long to exit from minUpdateDistance area at this speed?
 						actualSpeed = filteredSpeed;
 						Log.d(TAG,"Next location fix in: " + Long.toString(minUpdateTime/1000));
 						handler.removeCallbacks(requestUpdates);
@@ -915,6 +922,11 @@ public class CustomLocationManager
 				{
 					actualSpeed = 0;
 					userState = STATE_STANDING;
+					//If user is standing, reset minUpdateTime
+					ResetMinUpdateTime();
+					handler.removeCallbacks(requestUpdates);
+					RemoveUpdates();
+					handler.postDelayed(requestUpdates, minUpdateTime);
 				}
 			}
 			break;
@@ -930,7 +942,16 @@ public class CustomLocationManager
 				if(filteredSpeed * 1000 > WALKINGSPEED)//User moves again
 				{
 					userState = STATE_MOVING;
-					setMinUpdateTime((int)((minUpdateDistance-distanceFromLastCheck)/filteredSpeed));//How long to exit from minUpdateDistance area at this speed?
+					int distance;
+					//Calculate remaining distance for next check
+					if(distanceFromLastCheck >= minUpdateDistance)
+					{
+						double n = Math.floor(distanceFromLastCheck/minUpdateDistance);
+						distance = (int) (minUpdateDistance-(distanceFromLastCheck- n * minUpdateDistance));
+					}
+					else 
+						distance = (int) (minUpdateDistance-distanceFromLastCheck);
+					setMinUpdateTime((long) (distance/filteredSpeed));//How long to exit from minUpdateDistance area at this speed?
 					actualSpeed = filteredSpeed;
 					Log.d(TAG,"Next location fix in: " + Long.toString(minUpdateTime/1000));
 					handler.removeCallbacks(requestUpdates);
@@ -1165,7 +1186,7 @@ public class CustomLocationManager
 	    			 
 	    			int lastCheckedFixAccuracy = (int)lastCheckedFix.getAccuracy();
 	    			 
-	    			if(lastCheckedFixAccuracy > 100)
+	    			if(lastCheckedFixAccuracy > 50)
 	    			{
 	    				isAccuracyOk=false;
 	    				
