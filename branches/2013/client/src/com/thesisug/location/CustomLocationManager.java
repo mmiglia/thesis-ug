@@ -905,8 +905,7 @@ public class CustomLocationManager
 						//Calculate remaining distance for next check
 						if(distanceFromLastCheck >= minUpdateDistance)
 						{
-							double n = Math.floor(distanceFromLastCheck/minUpdateDistance);
-							distance = (int) (minUpdateDistance-(distanceFromLastCheck- n * minUpdateDistance));
+							distance = (int) (minUpdateDistance);
 						}
 						else 
 							distance = (int) (minUpdateDistance-distanceFromLastCheck);
@@ -946,8 +945,8 @@ public class CustomLocationManager
 					//Calculate remaining distance for next check
 					if(distanceFromLastCheck >= minUpdateDistance)
 					{
-						double n = Math.floor(distanceFromLastCheck/minUpdateDistance);
-						distance = (int) (minUpdateDistance-(distanceFromLastCheck- n * minUpdateDistance));
+					
+						distance = (int) (minUpdateDistance);
 					}
 					else 
 						distance = (int) (minUpdateDistance-distanceFromLastCheck);
