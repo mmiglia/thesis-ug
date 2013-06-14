@@ -256,6 +256,8 @@ public class ParentTab extends TabActivity
 				ActionTracker.appClosed(Calendar.getInstance().getTime(), getApplicationContext());
 				//android.os.Process.killProcess(android.os.Process.myPid());
 				//System.exit(0);
+				NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+				notificationManager.cancelAll();
 				super.finish();
 				finish();
 				break;
