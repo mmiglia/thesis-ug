@@ -125,8 +125,7 @@ public class GpsRequest extends Activity
     			.addAction(R.drawable.ok, "Ok", positiveAnswer)
     			.addAction(R.drawable.no,"No",negativeAnswer)
     			.setAutoCancel(true)
-    			.build()
-    			;
+    			.build();
     	
     	newnotification=TaskNotification.getInstance().addNotificationAlertMethod(context,newnotification,"prova",5);
     	//For some reason sometimes notificationManager gets null

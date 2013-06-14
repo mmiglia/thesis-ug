@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -180,6 +181,8 @@ public class CustomLocationManager
 				{
 					Log.d(TAG,"Wifi Request timeout.");
 					wifiAlreadyAsked=false;
+					NotificationManager notificationManager = (NotificationManager) applicationContext.getSystemService(applicationContext.NOTIFICATION_SERVICE);
+					notificationManager.cancel("wifi".hashCode());
 					wifiLock.notify();
 				}
 				
@@ -196,6 +199,8 @@ public class CustomLocationManager
 				{
 					Log.d(TAG,"Gps Request timeout.");
 					gpsAlreadyAsked=false;
+					NotificationManager notificationManager = (NotificationManager) applicationContext.getSystemService(applicationContext.NOTIFICATION_SERVICE);
+					notificationManager.cancel("gps".hashCode());
 					ActionTracker.gpsResponse(Calendar.getInstance().getTime(), lastCheckedFix, "TIMEOUT", applicationContext);
 					gpsLock.notify();
 				}

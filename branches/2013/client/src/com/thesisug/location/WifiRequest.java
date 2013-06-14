@@ -60,7 +60,7 @@ public class WifiRequest extends Activity
 		else
 		{
 			AccountUtil util = new AccountUtil();
-			String text_message = "Dear "+ util.getUsername(getApplicationContext()) +", enabling Wifi you let " + getString(R.string.app_name)+ " to obtain localization information through wireless networks. This could be very useful for the app to offer you a better service. Do you want to enable Gps?";
+			String text_message = "Dear "+ util.getUsername(getApplicationContext()) +", enabling Wifi you let " + getString(R.string.app_name)+ " to obtain localization information through wireless networks. This could be very useful for the app to offer you a better service. Do you want to enable Wifi?";
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(text_message).setTitle(getString(R.string.app_name));
 			builder.setOnCancelListener(new OnCancelListener() 
