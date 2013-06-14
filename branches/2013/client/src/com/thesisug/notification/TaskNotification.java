@@ -714,75 +714,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     {
     	customLocationManager.UnlockEvaluateThreadGps();
     }
-    /**
-     * Sends a notification asking user to activate Wifi.
-     * @param context	Application context
-     */
-    public void sendWifiNotification(final Context context) 
-    {
-    	Intent answer = new Intent(context,WifiRequest.class);
-    	answer.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-    	PendingIntent notificationClick = PendingIntent.getActivity(context, 2, answer, PendingIntent.FLAG_CANCEL_CURRENT);
-    	
-    	PendingIntent positiveAnswer = PendingIntent.getActivity(context, 0, answer.putExtra("answer", "ok"),  PendingIntent.FLAG_CANCEL_CURRENT);
-    	PendingIntent negativeAnswer = PendingIntent.getActivity(context, 1, answer.putExtra("answer", "no"), PendingIntent. FLAG_CANCEL_CURRENT);
-    	
-    	Notification newnotification =
-    			new Notification.Builder(context)
-    			.setSmallIcon(R.drawable.icon)
-    			.setContentTitle(context.getText(R.string.app_name))
-    			.setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.wifi))
-    			.setContentText("Wifi needed. Enable?")
-    			.setWhen(System.currentTimeMillis())
-    			.setContentIntent(notificationClick)
-    			.addAction(R.drawable.ok, "Ok", positiveAnswer)
-    			.addAction(R.drawable.no,"No",negativeAnswer)
-    			.setAutoCancel(true)
-    			.build()
-  
-    			;
-    	
-    	newnotification=addNotificationAlertMethod(context,newnotification,"prova",5);
-    	//For some reason sometimes notificationManager gets null
-    	if (notificationManager == null)
-    	    	notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-    	NotificationDispatcher.dispatch("wifi", newnotification, notificationManager,userSettings.getString("notification_hint_vibrate", "off"), context);
-    }
-    /**
-     * Sends a notification asking user to activate Gps.
-     * @param context	Application context
-     */
-    public void sendGpsNotification(final Context context) 
-    {
-    	Intent answer = new Intent(context,GpsRequest.class);
-    	
-
-    	PendingIntent notificationClick = PendingIntent.getActivity(context, 2, answer, PendingIntent.FLAG_CANCEL_CURRENT);
-    	
-    	PendingIntent positiveAnswer = PendingIntent.getActivity(context, 0, answer.putExtra("answer", "ok"),  PendingIntent.FLAG_CANCEL_CURRENT);
-    	PendingIntent negativeAnswer = PendingIntent.getActivity(context, 1, answer.putExtra("answer", "no"), PendingIntent. FLAG_CANCEL_CURRENT);
-    	
-    	Notification newnotification =
-    			new Notification.Builder(context)
-    			.setSmallIcon(R.drawable.icon)
-    			.setContentTitle(context.getText(R.string.app_name))
-    			.setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.gps))
-    			.setContentText("Gps needed. Enable?")
-    			.setContentIntent(notificationClick)
-    			.setWhen(System.currentTimeMillis())
-    			.addAction(R.drawable.ok, "Ok", positiveAnswer)
-    			.addAction(R.drawable.no,"No",negativeAnswer)
-    			.setAutoCancel(true)
-    			.build()
-    			;
-    	
-    	newnotification=addNotificationAlertMethod(context,newnotification,"prova",5);
-    	//For some reason sometimes notificationManager gets null
-    	if (notificationManager == null)
-    	    	notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
-    	NotificationDispatcher.dispatch("gps", newnotification, notificationManager,userSettings
-    			.getString("notification_hint_vibrate", "off"), context); 
-    }
+   
     /**
      * Add vibration and sound to the notification, manage also speaking, everything according to user settings
      * @param newNotification
@@ -790,7 +722,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
      * @param priority
      * @return THE SAME object passed in newNotification parameter
      */
-    private Notification addNotificationAlertMethod(Context context,Notification newNotification,String sentence,int priority){
+    public Notification addNotificationAlertMethod(Context context,Notification newNotification,String sentence,int priority){
     	//Adding sound
     	Log.d(TAG, "Sound:"+userSettings.getBoolean("notification_hint_sound",false));
     	if(userSettings.getBoolean("notification_hint_sound",false)){
