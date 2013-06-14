@@ -131,6 +131,8 @@ public class ContextResource
 							params.add(new BasicNameValuePair("dist", ""+(int)Math.ceil(area.rad)));
 							result = runHttpGet(LOCATION_SINGLE, params, context);
 							//If area is resized respect my request, there is a dummy hint at the end of the list
+							if(result == null)
+								break;
 							if(result.get(result.size()-1).title.equals("maxHintDistance"))
 							{
 								Log.d(TAG,"Area is restricted.");
