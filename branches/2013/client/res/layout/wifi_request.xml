@@ -8,16 +8,5 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".WifiRequest" >
 
-    <TextView
-        android:id="@+id/wifi_request_text"
-        android:layout_width="200dip"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:gravity="left"
-        android:scrollHorizontally="false"
-        android:text="Dear user, enabling Wifi you let this app to obtain localization information through wireless networks. This could be very useful for the app to offer you a better service. Do you want to enable Wifi?"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
    
 </RelativeLayout>
