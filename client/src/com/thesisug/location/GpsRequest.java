@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnDismissListener;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -30,7 +32,6 @@ public class GpsRequest extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		packet = getIntent().getExtras();
-		userSettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		
 		if(packet!=null)
 		{
@@ -53,6 +54,20 @@ public class GpsRequest extends Activity
 			String text_message = "Dear "+ util.getUsername(getApplicationContext()) +", enabling Gps you let " + getString(R.string.app_name)+ " to obtain localization information through Gps cells. This could be very useful for the app to offer you a better service. Do you want to enable Gps?";
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(text_message).setTitle(getString(R.string.app_name));
+			builder.setOnCancelListener(new OnCancelListener() 
+			{
+		           public void onCancel(DialogInterface dialog) 
+		           {
+		               finish();
+		           }
+			});
+			builder.setOnDismissListener(new OnDismissListener()
+			{
+		           public void onDismiss(DialogInterface dialog) 
+		           {
+		               finish();
+		           }
+			});
 			builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener()
 			{
 		           public void onClick(DialogInterface dialog, int id) 
@@ -117,9 +132,10 @@ public class GpsRequest extends Activity
     	//For some reason sometimes notificationManager gets null
     	
     	NotificationManager	notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+    	userSettings = PreferenceManager.getDefaultSharedPreferences(context);
+		
     	NotificationDispatcher.dispatch("gps", newnotification, notificationManager,userSettings
     			.getString("notification_hint_vibrate", "off"), context); 
     }
- 
 
 }

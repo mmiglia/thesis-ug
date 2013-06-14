@@ -9,11 +9,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnDismissListener;
 import android.graphics.BitmapFactory;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -25,6 +28,7 @@ import com.thesisug.notification.TaskNotification;
 
 public class WifiRequest extends Activity 
 {
+	private static final String TAG = "thesisug - WifiRequest";
 	private Bundle packet; 
 	private WifiManager wifiManager;
 	private static final int OK = 0;
@@ -35,7 +39,6 @@ public class WifiRequest extends Activity
 	protected void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
-		userSettings = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 		setContentView(R.layout.wifi_request);
 		wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		packet = getIntent().getExtras();
@@ -60,6 +63,20 @@ public class WifiRequest extends Activity
 			String text_message = "Dear "+ util.getUsername(getApplicationContext()) +", enabling Wifi you let " + getString(R.string.app_name)+ " to obtain localization information through wireless networks. This could be very useful for the app to offer you a better service. Do you want to enable Gps?";
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage(text_message).setTitle(getString(R.string.app_name));
+			builder.setOnCancelListener(new OnCancelListener() 
+			{
+		           public void onCancel(DialogInterface dialog) 
+		           {
+		               finish();
+		           }
+			});
+			builder.setOnDismissListener(new OnDismissListener()
+			{
+		           public void onDismiss(DialogInterface dialog) 
+		           {
+		               finish();
+		           }
+			});
 			builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener()
 			{
 		           public void onClick(DialogInterface dialog, int id) 
@@ -75,7 +92,7 @@ public class WifiRequest extends Activity
 		   				finish();
 		           }
 			});
-
+			
 			AlertDialog dialog = builder.create();
 			dialog.show();
 		}
@@ -97,7 +114,7 @@ public class WifiRequest extends Activity
      * Sends a notification asking user to activate Wifi.
      * @param context	Application context
      */
-    public static void sendWifiNotification(final Context context) 
+    public static void sendWifiNotification(Context context) 
     {
     	Intent answer = new Intent(context,WifiRequest.class);
     	answer.setFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
@@ -125,6 +142,7 @@ public class WifiRequest extends Activity
     	//For some reason sometimes notificationManager gets null
     
     	NotificationManager notificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+    	userSettings = PreferenceManager.getDefaultSharedPreferences(context);
     	NotificationDispatcher.dispatch("wifi", newnotification, notificationManager,userSettings.getString("notification_hint_vibrate", "off"), context);
     }
 }
