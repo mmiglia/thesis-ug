@@ -1205,7 +1205,7 @@ public class CustomLocationManager
 			    						wifiAlreadyAsked=true;
 			    						handler.removeCallbacks(requestUpdates);
 			    						RemoveUpdates();
-			    						TaskNotification.getInstance().sendWifiNotification(applicationContext);
+			    						WifiRequest.sendWifiNotification(applicationContext);
 			    						Log.d(TAG,"Thread is going to stop waiting for user answer!");
 			    						ActionTracker.wifiRequest(Calendar.getInstance().getTime(), lastCheckedFix, applicationContext);
 			    						handler.postDelayed(wifiRequestTimeout, FIVEMINS);
@@ -1265,7 +1265,7 @@ public class CustomLocationManager
 			    						gpsAlreadyAsked=true;
 			    						handler.removeCallbacks(requestUpdates);
 			    						RemoveUpdates();
-			    						TaskNotification.getInstance().sendGpsNotification(applicationContext);
+			    						GpsRequest.sendGpsNotification(applicationContext);
 			    						Log.d(TAG,"Thread is going to stop waiting for user answer!");
 			    						ActionTracker.gpsRequest(Calendar.getInstance().getTime(), lastCheckedFix, applicationContext);
 			    						handler.postDelayed(gpsRequestTimeout,FIVEMINS);
