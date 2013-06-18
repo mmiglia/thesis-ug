@@ -290,8 +290,8 @@ public class CachingDb extends SQLiteOpenHelper
 						//If distance is more than stored area's radius,
 						//It means that search area's centre is outside stored area.
 						Log.d(TAG,"areaToCheck centre is outside stored area.");
-						if(areaToCheck.rad>distance[0]-rad)
-						{
+						//if(areaToCheck.rad>distance[0]-rad)//Always verified, unuseful
+						//{
 							//If search area's radius is more than stored area's radius minus distance,
 							//there are two possibilities: areas are overlayed or stored area is nested
 							//in search area.
@@ -317,7 +317,7 @@ public class CachingDb extends SQLiteOpenHelper
 								//stored area is nested inside, so I delete it from database (mantaining hints).
 								toDelete.add(new Area(lat,lng,rad));
 							}
-						}
+						//}
 					}
 				}
 				
