@@ -553,9 +553,11 @@ public class ActionTracker
 	/**
 	 * Track when a notification snooze setting is deleted.
 	 * @param time		The time when snooze setting is deleted.
+	 * @param type		Type of the activity whose snooze setting is deleted.
+	 * @param title		Title of the activity whose snooze setting is deleted.
 	 * @param context	Application context.
 	 */
-	public static void notificationSnoozeDeleted(Date time,Context context)
+	public static void notificationSnoozeDeleted(Date time,String type, String title,Context context)
 	{
 		Log.d(TAG,"Tracking notificationSnoozeDeleted.");
 		
@@ -564,7 +566,10 @@ public class ActionTracker
 				"<eventtype>"+trackNotificationSnoozeDeleted+"</eventtype>" +
 				"<date>"+TrackUtilities.dateFormat.format(time)+"</date>" +
 				"<time>"+TrackUtilities.timeFormat.format(time)+"</time>" +
-				"<infos></infos>" +
+				"<infos>"+
+				"<type>"+type+"</type>"+
+				"<title>"+title+"</title>"+
+				"</infos>" +
 				"</event>";
 		
 		if(TrackUtilities.writeToFile(FILENAME, track, context))
