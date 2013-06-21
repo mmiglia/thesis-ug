@@ -68,7 +68,6 @@ public class CustomLocationManager
 	private static WifiManager wifiManager;
 	private static int taskHintSearching;
 	private static Thread evaluateThread;
-	private static GpxBuilder gpxBuilder;
 	private static long gpsIdleTime;
 	//Time values
 	@SuppressWarnings("unused")
@@ -136,7 +135,7 @@ public class CustomLocationManager
 		criteria.setPowerRequirement(Criteria.POWER_LOW);
 		hintsShowed = 0; 
 		taskHintSearching = 0;
-		gpxBuilder = new GpxBuilder(Calendar.getInstance().getTime(),applicationContext);
+		GpxBuilder.Init(Calendar.getInstance().getTime(),applicationContext);
 		handler = new Handler();
 		wifiToCellular = false;
 		wifiAlreadyAsked = false;
@@ -261,7 +260,7 @@ public class CustomLocationManager
 				            	RemoveUpdates();
 				            	locationProvider = LocationManager.NETWORK_PROVIDER;
 				            	handler.post(requestUpdates);
-				            	gpxBuilder.newtrkSeg(Calendar.getInstance().getTime());
+				            	GpxBuilder.newtrkSeg(Calendar.getInstance().getTime());
 				            }
 			            	haveWifiConnection = true; 
 
@@ -328,7 +327,7 @@ public class CustomLocationManager
 				            	locationProvider = LocationManager.NETWORK_PROVIDER;
 				            	RemoveUpdates();
 				            	handler.post(requestUpdates);
-				            	gpxBuilder.newtrkSeg(Calendar.getInstance().getTime());
+				            	GpxBuilder.newtrkSeg(Calendar.getInstance().getTime());
 			            	
 			            	}
 			    		}
@@ -1167,7 +1166,7 @@ public class CustomLocationManager
 	    				isAccuracyOk=true;
 	    			}
 	    			SendBroadcast(LOCATIONCHANGED, lastCheckedFix, lastCheckedFix.getProvider(),0,null);
-	    			gpxBuilder.append(lastCheckedFix, Calendar.getInstance().getTime());
+	    			GpxBuilder.append(lastCheckedFix, Calendar.getInstance().getTime());
 	    			//If there are no hints try to disable GPS
 	    			synchronized(gpsLock)
 		    		{
@@ -1179,7 +1178,7 @@ public class CustomLocationManager
 		    				handler.removeCallbacks(gpsTimeout);
 		    				locationProvider = LocationManager.NETWORK_PROVIDER;
 		    				RemoveUpdates();
-		    				gpxBuilder.newtrkSeg(Calendar.getInstance().getTime());
+		    				GpxBuilder.newtrkSeg(Calendar.getInstance().getTime());
 		    			}
 		    			handler.postDelayed(requestUpdates,minUpdateTime);
 		    		}
@@ -1331,7 +1330,7 @@ public class CustomLocationManager
 	    				//	wifiInaccurateFixes=0;
 	    				Log.d(TAG,"Accuracy is enough!");
 	    				SendBroadcast(LOCATIONCHANGED, lastCheckedFix, lastCheckedFix.getProvider(),0,null);
-	    				gpxBuilder.append(lastCheckedFix, Calendar.getInstance().getTime());
+	    				GpxBuilder.append(lastCheckedFix, Calendar.getInstance().getTime());
 	    				for(pendingHint p : pendingHints)
 		    			{
 		    				TaskNotification.getInstance().notifyHints(p.title, p.result, p.priority);
@@ -1400,7 +1399,7 @@ public class CustomLocationManager
 		}
 		else
 			Log.d(TAG,"Learning mode.");
-		gpxBuilder.append(lastCheckedFix, Calendar.getInstance().getTime());
+		GpxBuilder.append(lastCheckedFix, Calendar.getInstance().getTime());
 		
 		synchronized(gpsLock)
 		{
@@ -1421,6 +1420,6 @@ public class CustomLocationManager
 		Log.d(TAG,"Destroy.");
 		
 		RemoveUpdates();
-		gpxBuilder.closeFile(Calendar.getInstance().getTime());
+		GpxBuilder.closeFile(Calendar.getInstance().getTime());
 	}
 }
