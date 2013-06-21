@@ -131,6 +131,7 @@ public class ShowEvent extends Activity{
 			break;
 		case DELETESNOOZE:
 			SnoozeHandler.removeSnooze(title.getText().toString());
+			ActionTracker.notificationSnoozeDeleted(Calendar.getInstance().getTime(), "event", title.getText().toString(), this);
 			snooze.setText("This event is not snoozed.");
 			break;			
 		default:
