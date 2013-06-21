@@ -133,6 +133,8 @@ public class ContextResource
 							//If area is resized respect my request, there is a dummy hint at the end of the list
 							if(result == null)
 								break;
+							if(result.size()==0)
+								break;
 							if(result.get(result.size()-1).title.equals("maxHintDistance"))
 							{
 								Log.d(TAG,"Area is restricted.");
