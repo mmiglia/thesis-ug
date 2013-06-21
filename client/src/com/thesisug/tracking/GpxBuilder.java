@@ -178,9 +178,11 @@ public class GpxBuilder
 						"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "+
 						"xmlns=\"http://www.topografix.com/GPX/1/0\" "+
 						"xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\" >"+
+						"<metadata>" +
 						"<name>"+"thesusug-"+creationData+"</name>"+
 						"<desc>"+"Path followed by user during the day."+"</desc>"+
-						"<time>"+creationData+" "+creationTime+"</time>"+
+						"<time>"+creationData+" "+creationTime+"</time>" +
+						"</metadata>"+
 						"<trk>"+
 						"<name>"+"trk-"+creationData+"</name>"
 						+"<trkseg>"; 
