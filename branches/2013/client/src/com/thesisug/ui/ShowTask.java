@@ -162,6 +162,7 @@ public class ShowTask extends Activity{
 			break;
 		case DELETESNOOZE:
 			SnoozeHandler.removeSnooze(title.getText().toString());
+			ActionTracker.notificationSnoozeDeleted(Calendar.getInstance().getTime(), "task", title.getText().toString(), this);
 			snooze.setText("This task is not snoozed.");
 			break;
 		case DONE:
