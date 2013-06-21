@@ -26,16 +26,16 @@ import com.thesisug.communication.TrackingResource;
 public class GpxBuilder 
 {
 	private static final String TAG = "thesisug - Gpx File Builder";
-	private Context context;
-	private String gpxString;
-	private Date lastGpxFile;
-	private Calendar calendar;
-	private Handler handler = new Handler();
-	public GpxBuilder(Date data,Context context)
+	private static Context context;
+	private static String gpxString;
+	private static Date lastGpxFile;
+	private static Calendar calendar;
+	private static Handler handler = new Handler();
+	public static void Init(Date data,Context c)
 	{
 		Log.i(TAG,"New GpxBuilder");
 		
-		this.context = context;
+		context = c;
 		calendar = Calendar.getInstance();
 		gpxString="";
 		lastGpxFile = new GregorianCalendar(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).getTime();
@@ -43,13 +43,13 @@ public class GpxBuilder
 		File file = context.getFileStreamPath(TrackUtilities.dateFormat.format(data)+".gpx");
 		
 		if(file.exists()) //If "today" track exists, I check for previous unclosed files.
-			checkUnclosedFiles();
+			checkUnclosedFiles(context);
 	}
 	/**
 	 * Checks for unclosed .gpx files. Useful when phone is turned on. 
 	 *
 	 */
-	private void checkUnclosedFiles()
+	private static void checkUnclosedFiles(Context context)
 	{
 		Log.d(TAG,"Checking unclosed gpx files.");
 		File directory = context.getFilesDir();
@@ -85,7 +85,7 @@ public class GpxBuilder
 	 * 
 	 * @param date Date of the gpx file to close.
 	 */
-	public void closeFile(Date date)
+	public static void closeFile(Date date)
 	{
 		String FILENAME;
 		//if date is null close last gpx file
@@ -115,7 +115,7 @@ public class GpxBuilder
 	/**
 	 * Start a new track segment. Called when provider changes. 
 	 */
-	public void newtrkSeg(Date date)
+	public static void newtrkSeg(Date date)
 	{
 		String FILENAME = TrackUtilities.dateFormat.format(date) + ".gpx";
 		
@@ -145,7 +145,7 @@ public class GpxBuilder
 	 * @param newLocationDate	Date of track.
 	 * @param newTrkSeg should be true when a new track segment starts.
 	 */
-	public void append(Location newLocation,Date newLocationDate)
+	public static void append(Location newLocation,Date newLocationDate)
 	{
 		String creationData = TrackUtilities.dateFormat.format(newLocationDate);
 		String creationTime = TrackUtilities.timeFormat.format(newLocationDate);
@@ -216,7 +216,7 @@ public class GpxBuilder
 			}
 		}
 	
-	public String getGpxString(Date gpxFileDate)
+	public static String getGpxString(Date gpxFileDate)
 	{
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-yyyy", Locale.ITALY);
 		String date = dateFormat.format(gpxFileDate);
