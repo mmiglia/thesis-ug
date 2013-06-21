@@ -37,9 +37,9 @@ public class ActionTracker
 	private static final String trackHintChosen = "HINT-CHOSEN"; 
 	private static final String trackForceHintSearch="FORCE-HINT";
 	private static final String trackWifiRequest="WIFI-REQ";
-	private static final String trackWifiResponse="WIFI-ANSW";
+	private static final String trackWifiResponse="WIFI-RESP";
 	private static final String trackGpsRequest="GPS-REQ";
-	private static final String trackGpsResponse="GPS-REQ";
+	private static final String trackGpsResponse="GPS-RESP";
 	private static final long MAXFILESIZE = 102400; //100kb
 	private static Handler handler;
 	public static void Init(Date creationData,Context context)
