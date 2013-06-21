@@ -33,6 +33,7 @@ public class ActionTracker
 	private static final String trackNotificationViewed = "NOTIFICATION-VIEW";
 	private static final String trackNotificationDismissed = "NOTIFICATION-DISMISS";
 	private static final String trackNotificationSnooze="NOTIFICATION-SNOOZE";
+	private static final String trackNotificationSnoozeDeleted="NOTIFICATION-SNOOZE-DELETE";
 	private static final String trackHintChosen = "HINT-CHOSEN"; 
 	private static final String trackForceHintSearch="FORCE-HINT";
 	private static final String trackWifiRequest="WIFI-REQ";
@@ -241,7 +242,7 @@ public class ActionTracker
 			Log.e(TAG,"notificationSent tracking failed.");
 	};
 	/**
-	 * Tracks when a notification is clicked.
+	 * Tracks when a notification is viewed.
 	 * 
 	 * @param time		The moment in which notification is clicked.
 	 * @param title		Title of the content whose notification is clicked.
@@ -519,7 +520,14 @@ public class ActionTracker
 			
 		};
 		
-
+		/**
+		 * Track when a notification is snoozed.
+		 * @param time		The moment in wich notification is snoozed.
+		 * @param title		The title of the activity whose notification is snoozed.
+		 * @param context	Application context
+		 * @param type		Type of activity whose notification is snoozed.
+		 * @param delay		Snooze time delay.
+		 */
 	public static void notificationSnooze(Date time, String title,Context context,String type, int delay)
 	{
 		
@@ -541,6 +549,28 @@ public class ActionTracker
 			Log.d(TAG,"Tracked notificationSnooze: " + track);
 		else
 			Log.e(TAG,"notificationSnooze tracking failed.");
+	};
+	/**
+	 * Track when a notification snooze setting is deleted.
+	 * @param time		The time when snooze setting is deleted.
+	 * @param context	Application context.
+	 */
+	public static void notificationSnoozeDeleted(Date time,Context context)
+	{
+		Log.d(TAG,"Tracking notificationSnoozeDeleted.");
+		
+		String track = 
+				"<event>" +
+				"<eventtype>"+trackNotificationSnoozeDeleted+"</eventtype>" +
+				"<date>"+TrackUtilities.dateFormat.format(time)+"</date>" +
+				"<time>"+TrackUtilities.timeFormat.format(time)+"</time>" +
+				"<infos></infos>" +
+				"</event>";
+		
+		if(TrackUtilities.writeToFile(FILENAME, track, context))
+			Log.d(TAG,"Tracked notificationSnoozeDeleted: " + track);
+		else
+			Log.e(TAG,"notificationSnoozeDeleted tracking failed");
 	};
 	/**
 	 * Sends to server tracking file. A temporary old tracking file is created
