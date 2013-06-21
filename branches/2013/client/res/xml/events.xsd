@@ -109,14 +109,14 @@
 			   			</xs:element>
 			   			</xs:sequence></xs:complexType>
 		   			</xs:element>
-		   			<xs:element name="requestresponse" minOccurs="0" maxOccurs="1">
+		   			<xs:element name="requestresponse" type="xs:string" minOccurs="0" maxOccurs="1">
 		   			<xs:annotation>
 							<xs:documentation>
 								Title of chosen hint.
 				   			</xs:documentation>
 			   			</xs:annotation>
 		   			</xs:element>
-		   			<xs:element name="snoozevalue" minOccurs="0" maxOccurs="1">
+		   			<xs:element name="snoozevalue" type="xs:string" minOccurs="0" maxOccurs="1">
 		   			<xs:annotation>
 							<xs:documentation>
 								Value of snooze time delay.
