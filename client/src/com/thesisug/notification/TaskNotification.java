@@ -202,6 +202,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	        condvar.open();
 	        runningThread = false;
 	        SnoozeHandler.unregister();
+	        SnoozeHandler.saveToFile();
 	        synchronized(stopThreadObject)
 	        {
 	        	stopThreadObject.notify();
