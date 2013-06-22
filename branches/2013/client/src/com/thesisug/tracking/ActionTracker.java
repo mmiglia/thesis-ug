@@ -22,8 +22,8 @@ import com.thesisug.communication.TrackingResource;
 public class ActionTracker 
 {
 	private static final String TAG = "thesisug - Action tracker";
-	private static final String FILENAME = "tracking.txt";
-	private static final String OLDFILENAME ="tracking-completed.txt";
+	private static final String FILENAME = "tracking.xml";
+	private static final String OLDFILENAME ="tracking-completed.xml";
 	private static final String trackOpenedApp ="APP-OPEN";
 	private static final String trackClosedApp ="APP-CLOSED";
 	private static final String trackAddedContent ="CONTENT-ADD";
