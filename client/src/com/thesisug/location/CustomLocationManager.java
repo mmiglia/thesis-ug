@@ -1420,6 +1420,6 @@ public class CustomLocationManager
 		Log.d(TAG,"Destroy.");
 		
 		RemoveUpdates();
-		GpxBuilder.closeFile(Calendar.getInstance().getTime());
+		//GpxBuilder.closeFile(Calendar.getInstance().getTime());
 	}
 }
