@@ -35,6 +35,7 @@ import com.thesisug.notification.NotificationDispatcher;
 import com.thesisug.notification.SnoozeHandler;
 import com.thesisug.notification.TaskNotification;
 import com.thesisug.tracking.ActionTracker;
+import com.thesisug.tracking.GpxBuilder;
 
 public class ParentTab extends TabActivity 
 {
@@ -256,6 +257,7 @@ public class ParentTab extends TabActivity
 				ActionTracker.appClosed(Calendar.getInstance().getTime(), getApplicationContext());
 				//android.os.Process.killProcess(android.os.Process.myPid());
 				//System.exit(0);
+				GpxBuilder.newtrkSeg(Calendar.getInstance().getTime());
 				NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 				notificationManager.cancelAll();
 				super.finish();
