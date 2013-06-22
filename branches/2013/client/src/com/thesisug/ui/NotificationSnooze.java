@@ -79,6 +79,7 @@ public void onCreate(Bundle savedInstanceState)
      	   	ActionTracker.notificationDismissed(Calendar.getInstance().getTime(), sentence, context, ty);
      	   	packet.clear();
             finish();
+            return;
 		}
 		boolean snooze = packet.getBoolean("snooze");
 		//Check if user clicked on snooze button
@@ -104,7 +105,7 @@ public void onCreate(Bundle savedInstanceState)
 
             AlertDialog snoozeListDialog = snoozeListBuilder.create();
             snoozeListDialog.show();    
-			
+			return;
 		}
 		//User clicked on Notification
 		else
