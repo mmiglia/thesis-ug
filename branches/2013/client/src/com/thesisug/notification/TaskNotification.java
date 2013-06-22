@@ -479,12 +479,12 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	        		}
 	        		for (SingleTask o : tasks)
 	        		{
+	        			//if user has chose not to be reminded for this task
+	        			if (!userSettings.getBoolean(o.title, true)) 
+	        				continue; 
 	        			//check if task has been snoozed
 	        			if(SnoozeHandler.checkIfTaskIsSnoozed(o.title))
 	        				continue;
-	        			// if user has chose not to be reminded for this task
-	        			if (!userSettings.getBoolean(o.title, true)) 
-	        				continue; 
 	        			// dispatch thread to get hints
 	        			
 	        			int hintsDistance = maxDistance;
