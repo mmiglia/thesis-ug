@@ -41,7 +41,27 @@ public class SnoozeHandler
 	        {
 
 	    		Log.i(TAG,"Phone is shutting down");
-	        	synchronized(snoozedNotificationsSafe)
+	    		saveToFile();
+	        }
+	     };
+	     /**
+	      * Init SnoozeHandler.
+	      * @param c Context.
+	      */
+	     public static void Init(Context context)
+	     {
+	    	 Log.i(TAG,"Init");
+	    	 SnoozeHandler.context = context;
+	    	 if(!checkIfSnoozedFileIsPresent())
+	    		 snoozedNotifications = new HashMap<String,Date>();
+	    	 IntentFilter intentFilter = new IntentFilter();
+	    	 intentFilter.addAction(Intent.ACTION_SHUTDOWN);
+	    	 context.registerReceiver(saveSnoozedNotifications, intentFilter);
+	     }
+	     
+	     public static void saveToFile()
+	     {
+	    	 synchronized(snoozedNotificationsSafe)
 	        	{
 		        	if(snoozedNotifications != null)
 		        	{
@@ -62,21 +82,6 @@ public class SnoozeHandler
 						}
 		        	}
 	        	}
-	        }
-	     };
-	     /**
-	      * Init SnoozeHandler.
-	      * @param c Context.
-	      */
-	     public static void Init(Context context)
-	     {
-	    	 Log.i(TAG,"Init");
-	    	 SnoozeHandler.context = context;
-	    	 if(!checkIfSnoozedFileIsPresent())
-	    		 snoozedNotifications = new HashMap<String,Date>();
-	    	 IntentFilter intentFilter = new IntentFilter();
-	    	 intentFilter.addAction(Intent.ACTION_SHUTDOWN);
-	    	 context.registerReceiver(saveSnoozedNotifications, intentFilter);
 	     }
 	     /**
 	      * Check is snooze backup file is present in app_data. If present, it's loaded in snoozedNotifications.
