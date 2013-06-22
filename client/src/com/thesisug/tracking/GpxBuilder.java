@@ -27,7 +27,6 @@ public class GpxBuilder
 {
 	private static final String TAG = "thesisug - Gpx File Builder";
 	private static Context context;
-	private static String gpxString;
 	private static Date lastGpxFile;
 	private static Calendar calendar;
 	private static Handler handler = new Handler();
@@ -37,7 +36,7 @@ public class GpxBuilder
 		
 		context = c;
 		calendar = Calendar.getInstance();
-		gpxString="";
+		String gpxString="";
 		lastGpxFile = new GregorianCalendar(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).getTime();
 		
 		File file = context.getFileStreamPath(TrackUtilities.dateFormat.format(data)+".gpx");
@@ -91,7 +90,7 @@ public class GpxBuilder
 		//if date is null close last gpx file
 				
 		FILENAME = TrackUtilities.dateFormat.format(date) + ".gpx";
-		
+		String gpxString ="";
 		File file = context.getFileStreamPath(FILENAME);
 		if(file.exists())
 		{
@@ -120,7 +119,7 @@ public class GpxBuilder
 		String FILENAME = TrackUtilities.dateFormat.format(date) + ".gpx";
 		
 		File file = context.getFileStreamPath(FILENAME);
-		
+		String gpxString="";
 		if(file.exists())
 		{
 			
@@ -151,10 +150,8 @@ public class GpxBuilder
 		String creationTime = TrackUtilities.timeFormat.format(newLocationDate);
 		//Obtain FILENAME from newLocationDate
 		String FILENAME = creationData + ".gpx";
-		
-		//File Output Stream mode.
-		int mode;	
-		
+		String gpxString ="";
+				
 		File file = context.getFileStreamPath(FILENAME);
 		
 		//Check if "today" .gpx file already exists.
@@ -173,24 +170,18 @@ public class GpxBuilder
 			
 			gpxString="<?xml version=\"1.0\"?>"+
 						"<gpx "+
-						"version=\"1.0\" "+
+						"xmlns=\"http://www.topografix.com/GPX/1/1\" "+
+						"version=\"1.1\" "+
 						"creator=\"thesisug\" "+
-						"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "+
-						"xmlns=\"http://www.topografix.com/GPX/1/0\" "+
-						"xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\" >"+
+						">"+
 						"<metadata>" +
 						"<name>"+"thesusug-"+creationData+"</name>"+
 						"<desc>"+"Path followed by user during the day."+"</desc>"+
-						"<time>"+creationData+" "+creationTime+"</time>" +
+						"<time>"+creationData+"T"+creationTime+"Z</time>" +
 						"</metadata>"+
 						"<trk>"+
 						"<name>"+"trk-"+creationData+"</name>"
 						+"<trkseg>"; 
-			mode = Context.MODE_PRIVATE;
-		}
-		else
-		{			
-			mode = Context.MODE_APPEND;
 		}
 		
 		Date locDate = new Date(newLocation.getTime()); 
@@ -200,7 +191,7 @@ public class GpxBuilder
 					Double.toString(newLocation.getLatitude())+"\" "+
 					"lon=\""+Double.toString(newLocation.getLongitude())+"\">"+
 					"<ele>"+Double.toString(newLocation.getAltitude())+"</ele>"+
-					"<time>"+TrackUtilities.timeFormat.format(locDate)+"</time>"+
+					"<time>"+TrackUtilities.dateFormat.format(locDate)+"T"+TrackUtilities.timeFormat.format(locDate)+"Z</time>"+
 					"<name>Point-"+Integer.toString(newLocation.hashCode())+"</name>"+
 					"<desc>"+"Provider: "+newLocation.getProvider()+"</desc>"+
 					"<pdop>"+Float.toString(newLocation.getAccuracy())+"</pdop>"+
