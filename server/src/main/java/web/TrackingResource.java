@@ -20,6 +20,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import businessobject.TrackingManager;
+
 import valueobject.SingleTask;
 
 /**
@@ -35,8 +37,6 @@ public class TrackingResource
 {
 	@Context HttpHeaders requestHeaders;
 	
-	private Calendar calendar=Calendar.getInstance();
-	public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.ITALY);;
 	
 	private static Logger log = LoggerFactory.getLogger(TrackingResource.class);
 	
@@ -56,23 +56,8 @@ public class TrackingResource
 			@CookieParam("sessionid") String sessionid,@HeaderParam(value = "filename") String fileName,  String fileContent)
 	{
 		log.info("uploadAction request");
-		 try
-		 {
-			
-			 // Create file 
-			 File file = new File("/usr/local/apache-tomcat/tracking/tracking_"+dateFormat.format(calendar.getTime())+".txt");
-			 file.createNewFile();
-			 FileWriter fstream = new FileWriter(file);
-			 BufferedWriter out = new BufferedWriter(fstream);
-			 out.write(fileContent);
-			 //Close the output stream
-			 out.close();
-			 System.out.println("uploadAction done.");
-	 	}
-		 catch (Exception e)
-		 {
-			  System.err.println("Error: " + e.getMessage());
-		 }
+		
+		 TrackingManager.saveActionsToFile(userid, fileContent);
 		
 	}
 	
@@ -93,21 +78,8 @@ public class TrackingResource
 			@CookieParam("sessionid") String sessionid,@HeaderParam(value = "filename") String fileName, String fileContent)
 	{
 		log.info("uploadPath request");
-		  try
-		  {
-			  File file = new File("/usr/local/apache-tomcat/tracking/"+fileName);
-			  file.createNewFile();
-			  FileWriter fstream = new FileWriter(file);
-			  BufferedWriter out = new BufferedWriter(fstream);
-			  out.write(fileContent);
-			  //Close the output stream
-			  out.close();
-			  System.out.println("uploadPath done.");
-		  }
-		  catch (Exception e)
-		  {
-			  System.err.println("Error: " + e.getMessage());
-		  }
+		 
+		TrackingManager.savePathToFile(userid, fileName, fileContent);
 	}
 	
 }
