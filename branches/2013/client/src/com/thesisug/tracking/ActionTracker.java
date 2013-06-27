@@ -42,17 +42,22 @@ public class ActionTracker
 	private static final String trackGpsResponse="GPS-RESP";
 	private static final long MAXFILESIZE = 102400; //100kb
 	private static Handler handler;
-	public static void Init(Date creationData,Context context)
+	/**
+	 * Initialization of ActionTracker file.
+	 * @param creationData	Date of creation of the file.
+	 * @param context		Application's context.
+	 */
+	public static void Init(Date creationDate,Context context)
 	{
-		Log.d(TAG,"ActionTracker init."); 
+		Log.i(TAG,"ActionTracker init."); 
 		File file = context.getFileStreamPath(FILENAME);
 		handler = new Handler();
 		if(!file.exists())
 		{
 			String init = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
 						  "<events>"+
-						  "<creationdate>"+TrackUtilities.dateFormat.format(creationData)+"</creationdate>"+
-						  "<creationtime>"+TrackUtilities.timeFormat.format(creationData)+"</creationtime>";
+						  "<creationdate>"+TrackUtilities.dateFormat.format(creationDate)+"</creationdate>"+
+						  "<creationtime>"+TrackUtilities.timeFormat.format(creationDate)+"</creationtime>";
 			
 			if(TrackUtilities.writeToFile(FILENAME, init, context))
 				Log.d(TAG,"ActionTracker init success.");
@@ -65,6 +70,19 @@ public class ActionTracker
 			if(file.length()>MAXFILESIZE)
 				sendToServer(context);
 		}
+	};
+	
+	/**
+	 * Checks if file is too big; If it is, send it to the server and init a new one.
+	 * 	 */
+	private static void checkSize(Context context)
+	{
+		Log.i(TAG,"checkSize"); 
+		File file = context.getFileStreamPath(FILENAME);
+		if(file.exists() && file.length()>MAXFILESIZE)
+		{
+				sendToServer(context);
+		}
 	}
 	
 	/**
@@ -75,7 +93,9 @@ public class ActionTracker
 	 */
 	public static void appOpened(Date time,Context context)
 	{
-		Log.d(TAG,"Tracking appOpened.");
+		Log.i(TAG,"Tracking appOpened.");
+		
+		checkSize(context);
 		
 		String track = 
 				"<event>" +
@@ -99,7 +119,9 @@ public class ActionTracker
 	 */
 	public static void appClosed(Date time,Context context)
 	{
-		Log.d(TAG,"Tracking appClosed.");
+		Log.i(TAG,"Tracking appClosed.");
+		
+		checkSize(context);
 		
 		String track = 
 				"<event>" +
@@ -116,16 +138,16 @@ public class ActionTracker
 	};
 	
 	/**
-	 * Tracks when a new content is added to the to-do list.
-	 * 
-	 * @param time		The moment in which content is added.	
-	 * @param title		The title of the content.
+	 * Tracks when a search for hints is forced.
+	 * @param time		The moment in which search is forced.
+	 * @param location 	Location of the request.
 	 * @param context	Application's context.
-	 * @param ty		Type of content - 0 task, 1 event.
 	 */
 	public static void forceHintSearch(Date time,Location location,Context context)
 	{
-		Log.d(TAG,"Tracking trackForceHintSearch.");
+		Log.i(TAG,"Tracking trackForceHintSearch.");
+		
+		checkSize(context);
 		
 		String track = 
 				"<event>" +
@@ -146,16 +168,29 @@ public class ActionTracker
 		else
 			Log.e(TAG,"contentAdded tracking failed.");
 		
-	}
+	};
+	
+	/**
+	 * Tracks when a new content is added to the to-do list.
+	 * 
+	 * @param time		The moment in which content is added.	
+	 * @param title		The title of the content.
+	 * @param context	Application's context.
+	 * @param ty		Type of content - 0 task, 1 event.
+	 */
+	
 	public static void contentAdded(Date time, String title,Context context,int ty)
 	{
+		Log.i(TAG,"Tracking contentAdded.");
+		
+		checkSize(context);
+		
+		
 		String type;
 		if(ty==0)
 			type="Task";
 		else
 			type="Event";
-			
-		Log.d(TAG,"Tracking contentAdded.");
 		
 		String track = 
 				"<event>" +
@@ -173,6 +208,7 @@ public class ActionTracker
 			Log.e(TAG,"contentAdded tracking failed.");
 		
 	};
+	
 	/**
 	 * Tracks when a new content is done.
 	 * 
@@ -183,13 +219,15 @@ public class ActionTracker
 	 */
 	public static void contentCompleted(Date time, String title,Context context,int ty)
 	{
+		Log.i(TAG,"Tracking contentCompleted.");
+		
+		checkSize(context);
+		
 		String type;
 		if(ty==0)
 			type="Task";
 		else
 			type="Event";
-			
-		Log.i(TAG,"Tracking contentCompleted.");
 		
 		String track = 
 				"<event>" +
@@ -207,6 +245,7 @@ public class ActionTracker
 		else
 			Log.e(TAG,"contentCompleted tracking failed.");
 	};
+	
 	/**
 	 * Tracks when a notification is sent.
 	 * 
@@ -217,13 +256,16 @@ public class ActionTracker
 	 */
 	public static void notificationSent(Date time, String title,Context context,int ty)
 	{
+		Log.i(TAG,"Tracking notificationSent.");
+		
+		checkSize(context);
+		
 		String type;
 		if(ty==0)
 			type="Task"; 
 		else
 			type="Event";
 			
-		Log.d(TAG,"Tracking notificationSent.");
 		
 		String track = 
 				"<event>" +
@@ -241,6 +283,7 @@ public class ActionTracker
 		else
 			Log.e(TAG,"notificationSent tracking failed.");
 	};
+	
 	/**
 	 * Tracks when a notification is viewed.
 	 * 
@@ -251,13 +294,15 @@ public class ActionTracker
 	 */
 	public static void notificationViewed(Date time, String title,Context context,int ty)
 	{
+		Log.i(TAG,"Tracking notificationViewed.");
+
+		checkSize(context);
+		
 		String type;
 		if(ty==0)
 			type="Task";
 		else
 			type="Event";
-			
-		Log.d(TAG,"Tracking notificationViewed.");
 		
 		String track = 
 				"<event>" +
@@ -275,6 +320,7 @@ public class ActionTracker
 		else
 			Log.e(TAG,"notificationViewed tracking failed.");
 	};
+	
 	/**
 	 * Tracks when a notification is dismissed.
 	 * 
@@ -285,13 +331,15 @@ public class ActionTracker
 	 */
 	public static void notificationDismissed(Date time, String title,Context context,int ty)
 	{
+		Log.i(TAG,"Tracking notificationDismissed.");
+
+		checkSize(context);
+		
 		String type;
 		if(ty==0)
 			type="Task";
 		else
 			type="Event";
-			
-		Log.d(TAG,"Tracking notificationDismissed.");
 		
 		String track = 
 				"<event>" +
@@ -309,6 +357,7 @@ public class ActionTracker
 		else
 			Log.e(TAG,"notificationDismissed tracking failed.");
 	};
+	
 	/**
 	 * Tracks when a notification is clicked.
 	 * 
@@ -319,13 +368,15 @@ public class ActionTracker
 	 */
 	public static void notificationClicked(Date time, String title,Context context,int ty)
 	{
+		Log.i(TAG,"Tracking notificationClicked.");
+		
+		checkSize(context);
+		
 		String type;
 		if(ty==0)
 			type="Task";
 		else
 			type="Event";
-			
-		Log.d(TAG,"Tracking notificationClicked.");
 		
 		String track = 
 				"<event>" +
@@ -343,10 +394,12 @@ public class ActionTracker
 		else
 			Log.e(TAG,"notificationClicked tracking failed.");
 	};
+	
 	/**
 	 * Tracks which hint is chosen by the user.
 	 * 
 	 * @param time		The moment in which hint is clicked.
+	 * @param location Location of the request
 	 * @param title		Title of the content whose hint is clicked.
 	 * @param chosen	Title of the chosen hint.
 	 * @param context	Application context.
@@ -354,7 +407,9 @@ public class ActionTracker
 	public static void hintChosen(Date time,Location location ,String title,String chosen,ArrayList<String> unchosen,Context context)
 	{
 
-		Log.d(TAG,"Tracking hintChosen.");
+		Log.i(TAG,"Tracking hintChosen.");
+		
+		checkSize(context);
 		
 		String track = 
 				"<event>" +
@@ -385,16 +440,20 @@ public class ActionTracker
 			Log.e(TAG,"hintChosen tracking failed.");
 		
 	};
-/**
- * Tracks a request to the user to activate Wifi for location fixing.
- * @param time		Moment of the request
- * @param location	Location of the request
- * @param context	Application context
- */
+	
+	/**
+	 * Tracks a request to the user to activate Wifi for location fixing.
+	 * @param time		Moment of the request
+	 * @param location	Location of the request
+	 * @param context	Application context
+	 */
 	public static void wifiRequest(Date time,Location location,Context context)
 	{
 
-		Log.d(TAG,"Tracking hintChosen.");
+		Log.i(TAG,"Tracking hintChosen.");
+		
+		checkSize(context);
+		
 		
 		String track = 
 				"<event>" +
@@ -416,122 +475,133 @@ public class ActionTracker
 			Log.e(TAG,"hintChosen tracking failed.");
 		
 	};
+	
 	/**
 	 * Tracks a request to the user to activate Gps for location fixing.
 	 * @param time		Moment of the request
 	 * @param location	Location of the request
 	 * @param context	Application context
 	 */
-		public static void gpsRequest(Date time,Location location,Context context)
-		{
+	public static void gpsRequest(Date time,Location location,Context context)
+	{
 
-			Log.d(TAG,"Tracking hintChosen.");
-			
-			String track = 
-					"<event>" +
-					"<eventtype>"+trackGpsRequest+"</eventtype>" +
-					"<date>"+TrackUtilities.dateFormat.format(time)+"</date>" +
-					"<time>"+TrackUtilities.timeFormat.format(time)+"</time>" +
-					"<infos>";
-			if(location!=null)
-				track+=
-				"<location " +
-				"latitude=\""+Double.toString(location.getLatitude())+"\" "+
-				"longitude=\""+Double.toString(location.getLongitude())+"\" " +
-				"accuracy=\""+Float.toString(location.getAccuracy())+"\" "+"/>";
-			track+="</infos></event>";
-			
-			if(TrackUtilities.writeToFile(FILENAME, track, context))
-				Log.d(TAG,"Tracked hintChosen: " + track);
-			else
-				Log.e(TAG,"hintChosen tracking failed.");
-			
-		};
-		/**
-		 * Tracks user answer to a Wifi Request for activating Wifi.
-		 * @param time		Moment of the answer.
-		 * @param location	Location of the answer.
-		 * @param response	POSITIVE,NEGATIVE or TIMEOUT
-		 * @param context	Application context.
-		 */
-		public static void wifiResponse(Date time,Location location,String response,Context context)
-		{
-
-			Log.d(TAG,"Tracking hintChosen.");
-			
-			String track = 
-					"<event>" +
-					"<eventtype>"+trackWifiResponse+"</eventtype>" +
-					"<date>"+TrackUtilities.dateFormat.format(time)+"</date>" +
-					"<time>"+TrackUtilities.timeFormat.format(time)+"</time>" +
-					"<infos>";
-			if(location!=null)
-				track+=
-				"<location " +
-				"latitude=\""+Double.toString(location.getLatitude())+"\" "+
-				"longitude=\""+Double.toString(location.getLongitude())+"\" " +
-				"accuracy=\""+Float.toString(location.getAccuracy())+"\" "+"/>";
-			
-			track+=
-					"<requestresponse>"+response+"</requestresponse>" +
-					"</infos>" +
-					"</event>";
-			
-			if(TrackUtilities.writeToFile(FILENAME, track, context))
-				Log.d(TAG,"Tracked hintChosen: " + track);
-			else
-				Log.e(TAG,"hintChosen tracking failed.");
-			
-		};
-		/**
-		 * Tracks user answer to a Gps Request for activating Gps.
-		 * @param time		Moment of the answer.
-		 * @param location	Location of the answer.
-		 * @param response	POSITIVE,NEGATIVE or TIMEOUT
-		 * @param context	Application context.
-		 */
-		public static void gpsResponse(Date time,Location location,String response,Context context)
-		{
-
-			Log.d(TAG,"Tracking hintChosen.");
-			
-			String track = 
-					"<event>" +
-					"<eventtype>"+trackGpsResponse+"</eventtype>" +
-					"<date>"+TrackUtilities.dateFormat.format(time)+"</date>" +
-					"<time>"+TrackUtilities.timeFormat.format(time)+"</time>" +
-					"<infos>";
-			if(location!=null)
-				track+=
-				"<location " +
-				"latitude=\""+Double.toString(location.getLatitude())+"\" "+
-				"longitude=\""+Double.toString(location.getLongitude())+"\" " +
-				"accuracy=\""+Float.toString(location.getAccuracy())+"\" "+"/>";
-			
-			track+=
-					"<requestresponse>"+response+"</requestresponse>" +
-					"</infos>" +
-					"</event>";
-			
-			if(TrackUtilities.writeToFile(FILENAME, track, context))
-				Log.d(TAG,"Tracked hintChosen: " + track);
-			else
-				Log.e(TAG,"hintChosen tracking failed.");
-			
-		};
+		Log.i(TAG,"Tracking hintChosen.");
 		
-		/**
-		 * Track when a notification is snoozed.
-		 * @param time		The moment in wich notification is snoozed.
-		 * @param title		The title of the activity whose notification is snoozed.
-		 * @param context	Application context
-		 * @param type		Type of activity whose notification is snoozed.
-		 * @param delay		Snooze time delay.
-		 */
+		checkSize(context);
+		
+		String track = 
+				"<event>" +
+				"<eventtype>"+trackGpsRequest+"</eventtype>" +
+				"<date>"+TrackUtilities.dateFormat.format(time)+"</date>" +
+				"<time>"+TrackUtilities.timeFormat.format(time)+"</time>" +
+				"<infos>";
+		if(location!=null)
+			track+=
+			"<location " +
+			"latitude=\""+Double.toString(location.getLatitude())+"\" "+
+			"longitude=\""+Double.toString(location.getLongitude())+"\" " +
+			"accuracy=\""+Float.toString(location.getAccuracy())+"\" "+"/>";
+		track+="</infos></event>";
+		
+		if(TrackUtilities.writeToFile(FILENAME, track, context))
+			Log.d(TAG,"Tracked hintChosen: " + track);
+		else
+			Log.e(TAG,"hintChosen tracking failed.");
+		
+	};
+	
+	/**
+	 * Tracks user answer to a Wifi Request for activating Wifi.
+	 * @param time		Moment of the answer.
+	 * @param location	Location of the answer.
+	 * @param response	POSITIVE,NEGATIVE or TIMEOUT
+	 * @param context	Application context.
+	 */
+	public static void wifiResponse(Date time,Location location,String response,Context context)
+	{
+
+		Log.i(TAG,"Tracking hintChosen.");
+		
+		checkSize(context);
+		
+		String track = 
+				"<event>" +
+				"<eventtype>"+trackWifiResponse+"</eventtype>" +
+				"<date>"+TrackUtilities.dateFormat.format(time)+"</date>" +
+				"<time>"+TrackUtilities.timeFormat.format(time)+"</time>" +
+				"<infos>";
+		if(location!=null)
+			track+=
+			"<location " +
+			"latitude=\""+Double.toString(location.getLatitude())+"\" "+
+			"longitude=\""+Double.toString(location.getLongitude())+"\" " +
+			"accuracy=\""+Float.toString(location.getAccuracy())+"\" "+"/>";
+		
+		track+=
+				"<requestresponse>"+response+"</requestresponse>" +
+				"</infos>" +
+				"</event>";
+		
+		if(TrackUtilities.writeToFile(FILENAME, track, context))
+			Log.d(TAG,"Tracked hintChosen: " + track);
+		else
+			Log.e(TAG,"hintChosen tracking failed.");
+	};
+	
+	/**
+	 * Tracks user answer to a Gps Request for activating Gps.
+	 * @param time		Moment of the answer.
+	 * @param location	Location of the answer.
+	 * @param response	POSITIVE,NEGATIVE or TIMEOUT
+	 * @param context	Application context.
+	 */
+	public static void gpsResponse(Date time,Location location,String response,Context context)
+	{
+
+		Log.i(TAG,"Tracking hintChosen.");
+		
+		checkSize(context);
+		
+		
+		String track = 
+				"<event>" +
+				"<eventtype>"+trackGpsResponse+"</eventtype>" +
+				"<date>"+TrackUtilities.dateFormat.format(time)+"</date>" +
+				"<time>"+TrackUtilities.timeFormat.format(time)+"</time>" +
+				"<infos>";
+		if(location!=null)
+			track+=
+			"<location " +
+			"latitude=\""+Double.toString(location.getLatitude())+"\" "+
+			"longitude=\""+Double.toString(location.getLongitude())+"\" " +
+			"accuracy=\""+Float.toString(location.getAccuracy())+"\" "+"/>";
+		
+		track+=
+				"<requestresponse>"+response+"</requestresponse>" +
+				"</infos>" +
+				"</event>";
+		
+		if(TrackUtilities.writeToFile(FILENAME, track, context))
+			Log.d(TAG,"Tracked hintChosen: " + track);
+		else
+			Log.e(TAG,"hintChosen tracking failed.");
+		
+	};
+		
+	/**
+	 * Track when a notification is snoozed.
+	 * @param time		The moment in wich notification is snoozed.
+	 * @param title		The title of the activity whose notification is snoozed.
+	 * @param context	Application context
+	 * @param type		Type of activity whose notification is snoozed.
+	 * @param delay		Snooze time delay.
+	 */
 	public static void notificationSnooze(Date time, String title,Context context,String type, int delay)
 	{
 		
-		Log.d(TAG,"Tracking notificationSnooze for "+type+": " + title+".");
+		Log.i(TAG,"Tracking notificationSnooze for "+type+": " + title+".");
+		
+		checkSize(context);
 		
 		String track = 
 				"<event>" +
@@ -550,6 +620,7 @@ public class ActionTracker
 		else
 			Log.e(TAG,"notificationSnooze tracking failed.");
 	};
+	
 	/**
 	 * Track when a notification snooze setting is deleted.
 	 * @param time		The time when snooze setting is deleted.
@@ -559,8 +630,10 @@ public class ActionTracker
 	 */
 	public static void notificationSnoozeDeleted(Date time,String type, String title,Context context)
 	{
-		Log.d(TAG,"Tracking notificationSnoozeDeleted.");
+		Log.i(TAG,"Tracking notificationSnoozeDeleted.");
 		
+		checkSize(context);
+				
 		String track = 
 				"<event>" +
 				"<eventtype>"+trackNotificationSnoozeDeleted+"</eventtype>" +
@@ -577,6 +650,7 @@ public class ActionTracker
 		else
 			Log.e(TAG,"notificationSnoozeDeleted tracking failed");
 	};
+	
 	/**
 	 * Sends to server tracking file. A temporary old tracking file is created
 	 * and a new one is initiated for future trackings.
