@@ -36,6 +36,16 @@ public class PlacesTab extends TabActivity{
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 
+	    tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() 
+        {
+			
+			@Override
+			public void onTabChanged(String tabId) 
+			{
+				invalidateOptionsMenu();				
+			}
+		});
+	    
 	    // Do the same for the other tabs
 	    intent = new Intent().setClass(this, PublicPlaces.class);
 	    spec = tabHost.newTabSpec("Public Places").setIndicator("Public Places",
