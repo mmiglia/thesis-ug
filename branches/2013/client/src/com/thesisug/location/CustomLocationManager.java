@@ -739,7 +739,7 @@ public class CustomLocationManager
 	public boolean checkForHints(Location location)
 	{
 		//TODO
-		Log.i(TAG,"isBetterThanPrevious");
+		Log.i(TAG,"checkForHints");
 		 
 		Log.d(TAG,"New location from: " + location.getProvider() + " Accuracy: " + location.getAccuracy());
 		
@@ -966,16 +966,19 @@ public class CustomLocationManager
 					//If user is not moving, and stands for a while, low fix rate.
 					actualSpeed = 0;
 					standingTime += minUpdateTime; 
-					//If user is in the same place for more than 10 mins, probably he is standing there
-					if(standingTime > TENMINS)
+					//If user is in the same place for more than 2 mins, probably he is standing there
+					if(standingTime >= TWOMINS)
 					{
 						Log.d(TAG,"User is standing.");
 						handler.removeCallbacks(requestUpdates);
 						RemoveUpdates();
 						increaseMinUpdateTime();
 						handler.postDelayed(requestUpdates,minUpdateTime);
+						standingTime = 0;
 						
 				    }
+					else
+						Log.d(TAG,"Standing time: " + standingTime / 1000 +".");
 				}
 			}
 			break;
