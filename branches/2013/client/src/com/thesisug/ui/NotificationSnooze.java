@@ -42,6 +42,10 @@ public void onCreate(Bundle savedInstanceState)
 {
 	super.onCreate(savedInstanceState);
 	Log.i(TAG,"onCreate");
+	showNotificationDialogs();
+}
+private void showNotificationDialogs()
+{
 	context = this;
 	packet = getIntent().getExtras();
 	AlertDialog.Builder temp = new AlertDialog.Builder(this);
@@ -115,18 +119,11 @@ public void onCreate(Bundle savedInstanceState)
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setOnCancelListener(new OnCancelListener() 
 			{
-	            public void onCancel(DialogInterface dialog) 
-	            {
-	                finish();
-	            }
-	        });
-			builder.setOnDismissListener(new OnDismissListener()
-			{
-		           public void onDismiss(DialogInterface dialog) 
+		           public void onCancel(DialogInterface dialog) 
 		           {
 		               finish();
 		           }
-	       });
+			});
 			builder.setMessage(getText(R.string.notification_dialog_message)).setTitle(packet.getString("tasktitle"));
 			builder.setPositiveButton(R.string.show_hints, new DialogInterface.OnClickListener() 
 			{
@@ -186,24 +183,24 @@ public void onCreate(Bundle savedInstanceState)
 		           {
 		        	   Log.d(TAG,"Display snooze choice");
 		        	   snoozeListBuilder.setTitle(R.string.snooze_choice)
-	   		           .setItems(R.array.snooze, new DialogInterface.OnClickListener() 
-	   		           {
-	   		               public void onClick(DialogInterface dialog, int which) 
-	   		               {
-	   		               	   String [] snoozeArray = getResources().getStringArray(R.array.snoozeValue);
-	   		               	   Log.d(TAG,"Setting " + snoozeArray[which] +" min snooze for " + sentence +".");
-	   		            	   SnoozeHandler.snoozeTask(sentence,type, Integer.parseInt(snoozeArray[which]));
-	   		            	   Log.d(TAG,"Going to dismiss " + sentence);
-	   		            	   NotificationDispatcher.deleteNotification(sentence.hashCode());
-	   		            	   packet.clear();
-	   		                   finish();
-	   		               }      
+			           .setItems(R.array.snooze, new DialogInterface.OnClickListener() 
+			           {
+			               public void onClick(DialogInterface dialog, int which) 
+			               {
+			            	   String [] snoozeArray = getResources().getStringArray(R.array.snoozeValue);
+			            	   Log.d(TAG,"Setting " + snoozeArray[which] +" min snooze for " + sentence +".");
+			            	   SnoozeHandler.snoozeTask(sentence,type, Integer.parseInt(snoozeArray[which]));
+			            	   Log.d(TAG,"Going to dismiss " + sentence);
+			            	   NotificationDispatcher.deleteNotification(sentence.hashCode());
+			            	   packet.clear();
+			                   finish();
+			               }      
 
-	   		           });
-		               AlertDialog snoozeListDialog = snoozeListBuilder.create();
-		               
-		               snoozeListDialog.show();    
-	
+			           });
+
+		        	   AlertDialog snoozeListDialog = snoozeListBuilder.create();
+		        	   snoozeListDialog.show();       
+		              
 		           }
 			});
 			builder.setNegativeButton(R.string.dismiss_hints, new DialogInterface.OnClickListener() 
@@ -227,12 +224,14 @@ public void onDestroy()
 {
 	super.onDestroy();
 	Log.i(TAG,"onDestroy");
+
 	
 }
 @Override
 public void onNewIntent(Intent intent)
 {
 	Log.i(TAG,"onNewIntent");
+	showNotificationDialogs();
 }
 }
 
