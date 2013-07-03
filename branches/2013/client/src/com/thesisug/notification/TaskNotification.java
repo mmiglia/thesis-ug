@@ -583,6 +583,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	customLocationManager.TaskHintsSearchFinished(sentence,result,priority);
     	if(result!=null)
     	{
+    		Log.d(TAG,"Result not null");
 	    	synchronized(hintsFoundSync)
 	    	{
 	    		hintsFound += result.size();
