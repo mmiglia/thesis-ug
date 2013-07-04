@@ -106,7 +106,7 @@ public class ActionTracker
 				"</event>";
 		
 		if(TrackUtilities.writeToFile(FILENAME, track, context))
-			Log.d(TAG,"Tracked appOpened: " + track);
+			Log.i(TAG,"Tracked appOpened: " + track);
 		else
 			Log.e(TAG,"appOpened tracking failed");
 	};
@@ -132,7 +132,7 @@ public class ActionTracker
 				"</event>";
 		
 		if(TrackUtilities.writeToFile(FILENAME, track, context))
-			Log.d(TAG,"Tracked appClosed: " + track);
+			Log.i(TAG,"Tracked appClosed: " + track);
 		else
 			Log.e(TAG,"appOpened tracking failed");
 	};
@@ -145,7 +145,7 @@ public class ActionTracker
 	 */
 	public static void forceHintSearch(Date time,Location location,Context context)
 	{
-		Log.i(TAG,"Tracking trackForceHintSearch.");
+		Log.i(TAG,"Tracking forceHintSearch.");
 		
 		checkSize(context);
 		
@@ -164,7 +164,7 @@ public class ActionTracker
 		track+="</infos></event>";
 		
 		if(TrackUtilities.writeToFile(FILENAME, track, context))
-			Log.d(TAG,"Tracked trackForceHintSearch: " + track);
+			Log.i(TAG,"Tracked forceHintSearch: " + track);
 		else
 			Log.e(TAG,"contentAdded tracking failed.");
 		
@@ -199,11 +199,11 @@ public class ActionTracker
 				"<time>"+TrackUtilities.timeFormat.format(time)+"</time>" +
 				"<infos>"+
 				"<type>"+type+"</type>"+
-				"<title>"+title+"</title>"+
+				"<title><![CDATA[<![CDATA["+title+"]]></title>"+
 				"</infos></event>";
 		
 		if(TrackUtilities.writeToFile(FILENAME, track, context))
-			Log.d(TAG,"Tracked contentAdded: " + track);
+			Log.i(TAG,"Tracked contentAdded: " + track);
 		else
 			Log.e(TAG,"contentAdded tracking failed.");
 		
@@ -236,12 +236,12 @@ public class ActionTracker
 				"<time>"+TrackUtilities.timeFormat.format(time)+"</time>" +
 				"<infos>"+
 				"<type>"+type+"</type>"+
-				"<title>"+title+"</title>"+
+				"<title><![CDATA["+title+"]]></title>"+
 				"</infos>" +
 				"</event>";
 		
 		if(TrackUtilities.writeToFile(FILENAME,track,context))
-			Log.d(TAG,"Tracked contentCompleted: " + track);
+			Log.i(TAG,"Tracked contentCompleted: " + track);
 		else
 			Log.e(TAG,"contentCompleted tracking failed.");
 	};
@@ -274,12 +274,12 @@ public class ActionTracker
 				"<time>"+TrackUtilities.timeFormat.format(time)+"</time>" +
 				"<infos>"+
 				"<type>"+type+"</type>"+
-				"<title>"+title+"</title>"+
+				"<title><![CDATA["+title+"]]></title>"+
 				"</infos>" +
 				"</event>";
 		
 		if(TrackUtilities.writeToFile(FILENAME, track, context))
-			Log.d(TAG,"Tracked notificationSent: " + track);
+			Log.i(TAG,"Tracked notificationSent: " + track);
 		else
 			Log.e(TAG,"notificationSent tracking failed.");
 	};
@@ -311,12 +311,12 @@ public class ActionTracker
 				"<time>"+TrackUtilities.timeFormat.format(time)+"</time>" +
 				"<infos>"+
 				"<type>"+type+"</type>"+
-				"<title>"+title+"</title>"+
+				"<title><![CDATA["+title+"]]></title>"+
 				"</infos>" +
 				"</event>";
 		
 		if(TrackUtilities.writeToFile(FILENAME, track, context))
-			Log.d(TAG,"Tracked notificationViewed: " + track);
+			Log.i(TAG,"Tracked notificationViewed: " + track);
 		else
 			Log.e(TAG,"notificationViewed tracking failed.");
 	};
@@ -348,12 +348,12 @@ public class ActionTracker
 				"<time>"+TrackUtilities.timeFormat.format(time)+"</time>" +
 				"<infos>"+
 				"<type>"+type+"</type>"+
-				"<title>"+title+"</title>"+
+				"<title><![CDATA["+title+"]]></title>"+
 				"</infos>" +
 				"</event>";
 		
 		if(TrackUtilities.writeToFile(FILENAME, track, context))
-			Log.d(TAG,"Tracked notificationDismissed: " + track);
+			Log.i(TAG,"Tracked notificationDismissed: " + track);
 		else
 			Log.e(TAG,"notificationDismissed tracking failed.");
 	};
@@ -385,12 +385,12 @@ public class ActionTracker
 				"<time>"+TrackUtilities.timeFormat.format(time)+"</time>" +
 				"<infos>"+
 				"<type>"+type+"</type>"+
-				"<title>"+title+"</title>"+
+				"<title><![CDATA["+title+"]]></title>"+
 				"</infos>" +
 				"</event>";
 		
 		if(TrackUtilities.writeToFile(FILENAME, track, context))
-			Log.d(TAG,"Tracked notificationClicked: " + track);
+			Log.i(TAG,"Tracked notificationClicked: " + track);
 		else
 			Log.e(TAG,"notificationClicked tracking failed.");
 	};
@@ -417,25 +417,25 @@ public class ActionTracker
 				"<date>"+TrackUtilities.dateFormat.format(time)+"</date>" +
 				"<time>"+TrackUtilities.timeFormat.format(time)+"</time>" +
 				"<infos>"+
-				"<title>"+title+"</title>";
+				"<title><![CDATA["+title+"]]></title>";
 		if(location!=null)
 			track+=
 			"<location " +
 			"latitude=\""+Double.toString(location.getLatitude())+"\" "+
 			"longitude=\""+Double.toString(location.getLongitude())+"\" " +
 			"accuracy=\""+Float.toString(location.getAccuracy())+"\" "+"/>";
-		track+="<chosenhint>"+chosen+"</chosenhint>";
+		track+="<chosenhint><![CDATA["+chosen+"]]></chosenhint>";
 		if(unchosen.size()>0)
 		{
 			track += "<unchosenhints>";
 			for(String s:unchosen)
 			{
-				track+= "<title>"+s+"</title>"; 
+				track+= "<title><![CDATA["+s+"]]></title>"; 
 			}
 			track += "</unchosenhints></infos></event>";
 		}
 		if(TrackUtilities.writeToFile(FILENAME, track, context))
-			Log.d(TAG,"Tracked hintChosen: " + track);
+			Log.i(TAG,"Tracked hintChosen: " + track);
 		else
 			Log.e(TAG,"hintChosen tracking failed.");
 		
@@ -450,7 +450,7 @@ public class ActionTracker
 	public static void wifiRequest(Date time,Location location,Context context)
 	{
 
-		Log.i(TAG,"Tracking hintChosen.");
+		Log.i(TAG,"Tracking wifiRequest.");
 		
 		checkSize(context);
 		
@@ -470,7 +470,7 @@ public class ActionTracker
 		track+="</infos></event>";
 		
 		if(TrackUtilities.writeToFile(FILENAME, track, context))
-			Log.d(TAG,"Tracked hintChosen: " + track);
+			Log.i(TAG,"Tracked wifiRequest: " + track);
 		else
 			Log.e(TAG,"hintChosen tracking failed.");
 		
@@ -485,7 +485,7 @@ public class ActionTracker
 	public static void gpsRequest(Date time,Location location,Context context)
 	{
 
-		Log.i(TAG,"Tracking hintChosen.");
+		Log.i(TAG,"Tracking gpsRequest.");
 		
 		checkSize(context);
 		
@@ -504,7 +504,7 @@ public class ActionTracker
 		track+="</infos></event>";
 		
 		if(TrackUtilities.writeToFile(FILENAME, track, context))
-			Log.d(TAG,"Tracked hintChosen: " + track);
+			Log.i(TAG,"Tracked gpsRequest: " + track);
 		else
 			Log.e(TAG,"hintChosen tracking failed.");
 		
@@ -520,7 +520,7 @@ public class ActionTracker
 	public static void wifiResponse(Date time,Location location,String response,Context context)
 	{
 
-		Log.i(TAG,"Tracking hintChosen.");
+		Log.i(TAG,"Tracking wifiResponse.");
 		
 		checkSize(context);
 		
@@ -543,7 +543,7 @@ public class ActionTracker
 				"</event>";
 		
 		if(TrackUtilities.writeToFile(FILENAME, track, context))
-			Log.d(TAG,"Tracked hintChosen: " + track);
+			Log.i(TAG,"Tracked wifiResponse: " + track);
 		else
 			Log.e(TAG,"hintChosen tracking failed.");
 	};
@@ -558,7 +558,7 @@ public class ActionTracker
 	public static void gpsResponse(Date time,Location location,String response,Context context)
 	{
 
-		Log.i(TAG,"Tracking hintChosen.");
+		Log.i(TAG,"Tracking gpsResponse.");
 		
 		checkSize(context);
 		
@@ -582,7 +582,7 @@ public class ActionTracker
 				"</event>";
 		
 		if(TrackUtilities.writeToFile(FILENAME, track, context))
-			Log.d(TAG,"Tracked hintChosen: " + track);
+			Log.i(TAG,"Tracked gpsResponse: " + track);
 		else
 			Log.e(TAG,"hintChosen tracking failed.");
 		
@@ -610,13 +610,13 @@ public class ActionTracker
 				"<time>"+TrackUtilities.timeFormat.format(time)+"</time>" +
 				"<infos>"+
 				"<type>"+type+"</type>"+
-				"<title>"+title+"</title>"+
+				"<title><![CDATA["+title+"]]></title>"+
 				"<snoozevalue>"+delay+"</snoozevalue>"+
 				"</infos>" +
 				"</event>";
 		
 		if(TrackUtilities.writeToFile(FILENAME, track, context))
-			Log.d(TAG,"Tracked notificationSnooze: " + track);
+			Log.i(TAG,"Tracked notificationSnooze: " + track);
 		else
 			Log.e(TAG,"notificationSnooze tracking failed.");
 	};
@@ -641,12 +641,12 @@ public class ActionTracker
 				"<time>"+TrackUtilities.timeFormat.format(time)+"</time>" +
 				"<infos>"+
 				"<type>"+type+"</type>"+
-				"<title>"+title+"</title>"+
+				"<title><![CDATA["+title+"]]></title>"+
 				"</infos>" +
 				"</event>";
 		
 		if(TrackUtilities.writeToFile(FILENAME, track, context))
-			Log.d(TAG,"Tracked notificationSnoozeDeleted: " + track);
+			Log.i(TAG,"Tracked notificationSnoozeDeleted: " + track);
 		else
 			Log.e(TAG,"notificationSnoozeDeleted tracking failed");
 	};
