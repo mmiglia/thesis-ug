@@ -11,12 +11,18 @@ import com.thesisug.caching.CachingDb;
 public class CachingDbManager 
 {
 	private static final String TAG = "thesisug - CachingDbManager";
-	private static CachingDb cachingDb;
+	private static CachingDb cachingDb; 
 	//private static SQLiteDatabase db;
 	
 	public static void Init(Context c)
 	{
 		cachingDb = new CachingDb(c);
+		/**FOR DEBUG**
+		SQLiteDatabase db = cachingDb.getWritableDatabase();
+		cachingDb.insertAreaEntry(new Area((float)44.424682,(float)8.844599,(float)100),"comprare il latte",false,db);
+		cachingDb.insertAreaEntry(new Area((float)44.423069,(float)8.845965,(float)100),"comprare il latte", false, db);
+		db.close();
+		/************/
 	}
 	
 	
