@@ -148,7 +148,6 @@ public class CachingDb extends SQLiteOpenHelper
 				
 				db.execSQL(MessageFormat.format(createTable,LocalHintCachingPhoneNumber.TABLE_NAME, LocalHintCachingPhoneNumber.TITLE,LocalHintCachingPhoneNumber.LAT,LocalHintCachingPhoneNumber.LNG,LocalHintCachingPhoneNumber.NUMBER,LocalHintCachingPhoneNumber.TYPE,LocalHintCachingPhoneNumber.INSERTIONDATE,LocalHintCachingPhoneNumber.TITLE,LocalHintCachingPhoneNumber.LAT,LocalHintCachingPhoneNumber.LNG,LocalHintCachingPhoneNumber.NUMBER));
 				Log.d(TAG,"LocalHintCachingPhoneNumber table created.");
-				
 	}
 	/**
 	 * Start a new SQLite transaction.
@@ -206,7 +205,7 @@ public class CachingDb extends SQLiteOpenHelper
 				LocalHintCachingAreas.COLUMNS, 
 				LocalHintCachingAreas.SENTENCE +" = '"+sentence+"' ",
 				null, 
-				LocalHintCaching.SENTENCE, 
+				null, 
 				null, 
 				null, 
 				null
@@ -218,7 +217,7 @@ public class CachingDb extends SQLiteOpenHelper
 		    Area area = new Area(areaToCheck.lat,areaToCheck.lng,areaToCheck.rad,AREA_OUT);
 		    return area;
 		}
-		Log.d(TAG,"There are areas already in cache for "+sentence+".");
+		Log.d(TAG,"There are "+ queryResult.getCount()+" areas already in cache for "+sentence+".");
 		ArrayList<Area> toDelete = new ArrayList<Area>();
 		queryResult.moveToFirst();
 		//For each area corresponding to the same task
@@ -277,7 +276,7 @@ public class CachingDb extends SQLiteOpenHelper
 							{
 
 								//db.close();
-								queryResult.close();
+								
 								Log.d(TAG, "Existing area is nested in search area.");
 								//If search area's radius is more or equal than stored area's radius plus distance,
 								//stored area is nested inside search area, so I delete it from database (mantaining hints).
@@ -310,7 +309,7 @@ public class CachingDb extends SQLiteOpenHelper
 							{
 
 								//db.close();
-								queryResult.close();
+								
 
 								Log.d(TAG, "Existing area is nested in search area.");
 								//If search area's radius is more than stored area's radius plus distance,
@@ -333,7 +332,10 @@ public class CachingDb extends SQLiteOpenHelper
 			for(Area area:toDelete)
 			{
 				if(!deleteAreaEntry(area, sentence,db))
+				{
+					rollbackTransaction(db);
 					return null;
+				}
 			}	
 			commitTransaction(db);
 		}
@@ -373,6 +375,8 @@ public class CachingDb extends SQLiteOpenHelper
 		}
 		//Check union area for two reason: the union could overlay or neste other areas.
 		//In any case this call to checkArea will delete storedArea because is nested.
+		
+		
 		return checkArea(union,sentence,db);
 	}
 	/**
