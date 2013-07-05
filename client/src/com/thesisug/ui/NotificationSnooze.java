@@ -3,6 +3,7 @@ package com.thesisug.ui;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Random;
 
 import com.thesisug.R;
 import com.thesisug.communication.valueobject.Hint;
@@ -139,8 +140,11 @@ private void showNotificationDialogs()
 				           	showHintsIntent.putParcelableArrayListExtra("hints", new ArrayList<Hint>(result));
 				           	showHintsIntent.putExtra("tasktitle", sentence);
 				           	showHintsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			           	
-				           	PendingIntent showHints = PendingIntent.getActivity(getApplicationContext(), sentence.hashCode(), showHintsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+				           	//Notification newnotification = new Notification(R.drawable.icon, message, System.currentTimeMillis());
+					    	Random rand = new Random();
+					    	rand.setSeed(System.currentTimeMillis());
+					    	int requestID = rand.nextInt(2147483647);
+				           	PendingIntent showHints = PendingIntent.getActivity(getApplicationContext(), requestID, showHintsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 				           	try 
 				           	{
 								showHints.send();
