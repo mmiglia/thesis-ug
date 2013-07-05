@@ -11,6 +11,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -634,7 +635,9 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	    	 * @author Alberto Servetti 11/04/2013
 	    	 */
 	    	//Notification newnotification = new Notification(R.drawable.icon, message, System.currentTimeMillis());
-	    	int requestID = (int) System.currentTimeMillis();
+	    	Random rand = new Random();
+	    	rand.setSeed(System.currentTimeMillis());
+	    	int requestID = rand.nextInt(2147483647);
 	    	
 	    	Intent intent = new Intent(context,NotificationSnooze.class);
 	    	intent.putParcelableArrayListExtra("hints", new ArrayList<Hint>(result));
