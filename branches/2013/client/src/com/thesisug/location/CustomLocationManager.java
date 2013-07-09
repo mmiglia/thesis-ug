@@ -113,6 +113,7 @@ public class CustomLocationManager
 	private static final int STATE_MOVING = 2;
 	private static int userState;
 	private static int wifiInaccurateFixes;
+	private static int wifiNets;
 	private static float[] speedSamples;
 	private static float actualSpeed;
 	
@@ -252,7 +253,7 @@ public class CustomLocationManager
 			    		
 			    		synchronized(gpsLock)
 			    		{
-			            	if(locationProvider.equals(LocationManager.GPS_PROVIDER))
+			            	if(wifiManager.getScanResults().size()>wifiNets && locationProvider.equals(LocationManager.GPS_PROVIDER))
 				            {
 				            	//If gps is active and now I have wifi
 				            	handler.removeCallbacks(requestUpdates);
@@ -285,7 +286,7 @@ public class CustomLocationManager
 				        		}
 				    	}
 			        }
-			    	
+			    	wifiNets = wifiManager.getScanResults().size();
 			    	synchronized(wifiLock)
 			    	{
 			    		if(waitingForWifiAnswer) //To avoid useless .notify()
@@ -376,7 +377,7 @@ public class CustomLocationManager
 		actualSpeed = -1;
 		userState = STATE_STARTING;
 		wifiInaccurateFixes = 0;
-		
+		wifiNets = 0;
 		evaluateThread = new Thread(null, thread, "EvaluateAccuracyService");
 		evaluateThread.start();
 		
@@ -618,6 +619,7 @@ public class CustomLocationManager
 		{
 			Log.i(TAG,"forcing Location Fix.");
 			handler.removeCallbacks(requestUpdates);
+			handler.removeCallbacks(gpsTimeout);
 			isAccuracyOk=false;
 			//lastCheckedFix=null;
 			RemoveUpdates();
