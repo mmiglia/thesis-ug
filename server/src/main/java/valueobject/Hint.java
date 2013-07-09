@@ -30,7 +30,8 @@ public class Hint {
 	public String country; //country name of the result
 	public List<PhoneNumber> phoneNumbers; //list of phone numbers associated with this result
 	public List<String> addressLines; //an array consisting mailing address for this result, to support correct rendering of address
-
+	public String searchRadius;//Radius of the search area that gave this hint
+	
 	public Hint(){}
 	
 	/*
@@ -61,6 +62,7 @@ public class Hint {
 		this.country=country;
 		this.phoneNumbers=phoneNumbers;
 		this.addressLines=addressLines;
+		this.searchRadius="";
 			
 	}
 	
@@ -179,6 +181,7 @@ public class Hint {
 		for (String address : addressLines){
 			newcopy.addressLines.add(new String(address));
 		}
+		newcopy.searchRadius=searchRadius;
 		return newcopy;
 	}
 	
