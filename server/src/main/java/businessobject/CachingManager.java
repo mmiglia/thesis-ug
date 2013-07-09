@@ -18,11 +18,13 @@ public class CachingManager {
 			getLogger(OntologyManager.class);
 			
 			
-			private static class InstanceHolder {
+			private static class InstanceHolder 
+			{
 				private static final CachingManager INSTANCE = new CachingManager();
 			}
 
-				public static CachingManager getInstance() {
+			public static CachingManager getInstance() 
+			{
 				return InstanceHolder.INSTANCE;
 			}
 			
