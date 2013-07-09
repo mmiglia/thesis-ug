@@ -1197,7 +1197,7 @@ public class CustomLocationManager
 	    				isAccuracyOk=false;
 	    				
 	    				ResetMinUpdateTime();
-	    				
+	    					    				
 	    				Log.d(TAG,"Last location fix accuracy is not enough.");
 	    				
 	    				//if lastCheckedFixAccuracy > 50 should be always true, but not sure
@@ -1255,8 +1255,11 @@ public class CustomLocationManager
 	    							Log.d(TAG,"Have wifi connection!");
 	    							wifiInaccurateFixes++;
 	    							if(wifiInaccurateFixes < 3)
+	    							{
+	    								pendingHints.clear();
 	    								//If there are wifi networks I don't need GPS
 	    								continue;
+	    							}
 	    							else
 	    								wifiInaccurateFixes = 0;
 	    							
@@ -1308,6 +1311,7 @@ public class CustomLocationManager
 		    						RemoveUpdates();
 		    						locationProvider = LocationManager.GPS_PROVIDER;
 		    						handler.post(requestUpdates);
+		    						pendingHints.clear();
 		    						continue;
 		    					}
 	    					}
