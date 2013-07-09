@@ -85,8 +85,8 @@ public enum CachingDatabase {
 			System.out.println(insertQuery);
 			if(qs.execError){
 				log.error(qs.explainError());
-				qs.occourtedErrorException.printStackTrace();
-				System.out.println("ERRORE: title-lat-lng già inseriti nel db");
+				//qs.occourtedErrorException.printStackTrace();
+				//System.out.println("ERRORE: title-lat-lng già inseriti nel db");
 				
 				//Rolling back
 				dbManager.rollbackTransaction(conn);
@@ -96,7 +96,7 @@ public enum CachingDatabase {
 				continue;
 			}
 			dbManager.commitTransaction(conn);
-			
+			if(h.phoneNumbers!=null)
 			for (PhoneNumber p : h.phoneNumbers)
 			{	
 				qs=dbManager.startTransaction(conn);
@@ -113,8 +113,8 @@ public enum CachingDatabase {
 				System.out.println(insertQuery);
 				if(qs.execError){
 					log.error(qs.explainError());
-					qs.occourtedErrorException.printStackTrace();
-					System.out.println("ERRORE: title-lat-lng-number già inseriti nel db");
+					//qs.occourtedErrorException.printStackTrace();
+					//System.out.println("ERRORE: title-lat-lng-number già inseriti nel db");
 					
 					//Rolling back
 					dbManager.rollbackTransaction(conn);
@@ -125,6 +125,7 @@ public enum CachingDatabase {
 				dbManager.commitTransaction(conn);
 				
 			}
+			if(h.addressLines!=null)
 			for (String a : h.addressLines)
 			{	
 				qs=dbManager.startTransaction(conn);
@@ -140,8 +141,8 @@ public enum CachingDatabase {
 				System.out.println(insertQuery);
 				if(qs.execError){
 					log.error(qs.explainError());
-					qs.occourtedErrorException.printStackTrace();
-					System.out.println("ERRORE: title-lat-lng-address già inseriti nel db");
+					//qs.occourtedErrorException.printStackTrace();
+					//System.out.println("ERRORE: title-lat-lng-address già inseriti nel db");
 					
 					//Rolling back
 					dbManager.rollbackTransaction(conn);
@@ -267,7 +268,7 @@ public enum CachingDatabase {
 		}
 		dbManager.dbDisconnect(conn);
 		System.out.println("Sto per ritornare hintList");
-		System.out.println(hintList);
+		//System.out.println(hintList);
 		return hintList;
 	}
 
