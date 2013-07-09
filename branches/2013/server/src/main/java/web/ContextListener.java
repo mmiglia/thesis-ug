@@ -14,11 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import valueobject.Hint;
-import businessobject.LocationAwareAllThread;
 import businessobject.LocationAwareManager;
 import businessobject.LocationAwareThread;
 import businessobject.LocationAwareManagerThreadPool;
-import businessobject.OntologyManager;
 
 
 /**
@@ -57,7 +55,7 @@ public class ContextListener {
 		//return locT.checkLocationAllThread(userid, latitude, longitude, distance);
 		
 		//return LocationAwareManager.checkLocationAll(userid, latitude, longitude, distance);
-	
+		System.out.println("ContextListener checkLocationAll");
 		return LocationAwareManagerThreadPool.checkLocationAll(userid, latitude, longitude, distance);
 		
 	}
@@ -88,7 +86,7 @@ public class ContextListener {
 				+ latitude + ":" + longitude);
 		//LocationAwareThread locT= new LocationAwareThread(userid, sentence, latitude, longitude, distance);	
 		//return locT.checkLocationSingleThread(userid, sentence, latitude, longitude, distance);
-		
+		System.out.println("ContextListener checkLocationSingle");
 		//return LocationAwareManager.checkLocationSingle(userid, sentence, latitude, longitude, distance);
 		return LocationAwareManagerThreadPool.checkLocationSingle(userid, sentence, latitude, longitude, distance);
 	}	
@@ -118,6 +116,7 @@ public class ContextListener {
 		// salvare nel db: FUNZIONA
 		//CachingManager.cachingListHint(userid, sentence, latitude, longitude, distance,list);
 		//return list ;
+		System.out.println("ContextListener checkLocationSingleDB");
 		return LocationAwareManager.checkLocationSingle(userid, sentence, latitude, longitude, distance);
 	}
 	
@@ -130,7 +129,8 @@ public class ContextListener {
 			@CookieParam("sessionid") String sessionid) {
 		log.info("Request single context from user " + userid + " sentence "+sentence+" from location "
 				+ latitude + ":" + longitude);
-		LocationAwareThread locT= new LocationAwareThread(userid, sentence, latitude, longitude, distance);	
+		LocationAwareThread locT= new LocationAwareThread(userid, sentence, latitude, longitude, distance);
+		System.out.println("ContextListener checkLocationSingleThread");
 		return locT.checkLocationSingleThread(userid, sentence, latitude, longitude, distance);
 		//return LocationAwareManager.checkLocationSingle(userid, sentence, latitude, longitude, distance);
 	}
@@ -164,6 +164,7 @@ public class ContextListener {
 				+ latitude + ":" + longitude);
 		//LocationAwareThread locT= new LocationAwareThread(userid, sentence, latitude, longitude, distance);	
 		//return locT.checkLocationSingleThread(userid, sentence, latitude, longitude, distance);
+		System.out.println("ContextListener checkLocationSingleThreadPool");
 		return LocationAwareManager.checkLocationSingleTP(userid, sentence, latitude, longitude, distance);
 		}	
 
