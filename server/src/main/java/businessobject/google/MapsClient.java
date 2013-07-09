@@ -75,7 +75,8 @@ public class MapsClient  extends MapSubscriber {
 	}
 
 	@Override
-	public boolean openConnection() {
+	public boolean openConnection() 
+	{
 		// since AJAX API doesn't need handshake, we always return true
 		return true;
 	}
@@ -85,7 +86,11 @@ public class MapsClient  extends MapSubscriber {
 		Map<String, String> params = new LinkedHashMap<String, String>();
 		params.put("sll", lat + "," + lon);
 		params.put("mrt", "localonly");
+		params.put("rsz", "8");
+		params.put("sspn","0.015,0.025"); //1 miles x 1 miles square
 		params.put("key", googleApiKey);
+		
+		
 		if (query != null) {
 			params.put("q", query);
 		}
@@ -178,7 +183,7 @@ public class MapsClient  extends MapSubscriber {
 		if ("GET".equalsIgnoreCase(httpMethod)) {
 			String queryString = buildQueryString(params);
 			url = url + queryString;
-			System.out.println(url);
+			//System.out.println(url);
 			request = new HttpGet(url);
 		} else {
 			throw new RuntimeException("unsupported method: " + httpMethod);
