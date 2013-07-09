@@ -253,7 +253,7 @@ public class CustomLocationManager
 			    		
 			    		synchronized(gpsLock)
 			    		{
-			            	if(wifiManager.getScanResults().size()>wifiNets && locationProvider.equals(LocationManager.GPS_PROVIDER))
+			            	if(wifiManager.getScanResults().size()!=wifiNets && locationProvider.equals(LocationManager.GPS_PROVIDER))
 				            {
 				            	//If gps is active and now I have wifi
 				            	handler.removeCallbacks(requestUpdates);
