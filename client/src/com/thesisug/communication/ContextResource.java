@@ -16,6 +16,7 @@ import org.xml.sax.SAXException;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.thesisug.caching.Area;
 import com.thesisug.caching.CachingDb;
@@ -186,6 +187,13 @@ public class ContextResource
 				params.add(new BasicNameValuePair("lon", ""+lon));
 				params.add(new BasicNameValuePair("dist", ""+(int)Math.ceil(distance)));
 				result = runHttpGet(LOCATION_SINGLE, params, context);
+				if(!(result == null || result.size()==0))
+					if(result.get(result.size()-1).title.equals("searchRadius"))
+					{
+						Log.d(TAG,"Area is restricted. Update failed.");
+						Toast.makeText(context, "Update of an Area failed.", Toast.LENGTH_SHORT).show();
+						return;
+					}
 				sendResultCacheUpdate(new Area(lat,lon,distance),result, sentence, priority, handler, context);
 				
 			}
