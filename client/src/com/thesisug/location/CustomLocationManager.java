@@ -43,6 +43,7 @@ public class CustomLocationManager
 	private static Context applicationContext;
 	private static Location lastCheckedFix;
 	private static Location userPosition;
+	private static Location lastNotified;
 	private static SharedPreferences usersettings;
 	private static float minUpdateDistance=0;
 	private static float maxHintDistance=0;
@@ -65,6 +66,7 @@ public class CustomLocationManager
 	private static boolean wifiAlreadyAsked;
 	private static boolean gpsAlreadyAsked;
 	private static boolean waitingForWifiAnswer;
+	private static boolean gpsFirstFix;
 	private static WifiManager wifiManager;
 	private static int taskHintSearching;
 	private static Thread evaluateThread;
@@ -158,6 +160,8 @@ public class CustomLocationManager
 			public void run() 
 			{
 				Log.d(TAG,"GPS timeout.");
+				if(gpsFirstFix)
+					gpsFirstFix=false;
 				gpsIdleTime += TWOMINS;
 				if(gpsIdleTime>TENMINS)
 				{
@@ -181,7 +185,7 @@ public class CustomLocationManager
 				{
 					Log.d(TAG,"Wifi Request timeout.");
 					wifiAlreadyAsked=false;
-					NotificationManager notificationManager = (NotificationManager) applicationContext.getSystemService(applicationContext.NOTIFICATION_SERVICE);
+					NotificationManager notificationManager = (NotificationManager) applicationContext.getSystemService(Context.NOTIFICATION_SERVICE);
 					notificationManager.cancel("wifi".hashCode());
 					wifiLock.notify();
 				}
@@ -199,7 +203,7 @@ public class CustomLocationManager
 				{
 					Log.d(TAG,"Gps Request timeout.");
 					gpsAlreadyAsked=false;
-					NotificationManager notificationManager = (NotificationManager) applicationContext.getSystemService(applicationContext.NOTIFICATION_SERVICE);
+					NotificationManager notificationManager = (NotificationManager) applicationContext.getSystemService(Context.NOTIFICATION_SERVICE);
 					notificationManager.cancel("gps".hashCode());
 					ActionTracker.gpsResponse(Calendar.getInstance().getTime(), lastCheckedFix, "TIMEOUT", applicationContext);
 					gpsLock.notify();
@@ -252,20 +256,29 @@ public class CustomLocationManager
 			    		Log.d(TAG,"Woah! "+wifiManager.getScanResults().size()+" wifi network detected!");
 			    		
 			    		synchronized(gpsLock)
-			    		{
-			            	if(wifiManager.getScanResults().size()!=wifiNets && locationProvider.equals(LocationManager.GPS_PROVIDER))
+	        			{
+			            	if(
+			            			wifiManager.getScanResults().size()!=wifiNets 
+			            			&& 
+			            			locationProvider.equals(LocationManager.GPS_PROVIDER) 
+			            			&& 
+			            			!gpsFirstFix //(when app subscribes gps, at least one fix has to be done)
+			            			)
 				            {
-				            	//If gps is active and now I have wifi
-				            	handler.removeCallbacks(requestUpdates);
-				            	handler.removeCallbacks(gpsTimeout);
-				            	RemoveUpdates();
-				            	locationProvider = LocationManager.NETWORK_PROVIDER;
-				            	handler.post(requestUpdates);
-				            	GpxBuilder.newtrkSeg(Calendar.getInstance().getTime());
+				            	//When possible try to disable GPS because there are new Wifi nets
+			            		
+			        				handler.removeCallbacks(requestUpdates);
+			                    	handler.removeCallbacks(gpsTimeout);
+			                    	RemoveUpdates();
+			                    	locationProvider = LocationManager.NETWORK_PROVIDER;
+			                    	handler.postDelayed(requestUpdates,minUpdateTime);
+			                    	GpxBuilder.newtrkSeg(Calendar.getInstance().getTime());
+			                    
 				            }
-			            	haveWifiConnection = true; 
+	        			}
+		            	if(!haveWifiConnection)
+		            		haveWifiConnection = true; 
 
-			    		}
 			    		
 			    	} 
 			        else
@@ -380,8 +393,8 @@ public class CustomLocationManager
 		wifiNets = 0;
 		evaluateThread = new Thread(null, thread, "EvaluateAccuracyService");
 		evaluateThread.start();
-		
-		
+		gpsFirstFix=false;
+		lastNotified = null;
 	}
 	
 	/**
@@ -621,6 +634,7 @@ public class CustomLocationManager
 			handler.removeCallbacks(requestUpdates);
 			handler.removeCallbacks(gpsTimeout);
 			isAccuracyOk=false;
+			lastNotified= null;
 			//lastCheckedFix=null;
 			RemoveUpdates();
 			handler.post(requestUpdates);	
@@ -650,7 +664,7 @@ public class CustomLocationManager
 	 * @param location2
 	 * @return	True if provider is the same, false if is different or null.
 	 */
-	boolean isSameProvider(Location location1, Location location2)
+	private boolean isSameProvider(Location location1, Location location2)
 	{
 		if(location1 == null || location2 == null)
 			return false;
@@ -658,6 +672,7 @@ public class CustomLocationManager
 			return false;
 		else return location1.getProvider().equals(location2.getProvider());
 	}
+
 	/**
 	 * Get the number of avaiable samples.
 	 * 
@@ -712,6 +727,7 @@ public class CustomLocationManager
 	 * @param samplesConsidered		Number of samples to consider.
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private float getMaxSpeedSample(float[] speedSamples, int samplesConsidered) 
 	{
 		float max = 0;
@@ -780,9 +796,9 @@ public class CustomLocationManager
 			float newAccuracy = location.getAccuracy();
 			Log.d(TAG,"newAccuracy: "+ newAccuracy);
 			int accuracyDelta = (int)(newAccuracy - oldAccuracy);
-			boolean isSignificantlyLessAccurate = accuracyDelta > 200;
-			boolean isSignificantlyMoreAccurate = accuracyDelta < 200;
-			
+			boolean isSignificantlyLessAccurate = accuracyDelta > 100;
+			//boolean isSignificantlyMoreAccurate = accuracyDelta < 100;
+			boolean isEnoughAccurate = newAccuracy < 50;
 			if(isSignificantlyLessAccurate && !wifiToCellular && isSameProvider)
 			{
 				Log.d(TAG,"Previous fix was more accurate.");
@@ -806,12 +822,12 @@ public class CustomLocationManager
 			
 			Log.d(TAG, "New location accuracy is ok.");
 			
-			 //Check if new location respects minUpdateDistance
+			//Check if new location respects minUpdateDistance
 	    	float distanceFromLastCheck = lastCheckedFix.distanceTo(location);
 	    	float distanceFromLastPosition= userPosition.distanceTo(location);
 	    	Log.d(TAG,"Distance from last check: "+ distanceFromLastCheck +".");
 	    	Log.d(TAG,"Distance from last position: "+ distanceFromLastPosition +".");
-	    	boolean isDistantEnoughForUpdate = distanceFromLastCheck >= minUpdateDistance-15;
+	    	boolean isDistantEnoughForUpdate = distanceFromLastCheck >= minUpdateDistance;
 	    	Log.d(TAG,"Checking if new location is distant enough.");
 			//Speed of user last movement
 			float speed = getSpeed(location, distanceFromLastPosition, timeDelta);
@@ -821,21 +837,17 @@ public class CustomLocationManager
 			setNextFixTime(distanceFromLastCheck);
 			//Send broadcast message with new fix
 			SendBroadcast(LOCATIONCHANGED, location, location.getProvider(),0,null);
-			//Update user position
-			userPosition = location;
+			
 			Log.d(TAG,"Checking if new location is distant enough for a new hints search.");
 			//Check if new location is distant enough for new hints search
-			if(!isDistantEnoughForUpdate && (!isSignificantlyMoreAccurate || !isSignificantlyLessAccurate) )
+			if(!isDistantEnoughForUpdate && isEnoughAccurate)
 			{
-
 			    Log.d(TAG,"New location is not distant enough for a new update.");
-			    
-			    return false;
-			   
-			    
-			 }
+			    return false;   
+			}
 
 		 	Log.d(TAG,"Location is distant enough for a new update!");
+			
 		    //Update last fix
 			lastCheckedFix=location;
 			return true;
@@ -1165,6 +1177,8 @@ public class CustomLocationManager
 	    		if(hintsShowed==0)
 	    		{ 
 	    			Log.d(TAG, "There are no hints in the area.");
+	    			//Update user position
+	    			userPosition = lastCheckedFix;
 	    			int lastCheckedFixAccuracy = (int)lastCheckedFix.getAccuracy();
 	    			if(lastCheckedFixAccuracy < 50)
 	    			{
@@ -1175,23 +1189,23 @@ public class CustomLocationManager
 	    			//If there are no hints try to disable GPS
 	    			synchronized(gpsLock)
 		    		{
-	    				ResetMinUpdateTime();
 		    			if(locationProvider.equals(LocationManager.GPS_PROVIDER))
 		    			{
+		    				//ResetMinUpdateTime();
 		    				Log.d(TAG,"Gps enabled with no hints! Disabling.");
 		    				handler.removeCallbacks(requestUpdates);
 		    				handler.removeCallbacks(gpsTimeout);
 		    				locationProvider = LocationManager.NETWORK_PROVIDER;
 		    				RemoveUpdates();
 		    				GpxBuilder.newtrkSeg(Calendar.getInstance().getTime());
+		    				handler.postDelayed(requestUpdates,minUpdateTime);
 		    			}
-		    			handler.postDelayed(requestUpdates,minUpdateTime);
 		    		}
 	    		}
 	    		else
 	    		{
 	    			Log.d(TAG,"There are hints in the Accuracy+MaxHintDistance area.");
-	    			 
+	    			hintsShowed = 0;
 	    			int lastCheckedFixAccuracy = (int)lastCheckedFix.getAccuracy();
 	    			 
 	    			if(lastCheckedFixAccuracy > 50)
@@ -1233,6 +1247,8 @@ public class CustomLocationManager
 		    						if(wifiManager.isWifiEnabled())
 		    						{
 		    							ActionTracker.wifiResponse(Calendar.getInstance().getTime(), lastCheckedFix, "POSITIVE", applicationContext);
+		    							handler.removeCallbacks(requestUpdates);
+		    							Log.d(TAG,"Clearing pendingHints");
 		    							pendingHints.clear();
 		    							handler.post(requestUpdates);
 		    							continue;
@@ -1245,7 +1261,6 @@ public class CustomLocationManager
 		    					else 
 		    					{
 		    						Log.d(TAG,"Wifi is enabled or already asked!");
-		    						
 		    					}
     						}
 	    					
@@ -1256,9 +1271,12 @@ public class CustomLocationManager
 	    							
 	    							Log.d(TAG,"Have wifi connection!");
 	    							wifiInaccurateFixes++;
-	    							if(wifiInaccurateFixes < 3)
+	    							if(wifiInaccurateFixes < 1)
 	    							{
-	    								pendingHints.clear();
+	    								handler.removeCallbacks(requestUpdates);
+	    								Log.d(TAG,"Clearing pendingHints");
+		    							pendingHints.clear();
+		    							handler.postDelayed(requestUpdates, minUpdateTime);
 	    								//If there are wifi networks I don't need GPS
 	    								continue;
 	    							}
@@ -1270,7 +1288,6 @@ public class CustomLocationManager
 	    						
 		    					if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
 		    					{
-		    						
 		    						if(!gpsAlreadyAsked)
 		    						{
 			    						Log.d(TAG,"Asking user to activate GPS!");
@@ -1296,8 +1313,10 @@ public class CustomLocationManager
 		    						if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
 		    						{
 		    							ActionTracker.gpsResponse(Calendar.getInstance().getTime(), lastCheckedFix, "POSITIVE", applicationContext);
+		    							Log.d(TAG,"Clearing pendingHints");
 		    							pendingHints.clear();
 		    							Log.d(TAG,"Gps is enabled!");
+		    							gpsFirstFix = true;
 		    							locationProvider = LocationManager.GPS_PROVIDER;
 		    							handler.post(requestUpdates);
 		    							continue;
@@ -1310,21 +1329,32 @@ public class CustomLocationManager
 		    					{
 		    						Log.d(TAG,"Gps is enabled! Registering.");
 		    						handler.removeCallbacks(requestUpdates);
+		    						handler.removeCallbacks(gpsTimeout);
 		    						RemoveUpdates();
+		    						Log.d(TAG,"Clearing pendingHints");
+		    						pendingHints.clear();
+		    						gpsFirstFix=true;
 		    						locationProvider = LocationManager.GPS_PROVIDER;
 		    						handler.post(requestUpdates);
-		    						pendingHints.clear();
 		    						continue;
 		    					}
 	    					}
 	    					
 	    					
 							Log.d(TAG,"Neither Wifi nor Gps enabled!");
-							for(pendingHint p : pendingHints)
-		    				{
-								TaskNotification.getInstance().notifyHints(p.title, p.result, p.priority);
-		    				}
-		    				pendingHints.clear();
+							if(lastNotified == null || (lastNotified !=null && lastCheckedFix.distanceTo(lastNotified)>minUpdateDistance))
+							{
+								Log.d(TAG,"Notifying hints");
+								for(pendingHint p : pendingHints)
+			    				{
+									TaskNotification.getInstance().notifyHints(p.title, p.result, p.priority);
+			    				}
+			    				lastNotified = lastCheckedFix;
+			    			}
+							else
+								Log.d(TAG,"Not notifying hints" + (lastNotified == null));
+							Log.d(TAG,"Clearing pendingHints");
+							pendingHints.clear();
 		    				SendBroadcast(LOCATIONCHANGED, lastCheckedFix, lastCheckedFix.getProvider(),0,null);
 							
 		    				handler.postDelayed(requestUpdates, minUpdateTime);
@@ -1335,17 +1365,23 @@ public class CustomLocationManager
 	    			else
 	    			{ 
 	    				isAccuracyOk = true;
+	    				//Update user position
+	    				userPosition=lastCheckedFix;
+	    				
 	    				//if(locationProvider.equals(LocationManager.NETWORK_PROVIDER) && haveWifiConnection)
 	    				//	wifiInaccurateFixes=0;
+	    				
 	    				Log.d(TAG,"Accuracy is enough!");
 	    				SendBroadcast(LOCATIONCHANGED, lastCheckedFix, lastCheckedFix.getProvider(),0,null);
 	    				GpxBuilder.append(lastCheckedFix, Calendar.getInstance().getTime());
+	    				Log.d(TAG,"Notifying hints");
 	    				for(pendingHint p : pendingHints)
-		    			{
-		    				TaskNotification.getInstance().notifyHints(p.title, p.result, p.priority);
-		    			}
-
-		    			pendingHints.clear();
+	    				{
+							TaskNotification.getInstance().notifyHints(p.title, p.result, p.priority);
+	    				}
+	    				lastNotified = lastCheckedFix;
+	    				Log.d(TAG,"Clearing pendingHints");
+						pendingHints.clear();;
 	    				/*if(lastCheckedFix.getSpeed()>0)
 	    				{
 	    					setMinUpdateTime((int)(minUpdateDistance/lastCheckedFix.getSpeed()));
@@ -1429,6 +1465,11 @@ public class CustomLocationManager
 		Log.d(TAG,"Destroy.");
 		
 		RemoveUpdates();
+		handler.removeCallbacks(requestUpdates);
+		handler.removeCallbacks(gpsRequestTimeout);
+		handler.removeCallbacks(wifiRequestTimeout);
+		handler.removeCallbacks(gpsTimeout);
+		applicationContext.unregisterReceiver(broadCastReceiver);
 		//GpxBuilder.closeFile(Calendar.getInstance().getTime());
 	}
 }
