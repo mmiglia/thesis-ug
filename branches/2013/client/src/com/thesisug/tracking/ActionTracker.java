@@ -41,7 +41,7 @@ public class ActionTracker
 	private static final String trackGpsRequest="GPS-REQ";
 	private static final String trackGpsResponse="GPS-RESP";
 	private static final long MAXFILESIZE = 102400; //100kb
-	private static Handler handler;
+	private static Handler handler =null;
 	/**
 	 * Initialization of ActionTracker file.
 	 * @param creationData	Date of creation of the file.
@@ -51,7 +51,8 @@ public class ActionTracker
 	{
 		Log.i(TAG,"ActionTracker init."); 
 		File file = context.getFileStreamPath(FILENAME);
-		handler = new Handler();
+		if(handler==null)
+			handler = new Handler();
 		if(!file.exists())
 		{
 			String init = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
