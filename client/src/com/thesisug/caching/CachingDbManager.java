@@ -12,17 +12,18 @@ public class CachingDbManager
 {
 	private static final String TAG = "thesisug - CachingDbManager";
 	private static CachingDb cachingDb; 
-	//private static SQLiteDatabase db;
+	private static SQLiteDatabase db;
 	
 	public static void Init(Context c)
 	{
 		cachingDb = new CachingDb(c);
-		/**FOR DEBUG**
+		db = cachingDb.getWritableDatabase();
+		/*DEBUG
 		SQLiteDatabase db = cachingDb.getWritableDatabase();
 		cachingDb.insertAreaEntry(new Area((float)44.424682,(float)8.844599,(float)100),"comprare il latte",false,db);
 		cachingDb.insertAreaEntry(new Area((float)44.423069,(float)8.845965,(float)100),"comprare il latte", false, db);
 		db.close();
-		/************/
+		*/
 	}
 	
 	
@@ -30,7 +31,7 @@ public class CachingDbManager
 	{
 		Log.i(TAG,"insertHints");
 		boolean ret;
-		SQLiteDatabase db = cachingDb.getWritableDatabase();
+		//SQLiteDatabase db = cachingDb.getWritableDatabase();
 		cachingDb.startTransaction(db);
 		if(!cachingDb.insertAreaEntry(actualArea,sentence,false,db))
 		{
@@ -60,7 +61,7 @@ public class CachingDbManager
 	{
 		Log.i(TAG,"searchLocalBuisnessInCache");
 
-		SQLiteDatabase db = cachingDb.getWritableDatabase();
+		//SQLiteDatabase db = cachingDb.getWritableDatabase();
 		List<Hint> ret = cachingDb.searchLocalBuisnessInCache(sentence, latitude, longitude, distance,db);
 		//db.close();
 		return ret;
@@ -69,7 +70,7 @@ public class CachingDbManager
 	public static Area checkArea(Area areaToCheck,String sentence)
 	{
 		Log.i(TAG,"checkArea");
-		SQLiteDatabase db = cachingDb.getReadableDatabase();
+		//SQLiteDatabase db = cachingDb.getReadableDatabase();
 		Area ret = cachingDb.checkArea(areaToCheck, sentence,db);
 		//db.close();
 		return ret;
@@ -79,7 +80,7 @@ public class CachingDbManager
 	{
 		Log.i(TAG,"cleanArea");
 		boolean ret;
-		SQLiteDatabase db = cachingDb.getWritableDatabase();
+		//SQLiteDatabase db = cachingDb.getWritableDatabase();
 		cachingDb.startTransaction(db);
 		ret=cachingDb.deleteArea(areaToClean, sentence,db);
 		if(ret)
@@ -94,7 +95,7 @@ public class CachingDbManager
 	public static void startCacheUpdate()
 	{
 		Log.i(TAG,"updateCache");
-		SQLiteDatabase db = cachingDb.getWritableDatabase();
+		//SQLiteDatabase db = cachingDb.getWritableDatabase();
 		CachingDb.startCacheUpdate(db);
 		//db.close();
 	}
@@ -103,7 +104,7 @@ public class CachingDbManager
 	{
 		Log.i(TAG,"updateArea");
 
-		SQLiteDatabase db = cachingDb.getWritableDatabase();
+		//SQLiteDatabase db = cachingDb.getWritableDatabase();
 		cachingDb.updateArea(area,sentence,update,db);
 		//db.close();
 	}
@@ -112,7 +113,7 @@ public class CachingDbManager
 	{
 		Log.i(TAG,"cleanCache");
 
-		SQLiteDatabase db = cachingDb.getWritableDatabase();
+		//SQLiteDatabase db = cachingDb.getWritableDatabase();
 		cachingDb.cachingClean(db);
 		//db.close();
 	}
@@ -121,5 +122,17 @@ public class CachingDbManager
 	{
 		Log.i(TAG,"dbNeedsDownsize");
 		return cachingDb.dbNeedsDownsize(db);
+	}
+	
+	public static double calculateDistance(double latitudeA,double longitudeA,double latitudeB, double longitudeB)
+	{
+		Log.i(TAG,"calculateDistance");
+		return cachingDb.calculateDistance(latitudeA, longitudeA, latitudeB, longitudeB);
+	}
+	
+	public static void closeDatabaseConnection()
+	{
+		Log.i(TAG,"closeDatabaseConnection");
+		db.close();
 	}
 }
