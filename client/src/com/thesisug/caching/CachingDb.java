@@ -411,7 +411,7 @@ public class CachingDb extends SQLiteOpenHelper
 		container.put(LocalHintCachingAreas.RADIUS, Float.toString(areaToInsert.rad));
 		container.put(LocalHintCachingAreas.LASTUPDATE,dateFormat.format(Calendar.getInstance().getTime()));
 		
-		if(deleteNestedAreas(areaToInsert,sentence,db)==-1)
+		if(checkNestedAreas(areaToInsert,sentence,db)==-1)
 		{
 			Log.e(TAG,"Error deleting nested areas.");
 			return false;
@@ -431,11 +431,11 @@ public class CachingDb extends SQLiteOpenHelper
 		}
 		
 	}
-	private int deleteNestedAreas(Area areaToInsert, String sentence,SQLiteDatabase db) 
+	private int checkNestedAreas(Area areaToInsert, String sentence,SQLiteDatabase db) 
 	{
 		//TODO
-		Log.i(TAG,"Going to check areas for " + sentence+".");
-		Log.d(TAG,"areaToCheck:");
+		Log.i(TAG,"Going to check nested areas for " + sentence+".");
+		Log.d(TAG,"areaToInsert:");
 		Log.d(TAG,"lat: " + areaToInsert.lat);
 		Log.d(TAG,"lng: " + areaToInsert.lng);
 		Log.d(TAG,"rad:" + areaToInsert.rad);
@@ -506,6 +506,17 @@ public class CachingDb extends SQLiteOpenHelper
 								//stored area is nested inside search area, so I delete it from database (mantaining hints).
 								toDelete.add(new Area(lat,lng,rad));
 							}
+							else
+							{
+								rollbackTransaction(db);
+								return -1;
+							}
+								
+						}
+						else
+						{
+							rollbackTransaction(db);
+							return -1;
 						}
 					}
 					else
@@ -529,6 +540,11 @@ public class CachingDb extends SQLiteOpenHelper
 								//stored area is nested inside, so I delete it from database (mantaining hints).
 								toDelete.add(new Area(lat,lng,rad));
 							}
+							else
+							{
+								rollbackTransaction(db);
+								return -1;
+							}
 						//}
 					}
 				}
@@ -545,6 +561,7 @@ public class CachingDb extends SQLiteOpenHelper
 			{
 				if(!deleteAreaEntry(area, sentence,db))
 				{
+					Log.e(TAG,"deleteAreaEntry error!");
 					rollbackTransaction(db);
 					return -1;
 				}
