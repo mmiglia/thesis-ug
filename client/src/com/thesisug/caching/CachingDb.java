@@ -187,7 +187,6 @@ public class CachingDb extends SQLiteOpenHelper
 	 */
 	public Area checkArea(Area areaToCheck, String sentence,SQLiteDatabase db)
 	{
-		
 		//TODO
 		Log.i(TAG,"Going to check areas for " + sentence+".");
 		Log.d(TAG,"areaToCheck:");
@@ -218,7 +217,7 @@ public class CachingDb extends SQLiteOpenHelper
 		    return area;
 		}
 		Log.d(TAG,"There are "+ queryResult.getCount()+" areas already in cache for "+sentence+".");
-		ArrayList<Area> toDelete = new ArrayList<Area>();
+		//ArrayList<Area> toDelete = new ArrayList<Area>();
 		queryResult.moveToFirst();
 		//For each area corresponding to the same task
 		do
@@ -246,7 +245,7 @@ public class CachingDb extends SQLiteOpenHelper
 						//If distance is less than stored area's radius,
 						//It means that search area's centre is inside stored area.
 						Log.d(TAG,"areaToCheck centre is inside stored area.");
-						if(areaToCheck.rad<(rad-distance[0]))
+						if(areaToCheck.rad<=(rad-distance[0]))
 						{
 
 							//db.close();
@@ -280,7 +279,7 @@ public class CachingDb extends SQLiteOpenHelper
 								Log.d(TAG, "Existing area is nested in search area.");
 								//If search area's radius is more or equal than stored area's radius plus distance,
 								//stored area is nested inside search area, so I delete it from database (mantaining hints).
-								toDelete.add(new Area(lat,lng,rad));
+								//toDelete.add(new Area(lat,lng,rad));
 							}
 						}
 					}
@@ -314,7 +313,7 @@ public class CachingDb extends SQLiteOpenHelper
 								Log.d(TAG, "Existing area is nested in search area.");
 								//If search area's radius is more than stored area's radius plus distance,
 								//stored area is nested inside, so I delete it from database (mantaining hints).
-								toDelete.add(new Area(lat,lng,rad));
+								//toDelete.add(new Area(lat,lng,rad));
 							}
 						//}
 					}
@@ -326,7 +325,7 @@ public class CachingDb extends SQLiteOpenHelper
 
 		queryResult.close();
 		
-		if(toDelete.size()>0)
+		/*if(toDelete.size()>0)
 		{	
 			startTransaction(db);
 			for(Area area:toDelete)
@@ -335,14 +334,14 @@ public class CachingDb extends SQLiteOpenHelper
 				{
 					rollbackTransaction(db);
 					return null;
-				}
+				} 
 			}	
 			commitTransaction(db);
 		}
-		
+		*/
 		Area area = new Area(areaToCheck.lat,areaToCheck.lng,areaToCheck.rad,AREA_OUT);
 		return area;
-	
+		
 		
 	}
 	
@@ -361,18 +360,18 @@ public class CachingDb extends SQLiteOpenHelper
 		Log.i(TAG,"getAreaUnion");
 		Area union = null;
 		//Check which area is bigger
-		if(storedArea.rad>areaToCheck.rad)
-		{
-			Log.d(TAG,"storedArea is bigger.");
+		//if(storedArea.rad>areaToCheck.rad)
+		//{
+		//	Log.d(TAG,"storedArea is bigger.");
 			//If area is the bigger, use storedArea centre and distance+areaToCheck radius.
-			union = new Area(storedArea.lat,storedArea.lng,areaToCheck.rad+distance);
-		}
-		else
-		{
-			Log.d(TAG,"areaToCheck is bigger.");
+		//	union = new Area(storedArea.lat,storedArea.lng,areaToCheck.rad+distance);
+		//}
+		//else
+		//{
+		//	Log.d(TAG,"areaToCheck is bigger.");
 			//If area is the bigger, use areaToCheck centre and distance+storedArea radius.
 			union = new Area(areaToCheck.lat,areaToCheck.lng,storedArea.rad+distance);
-		}
+		//}
 		//Check union area for two reason: the union could overlay or neste other areas.
 		//In any case this call to checkArea will delete storedArea because is nested.
 		
@@ -412,6 +411,11 @@ public class CachingDb extends SQLiteOpenHelper
 		container.put(LocalHintCachingAreas.RADIUS, Float.toString(areaToInsert.rad));
 		container.put(LocalHintCachingAreas.LASTUPDATE,dateFormat.format(Calendar.getInstance().getTime()));
 		
+		if(deleteNestedAreas(areaToInsert,sentence,db)==-1)
+		{
+			Log.e(TAG,"Error deleting nested areas.");
+			return false;
+		}
 
 		if(db.insert(LocalHintCachingAreas.TABLE_NAME, null, container)==-1)
 		{
@@ -427,6 +431,131 @@ public class CachingDb extends SQLiteOpenHelper
 		}
 		
 	}
+	private int deleteNestedAreas(Area areaToInsert, String sentence,SQLiteDatabase db) 
+	{
+		//TODO
+		Log.i(TAG,"Going to check areas for " + sentence+".");
+		Log.d(TAG,"areaToCheck:");
+		Log.d(TAG,"lat: " + areaToInsert.lat);
+		Log.d(TAG,"lng: " + areaToInsert.lng);
+		Log.d(TAG,"rad:" + areaToInsert.rad);
+		Cursor queryResult;
+		
+		
+		//Query database for areas containing hints for the same task
+		//Equivalent to SELECT * FROM TABLE_NAME WHERE SENTENCE = sentence;
+		queryResult = db.query
+				(
+				LocalHintCachingAreas.TABLE_NAME,
+				LocalHintCachingAreas.COLUMNS, 
+				LocalHintCachingAreas.SENTENCE +" = '"+sentence+"' ",
+				null, 
+				null, 
+				null, 
+				null, 
+				null
+				);
+		if (!(queryResult.moveToFirst()) || queryResult.getCount() == 0)
+		{
+			//If there are no areas for this sentence, query server on the starting area
+		    Log.d(TAG,"No area present in Cache for "+ sentence +".");
+		    Area area = new Area(areaToInsert.lat,areaToInsert.lng,areaToInsert.rad,AREA_OUT);
+		    return 0;
+		}
+		Log.d(TAG,"There are "+ queryResult.getCount()+" areas already in cache for "+sentence+".");
+		ArrayList<Area> toDelete = new ArrayList<Area>();
+		queryResult.moveToFirst();
+		//For each area corresponding to the same task
+		do
+		{
+			Log.d(TAG,"Stored area:");
+			Log.d(TAG,"sentence: " + queryResult.getString(0));
+			float lat = queryResult.getFloat(1);
+			Log.d(TAG,"lat: " + lat);
+			float lng = queryResult.getFloat(2);
+			Log.d(TAG,"lng: " + lng);
+			float rad = queryResult.getFloat(3);
+			Log.d(TAG,"rad:" + rad);
+			float[] distance = new float[1];
+			//Distance between centre of the area I've to search and the actual area for the same task.
+			Location.distanceBetween(lat, lng, areaToInsert.lat, areaToInsert.lng, distance);
+			if(distance[0]>=0)
+			{
+				if(distance[0]<rad+areaToInsert.rad)
+				{
+					//If distance between centres is less than sum of two radius, 
+					//areas are surely overlayed or nested.
+					Log.d(TAG, "Areas are nested or overlayed.");
+					if(distance[0]<=rad)
+					{
+						//If distance is less than stored area's radius,
+						//It means that search area's centre is inside stored area.
+						Log.d(TAG,"areaToCheck centre is inside stored area.");
+						if(areaToInsert.rad>(rad-distance[0]))
+						{
+							//If search area's radius is more than stored area's radius minus distance,
+							//there are two possibilities: areas are overlayed or stored area is nested
+							//in search area.
+							if(areaToInsert.rad>=(rad+distance[0]))
+							{
+
+								//db.close();
+								
+								Log.d(TAG, "Existing area is nested in search area.");
+								//If search area's radius is more or equal than stored area's radius plus distance,
+								//stored area is nested inside search area, so I delete it from database (mantaining hints).
+								toDelete.add(new Area(lat,lng,rad));
+							}
+						}
+					}
+					else
+					{
+						//If distance is more than stored area's radius,
+						//It means that search area's centre is outside stored area.
+						Log.d(TAG,"areaToCheck centre is outside stored area.");
+						//if(areaToCheck.rad>distance[0]-rad)//Always verified, unuseful
+						//{
+							//If search area's radius is more than stored area's radius minus distance,
+							//there are two possibilities: areas are overlayed or stored area is nested
+							//in search area.
+							if(areaToInsert.rad>=(rad+distance[0]))
+							{
+
+								//db.close();
+								
+
+								Log.d(TAG, "Existing area is nested in search area.");
+								//If search area's radius is more than stored area's radius plus distance,
+								//stored area is nested inside, so I delete it from database (mantaining hints).
+								toDelete.add(new Area(lat,lng,rad));
+							}
+						//}
+					}
+				}
+				
+			}
+		}
+		while(queryResult.moveToNext());
+
+		queryResult.close();
+		
+		if(toDelete.size()>0)
+		{	
+			for(Area area:toDelete)
+			{
+				if(!deleteAreaEntry(area, sentence,db))
+				{
+					rollbackTransaction(db);
+					return -1;
+				}
+			}	
+		}
+		
+		return 1;
+			
+		
+	}
+
 	/**
 	 * Delete from cache an Area.
 	 * 
@@ -994,7 +1123,7 @@ public class CachingDb extends SQLiteOpenHelper
 	 * @param B	Point B.
 	 * @return distance in meter
 	 */
-	private double calculateDistance(double latitudeA,double longitudeA,double latitudeB, double longitudeB) 
+	public double calculateDistance(double latitudeA,double longitudeA,double latitudeB, double longitudeB) 
 	{
 		final double EARTH_RADIUS = 6378.14; // in kilometer, according to
 		// WolframAlpha
