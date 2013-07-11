@@ -32,6 +32,7 @@ public class HintList extends ListActivity
 	@Override
 	public void onCreate(Bundle savedInstanceState) 
 	{
+		Log.i(TAG,"onCreate");
 		super.onCreate(savedInstanceState);
 		List<LinkedHashMap<String,?>> hints = new LinkedList<LinkedHashMap<String,?>>();
 		hintlist = getIntent().getExtras().getParcelableArrayList("hints");
@@ -109,4 +110,26 @@ public class HintList extends ListActivity
 		
 	}
 	
+	public void onNewIntent(Intent intent)
+	{
+		Log.i(TAG,"onNewIntent");
+		List<LinkedHashMap<String,?>> hints = new LinkedList<LinkedHashMap<String,?>>();
+		hintlist = getIntent().getExtras().getParcelableArrayList("hints");
+		tasktitle= getIntent().getExtras().getString("tasktitle");
+		
+       	// create our list and custom adapter
+       	SeparatedListAdapter adapter = new SeparatedListAdapter(this);		
+       	if (hintlist==null||hintlist.isEmpty()) {
+       		Log.i(TAG, "Cannot find any Hint object in the intent");
+       		setListAdapter(adapter);
+       		return;
+       	} else {
+       		for (Hint o : hintlist) hints.add(createItem(o));
+       	SimpleAdapter hintAdapter = new SimpleAdapter(this, hints, R.layout.hint_list,
+       			new String[] { HINT_TITLE, HINT_ADDRESS, HINT_PHONE }, new int[] { R.id.hint_complex_title, R.id.hint_complex_caption, R.id.hint_phone_caption });
+       	adapter.addSection(getText(R.string.capable)+" "+getIntent().getExtras().getString("tasktitle")+" in", hintAdapter);
+       	setListAdapter(adapter);
+       	}
+       	ActionTracker.notificationViewed(Calendar.getInstance().getTime(), tasktitle, getApplicationContext(), 1);
+	}
 }
