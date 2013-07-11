@@ -1,14 +1,7 @@
 package com.thesisug.notification;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -18,12 +11,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.location.Criteria;
 import android.location.Location;
@@ -43,13 +34,8 @@ import com.thesisug.communication.ContextResource;
 import com.thesisug.communication.TaskResource;
 import com.thesisug.communication.valueobject.Hint;
 import com.thesisug.communication.valueobject.SingleTask;
-import com.thesisug.location.ActivityRecognitionRemover;
-import com.thesisug.location.ActivityRecognitionRequester;
 import com.thesisug.location.CustomLocationManager;
-import com.thesisug.location.GpsRequest;
-import com.thesisug.location.WifiRequest;
 import com.thesisug.tracking.ActionTracker;
-import com.thesisug.ui.EditGPS;
 import com.thesisug.ui.HintList;
 import com.thesisug.ui.NotificationSnooze;
 import com.thesisug.ui.Todo;
@@ -67,7 +53,7 @@ import com.thesisug.widget.ExampleAppWidgetProvider;
  *
  */ 
 public class TaskNotification extends Service implements LocationListener,OnSharedPreferenceChangeListener{
-	private static final String TAG = "thesisug - TaskNotificationService";
+	private static final String TAG = "thesisug - TaskNotification";
 	
 	 // variable which controls the notification thread 
     private static ConditionVariable condvar, downloadlock;
@@ -100,10 +86,6 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     private Thread notifyingThread;
     private static int hintsFound = 0;
     private static CustomLocationManager customLocationManager;
-	private static final int LOCATIONCHANGED = 0;
-	private static final int PROVIDERENABLED = 1;
-	private static final int PROVIDERDISABLED = 2;
-	private static final int STATUSCHANGED = 3;
 	private static Context context;
 	private static class InstanceHolder 
 	{ 
@@ -581,13 +563,16 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     public void afterHintsAcquired (String sentence, List<Hint> result,Area area, int priority)
     {
     	Log.i(TAG,"afterHintsAcquired");
-    	customLocationManager.TaskHintsSearchFinished(sentence,result,priority);
     	if(result!=null)
     	{
+    		//If hints come from server and not from cache, because of possibility of areas union  
+        	//it is necessary to filter them again for the notification
+        	List<Hint> filteredResult = filterHints(result,area,Float.parseFloat(userSettings.getString("maxdistance", "100")));
+        	customLocationManager.TaskHintsSearchFinished(sentence,filteredResult,priority);
     		Log.d(TAG,"Result not null");
 	    	synchronized(hintsFoundSync)
 	    	{
-	    		hintsFound += result.size();
+	    		hintsFound += filteredResult.size();
 	    		
 	    		CachingDbManager.insertHints(area,sentence, result);
 	    		
@@ -603,7 +588,17 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	}
     
     }
-    /**
+    private List<Hint> filterHints(List<Hint> result,Area area, float distance) 
+    {
+    	List<Hint> ret = new ArrayList<Hint>();
+    	for(Hint h:result)
+    	{
+    		if(CachingDbManager.calculateDistance(Double.parseDouble(h.lat), Double.parseDouble(h.lng), area.lat,area.lng)<distance)
+    			ret.add(h);
+    	}
+		return ret;
+	}
+	/**
      * Notify hints for a task.
      * @param sentence	Title of the task
      * @param result	List of hints for the task.
@@ -637,8 +632,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	    	//Notification newnotification = new Notification(R.drawable.icon, message, System.currentTimeMillis());
 	    	Random rand = new Random();
 	    	rand.setSeed(System.currentTimeMillis());
-	    	int requestID = rand.nextInt(2147483647);
-	    	
+	    	int requestID = rand.nextInt(Integer.MAX_VALUE) + sentence.hashCode();
 	    	Intent intent = new Intent(context,NotificationSnooze.class);
 	    	intent.putParcelableArrayListExtra("hints", new ArrayList<Hint>(result));
 	    	intent.putExtra("tasktitle", sentence);
@@ -663,7 +657,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	    	showHintsIntent.putExtra("type","Task");
 	    	showHintsIntent.putExtra("dismiss", false);
 	    	showHintsIntent.putExtra("snooze", false);
-	    	showHintsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	    	showHintsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK );
 	    	PendingIntent showHints = PendingIntent.getActivity(context, requestID +2, showHintsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 	    	
 	    	Intent snoozeHintsIntent = new Intent(context,NotificationSnooze.class);
