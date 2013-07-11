@@ -28,6 +28,7 @@ import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.thesisug.R;
+import com.thesisug.caching.CachingDbManager;
 import com.thesisug.communication.valueobject.Hint;
 import com.thesisug.location.ActivityRecognitionRemover;
 import com.thesisug.location.ActivityRecognitionRequester;
@@ -260,6 +261,7 @@ public class ParentTab extends TabActivity
 				GpxBuilder.newtrkSeg(Calendar.getInstance().getTime());
 				NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 				notificationManager.cancelAll();
+				CachingDbManager.closeDatabaseConnection();
 				super.finish();
 				finish();
 				break;
