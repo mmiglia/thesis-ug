@@ -1090,7 +1090,14 @@ public class CustomLocationManager
 		if(key.equals("appmode"))
 		{
 			Log.d(TAG,"Got query app mode updated, registering..");
+			String oldAppMode = appMode;
 			appMode = usersettings.getString("appmode", "learning_mode");
+			if(oldAppMode.equals("battery_rec_mode") && appMode.equals("learning_mode"))
+			{
+				this.ResetMinUpdateTime();
+				locationProvider = LocationManager.NETWORK_PROVIDER;
+				this.RequestLocationUpdates("appMode changed");
+			}
 			Log.d(TAG," done!");
 			
 		}
