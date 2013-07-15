@@ -164,7 +164,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	        
 	        calendar = Calendar.getInstance();
 	        CachingDbManager.Init(TaskNotification.this);
-
+	        
 	       
 	    } 
 	 	
@@ -379,6 +379,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
         {
         	while (runningThread)
         	{
+        		
         		// get preference on query period, return default 5 min if not set
         		//int delay = Integer.parseInt(usersettings.getString("queryperiod", "300")) * 1000;
         		minUpdateDistance = Integer.parseInt(userSettings.getString("queryperiod", "100"));
@@ -487,6 +488,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 						customLocationManager.NewTaskHintsSearch();
 					}
 	        		Log.d(TAG,"Going to do checkLocationSingle for each task DONE");
+	        		
 	    		}
         	
 	    		
@@ -567,7 +569,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	{
     		//If hints come from server and not from cache, because of possibility of areas union  
         	//it is necessary to filter them again for the notification
-        	List<Hint> filteredResult = filterHints(result,area,Float.parseFloat(userSettings.getString("maxdistance", "100")));
+        	List<Hint> filteredResult = filterHints(result,area);
         	customLocationManager.TaskHintsSearchFinished(sentence,filteredResult,priority);
     		Log.d(TAG,"Result not null");
 	    	synchronized(hintsFoundSync)
@@ -588,8 +590,11 @@ public class TaskNotification extends Service implements LocationListener,OnShar
     	}
     
     }
-    private List<Hint> filterHints(List<Hint> result,Area area, float distance) 
+    private List<Hint> filterHints(List<Hint> result,Area area) 
     {
+    	float distance = Float.parseFloat(userSettings.getString("maxdistance", "100")) + customLocationManager.GetlastCheckedFix().getAccuracy();
+    	
+    		
     	List<Hint> ret = new ArrayList<Hint>();
     	for(Hint h:result)
     	{
@@ -830,6 +835,8 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	
 	public void forceLocationFix()
 	{
+		Log.i(TAG,"forceLocationFix");
+		downloadlock.open();
 		customLocationManager.forceLocationFix();
 	}
 	/**
