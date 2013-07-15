@@ -633,7 +633,7 @@ public class CustomLocationManager
 			Log.i(TAG,"forcing Location Fix.");
 			handler.removeCallbacks(requestUpdates);
 			handler.removeCallbacks(gpsTimeout);
-			isAccuracyOk=false;
+			isAccuracyOk=false; 
 			lastNotified= null;
 			//lastCheckedFix=null;
 			RemoveUpdates();
@@ -650,10 +650,10 @@ public class CustomLocationManager
 	public Location getLastKnownPosition()
 	{
 		Log.i(TAG,"getLastKnownPosition");
-		/*if(lastCheckedFix == null)
+		if(lastCheckedFix != null)
 		{
-			lastCheckedFix = locationManager.getLastKnownLocation(locationProvider);
-		}*/
+			return lastCheckedFix;
+		}
 			return locationManager.getLastKnownLocation(locationProvider);
 	}
 	
@@ -664,6 +664,7 @@ public class CustomLocationManager
 	 * @param location2
 	 * @return	True if provider is the same, false if is different or null.
 	 */
+	@SuppressWarnings("unused")
 	private boolean isSameProvider(Location location1, Location location2)
 	{
 		if(location1 == null || location2 == null)
@@ -1164,7 +1165,7 @@ public class CustomLocationManager
 	 */
 	public float GetMaxHintDistance()
 	{
-		return maxHintDistance+userPosition.getAccuracy();
+		return maxHintDistance;
 	}
 	/**
 	 * Thread that implements hierarchical localization
@@ -1463,6 +1464,9 @@ public class CustomLocationManager
 				handler.postDelayed(requestUpdates, minUpdateTime);
 			}
 		}
+
+		isAccuracyOk=true;
+	
 	}
 	/**
 	 * When customLocationManager is destroyed.
