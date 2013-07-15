@@ -1091,7 +1091,7 @@ public class CachingDb extends SQLiteOpenHelper
 	 */
 	private List<Hint> filterResultsByDistance(Cursor result, float distance, float latitude, float longitude)
 	{
-		Log.i(TAG,"filterResultsByDistance.");
+		Log.i(TAG,"filterResultsByDistance: " + distance);
 		ArrayList<Hint> hintList=new ArrayList<Hint>();
 		Log.d(TAG,"Starting.");
 		result.moveToFirst();
