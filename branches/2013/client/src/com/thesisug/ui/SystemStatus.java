@@ -18,6 +18,7 @@ import com.thesisug.Constants;
 import com.thesisug.R;
 import com.thesisug.communication.NetworkUtilities;
 import com.thesisug.communication.valueobject.TestConnectionReply;
+import com.thesisug.location.CustomLocationManager;
 
 public class SystemStatus extends Activity {
 	private static final String TAG = "thesisug - SystemStatus";
@@ -114,7 +115,8 @@ public class SystemStatus extends Activity {
 		//Location service
 		
 		//Location provider		
-		if(locManager==null ){
+		/*if(locManager==null )
+		{
 			txt_location_provider.setText(R.string.location_provider_status_ko);
 	    	locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 		}
@@ -123,14 +125,18 @@ public class SystemStatus extends Activity {
 			txt_location_provider.setText(R.string.location_provider_status_ko);
 		}else{
 			txt_location_provider.setText(locationProvider.toUpperCase());
-		}
+		}*/
+		txt_location_provider.setText(CustomLocationManager.getActualLocationProvider());
 		//Current location
-		if(locationProvider!=null ){
-			userLocation = locManager.getLastKnownLocation(locationProvider);
-			if(userLocation==null ){
+		if(CustomLocationManager.getLastKnownPosition()!=null )
+		{
+			userLocation = CustomLocationManager.getLastKnownPosition();
+			if(userLocation==null )
+			{
 				txt_last_location_latitude.setText(R.string.user_position_unknown);
 				
-			}else{
+			}else
+			{
 				txt_last_location_latitude.setText("Lat: "+userLocation.getLatitude());
 				txt_last_location_longitude.setText("Lon: "+userLocation.getLongitude());
 			}
