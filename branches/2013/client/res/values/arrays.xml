@@ -104,14 +104,12 @@
 	    <item>battery_rec_mode</item>
 	</string-array>
 	<string-array name="serverList">
-		<item>Servetti</item>
+	    <item>mizar.cipi.unige.it</item>
 		<item>Localhost</item>
-		<item>mizar.cipi.unige.it</item>
 	</string-array>
 	<string-array name="serverListValue">
-		<item>93.50.79.234</item>
-		<item>10.0.2.2</item>
 		<item>mizar.cipi.unige.it</item>
+		<item>10.0.2.2</item>
 	</string-array>
 	
 	<string name="type">Choose a type</string>
