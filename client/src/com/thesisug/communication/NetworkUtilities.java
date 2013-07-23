@@ -39,7 +39,7 @@ public class NetworkUtilities
 {
 	private static final String TAG = new String("thesisug - NetworkUtilities");
 	private static final int REGISTRATION_TIMEOUT = 10000;
-	public static final String BASE_TRY_CONNECTION="/tryConn/";
+	public static final String BASE_TRY_CONNECTION="/tryConn";
 	public static final String BASE_VERSION_CHECK="/checkVer";
 	
 	//Dati del file com.thesisug.Constants.java
@@ -242,7 +242,7 @@ public class NetworkUtilities
     	DefaultHttpClient newClient = NetworkUtilities.createClient();
     	// provide username and password in correct param
     	Log.i(TAG,"Client created, creating request to check --> "+serverURI+" <--");
-    	String url="http://"+serverURI+":"+Constants.DEFAULT_HTTP_PORT+"/"+Constants.PROGRAM_NAME+BASE_TRY_CONNECTION;
+    	String url=serverURI+BASE_TRY_CONNECTION;
     	
         HttpGet request = new HttpGet(url);
         request.addHeader("Cookie", "uri="+serverURI);
