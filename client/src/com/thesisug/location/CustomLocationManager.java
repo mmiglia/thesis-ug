@@ -647,7 +647,7 @@ public class CustomLocationManager
 	 * @return Last known position
 	 * .
 	 */
-	public Location getLastKnownPosition()
+	public static Location getLastKnownPosition()
 	{
 		Log.i(TAG,"getLastKnownPosition");
 		if(lastCheckedFix != null)
@@ -1467,6 +1467,11 @@ public class CustomLocationManager
 
 		isAccuracyOk=true;
 	
+	}
+	
+	public static String getActualLocationProvider()
+	{
+		return locationProvider;
 	}
 	/**
 	 * When customLocationManager is destroyed.
