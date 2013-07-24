@@ -118,6 +118,7 @@ public class ParentTab extends TabActivity
         addTab("Todo","Activities",R.drawable.tab_activity);
         addTab("Map","Maps",R.drawable.tab_map);
         addTab("Preferences","Preferences",R.drawable.preferences);
+        invalidateOptionsMenu();
         /*
         Intent map = new Intent(ParentTab.this, Map.class);
         spec = tabHost.newTabSpec("Map").setIndicator("Maps",
@@ -234,9 +235,11 @@ public class ParentTab extends TabActivity
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		//Get a reference to current tab Activity
-		Activity thisActivity = this.getCurrentActivity();
+		boolean ret=false;
 		
-		boolean ret = thisActivity.onCreateOptionsMenu(menu);
+		Activity thisActivity = this.getCurrentActivity();
+		if(thisActivity!=null)
+			ret = thisActivity.onCreateOptionsMenu(menu);
 		menu.add(0,BACKGROUND,0,"Background").setIcon(R.drawable.back).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM|MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 		menu.add(0,EXIT,0,"Exit").setIcon(R.drawable.exit).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM|MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 		return ret;
