@@ -39,7 +39,7 @@ public class OntologyReasoner {
 	//private final static String ONTOLOGY_FILE = "http://gronksoft.altervista.org/HintsOntology.owl";
 	//private final static String ONTOLOGY_FILE = "http://localhost/HintsOntologyNew.owl";
 	//private final static String ONTOLOGY_FILE = "/var/www/HintsOntologyNew.owl";
-	private final static String ONTOLOGY_FILE = "/home/thesisug/workspace2/ephemere/src/main/resources/HintsOntology.owl";
+	private final static String ONTOLOGY_FILE = "/var/lib/tomcat7/webapps/ephemere/WEB-INF/classes/HintsOntology.owl";
 	//private final static String ONTOLOGY_FILE = "http://gronksoft.altervista.org/HintsOntology.owl";
 	//private final static String ONTOLOGY_FILE = "http://nettuno.dyndns.org/HintsOntology.owl";
 	
