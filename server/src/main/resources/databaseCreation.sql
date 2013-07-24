@@ -258,7 +258,7 @@ CREATE TABLE IF NOT EXISTS `Action_voted` (
 `Location` varchar(30) NOT NULL,
 `Username` varchar(30) NOT NULL COMMENT 'nome dell”utente che ha votato',
 `Vote` int(1) NOT NULL DEFAULT '1' COMMENT '1-voto, 0-voto cancellato',
-`VoteDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+`Date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 `CancellationDate` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
 PRIMARY KEY (`Action`,`Location`,`Username`) ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 select "End creation of table Action_voted" as " ";
