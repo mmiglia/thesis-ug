@@ -65,9 +65,10 @@ public class MailUtility {
     		sent = true;
      
     	 } catch (Exception e) {
+    		 log.info("Failed sending verification mail because:" + e.getMessage());
     		 e.printStackTrace();
     	 }
-     
+    	 log.info("Verification mail sent: " + sent);
     	 return sent;
 
     }
