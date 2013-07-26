@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	    <TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	
+            android:text="Info sul task inserito"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingBottom="3dip" />
+	    
+	    <TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	
+            android:text="Per l'oggetto:"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:paddingBottom="3dip" />
+	    
+		<TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+            android:text="PANE"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingBottom="3dip" />
+
+            
+            <TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+            android:text="altri utenti hanno proposto:"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingBottom="3dip" />
+           
+         <ListView 
+		 		android:id="@+id/list_db" 
+		 		android:layout_height="fill_parent"
+		 		android:layout_width="fill_parent">
+		 		
+	</ListView>	
+	<Button
+		  	android:id="@+id/btn_add_location"
+		  	android:layout_width="wrap_content"
+		  	android:layout_height="wrap_content"
+		  	android:text="@string/add_location"
+		  	android:textAppearance="?android:attr/textAppearanceSmall"
+		  	></Button>
+	
+	
+</LinearLayout>
