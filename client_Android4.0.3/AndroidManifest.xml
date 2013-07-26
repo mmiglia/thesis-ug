@@ -91,7 +91,7 @@
             android:name="com.thesisug.ui.ParentTab"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:supportsRtl="true"
+            
             android:theme="@android:style/Theme.Holo"
             android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter>
@@ -139,7 +139,7 @@
         <activity
             android:name="com.thesisug.ui.ShowEvent"
             android:label="@string/app_name"
-            android:supportsRtl="true"
+            
             android:theme="@android:style/Theme.Holo"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateVisible|adjustPan" >
@@ -147,7 +147,7 @@
         <activity
             android:name="com.thesisug.ui.ShowTask"
             android:label="@string/app_name"
-            android:supportsRtl="true"
+            
             android:theme="@android:style/Theme.Holo"
             android:uiOptions="splitActionBarWhenNarrow"
             android:windowSoftInputMode="stateVisible|adjustPan" >
@@ -171,7 +171,7 @@
         <activity
             android:name="com.thesisug.ui.ManageGroupMenu"
             android:label="@string/app_name"
-            android:supportsRtl="true"
+            
             android:theme="@android:style/Theme.Holo"
             android:uiOptions="splitActionBarWhenNarrow" >
         </activity>
@@ -188,14 +188,14 @@
         <activity
             android:name="com.thesisug.ui.SystemStatus"
             android:label="@string/app_name"
-            android:supportsRtl="true"
+            
             android:theme="@android:style/Theme.Holo"
             android:uiOptions="splitActionBarWhenNarrow" >
         </activity>
         <activity
             android:name="com.thesisug.ui.ViewAssertions"
             android:label="@string/app_name"
-            android:supportsRtl="true"
+            
             android:theme="@android:style/Theme.Holo"
             android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter>
@@ -207,14 +207,14 @@
         <activity
             android:name="com.thesisug.ui.Details_assertion_item"
             android:label="@string/app_name"
-            android:supportsRtl="true"
+            
             android:theme="@android:style/Theme.Holo"
             android:uiOptions="splitActionBarWhenNarrow" >
         </activity>
         <activity
             android:name="com.thesisug.ui.Details_assertion_action"
             android:label="@string/app_name"
-            android:supportsRtl="true"
+            
             android:theme="@android:style/Theme.Holo"
             android:uiOptions="splitActionBarWhenNarrow" >
         </activity>
@@ -253,7 +253,7 @@
         <activity
             android:name="com.thesisug.ui.ViewAssertions_Action"
             android:label="@string/app_name"
-            android:supportsRtl="true"
+            
             android:theme="@android:style/Theme.Holo"
             android:uiOptions="splitActionBarWhenNarrow" >
             <intent-filter>
@@ -271,14 +271,14 @@
         <activity
             android:name="com.thesisug.ui.PrivatePlaces"
             android:label="@string/app_name"
-            android:supportsRtl="true"
+            
             android:theme="@android:style/Theme.Holo"
             android:uiOptions="splitActionBarWhenNarrow" >
         </activity>
         <activity
             android:name="com.thesisug.ui.PublicPlaces"
             android:label="@string/app_name"
-            android:supportsRtl="true"
+            
             android:theme="@android:style/Theme.Holo"
             android:uiOptions="splitActionBarWhenNarrow" >
         </activity>
@@ -295,7 +295,7 @@
         <activity
             android:name="com.thesisug.ui.DetailsPlace"
             android:label="@string/app_name"
-            android:supportsRtl="true"
+            
             android:theme="@android:style/Theme.Holo"
             android:uiOptions="splitActionBarWhenNarrow" >
         </activity>
@@ -307,7 +307,7 @@
         <activity
             android:name="com.thesisug.ui.ListPlacesFound"
             android:label="@string/app_name"
-            android:supportsRtl="true"
+            
             android:theme="@android:style/Theme.Holo"
             android:uiOptions="splitActionBarWhenNarrow" >
         </activity>
@@ -324,7 +324,7 @@
         <activity
             android:name="com.thesisug.ui.DetailsPlaceToVote"
             android:label="@string/app_name"
-            android:supportsRtl="true"
+            
             android:theme="@android:style/Theme.Holo"
             android:uiOptions="splitActionBarWhenNarrow" >
         </activity>
@@ -393,9 +393,9 @@
 
     <uses-sdk
         android:name="com.thesisug.MAPS_RECEIVE"
-        android:minSdkVersion="17"
+        android:minSdkVersion="15"
         android:protectionLevel="signature"
-        android:targetSdkVersion="17" />
+        android:targetSdkVersion="15" />
 
     <uses-permission android:name="com.thesisug.MAPS_RECEIVE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />

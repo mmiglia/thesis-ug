@@ -57,13 +57,7 @@ private void showNotificationDialogs()
                finish();
            }
 	});
-	temp.setOnDismissListener(new OnDismissListener()
-	{
-           public void onDismiss(DialogInterface dialog) 
-           {
-               finish();
-           }
-	});
+	
 	final AlertDialog.Builder snoozeListBuilder=temp;
 	//Check if user clicked on dismiss button
 	if(packet!=null)
@@ -109,6 +103,13 @@ private void showNotificationDialogs()
 		           });
 
             AlertDialog snoozeListDialog = snoozeListBuilder.create();
+            snoozeListDialog.setOnDismissListener(new OnDismissListener()
+        	{
+                public void onDismiss(DialogInterface dialog) 
+                {
+                    finish();
+                }
+        	});
             snoozeListDialog.show();    
 			return;
 		}

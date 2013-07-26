@@ -785,7 +785,8 @@ public class CustomLocationManager
 			boolean isSameProvider = userPosition.getProvider().equals(location.getProvider());
 			
 			//Check if location is significantly newer than lastCheckedFix
-			long timeDelta = ((location.getElapsedRealtimeNanos() - userPosition.getElapsedRealtimeNanos()))/1000000; //Nanoseconds to milliseconds
+			//long timeDelta = ((location.getElapsedRealtimeNanos() - userPosition.getElapsedRealtimeNanos()))/1000000; //Nanoseconds to milliseconds
+			long timeDelta = ((location.getTime() - userPosition.getTime()))/1000000; //Nanoseconds to milliseconds
 			//boolean isSignificantlyNewer = timeDelta >= minUpdateTime/1000-5; //Accept an error of 5 seconds
 			Log.d(TAG,"timeDelta: "+timeDelta/1000);
 			
