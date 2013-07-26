@@ -1,5 +1,6 @@
 package com.thesisug.ui;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -23,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TextView;
@@ -62,6 +64,17 @@ public class ParentTab extends TabActivity
         super.onCreate(savedInstanceState);
         Log.i(TAG,"onCreate.");
         setContentView(R.layout.parenttab);
+        try {
+            ViewConfiguration config = ViewConfiguration.get(this);
+            Field menuKeyField = ViewConfiguration.class.getDeclaredField("sHasPermanentMenuKey");
+            if(menuKeyField != null) 
+            {
+                menuKeyField.setAccessible(true);
+                menuKeyField.setBoolean(config, false);
+            }
+        } catch (Exception ex) {
+            // Ignore
+        }
         // start Task Notification service
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if(!lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
