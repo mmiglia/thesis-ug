@@ -61,13 +61,13 @@ public class GpsRequest extends Activity
 		               finish();
 		           }
 			});
-			builder.setOnDismissListener(new OnDismissListener()
+			/*builder.setOnDismissListener(new OnDismissListener()
 			{
 		           public void onDismiss(DialogInterface dialog) 
 		           {
 		               finish();
 		           }
-			});
+			});*/
 			builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener()
 			{
 		           public void onClick(DialogInterface dialog, int id) 
@@ -85,6 +85,13 @@ public class GpsRequest extends Activity
 			});
 
 			AlertDialog dialog = builder.create();
+			dialog.setOnDismissListener(new OnDismissListener()
+			{
+		           public void onDismiss(DialogInterface dialog) 
+		           {
+		               finish();
+		           }
+			});
 			dialog.show();
 		}
 	
