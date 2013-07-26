@@ -1,6 +1,7 @@
 package businessobject.google;
 
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,8 +98,10 @@ public class MapsClient  extends MapSubscriber {
 
 		Response r = sendSearchRequest(LOCAL_SEARCH_URI, params);
 		ResponseData respData=r.getResponseData();
-		
-		return respData.getResults();
+		if(respData!=null)
+			return respData.getResults();
+		else 
+			return new ArrayList<Hint>();
 	}
 
 	/**
