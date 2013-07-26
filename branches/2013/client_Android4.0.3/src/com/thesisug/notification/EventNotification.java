@@ -78,12 +78,13 @@ public class EventNotification extends BroadcastReceiver
         .setContentTitle(sentence)
         .setSmallIcon(R.drawable.icon)
         .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),R.drawable.event2))
-        .addAction(R.drawable.ok, context.getText(R.string.show_hints), showEvent)
-    	.addAction(R.drawable.no,context.getText(R.string.dismiss_hints),dismissNotificationPendingIntent)
-    	.addAction(R.drawable.snooze,context.getText(R.string.snooze_set),snoozeHints)
+        //.addAction(R.drawable.ok, context.getText(R.string.show_hints), showEvent)
+    	//.addAction(R.drawable.no,context.getText(R.string.dismiss_hints),dismissNotificationPendingIntent)
+    	//.addAction(R.drawable.snooze,context.getText(R.string.snooze_set),snoozeHints)
     	.setContentIntent(pendingIntent)
         .setWhen(System.currentTimeMillis())
-        .build();
+        //.build();
+        .getNotification();
 		/*
     	Intent notificationIntent = new Intent(context, ShowEvent.class);
     	notificationIntent.putExtras(intent.getExtras());

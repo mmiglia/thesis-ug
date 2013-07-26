@@ -680,10 +680,12 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	    			.setContentText(message)
 	    			.setContentTitle(sentence)
 	    			.setContentIntent(pendingIntent)
-	    			.addAction(R.drawable.ok, context.getText(R.string.show_hints), showHints)
-	    			.addAction(R.drawable.no,context.getText(R.string.dismiss_hints),dismissNotificationPendingIntent)
-	    			.addAction(R.drawable.snooze,context.getText(R.string.snooze_set),snoozeHints)
-	    			.setWhen(System.currentTimeMillis()).build()
+	    			//.addAction(R.drawable.ok, context.getText(R.string.show_hints), showHints)
+	    			//.addAction(R.drawable.no,context.getText(R.string.dismiss_hints),dismissNotificationPendingIntent)
+	    			//.addAction(R.drawable.snooze,context.getText(R.string.snooze_set),snoozeHints)
+	    			.setWhen(System.currentTimeMillis())
+	    			//.build()
+	    			.getNotification()
 	    			;
 	    	/*
 	    	Intent notificationIntent = new Intent(context, HintList.class);

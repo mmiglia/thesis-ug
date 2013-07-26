@@ -70,13 +70,7 @@ public class WifiRequest extends Activity
 		               finish();
 		           }
 			});
-			builder.setOnDismissListener(new OnDismissListener()
-			{
-		           public void onDismiss(DialogInterface dialog) 
-		           {
-		               finish();
-		           }
-			});
+			
 			builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener()
 			{
 		           public void onClick(DialogInterface dialog, int id) 
@@ -94,6 +88,13 @@ public class WifiRequest extends Activity
 			});
 			
 			AlertDialog dialog = builder.create();
+			dialog.setOnDismissListener(new OnDismissListener()
+			{
+		           public void onDismiss(DialogInterface dialog) 
+		           {
+		               finish();
+		           }
+			});
 			dialog.show();
 		}
 		
@@ -131,11 +132,11 @@ public class WifiRequest extends Activity
     			.setContentText("Wifi needed. Enable?")
     			.setWhen(System.currentTimeMillis())
     			.setContentIntent(notificationClick)
-    			.addAction(R.drawable.ok, "Ok", positiveAnswer)
-    			.addAction(R.drawable.no,"No",negativeAnswer)
+    			//.addAction(R.drawable.ok, "Ok", positiveAnswer)
+    			//.addAction(R.drawable.no,"No",negativeAnswer)
     			.setAutoCancel(true)
-    			.build()
-  
+    			//.build()
+    			.getNotification()
     			;
     	
     	newnotification=TaskNotification.getInstance().addNotificationAlertMethod(context,newnotification,"prova",5);
