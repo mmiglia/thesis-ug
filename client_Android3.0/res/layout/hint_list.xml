@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout  
+     xmlns:android="http://schemas.android.com/apk/res/android"  
+     android:layout_width="fill_parent"  
+     android:layout_height="wrap_content"
+     android:orientation="vertical"
+     android:focusable="false"  
+     android:paddingTop="3dip"
+     android:paddingLeft="15dip">  
+     <TextView  
+         android:id="@+id/hint_complex_title"  
+         android:layout_width="fill_parent"  
+         android:layout_height="wrap_content"
+         android:focusable="false"  
+         android:textAppearance="?android:attr/textAppearanceMedium"/>  
+     <ImageView
+     	android:id="@+id/addressicon"
+     	android:layout_width="wrap_content"  
+        android:layout_height="wrap_content" 
+     	android:src="@drawable/address"
+		android:layout_below="@id/hint_complex_title"/>
+     <TextView  
+         android:id="@+id/hint_complex_caption"  
+         android:layout_width="wrap_content"  
+         android:layout_height="wrap_content"  
+         android:layout_toRightOf="@id/addressicon"
+         android:layout_alignTop="@id/addressicon"
+         android:focusable="false"
+         android:textAppearance="?android:attr/textAppearanceSmall"/>
+     <ImageView
+     	android:id="@+id/phoneicon"
+		android:layout_width="wrap_content"  
+        android:layout_height="wrap_content" 
+     	android:src="@drawable/phone"
+		android:layout_below="@id/hint_complex_caption"/>
+     <TextView  
+         android:id="@+id/hint_phone_caption"  
+         android:layout_width="wrap_content"  
+         android:layout_height="wrap_content"  
+         android:layout_toRightOf="@id/phoneicon"
+         android:layout_alignTop="@id/phoneicon"
+         android:focusable="false"
+         android:textAppearance="?android:attr/textAppearanceSmall"/>
+</RelativeLayout>

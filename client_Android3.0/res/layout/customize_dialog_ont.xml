@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/LinearLayout01"
+	android:layout_height="fill_parent" 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:gravity="center" 
+	android:layout_width="300dip">
+		<TextView 
+			android:id="@+id/TextView01" 
+			android:layout_height="wrap_content"
+			android:textColor="#fff" 
+			android:textStyle="bold"
+			android:layout_width="wrap_content" 
+			android:text="Nessuna corrispondenza per il task!">
+		</TextView>
+		
+ 		<Button 
+			android:layout_width="250dip"
+			android:layout_height="wrap_content" 
+			android:text="Vuoi cercare un oggetto" 
+			android:id="@+id/add_item">
+		</Button>
+         <Button 
+			android:layout_width="250dip"
+			android:layout_height="wrap_content" 
+			android:text="Vuoi compire un'azione" 
+			android:id="@+id/add_action">
+		</Button>
+		<Button 
+			android:layout_width="250dip"
+			android:layout_height="wrap_content" 
+			android:text="Vuoi raggingere un luogo" 
+			android:id="@+id/add_location">
+		</Button>
+
+</LinearLayout>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:stretchColumns="1">
+    <RelativeLayout
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="10dip">
+
+     <TextView  
+         android:id="@+id/group_member_username_title"
+		 android:text="@string/group_member_username_title"  
+         android:layout_width="240dip"  
+         android:layout_height="wrap_content" 
+         android:layout_marginBottom="10dip"
+         android:textAppearance="?android:attr/textAppearanceMedium"
+         android:focusable="false"/>
+     <TextView  
+         android:id="@+id/txt_member_username"  
+         android:layout_width="240dip"  
+         android:layout_height="wrap_content" 
+         android:layout_marginBottom="10dip"
+         android:textAppearance="?android:attr/textAppearanceSmall"
+         android:focusable="false"
+         android:layout_below="@+id/group_member_username_title"/>
+     <TextView  
+         android:id="@+id/group_member_joindate_title"
+		 android:text="@string/group_member_joindate_title"  
+         android:layout_width="240dip"  
+         android:layout_height="wrap_content" 
+         android:layout_marginBottom="10dip"
+         android:textAppearance="?android:attr/textAppearanceMedium"
+         android:focusable="false"
+         android:layout_below="@+id/txt_member_username"/>
+     <TextView  
+         android:id="@+id/txt_member_joindate"  
+         android:layout_width="240dip"  
+         android:layout_height="wrap_content" 
+         android:layout_marginBottom="10dip"
+         android:textAppearance="?android:attr/textAppearanceSmall"
+         android:focusable="false"
+         android:layout_below="@+id/group_member_joindate_title"/>
+
+</RelativeLayout>
+</TableLayout>

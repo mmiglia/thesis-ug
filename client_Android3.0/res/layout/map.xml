@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent">
+<LinearLayout
+    	android:id="@+id/hintBarView"
+    	android:layout_width="wrap_content"
+    	android:layout_height="50dip">
+    	
+	<Button 
+		android:id="@+id/map_btn_prev_Hint"
+		android:layout_gravity="left"
+		android:layout_height="wrap_content"
+		android:layout_width="52dip"
+		android:background="@drawable/arrowleft"/> 
+	
+	<TextView
+		android:inputType="textNoSuggestions"
+		android:id="@+id/map_txt_Hint"
+		android:layout_width="200dip"
+		android:layout_height="wrap_content"
+		android:gravity="center"
+		android:layout_gravity="center_horizontal|center"
+		android:text="No hints loaded"		
+	    android:textAppearance="?android:attr/textAppearanceSmall"
+	    android:layout_toRightOf="@+id/map_btn_prev_Hint"
+	    android:layout_alignBaseline="@+id/map_btn_prev_Hint"/>
+	
+	
+	<Button 
+		android:id="@+id/map_btn_next_Hint"
+		android:layout_gravity="right"
+		android:layout_height="wrap_content"
+		android:layout_width="48dip"
+		android:layout_toRightOf="@+id/map_txt_Hint"
+		android:background="@drawable/arrowright"
+		android:layout_alignBaseline="@+id/map_txt_Hint"/> 
+</LinearLayout>
+<!-- Modified 7/04/2013 for Google Maps Android Api key v2 by Alberto Servetti-->
+<LinearLayout
+    	android:id="@+id/mapView"
+    	android:layout_width="wrap_content"
+    	android:layout_height="fill_parent"
+        android:layout_below="@+id/hintBarView">
+            	
+<fragment 
+          android:id="@+id/map"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:name="com.google.android.gms.maps.MapFragment"/>
+</LinearLayout>
+<!--  -->
+</RelativeLayout>
