@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:orientation="vertical"
+    	android:paddingLeft="10dip"
+    	android:paddingRight="5dip">
+    	<TextView
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"
+        	android:id="@+id/view_group_title"
+            android:text="@string/view_group_title"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingBottom="3dip" />
+		<Spinner 
+		    android:id="@+id/SpinnerGroupList"
+		    android:layout_width="fill_parent"
+		    android:layout_height="55dip"
+		    android:prompt = "@string/chooseAGroup"
+		    android:layout_below="@+id/view_group_title">
+		</Spinner>
+		<Button
+		  	android:id="@+id/btn_updateGroupList"
+		  	android:layout_width="wrap_content"
+		  	android:layout_height="wrap_content"
+		  	android:text="@string/btn_updateGroupList"
+		  	android:textAppearance="?android:attr/textAppearanceSmall"
+		  	android:layout_below="@+id/SpinnerGroupList"/>
+		<Button
+		  	android:id="@+id/btn_ViewGroup"
+		  	android:layout_width="wrap_content"
+		  	android:layout_height="wrap_content"
+		  	android:text="@string/btn_view_group"
+		  	android:textAppearance="?android:attr/textAppearanceSmall"
+		  	android:layout_below="@+id/SpinnerGroupList"
+		  	android:layout_toRightOf="@+id/btn_updateGroupList"/>
+		<Button
+		  	android:id="@+id/btn_ExitFromGroup"
+		  	android:layout_width="wrap_content"
+		  	android:layout_height="wrap_content"
+		  	android:text="@string/btn_exit_from_group"
+		  	android:textAppearance="?android:attr/textAppearanceSmall"
+		  	android:layout_below="@+id/btn_updateGroupList"/>
+    	<TextView
+    		android:id="@+id/group_members_list_title"
+        	android:layout_width="wrap_content"
+        	android:layout_height="wrap_content"        	
+            android:text="@string/group_members_list_title"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:paddingBottom="3dip"
+            android:layout_below="@+id/btn_ExitFromGroup" />
+	 	<ListView 
+		 		android:id="@+id/groupMembersList" 
+		 		android:layout_height="fill_parent"
+		 		android:layout_width="fill_parent"
+		 		android:layout_below="@+id/group_members_list_title">
+		 </ListView>
+	
+    
+	</RelativeLayout>

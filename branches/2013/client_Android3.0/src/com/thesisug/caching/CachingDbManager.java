@@ -1,0 +1,138 @@
+package com.thesisug.caching;
+
+import java.util.List;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
+import com.thesisug.communication.valueobject.Hint;
+import com.thesisug.caching.CachingDb;
+
+public class CachingDbManager 
+{
+	private static final String TAG = "thesisug - CachingDbManager";
+	private static CachingDb cachingDb; 
+	private static SQLiteDatabase db;
+	
+	public static void Init(Context c)
+	{
+		cachingDb = new CachingDb(c);
+		db = cachingDb.getWritableDatabase();
+		/*DEBUG
+		SQLiteDatabase db = cachingDb.getWritableDatabase();
+		cachingDb.insertAreaEntry(new Area((float)44.424682,(float)8.844599,(float)100),"comprare il latte",false,db);
+		cachingDb.insertAreaEntry(new Area((float)44.423069,(float)8.845965,(float)100),"comprare il latte", false, db);
+		db.close();
+		*/
+	}
+	
+	
+	public static boolean insertHints(Area actualArea,String sentence, List<Hint> hints)
+	{
+		Log.i(TAG,"insertHints");
+		boolean ret;
+		//SQLiteDatabase db = cachingDb.getWritableDatabase();
+		cachingDb.startTransaction(db);
+		if(!cachingDb.insertAreaEntry(actualArea,sentence,false,db))
+		{
+			Log.e(TAG,"Failed to insert new area entry.");
+			return false;
+		}	
+			
+		ret=cachingDb.insertHints(sentence, hints,db);
+		if(ret)
+		{
+			cachingDb.commitTransaction(db);
+			if(dbNeedsDownsize(db))
+			{
+				Log.d(TAG,"Database is too big, need resize.");
+				cachingDb.downsizeDb(actualArea,db);
+			}
+			else
+				Log.d(TAG,"Size is ok.");
+		}
+		else
+			Log.e(TAG,"Failed to insert new hints.");
+		//db.close();
+		return ret;
+	}
+	
+	public static List<Hint> searchLocalBuisnessInCache(String sentence,float latitude, float longitude,int distance)
+	{
+		Log.i(TAG,"searchLocalBuisnessInCache");
+
+		//SQLiteDatabase db = cachingDb.getWritableDatabase();
+		List<Hint> ret = cachingDb.searchLocalBuisnessInCache(sentence, latitude, longitude, distance,db);
+		//db.close();
+		return ret;
+	}
+	
+	public static Area checkArea(Area areaToCheck,String sentence)
+	{
+		Log.i(TAG,"checkArea");
+		//SQLiteDatabase db = cachingDb.getReadableDatabase();
+		Area ret = cachingDb.checkArea(areaToCheck, sentence,db);
+		//db.close();
+		return ret;
+	}
+	
+	public static boolean deleteArea(Area areaToClean,String sentence)
+	{
+		Log.i(TAG,"cleanArea");
+		boolean ret;
+		//SQLiteDatabase db = cachingDb.getWritableDatabase();
+		cachingDb.startTransaction(db);
+		ret=cachingDb.deleteArea(areaToClean, sentence,db);
+		if(ret)
+		{
+			cachingDb.commitTransaction(db);
+		}
+		//db.close();
+		return ret;
+		
+	}
+	
+	public static void startCacheUpdate()
+	{
+		Log.i(TAG,"updateCache");
+		//SQLiteDatabase db = cachingDb.getWritableDatabase();
+		CachingDb.startCacheUpdate(db);
+		//db.close();
+	}
+	
+	public static void updateArea(Area area,String sentence,List<Hint> update)
+	{
+		Log.i(TAG,"updateArea");
+
+		//SQLiteDatabase db = cachingDb.getWritableDatabase();
+		cachingDb.updateArea(area,sentence,update,db);
+		//db.close();
+	}
+	
+	public static void cleanCache()
+	{
+		Log.i(TAG,"cleanCache");
+
+		//SQLiteDatabase db = cachingDb.getWritableDatabase();
+		cachingDb.cachingClean(db);
+		//db.close();
+	}
+	
+	public static boolean dbNeedsDownsize(SQLiteDatabase db)
+	{
+		Log.i(TAG,"dbNeedsDownsize");
+		return cachingDb.dbNeedsDownsize(db);
+	}
+	
+	public static double calculateDistance(double latitudeA,double longitudeA,double latitudeB, double longitudeB)
+	{
+		Log.i(TAG,"calculateDistance");
+		return cachingDb.calculateDistance(latitudeA, longitudeA, latitudeB, longitudeB);
+	}
+	
+	public static void closeDatabaseConnection()
+	{
+		Log.i(TAG,"closeDatabaseConnection");
+		db.close();
+	}
+}

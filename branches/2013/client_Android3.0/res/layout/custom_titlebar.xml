@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:paddingTop="10dip"
+	android:paddingRight="10dip"
+	android:background="@color/dkgrey"
+	android:focusable="true"
+	android:focusableInTouchMode="true">
+	<ImageView
+		android:id="@+id/personicon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/person"
+		android:layout_alignParentLeft="true"/>
+	<TextView
+		android:id="@+id/customtitlebar"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/personicon"
+		android:layout_alignBaseline="@id/personicon"
+		android:layout_centerVertical="true"
+		android:textStyle="bold"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+	 	android:focusable="true"
+		android:focusableInTouchMode="true"/>
+	<CheckBox android:id="@+id/remind_event_checkbox"
+		style="?android:attr/starStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true" 
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
+</RelativeLayout>
