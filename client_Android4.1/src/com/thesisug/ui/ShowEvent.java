@@ -88,6 +88,7 @@ public class ShowEvent extends Activity{
 			from = (Calendar) xs_DateTime.parseObject(packet.getString("startTime"));
 			to = (Calendar) xs_DateTime.parseObject(packet.getString("endTime"));
 			fromtext.setText(getText(R.string.from)+" : "+ printCalendar(from));
+			Log.d(TAG,"fromText:"+ fromtext);
 			totext.setText(getText(R.string.until)+"  : "+ printCalendar(to));
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -116,7 +117,9 @@ public class ShowEvent extends Activity{
 			intent.putExtra("reminderID", packet.getString("reminderID"));
 			intent.putExtra("title", title.getText().toString());
 			intent.putExtra("location", location.getText().toString());
+			if(from!=null)
 			intent.putExtra("startTime", new XsDateTimeFormat().format(from));
+			if(to!=null)
 			intent.putExtra("endTime", new XsDateTimeFormat().format(to));
 			intent.putExtra("priority", Math.round(priority.getRating()));
 			intent.putExtra("description", description.getText().toString());
