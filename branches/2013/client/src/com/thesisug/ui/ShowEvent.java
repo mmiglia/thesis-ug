@@ -116,7 +116,9 @@ public class ShowEvent extends Activity{
 			intent.putExtra("reminderID", packet.getString("reminderID"));
 			intent.putExtra("title", title.getText().toString());
 			intent.putExtra("location", location.getText().toString());
-			intent.putExtra("startTime", new XsDateTimeFormat().format(from));
+			if(from!=null)
+				intent.putExtra("startTime", new XsDateTimeFormat().format(from));
+			if(to!=null)
 			intent.putExtra("endTime", new XsDateTimeFormat().format(to));
 			intent.putExtra("priority", Math.round(priority.getRating()));
 			intent.putExtra("description", description.getText().toString());
