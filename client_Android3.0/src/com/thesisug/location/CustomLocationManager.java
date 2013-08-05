@@ -1107,7 +1107,7 @@ public class CustomLocationManager
 	}
 	/**
 	 * Obtain app running mode.
-	 * @return	Learning mode or Battery Recovery Mode.
+	 * @return	Learning mode or Battery Saving Mode.
 	 */
 	public String appMode()
 	{
@@ -1447,7 +1447,7 @@ public class CustomLocationManager
 		SendBroadcast(LOCATIONCHANGED, lastCheckedFix, lastCheckedFix.getProvider(),0,null);
 		if(appMode.equals("battery_rec_mode"))
 		{
-			Log.d(TAG,"Battery Recovery mode and no tasks! Stopping updates untill a new Task is added!");
+			Log.d(TAG,"Battery Saving mode and no tasks! Stopping updates untill a new Task is added!");
 			RemoveUpdates();
 			return;
 		}
