@@ -253,7 +253,7 @@ public class ParentTab extends TabActivity
 		Activity thisActivity = this.getCurrentActivity();
 		if(thisActivity!=null)
 			ret = thisActivity.onCreateOptionsMenu(menu);
-		menu.add(0,BACKGROUND,0,"Background").setIcon(R.drawable.back).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM|MenuItem.SHOW_AS_ACTION_WITH_TEXT);
+		menu.add(0,BACKGROUND,0,"Background").setIcon(R.drawable.pec_arrow_down).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM|MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 		menu.add(0,EXIT,0,"Exit").setIcon(R.drawable.exit).setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM|MenuItem.SHOW_AS_ACTION_WITH_TEXT);
 		return ret;
 	}
