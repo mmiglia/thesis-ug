@@ -97,7 +97,7 @@
 	</string-array>
 	<string-array name="p_mode">
 	    <item>Learning Mode</item>
-	    <item>Battery Recovery Mode</item>
+	    <item>Battery Saving Mode</item>
 	</string-array>
 	<string-array name="p_mode_value">
 	    <item>learning_mode</item>
