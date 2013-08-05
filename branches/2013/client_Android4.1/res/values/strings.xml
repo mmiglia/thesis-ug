@@ -286,7 +286,7 @@
     <string name="set_vibration_summary_customized">Select a vibration mode,</string>
     <string name="change_server_summary">Change server</string>
     <string name="app_mode">Running mode.</string>
-    <string name="app_mode_desc">Choose between learning mode and battery recovery mode.</string>
+    <string name="app_mode_desc">Choose between learning mode and battery saving mode.</string>
 	<string name="update_cache_button">Update cache</string>
 	<string name="delete_cache_button">Delete cache</string>
     <!-- TRACKING -->
