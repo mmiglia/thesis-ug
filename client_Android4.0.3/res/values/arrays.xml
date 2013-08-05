@@ -88,12 +88,12 @@
 	</string-array>
 	
 	<string-array name="p_lang">
-		<item>EN - English</item>
 		<item>IT - Italian</item>
+		<item>EN - English</item>
 	</string-array>
 	<string-array name="p_lang_value">
+		<item>it.lang</item>		
 		<item>en.lang</item>
-		<item>it.lang</item>
 	</string-array>
 	<string-array name="p_mode">
 	    <item>Learning Mode</item>
