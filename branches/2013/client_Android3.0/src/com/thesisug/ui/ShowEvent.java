@@ -129,7 +129,6 @@ public class ShowEvent extends Activity{
 			break;			
 		case DELETE:
 			showDialog(ASK_CONFIRMATION);
-			ActionTracker.contentCompleted(Calendar.getInstance().getTime(), title.getText().toString(), getApplicationContext(), 1);
 			break;
 		case DELETESNOOZE:
 			SnoozeHandler.removeSnooze(title.getText().toString());
@@ -177,6 +176,7 @@ public class ShowEvent extends Activity{
                 public void onClick(DialogInterface dialog, int whichButton) {
                 	
                 	Thread deleteThread = EventResource.removeEvent(packet.getString("eventID"), handler, ShowEvent.this);
+                	ActionTracker.contentCompleted(Calendar.getInstance().getTime(), title.getText().toString(), getApplicationContext(), 1);
                 	showDialog(WAIT_DELETION);
                 }
             })
