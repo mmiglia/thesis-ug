@@ -44,7 +44,7 @@ public class AddEvent implements Verb{
 				System.out.println(TAG+"oggetto OBJECT");
 				break;
 			case TIME: 
-				whenString = a.content;
+				whenString = a.content.replaceAll(" e ", ":");
 				System.out.println(TAG+"oggetto TIME");
 				break;
 			}
