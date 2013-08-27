@@ -1479,13 +1479,13 @@ public class CustomLocationManager
 	public void onDestroy()
 	{
 		Log.d(TAG,"Destroy.");
-		
+		evaluateThread.interrupt();
 		RemoveUpdates();
 		handler.removeCallbacks(requestUpdates);
 		handler.removeCallbacks(gpsRequestTimeout);
 		handler.removeCallbacks(wifiRequestTimeout);
 		handler.removeCallbacks(gpsTimeout);
 		applicationContext.unregisterReceiver(broadCastReceiver);
-		//GpxBuilder.closeFile(Calendar.getInstance().getTime());
+		GpxBuilder.newtrkSeg(Calendar.getInstance().getTime());
 	}
 }
