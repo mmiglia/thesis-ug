@@ -257,6 +257,7 @@ public class ParentTab extends TabActivity
 			case EXIT:
 				stopService(notificationDispatcherIntent);
 				stopService(taskNotificationIntent);
+				Todo.cleanEventAlarms();
 				//activityRecognitionRemover.removeUpdates(activityRecognitionRequester.getRequestPendingIntent());
 				ActionTracker.appClosed(Calendar.getInstance().getTime(), getApplicationContext());
 				//android.os.Process.killProcess(android.os.Process.myPid());
