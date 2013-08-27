@@ -59,8 +59,7 @@ public class AddEvent implements Verb{
 			endTime.add(Calendar.DAY_OF_MONTH, 0);
 			endTime.setTimeInMillis(start.getTime());
 			endTime.add(Calendar.DAY_OF_MONTH, 1); // add end time by one day
-			
-			EventManager.getInstance().createEvent(userid, "", Converter.CalendarTimetoString(startTime), Converter.CalendarDatetoString(endTime), "", title, "");
+			EventManager.getInstance().createEvent(userid, "", Converter.CalendarDatetoString(startTime), Converter.CalendarDatetoString(endTime), "", title, "");
 			return true;
 			
 		}
