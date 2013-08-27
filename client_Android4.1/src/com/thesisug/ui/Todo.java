@@ -95,6 +95,12 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 	public void onCreate(Bundle savedInstanceState) 
 	{
 		super.onCreate(savedInstanceState);
+		if (getIntent().getBooleanExtra("EXIT", false)) 
+		{
+			Log.d(TAG,"finishing.");
+		    finish();  
+		    return;
+		}
         accountManager = AccountManager.get(getApplicationContext());
         
         Log.d(TAG,"Todo_3");
