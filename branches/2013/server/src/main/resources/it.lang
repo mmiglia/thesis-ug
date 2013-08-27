@@ -1,4 +1,4 @@
 filename=it.lang
 name=Italian
 roles=GOAL,OBJECT,OBJECT,OBJECT,OBJECT,OBJECT,OBJECT,SOURCE,LOCATION,LOCATION,LOCATION,TIME,TIME,TIME,TIME
-delimiters=a,di,devo,aggiungi attività,aggiungi evento,ho un appuntamento,aggiungi appuntamento,da,in,vicino,nei dintorni,prima delle,prima di,prima dell\',alle
+delimiters=a,di,devo,aggiungi compito,aggiungi evento,ho un appuntamento,aggiungi appuntamento,da,in,vicino,nei dintorni,prima delle,prima di,prima dell\',alle
