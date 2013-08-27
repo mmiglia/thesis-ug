@@ -75,7 +75,7 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 	private static int counter = 0; // counter for task and event thread completion
 	private static String username, session;
 	private AccountManager accountManager;
-	private AlarmManager am;
+	private static AlarmManager am;
 	private Account[] accounts;
 	private final Handler handler = new Handler();
 	private static SharedPreferences userSettings;
@@ -607,13 +607,17 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 			return false;
 		}
 	}
-
+	public static void cleanEventAlarms()
+	{
+		am.cancel(alarmIntent);
+	}
 
     @Override
     public void onInit(int status) {
             // If the TTS init is successful set a flag to say we can be used; say hello
             if (status == TextToSpeech.SUCCESS){                    
                     mTts.speak("",TextToSpeech.QUEUE_FLUSH, null);
+                    
             }
     }
 
