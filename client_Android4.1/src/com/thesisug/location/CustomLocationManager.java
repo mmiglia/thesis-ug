@@ -1480,7 +1480,6 @@ public class CustomLocationManager
 	public void onDestroy()
 	{
 		Log.d(TAG,"Destroy.");
-		
 		RemoveUpdates();
 		handler.removeCallbacks(requestUpdates);
 		handler.removeCallbacks(gpsRequestTimeout);
