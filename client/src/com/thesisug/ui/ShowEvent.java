@@ -129,7 +129,7 @@ public class ShowEvent extends Activity{
 			break;			
 		case DELETE:
 			showDialog(ASK_CONFIRMATION);
-			ActionTracker.contentCompleted(Calendar.getInstance().getTime(), title.getText().toString(), getApplicationContext(), 1);
+			
 			break;
 		case DELETESNOOZE:
 			SnoozeHandler.removeSnooze(title.getText().toString());
@@ -178,6 +178,7 @@ public class ShowEvent extends Activity{
                 	
                 	Thread deleteThread = EventResource.removeEvent(packet.getString("eventID"), handler, ShowEvent.this);
                 	showDialog(WAIT_DELETION);
+                	ActionTracker.contentCompleted(Calendar.getInstance().getTime(), title.getText().toString(), getApplicationContext(), 1);
                 }
             })
             .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
