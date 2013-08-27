@@ -182,9 +182,11 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	    {
 	    	Log.i(TAG, "Task Notification service is stopped");
 	        // Stop the thread from generating further notifications
+	    	
 	        condvar.open();
 	        runningThread = false;
 	        SnoozeHandler.unregister();
+	        
 	        SnoozeHandler.saveToFile();
 	        synchronized(stopThreadObject)
 	        {
@@ -192,6 +194,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	        }
 	        
 	        customLocationManager.onDestroy();
+	        stopSelf();
 	       /* activityRecognitionRemover.removeUpdates(activityRecognitionRequester.getRequestPendingIntent());
 	        activityRecognitionRequester.getRequestPendingIntent().cancel();*/
 	        // Tell the user we stopped.
