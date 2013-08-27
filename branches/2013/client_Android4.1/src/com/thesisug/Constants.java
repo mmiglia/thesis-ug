@@ -21,7 +21,7 @@ public class Constants {
     
     //public static final String DEFAULT_URL="127.0.0.1";
     
-    //Server casa Servetti
+    
     public static final String DEFAULT_URL = "http://mizar.cipi.unige.it";
     
     public static final String PROGRAM_NAME="ephemere";
