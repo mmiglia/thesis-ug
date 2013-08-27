@@ -50,7 +50,7 @@ public class AddTask implements Verb{
 				continue;
 			}
 			if (a.role == SemanticRoles.RoleType.TIME) {
-				whenString = a.content;
+				whenString = a.content.replaceAll(" e ", ":");
 				System.out.println(TAG+"oggetto TIME: "+a.content);
 				//break;
 				continue;
