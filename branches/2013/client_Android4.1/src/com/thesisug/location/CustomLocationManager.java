@@ -614,7 +614,7 @@ public class CustomLocationManager
 	private void RequestLocationUpdates(String caller)
 	{
 		Log.i(TAG,"requestLocationUpdates by " + caller);
-		Log.d(TAG,"Registering to " + locationProvider +" updates with frequency "+ minUpdateTime +".");
+		Log.d(TAG,"Registering to " + locationProvider +" updates with frequency "+ minUpdateTime/1000 +".");
 		if(locationProvider.equals(LocationManager.GPS_PROVIDER))
 		{
 			handler.postDelayed(gpsTimeout, TWOMINS);
@@ -1480,12 +1480,13 @@ public class CustomLocationManager
 	public void onDestroy()
 	{
 		Log.d(TAG,"Destroy.");
+		evaluateThread.interrupt();
 		RemoveUpdates();
 		handler.removeCallbacks(requestUpdates);
 		handler.removeCallbacks(gpsRequestTimeout);
 		handler.removeCallbacks(wifiRequestTimeout);
 		handler.removeCallbacks(gpsTimeout);
 		applicationContext.unregisterReceiver(broadCastReceiver);
-		//GpxBuilder.closeFile(Calendar.getInstance().getTime());
+		GpxBuilder.newtrkSeg(Calendar.getInstance().getTime());
 	}
 }
