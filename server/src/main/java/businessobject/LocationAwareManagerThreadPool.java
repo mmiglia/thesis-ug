@@ -33,7 +33,7 @@ public class LocationAwareManagerThreadPool
 	public static DateUtilsNoTime date = new DateUtilsNoTime();
 	public static String nowDateCanc = DateUtilsNoTime.now();
 	public static boolean flagCanc = false;
-	private static final int PRECACHINGAREA = 3; //Side of caching square area in miles. 6 miles = 10 km 
+	private static final int PRECACHINGAREA = 15; //Side of caching square area in miles. 6 miles = 10 km 31 miles = 50 km
 	private static final double PRECACHINGDST = 1.0/6371.0; //Distance between centres of each caching area 
 	//It's unnecessary to memorize cachedQueries on Db because 
 	//cache is deleted when server restart 
@@ -391,11 +391,11 @@ public class LocationAwareManagerThreadPool
 			else
 			{
 				//At the moment max precaching area is 10 km
-				if(distance>10000)
+				if(distance>50000)
 				{
 					Hint dummyHint = new Hint();
 					dummyHint.title="searchRadius";
-					dummyHint.searchRadius="10000";
+					dummyHint.searchRadius="50000";
 					toReturn.add(dummyHint);
 				}
 				return toReturn;
