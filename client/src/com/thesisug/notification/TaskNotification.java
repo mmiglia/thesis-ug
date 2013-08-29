@@ -181,6 +181,7 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	    public void onDestroy() 
 	    {
 	    	Log.i(TAG, "Task Notification service is stopped");
+	    	super.onDestroy();
 	        // Stop the thread from generating further notifications
 	        condvar.open();
 	        runningThread = false;
@@ -192,6 +193,9 @@ public class TaskNotification extends Service implements LocationListener,OnShar
 	        }
 	        
 	        customLocationManager.onDestroy();
+	  	  
+	        handler.removeCallbacksAndMessages(null);
+	        stopSelf();
 	       /* activityRecognitionRemover.removeUpdates(activityRecognitionRequester.getRequestPendingIntent());
 	        activityRecognitionRequester.getRequestPendingIntent().cancel();*/
 	        // Tell the user we stopped.
