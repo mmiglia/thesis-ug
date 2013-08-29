@@ -146,6 +146,7 @@ public class CustomLocationManager
 		gpsAlreadyAsked = false;
 		waitingForWifiAnswer = false;
 		destroy=false;
+		isBatteryLow = false;
 		requestUpdates = 	new Runnable() 
 		{
 			@Override
@@ -350,7 +351,7 @@ public class CustomLocationManager
 		            }
 		        }
 			    /*batteryLow*/
-			    if(action.equals(Intent.ACTION_BATTERY_LOW))
+			    /*if(action.equals(Intent.ACTION_BATTERY_LOW))
 			    {
 
 			    	Log.d(TAG,"Battery low!");
@@ -369,10 +370,10 @@ public class CustomLocationManager
 		    		}
 			    }
 			    /*batteryOk*/
-			    if(action.equals(Intent.ACTION_BATTERY_OKAY))
+			    /*if(action.equals(Intent.ACTION_BATTERY_OKAY))
 			    {
 		    		isBatteryLow=false;
-			    }
+			    }*/
 			}
 		};
 	
