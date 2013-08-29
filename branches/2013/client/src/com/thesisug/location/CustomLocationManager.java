@@ -67,6 +67,7 @@ public class CustomLocationManager
 	private static boolean gpsAlreadyAsked;
 	private static boolean waitingForWifiAnswer;
 	private static boolean gpsFirstFix;
+	private static boolean destroy;
 	private static WifiManager wifiManager;
 	private static int taskHintSearching;
 	private static Thread evaluateThread;
@@ -144,6 +145,7 @@ public class CustomLocationManager
 		wifiAlreadyAsked = false;
 		gpsAlreadyAsked = false;
 		waitingForWifiAnswer = false;
+		destroy=false;
 		requestUpdates = 	new Runnable() 
 		{
 			@Override
@@ -1177,6 +1179,17 @@ public class CustomLocationManager
         {
         	while(true)
         	{
+        		if(destroy)
+        		{
+        			Log.d(TAG,"thread destroy");
+        			RemoveUpdates();
+        			handler.removeCallbacks(requestUpdates);
+        			handler.removeCallbacks(gpsRequestTimeout);
+        			handler.removeCallbacks(wifiRequestTimeout);
+        			handler.removeCallbacks(gpsTimeout);
+        			handler.removeCallbacksAndMessages(null);
+        			return;
+        		}
         		Log.d(TAG,"evaluateThread stopped.");
         		evaluateThreadStop.block();
 	        	Log.d(TAG,"evaluateThread started!");
@@ -1479,12 +1492,13 @@ public class CustomLocationManager
 	public void onDestroy()
 	{
 		Log.d(TAG,"Destroy.");
-		evaluateThread.interrupt();
+		destroy=true;
 		RemoveUpdates();
 		handler.removeCallbacks(requestUpdates);
 		handler.removeCallbacks(gpsRequestTimeout);
 		handler.removeCallbacks(wifiRequestTimeout);
 		handler.removeCallbacks(gpsTimeout);
+		handler.removeCallbacksAndMessages(null);
 		applicationContext.unregisterReceiver(broadCastReceiver);
 		GpxBuilder.newtrkSeg(Calendar.getInstance().getTime());
 	}

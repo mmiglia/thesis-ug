@@ -249,6 +249,7 @@ public class ParentTab extends TabActivity
 	public boolean onOptionsItemSelected(MenuItem item) 
 	{
 		boolean ret = true;
+		Activity thisActivity = this.getCurrentActivity();
 			switch (item.getItemId())
 			{
 			case BACKGROUND:
@@ -257,6 +258,7 @@ public class ParentTab extends TabActivity
 			case EXIT:
 				stopService(notificationDispatcherIntent);
 				stopService(taskNotificationIntent);
+				tabHost.clearAllTabs();
 				Todo.cleanEventAlarms();
 				//activityRecognitionRemover.removeUpdates(activityRecognitionRequester.getRequestPendingIntent());
 				ActionTracker.appClosed(Calendar.getInstance().getTime(), getApplicationContext());
@@ -267,11 +269,14 @@ public class ParentTab extends TabActivity
 				notificationManager.cancelAll();
 				CachingDbManager.closeDatabaseConnection();
 				super.finish();
+				Intent intent = new Intent(getApplicationContext(), Todo.class);
+				intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				intent.putExtra("EXIT", true);
+				startActivity(intent);
 				finish();
 				break;
 				default:
-			//Get a reference to current tab Activity
-			Activity thisActivity = this.getCurrentActivity();
+			
 			//The specific tab Activity handles button press
 			ret = thisActivity.onOptionsItemSelected(item);
 			break;
