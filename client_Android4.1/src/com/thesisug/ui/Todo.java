@@ -564,7 +564,8 @@ public class Todo extends ListActivity implements OnInitListener, OnUtteranceCom
 		
 		setListAdapter(adapter);		
 		
-		
+		SnoozeHandler.checkExpiredSnoozes();
+
 	}
 	
 	class EventBinder implements ViewBinder{
