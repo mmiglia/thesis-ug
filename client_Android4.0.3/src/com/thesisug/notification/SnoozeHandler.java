@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Set;
 
 import com.thesisug.tracking.ActionTracker;
 
@@ -63,7 +64,7 @@ public class SnoozeHandler
 	     {
 	    	 synchronized(snoozedNotificationsSafe)
 	        	{
-		        	if(snoozedNotifications != null)
+		        	if(snoozedNotifications != null && !snoozedNotifications.isEmpty())
 		        	{
 		        		Log.d(TAG,"Saving snoozedNotifications");;
 		        		File file = new File(context.getDir("data", Context.MODE_PRIVATE), "snoozedNotifications");    
@@ -117,6 +118,32 @@ public class SnoozeHandler
 	    	 }
 	    	 else
 	    		 return false;
+	     }
+		 /**
+		  * Check if there are expired snoozes.   
+		  */
+	     public static void checkExpiredSnoozes()
+	     {
+	    	 Log.i(TAG,"checkExpiredSnoozes");
+	    	 synchronized(snoozedNotificationsSafe)
+		     {
+	    		 if(snoozedNotifications == null)
+	     		{
+	     			Log.d(TAG,"SnoozedNotifications null");
+	     			return;
+	     		}
+	    		 Set<String> keys = snoozedNotifications.keySet();
+	    		 for(String s:keys)
+	    		 {
+	    			 if(Calendar.getInstance().getTime().after(snoozedNotifications.get(s)))
+		 				{
+		 					Log.d(TAG,"Snooze delay expired for : "+ s);
+		 					//If snoozed delay expired I remove the entry
+		 					snoozedNotifications.remove(s);
+		 				}
+	    		 }
+		     }
+	    	 
 	     }
 	     /**
 	      * Check if a task/event has been snoozed by the user. 
