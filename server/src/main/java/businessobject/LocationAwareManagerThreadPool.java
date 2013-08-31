@@ -390,14 +390,14 @@ public class LocationAwareManagerThreadPool
 			}
 			else
 			{
-				//At the moment max precaching area is 10 km
+				/*//At the moment max precaching area is 50 km
 				if(distance>50000)
 				{
 					Hint dummyHint = new Hint();
 					dummyHint.title="searchRadius";
 					dummyHint.searchRadius="50000";
 					toReturn.add(dummyHint);
-				}
+				}*/
 				return toReturn;
 			}
 			
