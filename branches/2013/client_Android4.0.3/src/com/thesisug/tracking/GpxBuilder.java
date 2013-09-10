@@ -175,7 +175,7 @@ public class GpxBuilder
 						"creator=\"thesisug\" "+
 						">"+
 						"<metadata>" +
-						"<name>"+"thesusug-"+creationData+"</name>"+
+						"<name>"+"thesisug-"+creationData+"</name>"+
 						"<desc>"+"Path followed by user during the day."+"</desc>"+
 						"<time>"+creationData+"T"+creationTime+"Z</time>" +
 						"</metadata>"+
